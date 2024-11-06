@@ -169,90 +169,67 @@ function activate(context) {
 			provideDefinition(document, position) {
 				const word = document.getText(document.getWordRangeAtPosition(position));
 				const lineText = document.lineAt(position).text;
-				console.log("Word:", word);
-				console.log("Line Text:", lineText);
-
 				const identifierChainRegex = /\b(\w+(\.\w+)*)\b/g;
 				const match = [...lineText.matchAll(identifierChainRegex)].find(
 					m => m.index <= position.character && m.index + m[0].length >= position.character
 				);
 
 				if (!match) {
-					console.log("No matching identifier chain found.");
 					return null;
 				}
 
 				const identifierChain = match[0].split(".");
-				console.log("Full Identifier Chain:", identifierChain);
-
 				let currentClassData = getClassData(identifierChain[0], typings);
 				if (!currentClassData) {
-					console.log(`No class data found for base class "${identifierChain[0]}"`);
 					return null;
 				}
 
 				const configPath = path.join(vscode.workspace.rootPath, 'config', 'minecraft_typings.json');
 				const uri = vscode.Uri.file(configPath);
 
-				// Initialize uniqueId with the base class ID
-				let uniqueId = currentClassData.id;
-				console.log(`Starting with base class ID: ${uniqueId}`);
-
-				for (let i = 0; i < identifierChain.length; i++) {
-					const identifier = identifierChain[i];
-					console.log(`Checking identifier: ${identifier}`);
-
-					// Navigate directly if the current identifier matches the clicked word
-					if (identifier === word) {
-						console.log(`Clicked on identifier "${identifier}" with ID: ${uniqueId}`);
-						const line = findLineById(uniqueId, configPath);
-						if (line !== null) {
-							console.log(`Navigating to line ${line} for ID: ${uniqueId}`);
-							return new vscode.Location(uri, new vscode.Position(line, 0));
-						}
-						break; // Stop further traversal once the clicked identifier is found
-					}
-
-					// Traverse fields, methods, and nested classes if needed, without updating uniqueId prematurely
-					let nextUniqueId = null;
-					const field = currentClassData.fields?.find(f => f.name === identifier);
-					const method = currentClassData.methods?.find(m => m.name === identifier);
-					const nestedClass = getClassData(identifier, typings); // Check for nested class
-
-					if (field) {
-						nextUniqueId = field.id;
-						console.log(`Found field "${identifier}" with ID: ${nextUniqueId}`);
-						const fieldTypeSimpleName = field.type.split('.').pop();
-						currentClassData = getClassData(fieldTypeSimpleName, typings);
-					} else if (method) {
-						nextUniqueId = method.id;
-						console.log(`Found method "${identifier}" with ID: ${nextUniqueId}`);
-						currentClassData = null;
-						break;
-					} else if (nestedClass) {
-						nextUniqueId = nestedClass.id;
-						currentClassData = nestedClass;
-						console.log(`Found nested class "${identifier}" with ID: ${nextUniqueId}`);
-					} else {
-						console.log(`No matching field, method, or nested class found for identifier: ${identifier}`);
-						currentClassData = null;
-						break;
-					}
-
-					// Update uniqueId after the traversal step is complete, ready for the next iteration
-					uniqueId = nextUniqueId;
-
-					if (!currentClassData) {
-						console.log(`No further class data found for identifier: ${identifier}`);
-						break;
+				if (word === identifierChain[0]) {
+					let baseClassId = currentClassData.id;
+					const line = findLineById(baseClassId, configPath);
+					if (line !== null) {
+						return new vscode.Location(uri, new vscode.Position(line, 0));
 					}
 				}
 
-				console.log("Definition not found for the provided identifier chain.");
+				let uniqueId = currentClassData.id;
+
+				for (let i = 1; i < identifierChain.length; i++) {
+					const identifier = identifierChain[i];
+					const field = currentClassData.fields?.find(f => f.name === identifier);
+					const method = currentClassData.methods?.find(m => m.name === identifier);
+					const nestedClass = getClassData(identifier, typings);
+
+					if (field) {
+						uniqueId = field.id;
+						currentClassData = getClassData(field.type.split('.').pop(), typings);
+					} else if (method) {
+						uniqueId = method.id;
+						currentClassData = null;
+						break;
+					} else if (nestedClass) {
+						uniqueId = nestedClass.id;
+						currentClassData = nestedClass;
+					} else {
+						break;
+					}
+
+					if (identifier === word) {
+						const line = findLineById(uniqueId, configPath);
+						if (line !== null) {
+							return new vscode.Location(uri, new vscode.Position(line, 0));
+						}
+						break;
+					}
+				}
 				return null;
 			}
 		}
 	);
+
 
 	context.subscriptions.push(definitionProvider);
 	context.subscriptions.push(completionProvider);
