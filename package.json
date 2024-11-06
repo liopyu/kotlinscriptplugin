@@ -1,0 +1,55 @@
+{
+  "name": "kotlinscript",
+  "displayName": "KotlinScript",
+  "description": "Generated KotlinScript typings based on the instance opened.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "kotlinscript.helloWorld",
+        "title": "Hello World"
+      }
+    ],
+    "languages": [
+      {
+        "id": "kotlinscript",
+        "aliases": [
+          "KotlinScript",
+          "kotlinscript"
+        ],
+        "extensions": [
+          ".kts"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ]
+  },
+  "extensionDependencies": [
+    "mathiasfrohlich.Kotlin"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.9",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.95.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.13.0"
+  },
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7"
+  }
+}
