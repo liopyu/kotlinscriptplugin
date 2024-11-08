@@ -20,7 +20,7 @@ function processFile(filePath) {
         tokens.forEach(token => console.log(token));
 
         // Parse the tokens into an AST
-        const parser = new Parser(tokens);
+        const parser = new Parser(tokens, tokenizer);
         console.log("Parser initialized.");
 
         const ast = parser.parse();

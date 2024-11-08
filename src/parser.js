@@ -1,12 +1,21 @@
-const { FunctionNode, VariableNode, CallExpressionNode, ImportNode } = require('./ast');
-const { TokenType } = require('./tokentype');
 
+
+const { FunctionNode, VariableNode, CallExpressionNode, ImportNode, IdentifierNode } = require('./ast');
+const { TokenType, Token } = require('./tokentype');
 class Parser {
-    constructor(tokens) {
+    constructor(tokens, tokenizer) {
         this.tokens = tokens;
         this.current = 0;
+        this.variables = new Map();
+        this.tokenizer = tokenizer;
     }
-
+    /**
+     * 
+     * @returns {Map<String,IdentifierNode>}
+     */
+    getVariables() {
+        return this.variables
+    }
     parse() {
         const nodes = [];
         while (this.current < this.tokens.length && this.peek() !== undefined) {
@@ -26,7 +35,10 @@ class Parser {
         return nodes;
     }
 
-
+    /**
+     * 
+     * @returns {Token}
+     */
     peek() {
         return this.tokens[this.current];
     }
@@ -46,14 +58,34 @@ class Parser {
         this.advance(); // Skip '='
         const valueToken = this.advance();
         const value = valueToken ? valueToken.value : ""; // Get the assigned value
-
-        return new VariableNode(name, value); // Return correct node with name and value
+        const node = new VariableNode(name, value);
+        //TODO: Add error handling for duplicate variables
+        this.variables.set(name, node);
+        return node
+    }
+    isReturnableVariable(token) {
+        if (token == null) return true
+        if (token.type === TokenType.IDENTIFIER || token.type === TokenType.NUMBER_LITERAL || token.type === TokenType.STRING_LITERAL) {
+            return true;
+        }
+        return false;
+    }
+    /**
+     * 
+     * @returns {Token}
+     */
+    parseExpression() {
+        const token = this.advance();
+        if (token && this.isReturnableVariable(token)) {
+            return token;
+        }
+        return null;
     }
 
     parseFunction() {
-        this.advance(); // Skip 'fun'
+        this.advance(); // Skip 'fun' keyword
         const nameToken = this.advance();
-        const name = nameToken ? nameToken.value : ""; // Function name safely
+        const name = nameToken ? nameToken.value : ""; // Get function name
 
         this.advance(); // Skip '('
 
@@ -65,32 +97,91 @@ class Parser {
             }
         }
         this.advance(); // Skip ')'
-        this.advance(); // Skip '{'
 
-        const body = [];
-        while (this.peek() && this.peek().value !== '}') {
-            const statement = this.parseStatement();
-            if (statement) {
-                body.push(statement); // Add parsed statement to function body
-            } else {
-                this.advance(); // Skip any undefined or unrecognized token
+        let body = [];
+        let subtype = "Fun0"; // Default to Fun0 (single-expression function)
+        let returnType = "kotlin.Unit"; // Default returnType to kotlin.Unit
+
+        if (this.peek() && this.peek().value === '=') {
+            // Single-expression function
+            this.advance(); // Skip '='
+            const expression = this.parseExpression();
+            const flatName = expression.value
+            body.push(flatName);
+            subtype = "Fun0";
+            if (this.isReturnableVariable(expression) && this.getVariables().has(flatName)) {
+                let variable = this.getVariables().get(flatName)
+                returnType = variable.type
+            } else if (expression.type == TokenType.NUMBER_LITERAL) {
+                returnType = "kotlin.Number";
+            } else if (expression.type == TokenType.STRING_LITERAL) {
+                returnType = "kotlin.String";
             }
-        }
-        this.advance(); // Skip '}'
+        } else if (this.peek() && this.peek().value === '{') {
+            this.advance();
 
-        return new FunctionNode(name, params, body);
+            while (this.peek() && this.peek().value !== '}') {
+                const statement = this.parseStatement();
+                if (statement) {
+                    // Check if it's a return statement
+                    if (statement.type === TokenType.KEYWORD && statement.value === "return") {
+                        // Move past 'return'
+                        this.advance();
+
+                        // Check if there's a value after 'return'
+                        if (this.peek() && !/\s/.test(this.peek().value)) {
+                            returnType = "/* Placeholder: parse return expression */"; // Placeholder
+                        }
+                    }
+                    body.push(statement);
+                } else {
+                    this.advance(); // Skip any undefined or unrecognized token
+                }
+            }
+            this.advance(); // Skip '}'
+            subtype = "Fun1"; // Indicate block function
+        }
+
+        return new FunctionNode(name, params, body, subtype, returnType);
     }
+
+
+
 
     parseStatement() {
         const token = this.peek();
-        if (token && token.type === TokenType.IDENTIFIER) {
-            // Call parseCallExpression if we detect a function call like 'println'
-            return this.parseCallExpression();
+
+        if (!token) return null;
+
+        switch (token.type) {
+            case TokenType.NUMBER_LITERAL:
+            case TokenType.STRING_LITERAL:
+                return this.parseLiteral(); // Parse as a literal
+            case TokenType.IDENTIFIER:
+                return this.parseIdentifierOrCall(); // Parse as an identifier or function call
+            default:
+                return null; // Return null if no valid statement is found
         }
-        return null; // Return null if no valid statement is found
+    }
+    parseLiteral() {
+        const token = this.advance();
+        return { type: "Literal", value: token.value };
     }
 
-    parseCallExpression() {
+    parseIdentifierOrCall() {
+        const token = this.advance(); // Get the identifier token
+        const name = token.value;
+
+        if (this.peek() && this.peek().value === '(') {
+            return this.parseCallExpression(name); // Parse as a function call
+        }
+        if (this.variables.has(name)) {
+            return this.variables.get(name); // Return the variable node if it exists
+        } else
+            return new IdentifierNode(name, null, "kotlin.Unit")
+    }
+
+    parseCallExpression(identifier) {
         const calleeToken = this.advance(); // Advance past the function name (e.g., 'println')
         const callee = calleeToken ? calleeToken.value : ""; // Use the callee token's value
 
@@ -105,7 +196,7 @@ class Parser {
         }
         this.advance(); // Skip ')'
 
-        return new CallExpressionNode(callee, args);
+        return new CallExpressionNode(callee, args, identifier);
     }
 
     parseImportStatement() {
@@ -128,8 +219,10 @@ class Parser {
                 break; // End of the import statement if pattern doesn't match
             }
         }
-
-        return new ImportNode(importPath.trim());
+        const node = new ImportNode(importPath.trim());
+        // TODO: Add error handling for duplicate imports and only grab the class name
+        this.variables.set(node.path, node);
+        return node
     }
 
 

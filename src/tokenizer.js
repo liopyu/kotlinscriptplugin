@@ -11,7 +11,6 @@ class Tokenizer {
         const tokens = [];
         while (this.currentPosition < this.input.length) {
             const char = this.input[this.currentPosition];
-
             if (/\s/.test(char)) {
                 this.consumeWhitespace();
             } else if (/[a-zA-Z_]/.test(char)) {
