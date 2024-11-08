@@ -25,12 +25,21 @@ class VariableNode extends ASTNode {
         this.name = name;
         this.value = value;
     }
+    setName(name) {
+        this.name = name;
+    }
+    setValue(value) {
+        this.value = value;
+    }
 }
 class IdentifierNode extends VariableNode {
     constructor(name, value, clazz) {
         super(name, value);
         this.clazz = clazz;
         this.setType("Identifier")
+    }
+    setClazz(clazz) {
+        this.clazz = clazz;
     }
 }
 
@@ -50,13 +59,16 @@ class CallExpressionNode extends ASTNode {
     }
 }
 
-class ImportNode extends ASTNode {
+class ImportNode extends IdentifierNode {
     constructor(path) {
         super("ImportStatement");
-        this.path = path;
+        this.setClazz(path)
+        this.setName(this.getClassName())
+        this.setValue(this.clazz)
+        this.setType("ImportStatement")
     }
     getClassName() {
-        const parts = this.path.split('.');
+        const parts = this.clazz.split('.');
         return parts[parts.length - 1];
     }
 }
