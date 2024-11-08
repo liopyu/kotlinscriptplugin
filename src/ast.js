@@ -37,9 +37,9 @@ export class ReturnNode extends Scopable {
     }
 }
 
-export class LiteralNode extends ExpressionNode {
-    constructor(type = "Literal", value, scope) {
-        super(type, scope);
+export class LiteralNode extends ASTNode {
+    constructor(type = "Literal", value) {
+        super(type);
         this.value = value;
     }
     setValue(value) {
@@ -47,13 +47,13 @@ export class LiteralNode extends ExpressionNode {
     }
 }
 export class StringLiteralNode extends LiteralNode {
-    constructor(value, scope) {
-        super("StringLiteral", value, scope);
+    constructor(value) {
+        super("StringLiteral", value);
     }
 }
 export class NumberLiteralNode extends LiteralNode {
-    constructor(value, scope) {
-        super("NumberLiteral", value, scope);
+    constructor(value) {
+        super("NumberLiteral", value);
     }
 }
 export class BlockNode extends ExpressionNode {
