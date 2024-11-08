@@ -1,6 +1,8 @@
 
 
 const {
+    Scopable,
+    ExpressionNode,
     FunctionNode,
     VariableNode,
     CallExpressionNode,
@@ -10,7 +12,8 @@ const {
     OperatorNode,
     BlockNode,
     StringLiteralNode,
-    NumberLiteralNode
+    NumberLiteralNode,
+    ReturnNode
 } = require('./ast');
 const { TokenType, Token } = require('./tokentype');
 const Scope = require('./scope');
@@ -183,7 +186,7 @@ class Parser {
         }
 
         this.exitScope();
-        return new FunctionNode(name, params, body, subtype, returnType, expectedReturn, blockNodes);
+        return new FunctionNode(name, params, body, subtype, returnType, expectedReturn, blockNodes, this.currentScope);
     }
     getReturnType(expression, flatName) {
         if (this.isReturnableVariable(expression) && this.currentScope.lookupVariable(flatName)) {
@@ -197,8 +200,21 @@ class Parser {
         return "kotlin.Unit";
     }
 
+    parseKeyword(token) {
+        switch (token.value) {
+            case 'val':
+            case 'var':
+                return this.parseVariableDeclaration();
+            case 'return':
+                return this.parseReturnStatement();
+            default:
+                break;
+        }
+    }
+    parseReturnStatement() {
+        this.advance();deliberate error
 
-
+    }
     parseStatement() {
         const token = this.peek();
 
@@ -206,13 +222,7 @@ class Parser {
 
         switch (token.type) {
             case TokenType.KEYWORD:
-                if (token.value === 'val' || token.value === 'var') {
-                    return this.parseVariableDeclaration();
-                }
-                if (token.value === 'return') {
-                    return token;
-                }
-                break;
+                return this.parseKeyword(token)
             case TokenType.IDENTIFIER:
                 return this.parseIdentifierOrCall();
             case TokenType.STRING_LITERAL:
@@ -253,11 +263,11 @@ class Parser {
     parseLiteral() {
         const token = this.advance();
         if (token.type === TokenType.STRING_LITERAL) {
-            return new StringLiteralNode(token.value)
+            return new StringLiteralNode(token.value, this.currentScope)
         } else if (token.type === TokenType.NUMBER_LITERAL) {
-            return new NumberLiteralNode(parseFloat(token.value))
+            return new NumberLiteralNode(parseFloat(token.value), this.currentScope)
         }
-        return new LiteralNode(token.value)
+        return new LiteralNode(token.value, this.currentScope)
     }
 
     parseIdentifierOrCall() {
@@ -270,7 +280,7 @@ class Parser {
         if (this.getVariables(this.currentScope).has(name)) {
             return this.getVariables(this.currentScope).get(name);
         } else
-            return new IdentifierNode(name, null, "kotlin.Unit")
+            return new IdentifierNode(name, null, "kotlin.Unit", this.currentScope)
     }
 
     parseCallExpression(identifier) {

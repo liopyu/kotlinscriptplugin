@@ -1,46 +1,74 @@
-class ASTNode {
-    constructor(type) {
+import Scope from "./scope";
+export class ASTNode {
+    constructor(type = "Any") {
         this.type = type;
     }
     setType(type) {
         this.type = type;
     }
 }
-class LiteralNode extends ASTNode {
-    constructor(value) {
-        super("Literal");
+export class Scopable extends ASTNode {
+    constructor(type, scope) {
+        super(type);
+        this.scope = scope;
+    }
+    setScope(scope) {
+        this.scope = scope;
+    }
+}
+export class ExpressionNode extends Scopable {
+    constructor(type = "Expression", scope) {
+        super(type, scope);
+    }
+}
+
+export class ReturnNode extends Scopable {
+    /**
+     * 
+     * @param {ExpressionNode} node 
+     * @param {Scope} scope 
+     */
+    constructor(node = new ExpressionNode(), scope) {
+        super("ReturnStatement", scope);
+        this.node = node;
+    }
+    setNode(node) {
+        this.node = node;
+    }
+}
+
+export class LiteralNode extends ExpressionNode {
+    constructor(type = "Literal", value, scope) {
+        super(type, scope);
         this.value = value;
     }
     setValue(value) {
         this.value = value;
     }
 }
-class StringLiteralNode extends LiteralNode {
-    constructor(value) {
-        super("StringLiteral");
-        this.setValue(value)
+export class StringLiteralNode extends LiteralNode {
+    constructor(value, scope) {
+        super("StringLiteral", value, scope);
     }
 }
-class NumberLiteralNode extends LiteralNode {
-    constructor(value) {
-        super("NumberLiteral");
-        this.setValue(value)
+export class NumberLiteralNode extends LiteralNode {
+    constructor(value, scope) {
+        super("NumberLiteral", value, scope);
     }
 }
-class BlockNode extends ASTNode {
+export class BlockNode extends ExpressionNode {
     constructor(statements, scope, blockType = "kotlin.Standard") {
-        super("Block")
+        super("Block", scope)
         this.statements = statements;
-        this.scope = scope;
         this.blockType = blockType;
     }
-    setStatement(statement) {
-        this.statement = statement;
+    setStatements(statements) {
+        this.statements = statements;
     }
 }
-class FunctionNode extends ASTNode {
-    constructor(name, params, body, subtype, returnType = "kotlin.Unit", expectedReturn = "kotlin.Unit", blockNodes = []) {
-        super("Function");
+export class FunctionNode extends ExpressionNode {
+    constructor(name, params, body, subtype, returnType = "kotlin.Unit", expectedReturn = "kotlin.Unit", blockNodes = new Array, scope) {
+        super("Function", scope);
         this.name = name;
         this.params = params;
         this.body = body;
@@ -61,9 +89,9 @@ class FunctionNode extends ASTNode {
 }
 
 
-class VariableNode extends ASTNode {
-    constructor(name, value) {
-        super("VariableDeclaration");
+export class VariableNode extends ExpressionNode {
+    constructor(name, value, scope, type = "VariableDeclaration") {
+        super(type, scope);
         this.name = name;
         this.value = value;
     }
@@ -74,25 +102,24 @@ class VariableNode extends ASTNode {
         this.value = value;
     }
 }
-class IdentifierNode extends VariableNode {
-    constructor(name, value, clazz) {
-        super(name, value);
+export class IdentifierNode extends VariableNode {
+    constructor(value, clazz, name, scope) {
+        super(name, value, scope, "Identifier");
         this.clazz = clazz;
-        this.setType("Identifier")
     }
     setClazz(clazz) {
         this.clazz = clazz;
     }
 }
 
-class OperatorNode extends ASTNode {
+export class OperatorNode extends ASTNode {
     constructor(operator) {
         super("Operator");
         this.operator = operator;
     }
 }
 
-class CallExpressionNode extends ASTNode {
+export class CallExpressionNode extends ASTNode {
     constructor(callee, args, value) {
         super("CallExpression");
         this.callee = callee;
@@ -101,7 +128,7 @@ class CallExpressionNode extends ASTNode {
     }
 }
 
-class ImportNode extends IdentifierNode {
+export class ImportNode extends IdentifierNode {
     constructor(path) {
         super("ImportStatement");
         this.setClazz(path)
@@ -114,18 +141,3 @@ class ImportNode extends IdentifierNode {
         return parts[parts.length - 1];
     }
 }
-
-
-module.exports = {
-    ASTNode,
-    FunctionNode,
-    VariableNode,
-    CallExpressionNode,
-    ImportNode,
-    IdentifierNode,
-    LiteralNode,
-    BlockNode,
-    OperatorNode,
-    StringLiteralNode,
-    NumberLiteralNode
-};
