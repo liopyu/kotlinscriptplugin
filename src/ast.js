@@ -6,15 +6,57 @@ class ASTNode {
         this.type = type;
     }
 }
-
+class LiteralNode extends ASTNode {
+    constructor(value) {
+        super("Literal");
+        this.value = value;
+    }
+    setValue(value) {
+        this.value = value;
+    }
+}
+class StringLiteralNode extends LiteralNode {
+    constructor(value) {
+        super("StringLiteral");
+        this.setValue(value)
+    }
+}
+class NumberLiteralNode extends LiteralNode {
+    constructor(value) {
+        super("NumberLiteral");
+        this.setValue(value)
+    }
+}
+class BlockNode extends ASTNode {
+    constructor(statements, scope, blockType = "kotlin.Standard") {
+        super("Block")
+        this.statements = statements;
+        this.scope = scope;
+        this.blockType = blockType;
+    }
+    setStatement(statement) {
+        this.statement = statement;
+    }
+}
 class FunctionNode extends ASTNode {
-    constructor(name, params, body, subtype, returnType = "kotlin.Unit") {
+    constructor(name, params, body, subtype, returnType = "kotlin.Unit", expectedReturn = "kotlin.Unit", blockNodes = []) {
         super("Function");
         this.name = name;
         this.params = params;
         this.body = body;
         this.subtype = subtype;
         this.returnType = returnType;
+        this.expectedReturn = expectedReturn;
+        this.blockNodes = blockNodes;
+    }
+    /**
+     * 
+     * @param {BlockNode} blockNode 
+     * @returns {FunctionNode}
+     */
+    addBlockNode(blockNode) {
+        this.blockNodes.push(blockNode);
+        return this
     }
 }
 
@@ -74,4 +116,16 @@ class ImportNode extends IdentifierNode {
 }
 
 
-module.exports = { ASTNode, FunctionNode, VariableNode, CallExpressionNode, ImportNode, IdentifierNode };
+module.exports = {
+    ASTNode,
+    FunctionNode,
+    VariableNode,
+    CallExpressionNode,
+    ImportNode,
+    IdentifierNode,
+    LiteralNode,
+    BlockNode,
+    OperatorNode,
+    StringLiteralNode,
+    NumberLiteralNode
+};

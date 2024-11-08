@@ -1,6 +1,17 @@
 
 
-const { FunctionNode, VariableNode, CallExpressionNode, ImportNode, IdentifierNode } = require('./ast');
+const {
+    FunctionNode,
+    VariableNode,
+    CallExpressionNode,
+    ImportNode,
+    IdentifierNode,
+    LiteralNode,
+    OperatorNode,
+    BlockNode,
+    StringLiteralNode,
+    NumberLiteralNode
+} = require('./ast');
 const { TokenType, Token } = require('./tokentype');
 const Scope = require('./scope');
 class Parser {
@@ -129,7 +140,7 @@ class Parser {
             const paramToken = this.advance();
             if (paramToken && paramToken.type === TokenType.IDENTIFIER) {
                 params.push(paramToken.value);
-
+                //TODO: handle typed parameters like (parameter: String) ect...
             }
         }
         this.advance();
@@ -137,7 +148,8 @@ class Parser {
         let body = [];
         let subtype = "Fun0";
         let returnType = "kotlin.Unit";
-
+        let expectedReturn = "kotlin.Unit";
+        let blockNodes = [];
         if (this.peek() && this.peek().value === '=') {
 
             this.advance();
@@ -149,19 +161,18 @@ class Parser {
         } else if (this.peek() && this.peek().value === '{') {
             this.advance();
             while (this.peek() && this.peek().value !== '}') {
-                const statement = this.parseStatement();
-                if (statement) {
-
-                    if (statement.type === TokenType.KEYWORD && statement.value === "return") {
-
+                const statementNode = this.parseStatement();
+                if (statementNode) {
+                    if (statementNode.type === TokenType.KEYWORD && statementNode.value === "return") {
                         this.advance();
-
-
-                        if (this.peek() && !/\s/.test(this.peek().value)) {
-                            returnType = "/* Placeholder: parse return expression */";
-                        }
+                        const expression = this.parseExpression();
+                        const flatName = expression.value
+                        subtype = "Fun1";
+                        returnType = this.getReturnType(expression, flatName);
+                    } else if (statementNode instanceof BlockNode) {
+                        blockNodes.push(statementNode);
                     }
-                    body.push(statement);
+                    body.push(statementNode);
                 } else {
                     this.advance();
                 }
@@ -172,7 +183,7 @@ class Parser {
         }
 
         this.exitScope();
-        return new FunctionNode(name, params, body, subtype, returnType);
+        return new FunctionNode(name, params, body, subtype, returnType, expectedReturn, blockNodes);
     }
     getReturnType(expression, flatName) {
         if (this.isReturnableVariable(expression) && this.currentScope.lookupVariable(flatName)) {
@@ -207,15 +218,46 @@ class Parser {
             case TokenType.STRING_LITERAL:
             case TokenType.NUMBER_LITERAL:
                 return this.parseLiteral();
+            case TokenType.SEPARATOR:
+                return this.parseSeparator();
             default:
                 return null;
         }
     }
+    parseSeparator() {
+        const separatorToken = this.advance();
 
+        if (separatorToken.value === "{") {
+            this.enterScope();
+            const statements = [];
+            while (this.peek() && this.peek().value !== "}") {
+                const statement = this.parseStatement();
+                if (statement) {
+                    statements.push(statement);
+                } else {
+                    this.advance();
+                }
+            }
+
+            this.advance();
+            const blockNode = new BlockNode(statements, this.currentScope);
+
+            this.exitScope();
+
+            return blockNode;
+        }
+
+        return null;
+    }
 
     parseLiteral() {
         const token = this.advance();
-        return { type: "Literal", value: token.value };
+        if (token.type === TokenType.STRING_LITERAL) {
+            return new StringLiteralNode(token.value)
+        } else if (token.type === TokenType.NUMBER_LITERAL) {
+            return new NumberLiteralNode(parseFloat(token.value))
+        }
+        return new LiteralNode(token.value)
     }
 
     parseIdentifierOrCall() {
