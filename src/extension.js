@@ -30,6 +30,7 @@ function processFile(filePath) {
         ast.forEach(node => {
             console.log(JSON.stringify(node, null, 2));
         });
+        parser.getVariables().forEach((variable, name) => console.log("Stored variable: " + name));
 
     } catch (error) {
         console.error(`Error processing file ${filePath}:`, error);

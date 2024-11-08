@@ -55,6 +55,10 @@ class ImportNode extends ASTNode {
         super("ImportStatement");
         this.path = path;
     }
+    getClassName() {
+        const parts = this.path.split('.');
+        return parts[parts.length - 1];
+    }
 }
 
 

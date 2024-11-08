@@ -11,23 +11,32 @@ class Tokenizer {
         const tokens = [];
         while (this.currentPosition < this.input.length) {
             const char = this.input[this.currentPosition];
-            if (/\s/.test(char)) {
-                this.consumeWhitespace();
-            } else if (/[a-zA-Z_]/.test(char)) {
-                tokens.push(this.consumeIdentifierOrKeyword());
-            } else if (/[0-9]/.test(char)) {
-                tokens.push(this.consumeNumberLiteral());
-            } else if (char === '"' || char === "'") {
-                tokens.push(this.consumeStringLiteral(char));
-            } else if (this.isOperator(char)) {
-                tokens.push(this.consumeOperator());
-            } else if (char === '.') {
-                tokens.push(new Token(TokenType.PERIOD, '.', this.currentLine, this.currentColumn));
-                this.advancePosition();
-            } else if (this.isSeparator(char)) {
-                tokens.push(this.consumeSeparator());
-            } else {
-                this.advancePosition();
+            switch (true) {
+                case /\s/.test(char):
+                    this.consumeWhitespace();
+                    break;
+                case /[a-zA-Z_]/.test(char):
+                    tokens.push(this.consumeIdentifierOrKeyword());
+                    break;
+                case /[0-9]/.test(char):
+                    tokens.push(this.consumeNumberLiteral());
+                    break;
+                case char === '"' || char === "'":
+                    tokens.push(this.consumeStringLiteral(char));
+                    break;
+                case this.isOperator(char):
+                    tokens.push(this.consumeOperator());
+                    break;
+                case char === '.':
+                    tokens.push(new Token(TokenType.PERIOD, '.', this.currentLine, this.currentColumn));
+                    this.advancePosition();
+                    break;
+                case this.isSeparator(char):
+                    tokens.push(this.consumeSeparator());
+                    break;
+                default:
+                    this.advancePosition();
+                    break;
             }
         }
         tokens.push(new Token(TokenType.EOF, "", this.currentLine, this.currentColumn));

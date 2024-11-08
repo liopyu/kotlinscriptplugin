@@ -220,8 +220,8 @@ class Parser {
             }
         }
         const node = new ImportNode(importPath.trim());
-        // TODO: Add error handling for duplicate imports and only grab the class name
-        this.variables.set(node.path, node);
+        // TODO: Add error handling for duplicate imports
+        this.variables.set(node.getClassName(), node);
         return node
     }
 
