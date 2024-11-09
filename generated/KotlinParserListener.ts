@@ -1,6 +1,6 @@
 // Generated from ./src/grammar/KotlinParser.g4 by ANTLR 4.13.2
 
-import {ParseTreeListener} from "antlr4";
+import { ParseTreeListener } from "antlr4";
 
 
 import { KotlinFileContext } from "./KotlinParser.js";

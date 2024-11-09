@@ -473,8 +473,8 @@ export default class KotlinLexer extends Lexer {
 		"Inside_RealLiteral", "Inside_NullLiteral", "Inside_LongLiteral", "Inside_UnsignedLiteral",
 		"Inside_Identifier", "Inside_Comment", "Inside_WS", "Inside_NL", "ErrorCharacter",
 	];
-	private _modeStack: number[] = [];
-	private _mode: number = 0;
+
+
 	constructor(input: CharStream) {
 		super(input);
 		this._interp = new LexerATNSimulator(this, KotlinLexer._ATN, KotlinLexer.DecisionsToDFA, new PredictionContextCache());
@@ -500,25 +500,16 @@ export default class KotlinLexer extends Lexer {
 				break;
 		}
 	}
-	public pushMode(mode: number): void {
-		this._modeStack.push(this._mode);
-		this._mode = mode;
-	}
-	public popMode(): number {
-		if (this._modeStack.length === 0) {
-			throw new Error("Mode stack is empty.");
-		}
-		this._mode = this._modeStack.pop()!;
-		return this._mode;
-	}
 
 	private RCURL_action(localctx: RuleContext, actionIndex: number): void {
 		switch (actionIndex) {
-			case 0:
-				if (this._modeStack.length > 0) { this.popMode(); }
+			case 0: Lexer
+				if (this.getModeStack().length > 0) { this.popMode(); }
+
 				break;
 		}
 	}
+
 	public static readonly _serializedATN: number[] = [4, 0, 173, 2250, 6, -1, 6,
 		-1, 6, -1, 6, -1, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 4, 2, 5, 7, 5, 2, 6, 7, 6, 2,
 		7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 2, 10, 7, 10, 2, 11, 7, 11, 2, 12, 7, 12, 2, 13, 7, 13, 2, 14, 7, 14,
