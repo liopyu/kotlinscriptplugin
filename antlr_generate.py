@@ -32,7 +32,7 @@ def main():
     output_dir = './generated'  # Output directory for generated files
     lexer_file = './src/grammar/KotlinLexer.g4'  # Path to your lexer grammar file
     parser_file = './src/grammar/KotlinParser.g4'  # Path to your parser grammar file
-    target_language = 'JavaScript'  # Change to 'Java' if needed
+    target_language = 'TypeScript'  # Change to 'Java' if needed
 
     # Install Python ANTLR runtime for possible further processing
     install_antlr_python_runtime()
