@@ -1,82 +1,29 @@
-const vscode = require('vscode');
-const fs = require('fs');
-const path = require('path');
-const Tokenizer = require('./tokenizer');
-const Parser = require('./parser');
+// Import necessary modules from antlr4 or any other libraries as ES modules
+import antlr4 from 'antlr4';
+import KotlinLexer from '../generated/KotlinLexer.mjs';
+import KotlinParser from '../generated/KotlinParser.mjs';
+import KotlinParserListener from '../generated/KotlinParserListener.mjs';
 
-function processFile(filePath) {
-    console.log(`Reading content of ${filePath}...`);
+// You can add more imports as necessary
 
-    try {
-        const content = fs.readFileSync(filePath, 'utf8');
-        console.log("File content read successfully.");
+// Define the activate function, which is called when your extension is activated
+export function activate(context) {
+    console.log('Congratulations, your extension "kotlinscript" is now active!');
 
-        // Tokenize the content
-        const tokenizer = new Tokenizer(content);
-        console.log("Tokenizer initialized.");
+    // You can put the rest of your extension's code here
+    const input = "field = 123 AND items in (1,2,3)";
+    const chars = new antlr4.InputStream(input);
+    const lexer = new KotlinLexer(chars);
+    const tokens = new antlr4.CommonTokenStream(lexer);
+    const parser = new KotlinParser(tokens);
+    const tree = parser.kotlinFile(); // Assuming 'kotlinFile' is the entry point rule
 
-        const tokens = tokenizer.tokenize();
-        console.log("Tokenization complete. Tokens:");
-        tokens.forEach(token => console.log(token));
-
-        // Parse the tokens into an AST
-        const parser = new Parser(tokens, tokenizer);
-        console.log("Parser initialized.");
-
-        const ast = parser.parse();
-        console.log("Parsing complete. AST:");
-
-        // Log each AST node for inspection
-        ast.forEach(node => {
-            console.log(JSON.stringify(node, null, 2));
-        });
-        parser.getScopes().forEach(scope => {
-            parser.getVariables(scope).forEach((variable, name) => console.log("Stored variable: " + name + " for scope depth: " + scope.depth));
-        })
-
-    } catch (error) {
-        console.error(`Error processing file ${filePath}:`, error);
-    }
+    // Example of how to use the listener or visitor patterns if necessary
+    // const listener = new KotlinParserListener();
+    // antlr4.tree.ParseTreeWalker.DEFAULT.walk(listener, tree);
 }
 
-
-function activate(context) {
-    console.log("Extension activated");
-
-    // Log workspace folder information for debugging
-    if (vscode.workspace.workspaceFolders) {
-        console.log("Workspace folders:", vscode.workspace.workspaceFolders);
-    } else {
-        console.log("No workspace folders detected.");
-    }
-
-    const instancePath = path.join(
-        vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '',
-        'config',
-        'scripts'
-    );
-
-    // Log the derived instance path
-    console.log("Derived instance path:", instancePath);
-
-    // Check if the instance path exists
-    if (!fs.existsSync(instancePath)) {
-        console.log(`Instance path ${instancePath} does not exist.`);
-        return;
-    } else {
-        console.log(`Instance path ${instancePath} exists.`);
-    }
-
-    // Process existing `.kts` files on activation
-    fs.readdirSync(instancePath)
-        .filter(file => file.endsWith('.kts'))
-        .forEach(file => {
-            const filePath = path.join(instancePath, file);
-            console.log(`Processing file on activation: ${filePath}`);
-            processFile(filePath);
-        });
+// Define the deactivate function, which is called when your extension is deactivated
+export function deactivate() {
+    console.log('Your extension "kotlinscript" is now deactivated.');
 }
-
-function deactivate() { }
-
-module.exports = { activate, deactivate };
