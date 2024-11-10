@@ -7,7 +7,7 @@ import * as path from 'path';
 import KotlinParserListenerImpl from './KotlinParserListenerImpl';
 
 // Import parsedFunctions from KotlinParserListenerImpl
-import { instantiatedClasses, parsedFunctions, parsedClasses, importedClassesUsage } from './KotlinParserListenerImpl';
+import { importedClasses, instantiatedClasses, parsedFunctions, parsedClasses, importedClassesUsage } from './KotlinParserListenerImpl';
 
 // Process file content to build up typings
 function processFileContent(content: string): void {
@@ -20,12 +20,7 @@ function processFileContent(content: string): void {
 
     const listener = new KotlinParserListenerImpl();
     ParseTreeWalker.DEFAULT.walk(listener, tree);
-    /* listener.enterEveryRule(parser._ctx)
-    listener.exitEveryRule(parser._ctx) */
-    /* console.log("Parsed functions:", parsedFunctions);
-    console.log("Parsed classes:", parsedClasses);
-    console.log("Parsed instantiatedClasses:", instantiatedClasses);
-console.log("Parsed importedClassesUsage:", importedClassesUsage); */
+    console.log("Imported Classes:", importedClasses);
 }
 
 // Setup file change listener to re-parse `.kts` files in real-time

@@ -1,14 +1,14 @@
 import KotlinParserListener from "../generated/KotlinParserListener";
-import { NavigationSuffixContext, ValueArgumentContext, ConstructorInvocationContext, KotlinFileContext, FunctionDeclarationContext, FunctionValueParameterContext, ParameterContext, ClassDeclarationContext, SimpleIdentifierContext } from "../generated/KotlinParser";
+import { StringLiteralContext, CollectionLiteralContext, ImportHeaderContext, NavigationSuffixContext, ValueArgumentContext, ConstructorInvocationContext, KotlinFileContext, FunctionDeclarationContext, FunctionValueParameterContext, ParameterContext, ClassDeclarationContext, SimpleIdentifierContext, TypeReferenceContext } from "../generated/KotlinParser";
 import { ParseTreeListener, ParserRuleContext } from "antlr4";
 export const parsedFunctions = new Map<string, { returnType: string, parameters: { name: string, type: string }[] }>();
 export const parsedClasses = new Map<string, { properties: { name: string, type: string }[], methods: { name: string, returnType: string, parameters: { name: string, type: string }[] }[] }>();
 export const importedClassesUsage = new Map<string, string[]>();
 export const instantiatedClasses = new Map<string, { arguments: { name: string; value: string }[] }>();
-
+export const importedClasses = new Map<string, string>();
 const individualLogging = false;
-const globalLogging = true;
-const exitGlobals = true;
+const globalLogging = false;
+const exitGlobals = false;
 const enterGlobals = false;
 function logContent(...data: any[]) {
     if (individualLogging) {
@@ -21,7 +21,18 @@ function logGlobals(...data: any[]) {
         console.log(data)
     }
 }
+
 export default class KotlinParserListenerImpl extends KotlinParserListener {
+    enterStringLiteral = (ctx: StringLiteralContext): void => {
+        console.log(ctx.getText())
+    }
+    /**
+     * Will need for type references
+     * @param ctx 
+     */
+    enterTypeReference = (ctx: TypeReferenceContext): void => {
+        console.log(ctx.getText())
+    }
     /**
      * Enter point for all rules
      * @param ctx 
@@ -59,142 +70,29 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
             logGlobals(`Stop Token: Text = ${stopToken.text}, Type = ${stopToken.type}, Position = ${stopToken.line}:${stopToken.column}`);
         }
     }
+    exitImportHeader = (ctx: ImportHeaderContext): void => {
+        const fullPathParts: string[] = [];
+
+        const identifierCtx = ctx.identifier();
+        if (identifierCtx) {
+            // Use childCount to iterate over each simpleIdentifier by index with null checks
+            for (let i = 0; i < identifierCtx.getChildCount(); i++) {
+                const idCtx = identifierCtx.simpleIdentifier(i) as SimpleIdentifierContext;
+                if (idCtx) { // Check for null before using getText()
+                    fullPathParts.push(idCtx.getText());
+                }
+            }
+        }
+
+        const fullPath = fullPathParts.join(".");
+        const className = fullPathParts[fullPathParts.length - 1] || "UnknownClass";
+
+        if (className !== "UnknownClass") {
+            importedClasses.set(className, fullPath);
+            console.log(`Captured import: ${className} from path: ${fullPath}`);
+        }
+    };
     exitSimpleIdentifier = (ctx: SimpleIdentifierContext): void => {
         const identifier = ctx.Identifier();
-        //logContent(`Found simple identifier: ${identifier}`);
     }
-    enterNavigationSuffix = (ctx: NavigationSuffixContext): void => {
-        const identifier = ctx.simpleIdentifier()?.getText();
-        if (identifier) {
-            logContent(`Navigating to member of: ${identifier}`);
-
-            // Check if `identifier` matches an imported class, like `Minecraft`
-            if (importedClassesUsage.has(identifier)) {
-                logContent(`Member navigation detected for imported class: ${identifier}`);
-                // You can then populate potential completions based on known members of `Minecraft` or other imported classes
-            }
-        }
-    };
-
-    exitNavigationSuffix = (ctx: NavigationSuffixContext): void => {
-        logContent("Exiting NavigationSuffix");
-        // Additional processing, if needed, once navigation is complete
-    };
-    exitConstructorInvocation = (ctx: ConstructorInvocationContext): void => {
-        logContent("Entering exitConstructorInvocation");
-
-        const className = ctx.userType()?.getText() || "UnknownClass";
-        const argumentsList: { name: string; value: string }[] = [];
-
-        const valueArgsCtx = ctx.valueArguments();
-        if (valueArgsCtx) {
-            logContent(`Processing ${valueArgsCtx.getChildCount()} arguments for class ${className}`);
-
-            for (let i = 0; i < valueArgsCtx.getChildCount(); i++) {
-                const argCtx = valueArgsCtx.getTypedRuleContext(ValueArgumentContext, i);
-                if (argCtx) {
-                    const argValue = argCtx.expression()?.getText() || "value";
-                    logContent(`Argument ${i + 1}: ${argValue}`);
-                    argumentsList.push({ name: `arg${i + 1}`, value: argValue });
-                }
-            }
-        } else {
-            logContent(`No arguments found for class ${className}`);
-        }
-
-        instantiatedClasses.set(className, { arguments: argumentsList });
-        logContent(`Instantiated class stored: ${className} with arguments:`, argumentsList);
-    };
-
-    exitClassDeclaration = (ctx: ClassDeclarationContext): void => {
-        const className = ctx.simpleIdentifier()?.getText() || "AnonymousClass";
-        const properties: { name: string; type: string; isMutable: boolean }[] = [];
-        const methods: { name: string; returnType: string; parameters: { name: string; type: string }[] }[] = [];
-
-        const classBodyCtx = ctx.classBody();
-        if (classBodyCtx) {
-            classBodyCtx.classMemberDeclarations()?.classMemberDeclaration_list()?.forEach(memberCtx => {
-                const declarationCtx = memberCtx.declaration();
-
-                // Check for property declaration
-                if (declarationCtx?.propertyDeclaration()) {
-                    const propertyDeclarationCtx = declarationCtx.propertyDeclaration();
-                    const isMutable = propertyDeclarationCtx.VAR() !== null;
-                    const propertyName = propertyDeclarationCtx.variableDeclaration()?.simpleIdentifier()?.getText() || "property";
-                    const propertyType = propertyDeclarationCtx.variableDeclaration()?.type_()?.getText() || "Any";
-
-                    properties.push({ name: propertyName, type: propertyType, isMutable });
-                }
-
-                // Check for function declaration
-                if (declarationCtx?.functionDeclaration()) {
-                    const methodName = declarationCtx.functionDeclaration().simpleIdentifier()?.getText() || "method";
-                    const returnType = declarationCtx.functionDeclaration().type_()?.getText() || "Unit";
-
-                    const parameters: { name: string; type: string }[] = [];
-                    const functionParamsCtx = declarationCtx.functionDeclaration().functionValueParameters();
-
-                    if (functionParamsCtx) {
-                        for (let i = 0; i < functionParamsCtx.getChildCount(); i++) {
-                            const paramCtx = functionParamsCtx.getTypedRuleContext(FunctionValueParameterContext, i);
-                            if (paramCtx) {
-                                const parameterCtx = paramCtx.parameter();
-                                const paramName = parameterCtx?.simpleIdentifier()?.getText() || "param";
-                                const paramType = parameterCtx?.type_()?.getText() || "Any";
-                                parameters.push({ name: paramName, type: paramType });
-                            }
-                        }
-                    }
-
-                    methods.push({ name: methodName, returnType, parameters });
-                }
-            });
-        }
-
-        parsedClasses.set(className, { properties, methods });
-        logContent(`Stored class: ${className} with properties and methods:`, { properties, methods });
-    };
-
-
-
-
-
-    enterKotlinFile = (ctx: KotlinFileContext): void => {
-        logContent("Entering Kotlin file for parsing");
-        ctx.children?.forEach(child => {
-            // Handle top-level elements here as needed
-        });
-        logContent("Completed parsing Kotlin file.");
-    };
-    getParsedFunctions() {
-        return parsedFunctions;
-    }
-    exitFunctionDeclaration = (ctx: FunctionDeclarationContext): void => {
-        logContent("Exiting function declaration");
-
-        const functionName = ctx.simpleIdentifier()?.getText() || "anonymous";
-        const parameters: { name: string; type: string }[] = [];
-        const functionParamsCtx = ctx.functionValueParameters();
-
-        if (functionParamsCtx) {
-            // Retrieve each parameter by index if needed
-            for (let i = 0; i < functionParamsCtx.getChildCount(); i++) {
-                const paramCtx = functionParamsCtx.getTypedRuleContext(FunctionValueParameterContext, i) as FunctionValueParameterContext;
-
-                if (paramCtx) {
-                    const parameterCtx = paramCtx.parameter() as ParameterContext;
-                    const name = parameterCtx?.simpleIdentifier()?.getText() || "param";
-                    const type = parameterCtx?.type_()?.getText() || "Any";
-                    parameters.push({ name, type });
-                }
-            }
-        }
-
-        const returnType = ctx.type_()?.getText() || "Unit";
-
-        // Store the function typing information for IntelliSense or auto-completion
-        parsedFunctions.set(functionName, { returnType, parameters });
-
-        logContent(`Stored function: ${functionName} with return type ${returnType} and parameters:`, parameters);
-    };
 }
