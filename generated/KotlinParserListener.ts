@@ -5,6 +5,10 @@ import { ParseTreeListener } from "antlr4";
 
 import { KotlinFileContext } from "./KotlinParser.js";
 import { ScriptContext } from "./KotlinParser.js";
+import { TopLevelAllowedExpressionContext } from "./KotlinParser.js";
+import { TypeCheckExpressionContext } from "./KotlinParser.js";
+import { TopLevelJumpExpressionContext } from "./KotlinParser.js";
+import { TopLevelExpressionContext } from "./KotlinParser.js";
 import { ShebangLineContext } from "./KotlinParser.js";
 import { FileAnnotationContext } from "./KotlinParser.js";
 import { PackageHeaderContext } from "./KotlinParser.js";
@@ -204,6 +208,46 @@ export default class KotlinParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitScript?: (ctx: ScriptContext) => void;
+	/**
+	 * Enter a parse tree produced by `KotlinParser.topLevelAllowedExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterTopLevelAllowedExpression?: (ctx: TopLevelAllowedExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `KotlinParser.topLevelAllowedExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitTopLevelAllowedExpression?: (ctx: TopLevelAllowedExpressionContext) => void;
+	/**
+	 * Enter a parse tree produced by `KotlinParser.typeCheckExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterTypeCheckExpression?: (ctx: TypeCheckExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `KotlinParser.typeCheckExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitTypeCheckExpression?: (ctx: TypeCheckExpressionContext) => void;
+	/**
+	 * Enter a parse tree produced by `KotlinParser.topLevelJumpExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterTopLevelJumpExpression?: (ctx: TopLevelJumpExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `KotlinParser.topLevelJumpExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitTopLevelJumpExpression?: (ctx: TopLevelJumpExpressionContext) => void;
+	/**
+	 * Enter a parse tree produced by `KotlinParser.topLevelExpression`.
+	 * @param ctx the parse tree
+	 */
+	enterTopLevelExpression?: (ctx: TopLevelExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by `KotlinParser.topLevelExpression`.
+	 * @param ctx the parse tree
+	 */
+	exitTopLevelExpression?: (ctx: TopLevelExpressionContext) => void;
 	/**
 	 * Enter a parse tree produced by `KotlinParser.shebangLine`.
 	 * @param ctx the parse tree

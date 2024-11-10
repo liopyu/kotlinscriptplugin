@@ -171,6 +171,7 @@ Inside_Comment=170
 Inside_WS=171
 Inside_NL=172
 ErrorCharacter=173
+AnyType=174
 '...'=6
 '.'=7
 ','=8

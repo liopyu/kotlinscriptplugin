@@ -500,12 +500,10 @@ export default class KotlinLexer extends Lexer {
 				break;
 		}
 	}
-
 	private RCURL_action(localctx: RuleContext, actionIndex: number): void {
 		switch (actionIndex) {
-			case 0: Lexer
+			case 0:
 				if (this.getModeStack().length > 0) { this.popMode(); }
-
 				break;
 		}
 	}
