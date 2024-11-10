@@ -15,7 +15,7 @@ import KotlinParserListener from "./KotlinParserListener.js";
 // for running tests with parameters, TODO: discuss strategy for typed parameters in CI
 // eslint-disable-next-line no-unused-vars
 type int = number;
-
+let syntaxErrors = new Set<{ line: number, column: number, message: string }>();
 export default class KotlinParser extends Parser {
 	public static readonly ShebangLine = 1;
 	public static readonly DelimitedComment = 2;
@@ -7628,6 +7628,7 @@ export default class KotlinParser extends Parser {
 		}
 		return localctx;
 	}
+
 	// @RuleVersion(0)
 	public loopStatement(): LoopStatementContext {
 		let localctx: LoopStatementContext = new LoopStatementContext(this, this._ctx, this.state);
@@ -7658,6 +7659,12 @@ export default class KotlinParser extends Parser {
 					}
 					break;
 				default:
+					const defaultErrorPosition = {
+						line: this._ctx.start.line,
+						column: this._ctx.start.column,
+						message: "No viable alternative found"
+					};
+					syntaxErrors.add(defaultErrorPosition);
 					throw new NoViableAltException(this);
 			}
 		}
@@ -7666,11 +7673,25 @@ export default class KotlinParser extends Parser {
 				localctx.exception = re;
 				this._errHandler.reportError(this, re);
 				this._errHandler.recover(this, re);
+				const errorPosition = {
+					line: re.offendingToken?.line ?? -1,
+					column: re.offendingToken?.column ?? -1,
+					message: re.message ?? "Unknown error"
+				};
+				syntaxErrors.add(errorPosition);
 			} else {
 				throw re;
 			}
 		}
 		finally {
+			if (!localctx.exception) {
+				const successPosition = {
+					line: this._ctx.start.line,
+					column: this._ctx.start.column,
+					message: ""
+				};
+				syntaxErrors.delete(successPosition);
+			}
 			this.exitRule();
 		}
 		return localctx;

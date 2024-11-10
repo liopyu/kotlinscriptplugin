@@ -1,92 +1,67 @@
-import { CharStream, CommonTokenStream, ParseTreeWalker } from 'antlr4';
+import { CharStreams, CommonTokenStream, ParseTreeWalker } from 'antlr4';
 import KotlinLexer from '../generated/KotlinLexer';
 import KotlinParser from '../generated/KotlinParser';
+import KotlinParserListenerImpl, { syntaxErrors } from './KotlinParserListenerImpl';
 import * as vscode from 'vscode';
-import * as fs from 'fs';
-import * as path from 'path';
-import KotlinParserListenerImpl from './KotlinParserListenerImpl';
 
-// Import parsedFunctions from KotlinParserListenerImpl
-import { importedClasses, instantiatedClasses, parsedFunctions, parsedClasses, importedClassesUsage } from './KotlinParserListenerImpl';
-
-// Process file content to build up typings
 function processFileContent(content: string): void {
-    console.log("Processing file content...");
-    const chars = new CharStream(content);
+    const chars = CharStreams.fromString(content);
     const lexer = new KotlinLexer(chars);
     const tokens = new CommonTokenStream(lexer);
     const parser = new KotlinParser(tokens);
+
+    syntaxErrors.length = 0; // Clear previous errors
     const tree = parser.kotlinFile();
 
     const listener = new KotlinParserListenerImpl();
     ParseTreeWalker.DEFAULT.walk(listener, tree);
-    console.log("Imported Classes:", importedClasses);
 }
 
-// Setup file change listener to re-parse `.kts` files in real-time
-function setupFileChangeListener() {
+function updateDiagnostics(document: vscode.TextDocument, collection: vscode.DiagnosticCollection): void {
+    const diagnostics: vscode.Diagnostic[] = syntaxErrors.map(error => {
+        const range = new vscode.Range(
+            error.line - 1, // Convert 1-based line number to 0-based
+            error.column,
+            error.line - 1,
+            error.column + 1 // Only underlines the error character
+        );
+        return new vscode.Diagnostic(range, error.message, vscode.DiagnosticSeverity.Error);
+    });
+
+    collection.set(document.uri, diagnostics);
+}
+
+function setupFileChangeListener(context: vscode.ExtensionContext, collection: vscode.DiagnosticCollection) {
     vscode.workspace.onDidChangeTextDocument(event => {
         if (event.document.languageId === 'kotlinscript' && event.document.uri.fsPath.endsWith('.kts')) {
-            console.log("File content changed, re-parsing...");
             const content = event.document.getText();
             processFileContent(content);
+            updateDiagnostics(event.document, collection);
         }
     });
 }
 
-// Setup completion provider using parsed function data
-function setupCompletionProvider(context: vscode.ExtensionContext) {
-    const provider = vscode.languages.registerCompletionItemProvider(
-        { language: 'kotlinscript', pattern: '**/*.kts', scheme: 'file' },
-        {
-            provideCompletionItems(document, position) {
-                console.log("Providing function completion items...");
-                const completionItems: vscode.CompletionItem[] = [];
-
-                // Use parsed functions for completion suggestions
-                parsedFunctions.forEach((funcData, funcName) => {
-                    const item = new vscode.CompletionItem(
-                        funcName,
-                        vscode.CompletionItemKind.Function
-                    );
-                    item.detail = `Function: ${funcName}`;
-                    item.documentation = `Parameters: ${JSON.stringify(funcData.parameters)}\nReturn Type: ${funcData.returnType}`;
-                    completionItems.push(item);
-                });
-
-                return completionItems;
-            }
-        },
-        "."
-    );
-    context.subscriptions.push(provider);
-
-    console.log("CompletionItemProvider registered for .kts files.");
-}
-
 export function activate(context: vscode.ExtensionContext): void {
-    console.log('Extension "kotlinscript" is now active.');
-    /* 
-        // Parse initial files in the instance folder
-        const instancePath = path.join(
-            vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '',
-            'config',
-            'scripts'
-        );
-    
-        if (fs.existsSync(instancePath)) {
-            fs.readdirSync(instancePath)
-                .filter(file => file.endsWith('.kts'))
-                .forEach(file => {
-                    const content = fs.readFileSync(path.join(instancePath, file), 'utf8');
-                    processFileContent(content); // Initial parse on activation
-                });
+    const collection = vscode.languages.createDiagnosticCollection('kotlinscript');
+    context.subscriptions.push(collection);
+
+    vscode.workspace.onDidOpenTextDocument(document => {
+        if (document.languageId === 'kotlinscript' && document.uri.fsPath.endsWith('.kts')) {
+            const content = document.getText();
+            processFileContent(content);
+            updateDiagnostics(document, collection);
         }
-     */
-    setupFileChangeListener();
-    //setupCompletionProvider(context);
+    });
+
+    vscode.workspace.onDidCloseTextDocument(document => {
+        if (document.languageId === 'kotlinscript') {
+            collection.delete(document.uri);
+        }
+    });
+
+    setupFileChangeListener(context, collection);
 }
 
 export function deactivate(): void {
-    console.log('Extension "kotlinscript" is now deactivated.');
+    // Cleanup if necessary
 }

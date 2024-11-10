@@ -1,11 +1,12 @@
 import KotlinParserListener from "../generated/KotlinParserListener";
-import { StringLiteralContext, CollectionLiteralContext, ImportHeaderContext, NavigationSuffixContext, ValueArgumentContext, ConstructorInvocationContext, KotlinFileContext, FunctionDeclarationContext, FunctionValueParameterContext, ParameterContext, ClassDeclarationContext, SimpleIdentifierContext, TypeReferenceContext } from "../generated/KotlinParser";
+import { LoopStatementContext, StringLiteralContext, CollectionLiteralContext, ImportHeaderContext, NavigationSuffixContext, ValueArgumentContext, ConstructorInvocationContext, KotlinFileContext, FunctionDeclarationContext, FunctionValueParameterContext, ParameterContext, ClassDeclarationContext, SimpleIdentifierContext, TypeReferenceContext } from "../generated/KotlinParser";
 import { ParseTreeListener, ParserRuleContext } from "antlr4";
 export const parsedFunctions = new Map<string, { returnType: string, parameters: { name: string, type: string }[] }>();
 export const parsedClasses = new Map<string, { properties: { name: string, type: string }[], methods: { name: string, returnType: string, parameters: { name: string, type: string }[] }[] }>();
 export const importedClassesUsage = new Map<string, string[]>();
 export const instantiatedClasses = new Map<string, { arguments: { name: string; value: string }[] }>();
 export const importedClasses = new Map<string, string>();
+export const syntaxErrors: { line: number, column: number, message: string }[] = [];
 const individualLogging = false;
 const globalLogging = false;
 const exitGlobals = false;
@@ -23,6 +24,17 @@ function logGlobals(...data: any[]) {
 }
 
 export default class KotlinParserListenerImpl extends KotlinParserListener {
+    /* enterLoopStatement = (ctx: LoopStatementContext): void => {
+        const startToken = ctx.start;
+        if (startToken && startToken.text !== "for" && startToken.text !== "while" && startToken.text !== "do") {
+            const error = {
+                line: startToken.line,
+                column: startToken.column,
+                message: `Syntax error: Unexpected token '${startToken.text}' in loop statement`
+            };
+            syntaxErrors.push(error);
+        }
+    } */
     enterStringLiteral = (ctx: StringLiteralContext): void => {
         console.log(ctx.getText())
     }
