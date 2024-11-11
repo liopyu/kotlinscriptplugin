@@ -1,11 +1,10 @@
 // Generated from ./src/grammar/KotlinParser.g4 by ANTLR 4.13.2
 
-import { ParseTreeListener } from "antlr4";
+import {ParseTreeListener} from "antlr4";
 
 
 import { KotlinFileContext } from "./KotlinParser.js";
 import { ScriptContext } from "./KotlinParser.js";
-import { TopLevelAllowedExpressionContext } from "./KotlinParser.js";
 import { TypeCheckExpressionContext } from "./KotlinParser.js";
 import { TopLevelJumpExpressionContext } from "./KotlinParser.js";
 import { TopLevelExpressionContext } from "./KotlinParser.js";
@@ -208,16 +207,6 @@ export default class KotlinParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitScript?: (ctx: ScriptContext) => void;
-	/**
-	 * Enter a parse tree produced by `KotlinParser.topLevelAllowedExpression`.
-	 * @param ctx the parse tree
-	 */
-	enterTopLevelAllowedExpression?: (ctx: TopLevelAllowedExpressionContext) => void;
-	/**
-	 * Exit a parse tree produced by `KotlinParser.topLevelAllowedExpression`.
-	 * @param ctx the parse tree
-	 */
-	exitTopLevelAllowedExpression?: (ctx: TopLevelAllowedExpressionContext) => void;
 	/**
 	 * Enter a parse tree produced by `KotlinParser.typeCheckExpression`.
 	 * @param ctx the parse tree
