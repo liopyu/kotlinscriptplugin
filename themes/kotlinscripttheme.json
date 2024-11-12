@@ -1,0 +1,316 @@
+{
+    "name": "KotlinScript Custom Theme",
+    "colors": {
+        "editor.foreground": "#d4d4d4",
+        "editor.background": "#1e1e1e",
+        "editorLineNumber.foreground": "#858585"
+    },
+    "tokenColors": [
+        {
+            "scope": "keyword.other.import.kotlin",
+            "settings": {
+                "foreground": "#4ea3f2"
+            }
+        },
+        {
+            "scope": "variable.language.kotlin",
+            "settings": {
+                "foreground": "#4ea3f2"
+            }
+        },
+        {
+            "scope": "entity.name.package.kotlin",
+            "settings": {
+                "foreground": "#4ec9b0"
+            }
+        },
+        {
+            "scope": "meta.import.kotlin",
+            "settings": {
+                "foreground": "#4ec9b0"
+            }
+        },
+        {
+            "scope": "keyword.declaration.function.kotlin",
+            "settings": {
+                "foreground": "#569cd6"
+            }
+        },
+        {
+            "scope": "entity.name.function.kotlin",
+            "settings": {
+                "foreground": "#dcdcaa"
+            }
+        },
+        {
+            "scope": "entity.name.class.kotlin",
+            "settings": {
+                "foreground": "#4ec9b0"
+            }
+        },
+        {
+            "scope": "storage.type.kotlin",
+            "settings": {
+                "foreground": "#4ea3f2"
+            }
+        },
+        {
+            "scope": "support.class.kotlin",
+            "settings": {
+                "foreground": "#4ec9b0"
+            }
+        },
+        {
+            "scope": "entity.name.type.class.kotlin",
+            "settings": {
+                "foreground": "#4ec9b0"
+            }
+        },
+        {
+            "scope": "keyword.control.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "keyword.control.catch-exception.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "keyword.control.conditional.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "variable.parameter.function.kotlin",
+            "settings": {
+                "foreground": "#9cdcfe"
+            }
+        },
+        {
+            "scope": "string.quoted.double.kotlin",
+            "settings": {
+                "foreground": "#ce9178"
+            }
+        },
+        {
+            "scope": "comment.line.double-slash.kotlin",
+            "settings": {
+                "foreground": "#6a9955"
+            }
+        },
+        {
+            "scope": "constant.numeric.float.kotlin",
+            "settings": {
+                "foreground": "#c6dd8c"
+            }
+        },
+        {
+            "scope": "constant.numeric.integer.kotlin",
+            "settings": {
+                "foreground": "#c6dd8c"
+            }
+        },
+        {
+            "scope": "meta.declaration.annotation.kotlin",
+            "settings": {
+                "foreground": "#5acef0"
+            }
+        },
+        {
+            "scope": "punctuation.definition.comment.kotlin",
+            "settings": {
+                "foreground": "#6a9955"
+            }
+        },
+        {
+            "scope": "comment.block.kotlin",
+            "settings": {
+                "foreground": "#6a9955"
+            }
+        },
+        {
+            "scope": "comment.block.empty.kotlin",
+            "settings": {
+                "foreground": "#6a9955"
+            }
+        },
+        {
+            "scope": "keyword.other.kotlin",
+            "settings": {
+                "foreground": "#4ea3f2"
+            }
+        },
+        {
+            "scope": "constant.language.kotlin",
+            "settings": {
+                "foreground": "#4ea3f2"
+            }
+        },
+        {
+            "scope": "keyword.operator.assignment.kotlin",
+            "settings": {
+                "foreground": "#ceca78"
+            }
+        },
+        {
+            "scope": "support.function.kotlin",
+            "settings": {
+                "foreground": "#4ea3f2"
+            }
+        },
+        {
+            "scope": "constant.character.escape.kotlin",
+            "settings": {
+                "foreground": "#ceac78"
+            }
+        },
+        {
+            "scope": "constant.character.escape.newline.kotlin",
+            "settings": {
+                "foreground": "#ceac78"
+            }
+        },
+        {
+            "scope": "punctuation.definition.keyword.kotlin",
+            "settings": {
+                "foreground": "#ee9d27"
+            }
+        },
+        {
+            "scope": "punctuation.section.block.begin.kotlin",
+            "settings": {
+                "foreground": "#ee9d27"
+            }
+        },
+        {
+            "scope": "punctuation.section.block.end.kotlin",
+            "settings": {
+                "foreground": "#ee9d27"
+            }
+        },
+        {
+            "scope": "punctuation.definition.annotation-arguments.begin.kotlin",
+            "settings": {
+                "foreground": "#ee9d27"
+            }
+        },
+        {
+            "scope": "punctuation.definition.annotation-arguments.end.kotlin",
+            "settings": {
+                "foreground": "#ee9d27"
+            }
+        },
+        {
+            "scope": "entity.string.template.element.kotlin",
+            "settings": {
+                "foreground": "#eee462"
+            }
+        },
+        {
+            "scope": "constant.other.key.kotlin",
+            "settings": {
+                "foreground": "#eee462"
+            }
+        },
+        {
+            "scope": "storage.modifier.kotlin",
+            "settings": {
+                "foreground": "#4ea3f2"
+            }
+        },
+        {
+            "scope": "keyword.operator.declaration.kotlin",
+            "settings": {
+                "foreground": "#ceca78"
+            }
+        },
+        {
+            "scope": "keyword.operator.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "keyword.operator.bitwise.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "keyword.operator.comparison.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "keyword.operator.increment-decrement.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "keyword.operator.arithmetic.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "keyword.operator.arithmetic.assign.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "punctuation.seperator.property.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "keyword.operator.logical.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "keyword.operator.range.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "punctuation.accessor.reference.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "keyword.operator.dereference.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "entity.other.inherited-class.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "punctuation.definition.variable.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        },
+        {
+            "scope": "variable.other.declaration.kotlin",
+            "settings": {
+                "foreground": "#c586c0"
+            }
+        }
+    ]
+}

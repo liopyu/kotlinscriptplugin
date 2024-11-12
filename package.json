@@ -12,24 +12,50 @@
   "type": "module",
   "main": "./out/extension.cjs",
   "contributes": {
+    "themes": [
+      {
+        "label": "KotlinScript Custom Theme",
+        "uiTheme": "vs-dark",
+        "path": "./themes/kotlinscripttheme.json"
+      }
+    ],
     "languages": [
       {
         "id": "kotlinscript",
         "aliases": [
           "KotlinScript",
-          "kotlinscript",
-          "kotlin"
+          "Kotlin"
         ],
         "extensions": [
           ".kts"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./kotlin.configuration.json"
+      },
+      {
+        "id": "kotlin",
+        "aliases": [
+          "Kotlin"
+        ],
+        "extensions": [
+          ".kt"
+        ],
+        "configuration": "./kotlin.configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "kotlinscript",
+        "scopeName": "source.kotlin",
+        "path": "./syntaxes/Kotlin.tmLanguage"
+      },
+      {
+        "language": "kotlin",
+        "scopeName": "source.kotlin",
+        "path": "./syntaxes/Kotlin.tmLanguage"
       }
     ]
   },
-  "extensionDependencies": [
-    "mathiasfrohlich.Kotlin"
-  ],
+  "extensionDependencies": [],
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",

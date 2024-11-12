@@ -37,31 +37,37 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
         this.document = document;
         this.errorStrategy = errorStrategy;
     }
+    /* visitErrorNode(node: ErrorNode): void {
+        
+    } */
+    /* visitErrorNode(node: ErrorNode): void {
+        console.log(node.getText())
+        super.visitErrorNode(node);
+    } */
+    /* visitErrorNode(node: ErrorNode): void {
+        const ctx = node.parentCtx;
+        const startToken = ctx.start;
 
-    visitErrorNode(node: ErrorNode): void {
-        /*  const ctx = node.parentCtx;
-         const startToken = ctx.start;
- 
-         try {
-             const line = startToken.line - 1; // Convert to zero-based line index for VSCode
-             const col = startToken.column;
-             const positionKey = `${startToken.line}:${startToken.column}`;
- 
-             // Retrieve the custom message from the error strategy if available
-             const customMessage = this.errorStrategy.getErrorMessage(startToken.line, startToken.column);
-             console.log("Pos: " + positionKey)
-             console.log("Custom Message:" + customMessage)
-             const message = customMessage || "Syntax error"; // Fallback to a default message if no custom message is found
- 
-             const range = new Range(new Position(line, col), new Position(line, col + startToken.text.length));
-             const diagnostic = new Diagnostic(range, message, DiagnosticSeverity.Error);
-             this.diagnostics.push(diagnostic);
-         } catch (error) {
-             console.error("Error in visitErrorNode: " + error);
-         } */
-    }
+        try {
+            const line = startToken.line - 1; // Convert to zero-based line index for VSCode
+            const col = startToken.column;
+            const positionKey = `${startToken.line}:${startToken.column}`;
 
-    public getDiagnostics(): Diagnostic[] {
+            // Retrieve the custom message from the error strategy if available
+            const customMessage = this.errorStrategy.getErrorMessage(startToken.line, startToken.column);
+            console.log("Pos: " + positionKey)
+            console.log("Custom Message:" + customMessage)
+            const message = customMessage || "Syntax error"; // Fallback to a default message if no custom message is found
+
+            const range = new Range(new Position(line, col), new Position(line, col + startToken.text.length));
+            const diagnostic = new Diagnostic(range, message, DiagnosticSeverity.Error);
+            this.diagnostics.push(diagnostic);
+        } catch (error) {
+            console.error("Error in visitErrorNode: " + error);
+        }
+    } */
+
+    /* public getDiagnostics(): Diagnostic[] {
         return this.diagnostics;
-    }
+    } */
 }

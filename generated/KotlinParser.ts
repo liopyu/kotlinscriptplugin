@@ -751,10 +751,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -865,10 +864,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -915,10 +913,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -960,10 +957,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -1006,10 +1002,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -1053,10 +1048,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -1217,10 +1211,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -1264,10 +1257,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -1305,10 +1297,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -1463,10 +1454,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -1491,10 +1481,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -1527,10 +1516,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -1636,10 +1624,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -1696,10 +1683,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -1951,10 +1937,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -2023,10 +2008,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -2093,10 +2077,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -2235,10 +2218,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -2364,10 +2346,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -2440,10 +2421,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -2517,10 +2497,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -2560,10 +2539,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -2618,10 +2596,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -2694,10 +2671,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -2828,10 +2804,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -2919,10 +2894,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -3009,10 +2983,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -3082,10 +3055,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -3155,10 +3127,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -3208,10 +3179,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -3251,10 +3221,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -3421,10 +3390,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -3561,10 +3529,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -3641,10 +3608,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -3862,10 +3828,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -3922,10 +3887,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -4060,10 +4024,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -4194,10 +4157,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -4615,10 +4577,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -4660,10 +4621,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -4793,10 +4753,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -4966,10 +4925,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -5106,10 +5064,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -5186,10 +5143,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -5256,10 +5212,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -5315,10 +5270,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -5435,10 +5389,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -5555,10 +5508,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -5605,10 +5557,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -5717,10 +5668,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -5817,10 +5767,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -5916,10 +5865,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -5929,7 +5877,6 @@ export default class KotlinParser extends Parser {
 		}
 		return localctx;
 	}
-
 	// @RuleVersion(0)
 	public type_(): TypeContext {
 		let localctx: TypeContext = new TypeContext(this, this._ctx, this.state);
@@ -5985,10 +5932,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -6031,10 +5977,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -6157,10 +6102,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -6191,10 +6135,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -6265,10 +6208,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -6316,10 +6258,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -6419,10 +6360,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -6464,10 +6404,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -6522,10 +6461,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -6621,10 +6559,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -6781,10 +6718,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -6840,10 +6776,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -6896,10 +6831,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -7018,10 +6952,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -7223,10 +7156,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -7286,10 +7218,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -7417,10 +7348,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -7470,10 +7400,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -7509,10 +7438,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -7595,10 +7523,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -7643,10 +7570,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -7819,10 +7745,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8013,10 +7938,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8119,10 +8043,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8182,10 +8105,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8233,10 +8155,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8286,10 +8207,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8312,10 +8232,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8388,10 +8307,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8464,10 +8382,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8525,10 +8442,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8586,10 +8502,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8629,10 +8544,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8723,10 +8637,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8799,10 +8712,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8827,10 +8739,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8888,10 +8799,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -8957,10 +8867,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9018,10 +8927,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9079,10 +8987,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9153,10 +9060,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9196,10 +9102,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9314,10 +9219,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9357,10 +9261,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9417,10 +9320,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9465,10 +9367,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9527,10 +9428,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9566,10 +9466,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9628,10 +9527,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9679,10 +9577,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9813,10 +9710,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9925,10 +9821,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -9986,10 +9881,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -10051,10 +9945,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -10181,10 +10074,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -10323,10 +10215,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -10445,10 +10336,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -10568,10 +10458,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -10630,10 +10519,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -10772,10 +10660,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -10806,10 +10693,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -10847,10 +10733,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -10906,10 +10791,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -10967,10 +10851,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -11001,10 +10884,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -11063,10 +10945,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -11097,10 +10978,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -11159,10 +11039,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -11271,10 +11150,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -11371,10 +11249,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -11503,10 +11380,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -11698,10 +11574,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -11741,10 +11616,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -11875,10 +11749,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -11909,10 +11782,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -12005,10 +11877,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -12301,10 +12172,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -12421,10 +12291,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -12555,10 +12424,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -12850,10 +12718,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -12988,10 +12855,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13033,10 +12899,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13076,10 +12941,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13206,10 +13070,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13311,10 +13174,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13354,10 +13216,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13461,10 +13322,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13577,10 +13437,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13611,10 +13470,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13645,10 +13503,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13679,10 +13536,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13713,10 +13569,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13747,10 +13602,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13781,10 +13635,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13815,10 +13668,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13849,10 +13701,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13912,10 +13763,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13962,10 +13812,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -13996,10 +13845,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14071,10 +13919,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14099,10 +13946,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14185,10 +14031,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14247,10 +14092,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14361,10 +14205,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14406,10 +14249,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14463,10 +14305,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14497,10 +14338,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14531,10 +14371,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14565,10 +14404,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14599,10 +14437,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14644,10 +14481,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14727,10 +14563,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14761,10 +14596,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14787,10 +14621,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14821,10 +14654,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14855,10 +14687,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14881,10 +14712,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14915,10 +14745,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -14972,10 +14801,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -15035,10 +14863,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -15114,10 +14941,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -15173,10 +14999,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -15212,10 +15037,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -15246,10 +15070,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
@@ -15306,10 +15129,9 @@ export default class KotlinParser extends Parser {
 		}
 		catch (re) {
 			if (re instanceof RecognitionException) {
-				localctx.exception = re;
-
 				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re)
+				this._errHandler.recover(this, re);
+				localctx.exception = re;
 			} else {
 				throw re;
 			}
