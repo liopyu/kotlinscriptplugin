@@ -1,5 +1,5 @@
 import KotlinParserListener from "../generated/KotlinParserListener";
-import { LoopStatementContext, StringLiteralContext, CollectionLiteralContext, ImportHeaderContext, NavigationSuffixContext, ValueArgumentContext, ConstructorInvocationContext, KotlinFileContext, FunctionDeclarationContext, FunctionValueParameterContext, ParameterContext, ClassDeclarationContext, SimpleIdentifierContext, TypeReferenceContext, VariableDeclarationContext } from "../generated/KotlinParser";
+import { AssignmentContext, FunctionBodyContext, ImportListContext, LoopStatementContext, StringLiteralContext, CollectionLiteralContext, ImportHeaderContext, NavigationSuffixContext, ValueArgumentContext, ConstructorInvocationContext, KotlinFileContext, FunctionDeclarationContext, FunctionValueParameterContext, ParameterContext, ClassDeclarationContext, SimpleIdentifierContext, TypeReferenceContext, VariableDeclarationContext, MultiVariableDeclarationContext, PackageHeaderContext } from "../generated/KotlinParser";
 import { RecognitionException, ParseTreeListener, ParserRuleContext, ErrorNode } from "antlr4";
 import type { TextDocument } from "vscode";
 import vscode from "vscode"
@@ -13,7 +13,7 @@ export const instantiatedClasses = new Map<string, { arguments: { name: string; 
 export const importedClasses = new Map<string, string>();
 export const syntaxErrors: { line: number, column: number, message: string }[] = [];
 const individualLogging = false;
-const globalLogging = false;
+const globalLogging = true;
 const exitGlobals = false;
 const enterGlobals = false;
 function logContent(...data: any[]) {
@@ -27,6 +27,7 @@ function logGlobals(...data: any[]) {
         console.log(data)
     }
 }
+export const parsedVariables = new Map<string, string>();
 export default class KotlinParserListenerImpl extends KotlinParserListener {
     private diagnostics: vscode.Diagnostic[] = [];
     private document: TextDocument;
@@ -37,37 +38,100 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
         this.document = document;
         this.errorStrategy = errorStrategy;
     }
-    /* visitErrorNode(node: ErrorNode): void {
-        
-    } */
-    /* visitErrorNode(node: ErrorNode): void {
-        console.log(node.getText())
-        super.visitErrorNode(node);
-    } */
-    /* visitErrorNode(node: ErrorNode): void {
-        const ctx = node.parentCtx;
-        const startToken = ctx.start;
+    enterPackageHeader = (ctx: PackageHeaderContext) => {
 
-        try {
-            const line = startToken.line - 1; // Convert to zero-based line index for VSCode
-            const col = startToken.column;
-            const positionKey = `${startToken.line}:${startToken.column}`;
+    }
+    exitPackageHeader = (ctx: PackageHeaderContext) => {
 
-            // Retrieve the custom message from the error strategy if available
-            const customMessage = this.errorStrategy.getErrorMessage(startToken.line, startToken.column);
-            console.log("Pos: " + positionKey)
-            console.log("Custom Message:" + customMessage)
-            const message = customMessage || "Syntax error"; // Fallback to a default message if no custom message is found
+    }
+    enterImportList = (ctx: ImportListContext) => {
 
-            const range = new Range(new Position(line, col), new Position(line, col + startToken.text.length));
-            const diagnostic = new Diagnostic(range, message, DiagnosticSeverity.Error);
-            this.diagnostics.push(diagnostic);
-        } catch (error) {
-            console.error("Error in visitErrorNode: " + error);
-        }
-    } */
+    }
+    exitImportList = (ctx: ImportListContext) => {
 
-    /* public getDiagnostics(): Diagnostic[] {
-        return this.diagnostics;
-    } */
+    }
+    enterVariableDeclaration = (ctx: VariableDeclarationContext) => {
+
+    }
+    exitVariableDeclaration = (ctx: VariableDeclarationContext) => {
+
+    }
+    enterFunctionDeclaration = (ctx: FunctionDeclarationContext) => {
+
+    }
+    exitFunctionDeclaration = (ctx: FunctionDeclarationContext) => {
+
+    }
+    enterClassDeclaration = (ctx: ClassDeclarationContext) => {
+
+    }
+    exitClassDeclaration = (ctx: ClassDeclarationContext) => {
+
+    }
+    enterLoopStatement = (ctx: LoopStatementContext) => {
+
+    }
+    exitLoopStatement = (ctx: LoopStatementContext) => {
+
+    }
+    enterAssignment = (ctx: AssignmentContext) => {
+
+    }
+    exitAssignment = (ctx: AssignmentContext) => {
+
+    }
+
 }
+
+class Scope {
+    parentScope: Scope | null;
+    symbols: Map<string, Symbol>;
+
+    constructor(parentScope: Scope | null) {
+        this.parentScope = parentScope;
+        this.symbols = new Map();
+    }
+
+    define(symbol: Symbol): void {
+        this.symbols.set(symbol.name, symbol);
+    }
+
+    getEnclosingScope(): Scope | null {
+        return this.parentScope;
+    }
+
+}
+let currentScope: Scope = new Scope(null);
+
+function enterScope(newScope: Scope) {
+    newScope.parentScope = currentScope;
+    currentScope = newScope;
+}
+
+function exitScope() {
+    if (currentScope.parentScope) {
+        currentScope = currentScope.parentScope;
+    }
+}
+class Symbol {
+    name: string;
+    type: string | null;
+    constructor(name: string, type: string | null = null) {
+        this.name = name;
+        this.type = type;
+    }
+}
+
+class FunctionSymbol extends Symbol {
+    public args: Symbol[];
+    public returnType: string | null;
+    constructor(name: string, args: Symbol[], returnType: string | null) {
+        super(name, returnType);
+        this.args = args;
+        this.returnType = returnType;
+    }
+}
+
+class VariableSymbol extends Symbol { }
+class ClassSymbol extends Symbol { }
+class InterfaceSymbol extends Symbol { }

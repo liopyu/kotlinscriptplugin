@@ -55,15 +55,16 @@ export class KotlinScriptErrorStrategy extends DefaultErrorStrategy {
                 const line = offendingToken.line;
                 const column = offendingToken.column;
                 const positionKey = `${line}:${column}`;
+                // @ts-expect-error 
                 const currentRuleName = recognizer.ruleNames[recognizer._ctx.ruleIndex];
-
-                // Suggest expected tokens (limited to top 3 for readability)
+                // @ts-expect-error 
                 const expecting = this.getExpectedTokens(recognizer);
                 const expectedTokenNames = this.getReadableExpectedTokens(expecting, recognizer);
                 const suggestedTokens = expectedTokenNames.slice(0, 3).join(", ") || "other tokens";
 
                 if (!this.errorMessages.has(positionKey)) {
                     const inputSnippet = input.length > 20 ? input.slice(0, 20) + "..." : input;
+                    // @ts-expect-error 
                     const message = `Unexpected input near '${this.escapeWSAndQuote(inputSnippet)}' in '${currentRuleName}'. Did you mean one of: ${suggestedTokens}?`;
 
                     this.errorMessages.set(positionKey, message);
@@ -71,9 +72,6 @@ export class KotlinScriptErrorStrategy extends DefaultErrorStrategy {
                     const diagnostic = new vscode.Diagnostic(range, message, vscode.DiagnosticSeverity.Error);
                     this.diagnostics.push(diagnostic);
                 }
-
-
-
             }
         } catch (error) {
             console.error(error);
