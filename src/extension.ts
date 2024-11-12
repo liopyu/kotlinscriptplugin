@@ -4,11 +4,9 @@ import KotlinParser from '../generated/KotlinParser';
 import * as vscode from 'vscode';
 import KotlinParserListenerImpl from './KotlinParserListenerImpl';
 import { KotlinScriptErrorStrategy } from './KotlinScriptErrorStrategy';
+import { Scope, applyVariableDecorations } from './KotlinParserListenerImpl';
 let diagnosticCollection: vscode.DiagnosticCollection;
-let bracketDecorationType = vscode.window.createTextEditorDecorationType({
-    color: 'red', // Customize color for unmatched brackets
-    fontWeight: 'bold'
-});
+
 
 function processFileContent(content: string, document: vscode.TextDocument): void {
     try {
@@ -29,22 +27,26 @@ function processFileContent(content: string, document: vscode.TextDocument): voi
 }
 
 
+
+
+
 function setupFileChangeListener() {
-    let debounceTimer: NodeJS.Timeout | undefined;
+    /* let debounceTimer: NodeJS.Timeout | undefined; */
 
     vscode.workspace.onDidChangeTextDocument(event => {
         if (event.document.languageId === 'kotlinscript' && event.document.uri.fsPath.endsWith('.kts')) {
             try {
-                if (debounceTimer) clearTimeout(debounceTimer);
+                /* if (debounceTimer) clearTimeout(debounceTimer);
 
                 debounceTimer = setTimeout(() => {
-                    const content = event.document.getText();
-                    processFileContent(content, event.document);
-                }, 500);
+
+                }, 250); */
+                const content = event.document.getText();
+                processFileContent(content, event.document);
+                applyVariableDecorations(event.document);
             } catch (error) {
                 console.error(error)
             }
-
         }
     });
 }
@@ -53,6 +55,9 @@ function setupFileChangeListener() {
 export function activate(context: vscode.ExtensionContext): void {
     diagnosticCollection = vscode.languages.createDiagnosticCollection('kotlinscript');
     context.subscriptions.push(diagnosticCollection);
+
+
+    /*  context.subscriptions.push(variableDecorationType) */
     setupFileChangeListener();
 }
 
