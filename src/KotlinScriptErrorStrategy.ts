@@ -1,16 +1,12 @@
-import { RecognitionException, Parser, Token, NoViableAltException, TokenStream, InputMismatchException, FailedPredicateException } from 'antlr4';
+import { Token, NoViableAltException, TokenStream, InputMismatchException, FailedPredicateException } from 'antlr4';
 import { Interval, IntervalSet, DefaultErrorStrategy } from "antlr4"
-import { Diagnostic, DiagnosticSeverity, Uri, Range, Position } from "vscode"
+import { Diagnostic, DiagnosticSeverity, Range, Position } from "vscode"
 import vscode from "vscode"
 import KotlinParser from '../generated/KotlinParser';
-import KotlinLexer from '../generated/KotlinLexer';
 export class KotlinScriptErrorStrategy extends DefaultErrorStrategy {
-    private errorMessages: Map<string, string> = new Map();
     public diagnostics: vscode.Diagnostic[] = [];
-    private document: vscode.TextDocument;
-    constructor(document: vscode.TextDocument) {
+    constructor() {
         super()
-        this.document = document;
     }
     reportFailedPredicate(recognizer: KotlinParser, e: FailedPredicateException) {
         try {
@@ -20,6 +16,7 @@ export class KotlinScriptErrorStrategy extends DefaultErrorStrategy {
             // @ts-expect-error 
             recognizer.notifyErrorListeners(msg, e.offendingToken, e);
             this.addDiagnostics(msg, recognizer)
+            e.message = msg;
         } catch (error) {
             console.error(error)
         }
@@ -33,6 +30,7 @@ export class KotlinScriptErrorStrategy extends DefaultErrorStrategy {
         // @ts-expect-error 
         recognizer.notifyErrorListeners(msg, e.offendingToken, e);
         this.addDiagnostics(msg, recognizer)
+        e.message = msg;
     }
     reportNoViableAlternative(recognizer: KotlinParser, e: NoViableAltException): void {
         const tokens = recognizer._input as TokenStream;
@@ -54,7 +52,6 @@ export class KotlinScriptErrorStrategy extends DefaultErrorStrategy {
 
                 const line = offendingToken.line;
                 const column = offendingToken.column;
-                const positionKey = `${line}:${column}`;
                 // @ts-expect-error 
                 const currentRuleName = recognizer.ruleNames[recognizer._ctx.ruleIndex];
                 // @ts-expect-error 
@@ -62,16 +59,15 @@ export class KotlinScriptErrorStrategy extends DefaultErrorStrategy {
                 const expectedTokenNames = this.getReadableExpectedTokens(expecting, recognizer);
                 const suggestedTokens = expectedTokenNames.slice(0, 3).join(", ") || "other tokens";
 
-                if (!this.errorMessages.has(positionKey)) {
-                    const inputSnippet = input.length > 20 ? input.slice(0, 20) + "..." : input;
-                    // @ts-expect-error 
-                    const message = `Unexpected input near '${this.escapeWSAndQuote(inputSnippet)}' in '${currentRuleName}'. Did you mean one of: ${suggestedTokens}?`;
+                const inputSnippet = input.length > 20 ? input.slice(0, 20) + "..." : input;
+                // @ts-expect-error 
+                const message = `Unexpected input near '${this.escapeWSAndQuote(inputSnippet)}' in '${currentRuleName}'. Did you mean one of: ${suggestedTokens}?`;
 
-                    this.errorMessages.set(positionKey, message);
-                    const range = new vscode.Range(new vscode.Position(line - 1, column), new vscode.Position(line - 1, column + inputSnippet.length));
-                    const diagnostic = new vscode.Diagnostic(range, message, vscode.DiagnosticSeverity.Error);
-                    this.diagnostics.push(diagnostic);
-                }
+                const range = new vscode.Range(new vscode.Position(line - 1, column), new vscode.Position(line - 1, column + inputSnippet.length));
+                const diagnostic = new vscode.Diagnostic(range, message, vscode.DiagnosticSeverity.Error);
+                this.diagnostics.push(diagnostic);
+                e.message = message;
+
             }
         } catch (error) {
             console.error(error);
@@ -127,21 +123,13 @@ export class KotlinScriptErrorStrategy extends DefaultErrorStrategy {
         const tokenName = this.getTokenErrorDisplay(t);
         const line = t.line;
         const column = t.column;
-        const positionKey = `${line}:${column}`;
-        if (!this.errorMessages.has(positionKey)) {
-            this.errorMessages.set(positionKey, msg);
-            const range = new Range(new Position(line - 1, column), new Position(line - 1, column + tokenName.length));
-            const diagnostic = new Diagnostic(range, msg, DiagnosticSeverity.Error);
-            this.diagnostics.push(diagnostic);
-        }
+        const range = new Range(new Position(line - 1, column), new Position(line - 1, column + tokenName.length));
+        const diagnostic = new Diagnostic(range, msg, DiagnosticSeverity.Error);
+        this.diagnostics.push(diagnostic);
     }
 
 
     public getDiagnostics(): Diagnostic[] {
         return this.diagnostics;
     }
-    public getErrorMessage(line: number, column: number): string | undefined {
-        return this.errorMessages.get(`${line}:${column}`);
-    }
-
 }

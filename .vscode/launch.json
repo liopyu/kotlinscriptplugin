@@ -6,7 +6,6 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"preLaunchTask": "npm: build",
-			"program": "${workspaceFolder}/node_modules/.bin/vscode-extension-telemetry",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}"
 			],

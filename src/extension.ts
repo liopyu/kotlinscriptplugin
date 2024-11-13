@@ -4,7 +4,7 @@ import KotlinParser from '../generated/KotlinParser';
 import * as vscode from 'vscode';
 import KotlinParserListenerImpl from './KotlinParserListenerImpl';
 import { KotlinScriptErrorStrategy } from './KotlinScriptErrorStrategy';
-import { Scope, applyVariableDecorations } from './KotlinParserListenerImpl';
+import { Scope, applyDecorations } from './KotlinParserListenerImpl';
 let diagnosticCollection: vscode.DiagnosticCollection;
 
 
@@ -14,13 +14,18 @@ function processFileContent(content: string, document: vscode.TextDocument): voi
         const lexer = new KotlinLexer(chars);
         const tokens = new CommonTokenStream(lexer);
         const parser = new KotlinParser(tokens);
-        const errorStrat = new KotlinScriptErrorStrategy(document);
+        const errorStrat = new KotlinScriptErrorStrategy();
         parser._errHandler = errorStrat;
         const listener = new KotlinParserListenerImpl(document, errorStrat);
         const tree = parser.kotlinFile();
         ParseTreeWalker.DEFAULT.walk(listener, tree);
         //errorStrat.getDiagnostics().forEach((diag, i) => console.log("Diag message: " + diag.message + ". Diag index: " + i))
+        listener.diagnostics.forEach((diag, i) => errorStrat.getDiagnostics().push(diag))
         diagnosticCollection.set(document.uri, errorStrat.getDiagnostics());
+
+        applyDecorations(listener, document)
+
+
     } catch (error) {
         console.error(error)
     }
@@ -43,7 +48,7 @@ function setupFileChangeListener() {
                 }, 250); */
                 const content = event.document.getText();
                 processFileContent(content, event.document);
-                applyVariableDecorations(event.document);
+                //processFile(content, event.document);
             } catch (error) {
                 console.error(error)
             }
@@ -53,11 +58,9 @@ function setupFileChangeListener() {
 
 
 export function activate(context: vscode.ExtensionContext): void {
+    console.log("Booting up extension!")
     diagnosticCollection = vscode.languages.createDiagnosticCollection('kotlinscript');
     context.subscriptions.push(diagnosticCollection);
-
-
-    /*  context.subscriptions.push(variableDecorationType) */
     setupFileChangeListener();
 }
 

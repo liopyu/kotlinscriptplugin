@@ -15,7 +15,7 @@ export const syntaxErrors: { line: number, column: number, message: string }[] =
 const individualLogging = false;
 const globalLogging = true;
 const exitGlobals = false;
-const enterGlobals = false;
+const enterGlobals = true;
 function logContent(...data: any[]) {
     if (individualLogging) {
         console.log(data)
@@ -27,105 +27,237 @@ function logGlobals(...data: any[]) {
         console.log(data)
     }
 }
-export const parsedVariables = new Map<string, string>();
+enum VariableType {
+    SIMPLE,
+    VARIABLE,
+    IMPORT
+}
 export default class KotlinParserListenerImpl extends KotlinParserListener {
-    private diagnostics: vscode.Diagnostic[] = [];
+    public hasPackageHeader: boolean = false;
+    public currentScope: Scope = new Scope(null);
+    public scopes: Scope[] = [];
+    public ranges: Map<VariableType, vscode.Range[]> = new Map();
+    public simpleRanges: vscode.Range[] = []
+    public imports: Map<string, ImportSymbol> = new Map()
+    public scopedVariables: VariableSymbol[] = []
+    public diagnostics: vscode.Diagnostic[] = [];
     private document: TextDocument;
-    private errorStrategy: KotlinScriptErrorStrategy; // Reference to the error strategy for accessing error messages
+    private errorStrategy: KotlinScriptErrorStrategy;
 
     constructor(document: TextDocument, errorStrategy: KotlinScriptErrorStrategy) {
         super();
         this.document = document;
         this.errorStrategy = errorStrategy;
+        this.scopes.push(this.currentScope);
     }
-    enterPackageHeader = (ctx: PackageHeaderContext) => {
-        /*   try {
-              // Retrieve the package name from the context
-              const packageName = ctx.identifier().getText();
-  
-              // Create a package symbol with the name
-              const packageSymbol = new Symbol(packageName);
-              currentScope.define(packageSymbol);
-  
-              // Log and enter the package scope
-              console.log(`Entering package: ${packageName}`);
-              enterScope(new Scope(currentScope));
-          } catch (error) {
-              console.error(error);
-          } */
+
+    exitKotlinFile = (ctx: KotlinFileContext) => {
+        try {
+            // Ensure arrays are initialized for each variable type
+            if (!this.ranges.has(VariableType.IMPORT)) {
+                this.ranges.set(VariableType.IMPORT, []);
+            }
+            if (!this.ranges.has(VariableType.VARIABLE)) {
+                this.ranges.set(VariableType.VARIABLE, []);
+            }
+            if (!this.ranges.has(VariableType.SIMPLE)) {
+                this.ranges.set(VariableType.SIMPLE, []);
+            }
+
+            // Add import ranges to IMPORT array
+            this.scopedVariables.forEach(variable => {
+                const range = variable.range;
+                if (variable.isImport) {
+                    logGlobals(`Applying import decoration for ${variable.name}: Range: [${range.start.line}, ${range.start.character}] , [${range.end.line}, ${range.end.character}]`);
+                    this.ranges.get(VariableType.IMPORT)!.push(range);
+                } else {
+                    logGlobals(`Applying variable decoration for ${variable.name}: Range: [${range.start.line}, ${range.start.character}] , [${range.end.line}, ${range.end.character}]`);
+                    this.ranges.get(VariableType.VARIABLE)!.push(range);
+                }
+            });
+
+            // Add variable ranges from each scope to VARIABLE array
+            this.scopes.forEach(scope => {
+                scope.variables.forEach(variable => {
+                    const range = variable.range;
+                    logGlobals(`Applying variable decoration for ${variable.name}: Range: [${range.start.line}, ${range.start.character}] , [${range.end.line}, ${range.end.character}]`);
+                    this.ranges.get(VariableType.VARIABLE)!.push(range);
+                });
+            });
+
+            // Add default identifier ranges to SIMPLE array
+            this.simpleRanges.forEach(simpleRange => {
+                this.ranges.get(VariableType.SIMPLE)!.push(simpleRange);
+                logGlobals(`Applying default decoration: Range: [${simpleRange.start.line}, ${simpleRange.start.character}] , [${simpleRange.end.line}, ${simpleRange.end.character}]`);
+            });
+
+            // Exit package scope if it was entered
+            if (this.hasPackageHeader) {
+                this.exitScope();
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    exitPackageHeader = (ctx: PackageHeaderContext) => {
-        /*   try {
-              // Retrieve the package name for logging or debugging purposes
-              const packageName = ctx.identifier().getText();
-              console.log(`Exiting package: ${packageName}`);
-  
-              // Exit the package scope
-              exitScope();
-          } catch (error) {
-              console.error(error);
-          } */
+    enterEveryRule(ctx: ParserRuleContext): void {
+        try {
+            if (enterGlobals) {
+                logContent(`Entering rule: ${ctx?.ruleContext?.getText()}, ${ctx.constructor.name}`);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    enterSimpleIdentifier = (ctx: SimpleIdentifierContext) => {
+        try {
+            const identifierText = ctx.getText();
+            const startPos = new vscode.Position(ctx.start.line - 1, ctx.start.column);
+            const endPos = new vscode.Position(ctx.start.line - 1, ctx.start.column + identifierText.length);
+            const range = new vscode.Range(startPos, endPos);
+
+            let scope: Scope | null = this.currentScope;
+            let isVariable = false;
+            let isImport = false;
+
+            // Check if the identifier is a variable in the current scope or any parent scope
+            while (scope) {
+                if (scope.variables.has(identifierText)) {
+                    const variable = scope.variables.get(identifierText);
+                    if (variable) {
+                        if (!this.ranges.has(VariableType.VARIABLE)) {
+                            this.ranges.set(VariableType.VARIABLE, []);
+                        }
+                        this.ranges.get(VariableType.VARIABLE)!.push(range);
+                        logGlobals(`Decorated variable identifier: ${identifierText} at ${startPos.line}:${startPos.character}`);
+                        isVariable = true;
+                    }
+                    break;
+                }
+                scope = scope.parentScope;
+            }
+
+            // If not a variable, check if it's an import
+            if (!isVariable && this.imports.has(identifierText)) {
+                const imp = this.imports.get(identifierText);
+                if (imp && !imp.initialRange.intersection(range)) {
+                    if (!this.ranges.has(VariableType.IMPORT)) {
+                        this.ranges.set(VariableType.IMPORT, []);
+                    }
+                    this.ranges.get(VariableType.IMPORT)!.push(range);
+                    logGlobals(`Decorated import identifier: ${identifierText} at ${startPos.line}:${startPos.character}`);
+                    isImport = true;
+                }
+            }
+
+            // If it's not a variable or import, treat it as a general identifier
+            if (!isVariable && !isImport) {
+                const isImportContext = ctx.parentCtx?.parentCtx?.constructor.name === "ImportHeaderContext";
+                const isVariableContext = ctx.parentCtx?.constructor.name === "VariableDeclarationContext";
+
+                if (!isImportContext && !isVariableContext) {
+                    if (!this.ranges.has(VariableType.SIMPLE)) {
+                        this.ranges.set(VariableType.SIMPLE, []);
+                    }
+                    this.ranges.get(VariableType.SIMPLE)!.push(range);
+                    logGlobals(`Decorated default identifier: ${identifierText} at ${startPos.line}:${startPos.character}`);
+                }
+            }
+        } catch (error) {
+            console.error("Error in enterSimpleIdentifier:", error);
+        }
+    };
+
+
+
+    exitSimpleIdentifier = (ctx: SimpleIdentifierContext) => {
+        try {
+        } catch (error) {
+            console.error("Error in exitSimpleIdentifier:", error);
+        }
+    }
+    enterPackageHeader = (ctx: PackageHeaderContext) => {
+        try {
+            if (!ctx.identifier()) return
+            this.hasPackageHeader = true
+            const packageName = ctx.identifier().getText();
+
+            const packageSymbol = new Symbol(packageName);
+            this.currentScope.define(packageSymbol);
+
+            logGlobals(`Entering package: ${packageName}`);
+            this.enterScope(new Scope(this.currentScope));
+        } catch (error) {
+            console.error(error);
+        }
     };
     enterImportList = (ctx: ImportListContext) => {
         try {
-            /*  // Retrieve each import from the import list
-             for (const importHeader of ctx.importHeader_list()) {
-                 const importPath = importHeader.identifier().getText();
- 
-                 // Create an import symbol for the class or package
-                 const importSymbol = new Symbol(importPath);
- 
-                 // Record the import in the global scope or a dedicated imports map
-                 currentScope.define(importSymbol); // or store in a dedicated `importsMap`
- 
-                 console.log(`Importing: ${importPath}`);
-             } */
+            for (const importHeader of ctx.importHeader_list()) {
+                const importPath = importHeader.identifier().getText();
+                const identifierText = importHeader.identifier().getText();
+                if (!importHeader.identifier()) return;
+
+                // Extract class name from the import path (e.g., if importPath is "com.example.MyClass", name would be "MyClass")
+                const name = getClassName(importPath);
+
+                // Get the start and end positions of the specific import path
+                const startPos = new vscode.Position(importHeader.start.line - 1, importHeader.start.column);
+                // @ts-expect-error 
+                const endPos = new vscode.Position(importHeader.stop.line - 1, importHeader.stop.column + identifierText.length);
+
+                const range = new vscode.Range(startPos, endPos);
+                const importSymbol = new ImportSymbol(name, importPath, range);
+
+                logGlobals("Storing import path: " + importPath + " with name: " + name);
+                this.imports.set(name, importSymbol);
+                logGlobals(`Importing: ${importPath}`);
+            }
         } catch (error) {
             console.error(error);
         }
     };
 
-    exitImportList = (ctx: ImportListContext) => {
-        /*   try {
-              // Log exit from import list processing, if needed for debugging
-              console.log(`Finished processing imports.`);
-          } catch (error) {
-              console.error(error);
-          } */
-    };
 
     enterVariableDeclaration = (ctx: VariableDeclarationContext) => {
         try {
-            // Retrieve the variable name from the context, if available
-            const variableName = ctx.simpleIdentifier() ? ctx.simpleIdentifier().getText() : null;
+            const simpleIdentifier = ctx.simpleIdentifier();
+            const variableName = simpleIdentifier ? simpleIdentifier.getText() : null;
             if (!variableName) {
-                console.warn("Variable name not found.");
+                logGlobals("Variable name not found.");
                 return;
             }
 
-            // Determine the variable type, defaulting to 'Any' if unspecified or null
+            logGlobals("Adding definition for variable: " + variableName);
             const variableType = ctx.type_() ? ctx.type_().getText() : "Any";
 
-            // Create a variable symbol with the extracted name and type
-            const variableSymbol = new VariableSymbol(variableName, variableType);
+            // Get the start and end positions of the variable name (SimpleIdentifier)
+            const startPos = new vscode.Position(simpleIdentifier.start.line - 1, simpleIdentifier.start.column);
+            const endPos = new vscode.Position(
+                simpleIdentifier.start.line - 1,
+                simpleIdentifier.start.column + variableName.length
+            );
 
-            // Define the variable symbol in the current scope
-            currentScope.define(variableSymbol);
+            const range = new vscode.Range(startPos, endPos);
+            const variableSymbol = new VariableSymbol(variableName, variableType, range);
 
-            // Log the variable for debugging
-            console.log(`Declared variable: ${variableName} with type: ${variableType}`);
+            this.currentScope.define(variableSymbol);
+
+            logGlobals(`Declared variable: ${variableName} with type: ${variableType}`);
         } catch (error) {
             console.error(error);
         }
     };
+
 
 
     exitVariableDeclaration = (ctx: VariableDeclarationContext) => {
         try {
+            /* 
+ 
             // Optional: Log exiting variable declaration or cleanup if necessary
             const variableName = ctx.simpleIdentifier().getText();
-            console.log(`Exiting variable declaration for: ${variableName}`);
+            logGlobals(`Exiting variable declaration for: ${variableName}`); */
         } catch (error) {
             console.error(error);
         }
@@ -151,7 +283,7 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
                const functionSymbol = new FunctionSymbol(functionName, parameters, returnType);
                currentScope.define(functionSymbol);
    
-               console.log(`Entering function: ${functionName} with parameters: ${parameters.map(p => `${p.name}: ${p.type}`).join(", ")}`);
+               logGlobals(`Entering function: ${functionName} with parameters: ${parameters.map(p => `${p.name}: ${p.type}`).join(", ")}`);
                enterScope(new Scope(currentScope)); */
         } catch (error) {
             console.error(error);
@@ -161,7 +293,7 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
     exitFunctionDeclaration = (ctx: FunctionDeclarationContext) => {
         /*   try {
               const functionName = ctx.simpleIdentifier().getText();
-              console.log(`Exiting function: ${functionName}`);
+              logGlobals(`Exiting function: ${functionName}`);
               exitScope();
           } catch (error) {
               console.error(error);
@@ -169,33 +301,27 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
     };
 
     enterBlock = (ctx: BlockContext) => {
-        // Create a new scope specifically for this block
         /* const blockScope = new Scope(currentScope);
 
-        // Enter the block scope
         enterScope(blockScope); */
-        console.log("Entering a new block scope.");
+        logGlobals("Entering a new block scope.");
     };
 
     exitBlock = (ctx: BlockContext) => {
-        // Exit the block scope, reverting to the previous scope
         /*   exitScope(); */
-        console.log("Exiting block scope.");
+        logGlobals("Exiting block scope.");
     };
 
     enterClassDeclaration = (ctx: ClassDeclarationContext) => {
         try {
-            /*    // Retrieve the class name from the context
+            /*
                const className = ctx.simpleIdentifier().getText();
    
-               // Create a class symbol with the name
                const classSymbol = new ClassSymbol(className);
    
-               // Define the class symbol in the current scope
                currentScope.define(classSymbol);
    
-               // Log and enter the class scope
-               console.log(`Entering class: ${className}`);
+               logGlobals(`Entering class: ${className}`);
                enterScope(new Scope(currentScope)); */
         } catch (error) {
             console.error(error);
@@ -204,11 +330,9 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
 
     exitClassDeclaration = (ctx: ClassDeclarationContext) => {
         /*   try {
-              // Retrieve the class name for logging or debugging
               const className = ctx.simpleIdentifier().getText();
-              console.log(`Exiting class: ${className}`);
+              logGlobals(`Exiting class: ${className}`);
   
-              // Exit the class scope
               exitScope();
           } catch (error) {
               console.error(error);
@@ -217,12 +341,10 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
 
     enterLoopStatement = (ctx: LoopStatementContext) => {
         /*  try {
-             // Create a new scope specifically for this loop
              const loopScope = new Scope(currentScope);
  
-             // Enter the loop scope
              enterScope(loopScope);
-             console.log("Entering a loop scope.");
+             logGlobals("Entering a loop scope.");
          } catch (error) {
              console.error(error);
          } */
@@ -230,49 +352,51 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
 
     exitLoopStatement = (ctx: LoopStatementContext) => {
         /*  try {
-             // Exit the loop scope, reverting to the previous scope
              exitScope();
-             console.log("Exiting loop scope.");
+             logGlobals("Exiting loop scope.");
          } catch (error) {
              console.error(error);
          } */
     };
+    enterScope(newScope: Scope) {
+        this.scopes.push(newScope);
+        newScope.parentScope = this.currentScope;
+        this.currentScope = newScope;
+    }
+
+    exitScope() {
+        if (this.currentScope.parentScope) {
+            this.currentScope = this.currentScope.parentScope;
+        }
+    }
 
 }
-let variableDecorationType = vscode.window.createTextEditorDecorationType({
+let SimpleDecorationType = vscode.window.createTextEditorDecorationType({
+    color: '#93c3de',
+});
+let VariableDecorationType = vscode.window.createTextEditorDecorationType({
     color: '#ADD8E6',
 });
+let ImportDecorationType = vscode.window.createTextEditorDecorationType({
+    color: '#4ec9b0',
+});
 
-export function applyVariableDecorations(document: vscode.TextDocument): void {
-    const variableRanges: vscode.Range[] = [];
-    const text = document.getText();
-
-    // Traverse all variables in current scope and its parents
-    let scope: Scope | null = currentScope;  // Start with the current scope
-    while (scope) {
-        scope.variables.forEach((variableSymbol, variableName) => {
-            const regex = new RegExp(`\\b${variableName}\\b`, 'g');
-            let match;
-
-            // Find all occurrences of the variable name in the document
-            while ((match = regex.exec(text)) !== null) {
-                const startPos = document.positionAt(match.index);
-                const endPos = document.positionAt(match.index + variableName.length);
-                variableRanges.push(new vscode.Range(startPos, endPos));
-                console.log(`Variable range for '${variableName}': ${startPos.line}:${startPos.character} - ${endPos.line}:${endPos.character}`);
-            }
-        });
-
-        // Move to the parent scope to check for variables accessible from parent scopes
-        scope = scope.parentScope;
-    }
-
+export function applyDecorations(parser: KotlinParserListenerImpl, document: vscode.TextDocument): void {
     const editor = vscode.window.activeTextEditor;
     if (editor && editor.document === document) {
-        editor.setDecorations(variableDecorationType, variableRanges);
-        console.log(`Applied decorations for ${variableRanges.length} variables`);
+        if (parser.ranges.has(VariableType.IMPORT)) {
+            editor.setDecorations(ImportDecorationType, parser.ranges.get(VariableType.IMPORT)!);
+        }
+        if (parser.ranges.has(VariableType.SIMPLE)) {
+            editor.setDecorations(SimpleDecorationType, parser.ranges.get(VariableType.SIMPLE)!);
+        }
+        if (parser.ranges.has(VariableType.VARIABLE)) {
+            editor.setDecorations(VariableDecorationType, parser.ranges.get(VariableType.VARIABLE)!);
+        }
     }
 }
+
+
 export class Scope {
     parentScope: Scope | null;
     symbols: Map<string, Symbol>;
@@ -281,7 +405,7 @@ export class Scope {
     constructor(parentScope: Scope | null) {
         this.parentScope = parentScope;
         this.symbols = new Map();
-        this.variables = new Map();  // Track variables in this specific scope
+        this.variables = new Map();
     }
 
     define(symbol: Symbol): void {
@@ -296,18 +420,7 @@ export class Scope {
         return this.variables.get(name) || (this.parentScope ? this.parentScope.resolveVariable(name) : undefined);
     }
 }
-let currentScope: Scope = new Scope(null);
 
-function enterScope(newScope: Scope) {
-    newScope.parentScope = currentScope;
-    currentScope = newScope;
-}
-
-function exitScope() {
-    if (currentScope.parentScope) {
-        currentScope = currentScope.parentScope;
-    }
-}
 class Symbol {
     name: string;
     type: string | null;
@@ -327,6 +440,29 @@ class FunctionSymbol extends Symbol {
     }
 }
 
-class VariableSymbol extends Symbol { }
+class VariableSymbol extends Symbol {
+    public isImport: boolean;
+    public range: vscode.Range
+    constructor(name: string, type: string | null = null, range: vscode.Range, isImport: boolean = false) {
+        super(name, type);
+        this.range = range;
+        this.isImport = isImport;
+    }
+}
 class ClassSymbol extends Symbol { }
 class InterfaceSymbol extends Symbol { }
+class ImportSymbol extends Symbol {
+    public initialRange: vscode.Range
+    constructor(name: string, type: string | null = null, initialRange: vscode.Range) {
+        super(name, type);
+        this.initialRange = initialRange;
+    }
+
+}
+function getClassName(type: string): string {
+    if (type != null) {
+        const parts = type.split('.');
+        return parts[parts.length - 1];
+    }
+    return "kotlin.Unit";
+}
