@@ -116,25 +116,19 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
             const endPos = new vscode.Position(ctx.start.line - 1, ctx.start.column + identifierText.length);
             const range = new vscode.Range(startPos, endPos);
 
-            let scope: Scope | null = this.currentScope;
             let isVariable = false;
             let isImport = false;
 
-            // Check if the identifier is a variable in the current scope or any parent scope
-            while (scope) {
-                if (scope.variables.has(identifierText)) {
-                    const variable = scope.variables.get(identifierText);
-                    if (variable) {
-                        if (!this.ranges.has(VariableType.VARIABLE)) {
-                            this.ranges.set(VariableType.VARIABLE, []);
-                        }
-                        this.ranges.get(VariableType.VARIABLE)!.push(range);
-                        logGlobals(`Decorated variable identifier: ${identifierText} at ${startPos.line}:${startPos.character}`);
-                        isVariable = true;
-                    }
-                    break;
+            // Check if the identifier is a variable in the current scope or parent scope using resolveVariable
+            const variable = this.currentScope.resolveVariable(identifierText);
+            if (variable) {
+                // The variable is in the correct scope
+                if (!this.ranges.has(VariableType.VARIABLE)) {
+                    this.ranges.set(VariableType.VARIABLE, []);
                 }
-                scope = scope.parentScope;
+                this.ranges.get(VariableType.VARIABLE)!.push(range);
+                logGlobals(`Decorated variable identifier: ${identifierText} at ${startPos.line}:${startPos.character}`);
+                isVariable = true;
             }
 
             // If not a variable, check if it's an import
@@ -167,6 +161,7 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
             console.error("Error in enterSimpleIdentifier:", error);
         }
     };
+
 
 
 
@@ -265,79 +260,102 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
 
     enterFunctionDeclaration = (ctx: FunctionDeclarationContext) => {
         try {
-            /*    const functionName = ctx.simpleIdentifier().getText();
-               const parameters: VariableSymbol[] = [];
-               const paramList = ctx.functionValueParameters();
-   
-               if (paramList) {
-                   for (const param of paramList.functionValueParameter_list()) {
-                       const paramCtx = param.parameter();
-                       const paramName = paramCtx.simpleIdentifier().getText();
-                       const paramType = paramCtx.type_() ? paramCtx.type_().getText() : "Any";
-                       const paramSymbol = new VariableSymbol(paramName, paramType);
-                       parameters.push(paramSymbol);
-                   }
-               }
-   
-               const returnType = ctx.type_() ? ctx.type_().getText() : "Unit";
-               const functionSymbol = new FunctionSymbol(functionName, parameters, returnType);
-               currentScope.define(functionSymbol);
-   
-               logGlobals(`Entering function: ${functionName} with parameters: ${parameters.map(p => `${p.name}: ${p.type}`).join(", ")}`);
-               enterScope(new Scope(currentScope)); */
+            const functionName = ctx.simpleIdentifier().getText();
+            const parameters: VariableSymbol[] = [];
+            const paramList = ctx.functionValueParameters();
+
+            if (paramList) {
+                for (const param of paramList.functionValueParameter_list()) {
+                    const paramCtx = param.parameter();
+                    const paramName = paramCtx.simpleIdentifier().getText();
+                    const paramType = paramCtx.type_() ? paramCtx.type_().getText() : "Any";
+
+                    // Determine the start and end positions of the parameter
+                    const startPos = new vscode.Position(paramCtx.simpleIdentifier().start.line - 1, paramCtx.simpleIdentifier().start.column);
+                    const endPos = new vscode.Position(
+                        paramCtx.simpleIdentifier().start.line - 1,
+                        paramCtx.simpleIdentifier().start.column + paramName.length
+                    );
+                    const range = new vscode.Range(startPos, endPos);
+
+                    // Create the VariableSymbol with the correct range
+                    const paramSymbol = new VariableSymbol(paramName, paramType, range);
+                    parameters.push(paramSymbol);
+                }
+            }
+
+            // Define the function symbol with its parameters and return type
+            const returnType = ctx.type_() ? ctx.type_().getText() : "Unit";
+            const functionSymbol = new FunctionSymbol(functionName, parameters, returnType);
+            this.currentScope.define(functionSymbol);
+
+            // Log function entry and push a new scope
+            logGlobals(`Entering function: ${functionName} with parameters: ${parameters.map(p => `${p.name}: ${p.type}`).join(", ")}`);
+            /* this.enterScope(new Scope(this.currentScope)); */
+
+            // Define each parameter in the function's scope
+            parameters.forEach(param => this.currentScope.define(param));
         } catch (error) {
             console.error(error);
         }
     };
 
+
     exitFunctionDeclaration = (ctx: FunctionDeclarationContext) => {
-        /*   try {
-              const functionName = ctx.simpleIdentifier().getText();
-              logGlobals(`Exiting function: ${functionName}`);
-              exitScope();
-          } catch (error) {
-              console.error(error);
-          } */
+        try {
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    enterBlock = (ctx: BlockContext) => {
-        /* const blockScope = new Scope(currentScope);
 
-        enterScope(blockScope); */
+    enterBlock = (ctx: BlockContext) => {
+        const name = ctx.parentCtx?.constructor.name;
+        const blockScope = new Scope(this.currentScope);
+
+        this.enterScope(blockScope);
         logGlobals("Entering a new block scope.");
     };
 
     exitBlock = (ctx: BlockContext) => {
-        /*   exitScope(); */
+        const name = ctx.parentCtx?.constructor.name;
+        this.exitScope();
         logGlobals("Exiting block scope.");
     };
 
     enterClassDeclaration = (ctx: ClassDeclarationContext) => {
         try {
-            /*
-               const className = ctx.simpleIdentifier().getText();
-   
-               const classSymbol = new ClassSymbol(className);
-   
-               currentScope.define(classSymbol);
-   
-               logGlobals(`Entering class: ${className}`);
-               enterScope(new Scope(currentScope)); */
+            // Get the class name from the SimpleIdentifier context
+            const className = ctx.simpleIdentifier().getText();
+
+            // Define the class symbol and assign it to the current scope
+            const classSymbol = new ClassSymbol(className);
+            this.currentScope.define(classSymbol);
+
+            // Log class entry and create a new scope for the class
+            logGlobals(`Entering class: ${className}`);
+            const classScope = new Scope(this.currentScope);
+            this.enterScope(classScope);
+
         } catch (error) {
             console.error(error);
         }
     };
 
+
     exitClassDeclaration = (ctx: ClassDeclarationContext) => {
-        /*   try {
-              const className = ctx.simpleIdentifier().getText();
-              logGlobals(`Exiting class: ${className}`);
-  
-              exitScope();
-          } catch (error) {
-              console.error(error);
-          } */
+        try {
+            const className = ctx.simpleIdentifier().getText();
+            logGlobals(`Exiting class: ${className}`);
+
+            // Exit the class scope
+            this.exitScope();
+
+        } catch (error) {
+            console.error(error);
+        }
     };
+
 
     enterLoopStatement = (ctx: LoopStatementContext) => {
         /*  try {
@@ -372,10 +390,10 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
 
 }
 let SimpleDecorationType = vscode.window.createTextEditorDecorationType({
-    color: '#93c3de',
+    color: '#ADD8E6',
 });
 let VariableDecorationType = vscode.window.createTextEditorDecorationType({
-    color: '#ADD8E6',
+    color: '#4bb4ec',
 });
 let ImportDecorationType = vscode.window.createTextEditorDecorationType({
     color: '#4ec9b0',
@@ -419,6 +437,7 @@ export class Scope {
     resolveVariable(name: string): VariableSymbol | undefined {
         return this.variables.get(name) || (this.parentScope ? this.parentScope.resolveVariable(name) : undefined);
     }
+
 }
 
 class Symbol {

@@ -36,19 +36,18 @@ function processFileContent(content: string, document: vscode.TextDocument): voi
 
 
 function setupFileChangeListener() {
-    /* let debounceTimer: NodeJS.Timeout | undefined; */
+    let debounceTimer: NodeJS.Timeout | undefined;
 
     vscode.workspace.onDidChangeTextDocument(event => {
         if (event.document.languageId === 'kotlinscript' && event.document.uri.fsPath.endsWith('.kts')) {
             try {
-                /* if (debounceTimer) clearTimeout(debounceTimer);
+                if (debounceTimer) clearTimeout(debounceTimer);
 
                 debounceTimer = setTimeout(() => {
+                    const content = event.document.getText();
+                    processFileContent(content, event.document);
 
-                }, 250); */
-                const content = event.document.getText();
-                processFileContent(content, event.document);
-                //processFile(content, event.document);
+                }, 500);
             } catch (error) {
                 console.error(error)
             }

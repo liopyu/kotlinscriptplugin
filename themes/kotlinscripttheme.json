@@ -9,13 +9,13 @@
         {
             "scope": "keyword.other.import.kotlin",
             "settings": {
-                "foreground": "#4ea3f2"
+                "foreground": "#5092e6"
             }
         },
         {
             "scope": "variable.language.kotlin",
             "settings": {
-                "foreground": "#4ea3f2"
+                "foreground": "#5092e6"
             }
         },
         {
@@ -51,7 +51,7 @@
         {
             "scope": "storage.type.kotlin",
             "settings": {
-                "foreground": "#4ea3f2"
+                "foreground": "#5092e6"
             }
         },
         {
@@ -141,13 +141,13 @@
         {
             "scope": "keyword.other.kotlin",
             "settings": {
-                "foreground": "#4ea3f2"
+                "foreground": "#5092e6"
             }
         },
         {
             "scope": "constant.language.kotlin",
             "settings": {
-                "foreground": "#4ea3f2"
+                "foreground": "#5092e6"
             }
         },
         {
@@ -159,7 +159,7 @@
         {
             "scope": "support.function.kotlin",
             "settings": {
-                "foreground": "#4ea3f2"
+                "foreground": "#5092e6"
             }
         },
         {
@@ -219,7 +219,7 @@
         {
             "scope": "storage.modifier.kotlin",
             "settings": {
-                "foreground": "#4ea3f2"
+                "foreground": "#5092e6"
             }
         },
         {
