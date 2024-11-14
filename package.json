@@ -60,7 +60,9 @@
     "lint": "eslint .",
     "pretest": "npm run lint",
     "test": "vscode-test",
-    "build": "rollup --config rollup.config.js"
+    "build": "rollup --config rollup.config.js",
+    "generate-parser": "tree-sitter generate -- ./node_modules/kotlin-tree-sitter",
+    "build-parser": "tree-sitter build ./node_modules/kotlin-tree-sitter"
   },
   "files": [
     "src",
@@ -77,11 +79,17 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
+    "tree-sitter": "^0.20.0",
+    "kotlin-tree-sitter": "github:your-repo/kotlin-tree-sitter",
     "adm-zip": "^0.5.16",
     "antlr4": "^4.13.2",
     "java-class-reader": "^0.4.3",
     "java-class-tools": "^1.3.2",
     "node-java-maven": "^0.1.2",
     "vscode-languageclient": "^9.0.1"
+  },
+  "tree-sitter": {
+    "name": "kotlin",
+    "file": "./node_modules/kotlin-tree-sitter/grammar.js"
   }
 }

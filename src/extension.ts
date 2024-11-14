@@ -7,8 +7,7 @@ import { KotlinScriptErrorStrategy } from './KotlinScriptErrorStrategy';
 import { Scope, applyDecorations } from './KotlinParserListenerImpl';
 let diagnosticCollection: vscode.DiagnosticCollection;
 
-
-function processFileContent(content: string, document: vscode.TextDocument): void {
+function processLineContent(content: string, document: vscode.TextDocument, line: number): void {
     try {
         const chars = new CharStream(content);
         const lexer = new KotlinLexer(chars);
@@ -17,23 +16,18 @@ function processFileContent(content: string, document: vscode.TextDocument): voi
         const errorStrat = new KotlinScriptErrorStrategy();
         parser._errHandler = errorStrat;
         const listener = new KotlinParserListenerImpl(document, errorStrat);
+
         const tree = parser.kotlinFile();
         ParseTreeWalker.DEFAULT.walk(listener, tree);
-        //errorStrat.getDiagnostics().forEach((diag, i) => console.log("Diag message: " + diag.message + ". Diag index: " + i))
-        listener.diagnostics.forEach((diag, i) => errorStrat.getDiagnostics().push(diag))
+
+        listener.diagnostics.forEach((diag) => errorStrat.getDiagnostics().push(diag));
         diagnosticCollection.set(document.uri, errorStrat.getDiagnostics());
-
-        applyDecorations(listener, document)
-
+        applyDecorations(listener, document);
 
     } catch (error) {
-        console.error(error)
+        console.error(error);
     }
 }
-
-
-
-
 
 function setupFileChangeListener() {
     let debounceTimer: NodeJS.Timeout | undefined;
@@ -45,19 +39,21 @@ function setupFileChangeListener() {
 
                 debounceTimer = setTimeout(() => {
                     const content = event.document.getText();
-                    processFileContent(content, event.document);
+                    const changedLines = event.contentChanges.map(change => event.document.lineAt(change.range.start.line));
+                    changedLines.forEach(line => {
+                        processLineContent(line.text, event.document, line.lineNumber);
+                    });
 
-                }, 500);
+                }, 100);
             } catch (error) {
-                console.error(error)
+                console.error(error);
             }
         }
     });
 }
 
-
 export function activate(context: vscode.ExtensionContext): void {
-    console.log("Booting up extension!")
+    console.log("Booting up extension!");
     diagnosticCollection = vscode.languages.createDiagnosticCollection('kotlinscript');
     context.subscriptions.push(diagnosticCollection);
     setupFileChangeListener();

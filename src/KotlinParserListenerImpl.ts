@@ -1,5 +1,27 @@
 import KotlinParserListener from "../generated/KotlinParserListener";
-import { AssignmentContext, FunctionBodyContext, ImportListContext, LoopStatementContext, StringLiteralContext, CollectionLiteralContext, ImportHeaderContext, NavigationSuffixContext, ValueArgumentContext, ConstructorInvocationContext, KotlinFileContext, FunctionDeclarationContext, FunctionValueParameterContext, ParameterContext, ClassDeclarationContext, SimpleIdentifierContext, TypeReferenceContext, VariableDeclarationContext, MultiVariableDeclarationContext, PackageHeaderContext, BlockContext } from "../generated/KotlinParser";
+import {
+    PostfixUnaryExpressionContext,
+    AssignmentContext,
+    FunctionBodyContext,
+    ImportListContext,
+    LoopStatementContext,
+    StringLiteralContext,
+    CollectionLiteralContext,
+    ImportHeaderContext,
+    NavigationSuffixContext,
+    ValueArgumentContext,
+    ConstructorInvocationContext,
+    KotlinFileContext,
+    FunctionDeclarationContext,
+    FunctionValueParameterContext,
+    ParameterContext,
+    ClassDeclarationContext,
+    SimpleIdentifierContext,
+    TypeReferenceContext,
+    VariableDeclarationContext,
+    MultiVariableDeclarationContext,
+    PackageHeaderContext, BlockContext
+} from "../generated/KotlinParser";
 import { RecognitionException, ParseTreeListener, ParserRuleContext, ErrorNode } from "antlr4";
 import type { TextDocument } from "vscode";
 import vscode from "vscode"
@@ -13,9 +35,9 @@ export const instantiatedClasses = new Map<string, { arguments: { name: string; 
 export const importedClasses = new Map<string, string>();
 export const syntaxErrors: { line: number, column: number, message: string }[] = [];
 const individualLogging = false;
-const globalLogging = true;
+const globalLogging = false;
 const exitGlobals = false;
-const enterGlobals = true;
+const enterGlobals = false;
 function logContent(...data: any[]) {
     if (individualLogging) {
         console.log(data)
@@ -30,7 +52,8 @@ function logGlobals(...data: any[]) {
 enum VariableType {
     SIMPLE,
     VARIABLE,
-    IMPORT
+    IMPORT,
+    METHOD
 }
 export default class KotlinParserListenerImpl extends KotlinParserListener {
     public hasPackageHeader: boolean = false;
@@ -109,6 +132,59 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
             console.error(error);
         }
     }
+    enterPostfixUnaryExpression = (ctx: PostfixUnaryExpressionContext) => {
+        // Get the primary expression (object or class name)
+        const primaryExpr = ctx.primaryExpression();
+        const objectName = primaryExpr?.simpleIdentifier()?.getText();
+
+        ctx.postfixUnarySuffix_list().forEach(context => {
+            const suffixText = context.getText();
+            console.log("Text: " + suffixText);
+
+            if (context.callSuffix()) {
+                console.log("Call suffix: " + context.callSuffix().getText());
+                console.log("Value args: " + context.callSuffix().valueArguments().getText());
+            }
+            if (context.indexingSuffix()) {
+                console.log("Index suffix: " + context.indexingSuffix().getText());
+            }
+            if (context.navigationSuffix()) {
+                const navText = context.navigationSuffix().getText();
+                console.log("Nav suffix: " + navText);
+
+                // Check if navigation suffix indicates a method call
+                const methodName = navText.startsWith('.') ? navText.slice(1) : navText;  // Remove '.' if present
+                if (methodName) {
+                    // Get the start and end positions for the method name
+                    const startPos = new vscode.Position(context.navigationSuffix().start.line - 1, context.navigationSuffix().start.column + 1); // Offset to skip '.'
+                    const endPos = new vscode.Position(context.navigationSuffix().start.line - 1, startPos.character + methodName.length);
+
+                    // Define the range and apply the decoration
+                    const range = new vscode.Range(startPos, endPos);
+                    if (!this.ranges.has(VariableType.METHOD)) {
+                        this.ranges.set(VariableType.METHOD, []);
+                    }
+                    this.ranges.get(VariableType.METHOD)!.push(range);
+
+                    logGlobals(`Method call: ${objectName}.${methodName} at ${startPos.line}:${startPos.character}`);
+                }
+            }
+        });
+
+        // If there's a valid object name, detect method calls in `postfixUnarySuffix_list`
+        if (objectName) {
+            for (const suffix of ctx.postfixUnarySuffix_list()) {
+                if (suffix.callSuffix()) {
+                    const methodName = suffix.callSuffix().getText().replace('()', ''); // Remove '()' to isolate method name
+                    logContent(`Detected method call on object: ${objectName}.${methodName}`);
+                }
+            }
+        }
+    };
+
+
+
+
     enterSimpleIdentifier = (ctx: SimpleIdentifierContext) => {
         try {
             const identifierText = ctx.getText();
@@ -148,8 +224,9 @@ export default class KotlinParserListenerImpl extends KotlinParserListener {
             if (!isVariable && !isImport) {
                 const isImportContext = ctx.parentCtx?.parentCtx?.constructor.name === "ImportHeaderContext";
                 const isVariableContext = ctx.parentCtx?.constructor.name === "VariableDeclarationContext";
+                const isNavContext = ctx.parentCtx?.constructor.name === "NavigationSuffixContext"
 
-                if (!isImportContext && !isVariableContext) {
+                if (!isImportContext && !isVariableContext && !isNavContext) {
                     if (!this.ranges.has(VariableType.SIMPLE)) {
                         this.ranges.set(VariableType.SIMPLE, []);
                     }
@@ -398,7 +475,9 @@ let VariableDecorationType = vscode.window.createTextEditorDecorationType({
 let ImportDecorationType = vscode.window.createTextEditorDecorationType({
     color: '#4ec9b0',
 });
-
+let MethodDecorationType = vscode.window.createTextEditorDecorationType({
+    color: '#FFD700',
+});
 export function applyDecorations(parser: KotlinParserListenerImpl, document: vscode.TextDocument): void {
     const editor = vscode.window.activeTextEditor;
     if (editor && editor.document === document) {
@@ -411,9 +490,11 @@ export function applyDecorations(parser: KotlinParserListenerImpl, document: vsc
         if (parser.ranges.has(VariableType.VARIABLE)) {
             editor.setDecorations(VariableDecorationType, parser.ranges.get(VariableType.VARIABLE)!);
         }
+        if (parser.ranges.has(VariableType.METHOD)) {
+            editor.setDecorations(MethodDecorationType, parser.ranges.get(VariableType.METHOD)!);
+        }
     }
 }
-
 
 export class Scope {
     parentScope: Scope | null;
