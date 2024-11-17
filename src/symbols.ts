@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import Parser from 'web-tree-sitter';
-import { SemanticTokensProvider } from './extension';
+import Parser, { Tree } from 'web-tree-sitter';
+import { TreeProvider } from './extension';
 export enum VariableType {
     SIMPLE,
     VARIABLE,
@@ -19,7 +19,7 @@ export const ImportDecorationType = vscode.window.createTextEditorDecorationType
 export const MethodDecorationType = vscode.window.createTextEditorDecorationType({
     color: '#FFD700',
 });
-export function applyDecorations(parser: SemanticTokensProvider, document: vscode.TextDocument): void {
+export function applyDecorations(parser: TreeProvider, document: vscode.TextDocument): void {
     const editor = vscode.window.activeTextEditor;
     if (editor && editor.document === document) {
         if (parser.ranges.has(VariableType.IMPORT)) {

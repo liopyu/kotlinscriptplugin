@@ -36,80 +36,74 @@ const TOKEN_TYPES = [
 const TOKEN_MODIFIERS: string[] = [];
 const LEGEND = new vscode.SemanticTokensLegend(TOKEN_TYPES, TOKEN_MODIFIERS);
 
-export class SemanticTokensProvider /* implements vscode.DocumentSemanticTokensProvider  */ {
+export class TreeProvider {
 	public hasPackageHeader: boolean = false;
 	public currentScope: Scope = new Scope(null);
 	public scopes: Scope[] = [];
 	public ranges: Map<VariableType, vscode.Range[]> = new Map();
 	public simpleRanges: vscode.Range[] = []
 	private readonly parser: TSParser;
-	/* private readonly highlightQuery: TSParser.Query; */
+	private readonly highlightQuery: TSParser.Query;
 	private scopedVariables: Map<string, VariableSymbol> = new Map();
 	private imports: Map<string, ImportSymbol> = new Map();
 	private hasInited: boolean = false;
-	private tree: TSParser.Tree;
-	private document: vscode.TextDocument;
-	constructor(parser: TSParser, /* highlightQuery: TSParser.Query,  */document: vscode.TextDocument) {
+	private tree: TSParser.Tree | undefined = undefined;
+	constructor(parser: TSParser, highlightQuery: TSParser.Query,) {
 		this.parser = parser;
-		/* this.highlightQuery = highlightQuery; */
 		console.log("initializing semantic tokens provider")
 		this.scopes.push(this.currentScope);
-		this.tree = parser.parse(document.getText());
-		this.document = document;
+		this.highlightQuery = highlightQuery
 	}
-	propertyDeclaration(node: TSParser.SyntaxNode): void {
-		console.log("property declaration")
-	}
-	updateTokens() {
-		const newTree = this.parser.parse(this.document.getText(), this.tree);
-		newTree.rootNode.children.forEach(node => {
-			if (node.hasChanges || !this.hasInited) {
-				switch (node.type) {
-					case "property_declaration":
-						this.propertyDeclaration(node)
-						break;
 
-					default:
-						break;
-				}
-				this.hasInited = true;
-			}
-		});
-		this.tree.getChangedRanges(newTree).forEach(range => { console.log("Changed ranges- start: " + range.startPosition.row + ", " + range.startPosition.column + " end: " + range.endPosition.row + ", " + range.endPosition.column) })
-		/* this.tree.delete()
-		this.tree = newTree; */
-		const builder = new vscode.SemanticTokensBuilder(LEGEND);
-		/* const matches = this.highlightQuery.matches(tree.rootNode);
+	updateTokens(document: vscode.TextDocument): void {
+		const newTree = this.parser.parse(document.getText());
 		const currentVariables: Set<string> = new Set();
-		const currentImports = new Set<string>();
-		matches.forEach(match => {
-			match.captures.forEach(capture => {
-				const node = capture.node;
-				const range = new vscode.Range(
-					node.startPosition.row,
-					node.startPosition.column,
-					node.endPosition.row,
-					node.endPosition.column
-				);
-
-				this.processTokenType(capture.name, range, builder);
-				if (capture.name == "source_file") {
-					console.log("entering file")
-
-				} else if (capture.name === 'variable' && this.isVariableDeclaration(node)) {
-					this.processVariableDeclaration(node, range, currentVariables);
-				} else if (this.isImportDeclaration(node)) {
-					this.processImportDeclaration(node, range, currentImports);
-				}
+		const currentImports: Set<string> = new Set();
+		if (!this.tree) this.tree = newTree;
+		const changedRanges = this.tree.getChangedRanges(newTree);
+		if (changedRanges.length > 0 || !this.hasInited) {
+			const matches = this.highlightQuery.matches(newTree.rootNode);
+			matches.forEach((match, matchIndex) => {
+				match.captures.forEach((capture, captureIndex) => {
+					const node = capture.node;
+					const hasRelevantChanges = this.nodeHasRelevantChanges(node, changedRanges);
+					const range = new vscode.Range(
+						node.startPosition.row,
+						node.startPosition.column,
+						node.endPosition.row,
+						node.endPosition.column
+					);
+					if (hasRelevantChanges || !this.hasInited) {
+						if (capture.name === 'variable' && this.isVariableDeclaration(node)) {
+							this.processVariableDeclaration(node, range, currentVariables);
+						} else if (this.isImportDeclaration(node)) {
+							this.processImportDeclaration(node, range, currentImports);
+						}
+					}
+				});
 			});
-		});
-		this.cleanupStaleEntries(this.scopedVariables, currentVariables);
-		this.cleanupStaleEntries(this.imports, currentImports);
-		return builder.build(); */
+			this.cleanupStaleEntries(this.scopedVariables, currentVariables);
+			this.cleanupStaleEntries(this.imports, currentImports);
+			this.tree = newTree;
+		}
 	}
-	/* provideDocumentSemanticTokens(document: vscode.TextDocument): vscode.ProviderResult<vscode.SemanticTokens> {
-		return this.updateTokens(document)
-	} */
+
+
+	private nodeHasRelevantChanges(node: TSParser.SyntaxNode, changedRanges: TSParser.Range[]): boolean {
+		const result = changedRanges.some((range, rangeIndex) => {
+			const nodeStart = node.startPosition;
+			const nodeEnd = node.endPosition;
+			const intersects = (
+				(nodeStart.row < range.endPosition.row ||
+					(nodeStart.row === range.endPosition.row && nodeStart.column <= range.endPosition.column)) &&
+				(nodeEnd.row > range.startPosition.row ||
+					(nodeEnd.row === range.startPosition.row && nodeEnd.column >= range.startPosition.column))
+			);
+			return intersects;
+		});
+		return result;
+	}
+
 
 
 	private processVariableDeclaration(node: TSParser.SyntaxNode, range: vscode.Range, currentVariables: Set<string>) {
@@ -145,7 +139,8 @@ export class SemanticTokensProvider /* implements vscode.DocumentSemanticTokensP
 			const variableSymbol = new VariableSymbol(variableName, range, ctx);
 
 			this.currentScope.define(variableSymbol);
-			this.scopedVariables.set(variableName, new VariableSymbol(variableName, range, ctx));
+			this.scopedVariables.set(variableName, variableSymbol);
+			console.log(variableSymbol)
 			variablRanges.get(variableName)?.push(range)
 
 			logGlobals(`Declared variable: ${variableName} with type: ${variableType}`);
@@ -295,7 +290,7 @@ class KotlinScriptDefinitionProvider implements vscode.DefinitionProvider {
 		);
 	}
 }
-function updateDecorationsForVisibleRanges(editor: vscode.TextEditor, parser: SemanticTokensProvider) {
+function updateDecorationsForVisibleRanges(editor: vscode.TextEditor, parser: TreeProvider) {
 	const visibleRanges = editor.visibleRanges;
 	var rangesToDecorate: vscode.Range[] = [];
 	parser.getscopedVariables().forEach(variable => {
@@ -331,7 +326,7 @@ function startPeriodicDecorationUpdate(editor: vscode.TextEditor, provider: any)
 }
 const documentData = new Map<string, CustomData>();
 interface CustomData {
-	treeProvider: SemanticTokensProvider;
+	treeProvider: TreeProvider;
 	document: vscode.TextDocument;
 }
 let totalDocuments = 0;
@@ -357,11 +352,11 @@ export async function activate(context: vscode.ExtensionContext) {
 		if (!documentData.has(documentUri)) {
 			console.log("Adding document");
 
-			const semanticTokensProvider = new SemanticTokensProvider(parser, document);
+			const treeProvider = new TreeProvider(parser, highlightQuery);
 
-			// Store document and SemanticTokensProvider in one map entry
+			// Store document and TreeProvider in one map entry
 			documentData.set(documentUri, {
-				treeProvider: semanticTokensProvider,
+				treeProvider: treeProvider,
 				document: document
 			});
 		}
@@ -402,10 +397,40 @@ export async function activate(context: vscode.ExtensionContext) {
 		const documentUri = event.document.uri.toString();
 		const data = documentData.get(documentUri);
 		if (data) {
-			data.treeProvider.updateTokens();
-			//updateDecorationsForVisibleRanges(event.textEditor, data.treeProvider);
+			data.treeProvider.updateTokens(event.document);
+			if (editor) {
+				updateDecorationsForVisibleRanges(editor, data.treeProvider);
+				const variableDefinitionProvider = new KotlinScriptDefinitionProvider(data.treeProvider.getscopedVariables());
+				context.subscriptions.push(
+					vscode.languages.registerDefinitionProvider(selector, variableDefinitionProvider)
+				);
+			}
 		}
 	});
+
+	if (vscode.window.activeTextEditor) {
+		var doc = documentData.get(vscode.window.activeTextEditor.document.uri.toString())
+		if (doc) {
+			updateDecorationsForVisibleRanges(vscode.window.activeTextEditor, doc.treeProvider);
+
+
+			const importDefinitionProvider = new ImportDefinitionProvider(doc.treeProvider.getimports());
+			context.subscriptions.push(
+				vscode.languages.registerDefinitionProvider(selector, importDefinitionProvider)
+			);
+
+		}
+	}
+	if (editor) {
+		addDocumentIfNotExists(editor.document);
+		var doc = documentData.get(editor.document.uri.toString())
+		if (doc) {
+			startPeriodicDecorationUpdate(editor, doc.treeProvider);
+		}
+	}
+
+
+
 	/* vscode.workspace.onDidChangeTextDocument(event => {
 		var document: vscode.TextDocument = event.document
 		var dData = documentData.get(document)
@@ -424,26 +449,18 @@ export async function activate(context: vscode.ExtensionContext) {
 	if (editor) {
 		const dData = documentData.get(editor.document)
 		if (dData) {
-			const semanticTokensProvider = dData?.treeProvider
-			startPeriodicDecorationUpdate(editor, semanticTokensProvider);
+			const treeProvider = dData?.treeProvider
+			startPeriodicDecorationUpdate(editor, treeProvider);
 
 
 
 			if (vscode.window.activeTextEditor) {
-				updateDecorationsForVisibleRanges(vscode.window.activeTextEditor, semanticTokensProvider);
+				updateDecorationsForVisibleRanges(vscode.window.activeTextEditor, treeProvider);
 			}
 			// context.subscriptions.push(
-			//	vscode.languages.registerDocumentSemanticTokensProvider(selector, semanticTokensProvider, LEGEND)
+			//	vscode.languages.registerDocumentTreeProvider(selector, treeProvider, LEGEND)
 			//); 
-			const variableDefinitionProvider = new KotlinScriptDefinitionProvider(semanticTokensProvider.getscopedVariables());
-			context.subscriptions.push(
-				vscode.languages.registerDefinitionProvider(selector, variableDefinitionProvider)
-			);
-
-			const importDefinitionProvider = new ImportDefinitionProvider(semanticTokensProvider.getimports());
-			context.subscriptions.push(
-				vscode.languages.registerDefinitionProvider(selector, importDefinitionProvider)
-			);
+			
 		}
 	} */
 }
