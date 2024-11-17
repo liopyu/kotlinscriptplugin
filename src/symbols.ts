@@ -40,8 +40,10 @@ export class Scope {
     parentScope: Scope | null;
     symbols: Map<string, Symbol>;
     variables: Map<string, VariableSymbol>;
+    depth: number;
 
     constructor(parentScope: Scope | null) {
+        this.depth = (parentScope ? parentScope.depth + 1 : 0);
         this.parentScope = parentScope;
         this.symbols = new Map();
         this.variables = new Map();
