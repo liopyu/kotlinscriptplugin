@@ -47,6 +47,11 @@
         "id": "conditional",
         "description": "Token type for conditional keywords",
         "superType": "keyword"
+      },
+      {
+        "id": "keyword_variable",
+        "description": "Token type for conditional keywords",
+        "superType": "keyword"
       }
     ],
     "semanticTokenScopes": [

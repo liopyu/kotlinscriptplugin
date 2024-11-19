@@ -5,5 +5,5 @@ def generate_kotlin_file(num_vars: int, file_name: str = "generated_vars.kts"):
     print(f"File '{file_name}' with {num_vars} variables generated.")
 
 # Customize the number of variables here
-num_vars = 2000
+num_vars = 20000
 generate_kotlin_file(num_vars)

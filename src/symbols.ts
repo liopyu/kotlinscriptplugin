@@ -12,6 +12,7 @@ export const SimpleDecorationType = vscode.window.createTextEditorDecorationType
 });
 export const VariableDecorationType = vscode.window.createTextEditorDecorationType({
     color: '#4bb4ec',
+    textDecoration: 'underline'
 });
 export const ImportDecorationType = vscode.window.createTextEditorDecorationType({
     color: '#4ec9b0',
@@ -93,14 +94,16 @@ export class VariableSymbol extends Symbol {
     range: vscode.Range;
     node: Parser.SyntaxNode;
     childNodes: Parser.SyntaxNode[];
+    value: string
 
-    constructor(name: string, range: vscode.Range, node: Parser.SyntaxNode, isImport: boolean = false) {
+    constructor(name: string, range: vscode.Range, node: Parser.SyntaxNode, value: string, isImport: boolean = false) {
         super(name);
         this.name = name;
         this.range = range;
         this.node = node;
         this.childNodes = node.children;
         this.isImport = isImport;
+        this.value = value;
     }
 }
 export class ImportSymbol {
