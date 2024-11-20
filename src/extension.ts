@@ -58,10 +58,21 @@ const expressionTypes: string[] = [
 	"disjunction_expression",
 	"parenthesized_expression",
 	"simple_identifier",
-	"_literal_constant",
+	"expression",
+	"property_delegate",
+	"literal_constant",
+	"boolean_literal",
+	"integer_literal",
+	"hex_literal",
+	"bin_literal",
+	"character_literal",
+	"real_literal",
+	"null_literal",
+	"long_literal",
+	"unsigned_literal",
 	"string_literal",
 	"callable_reference",
-	"_function_literal",
+	"function_literal",
 	"object_literal",
 	"collection_literal",
 	"this_expression",
@@ -69,9 +80,14 @@ const expressionTypes: string[] = [
 	"if_expression",
 	"when_expression",
 	"try_expression",
-	"jump_expression"
-
+	"jump_expression",
+	"lambda_literal",
+	"anonymous_function"
 ];
+const variableDeclarationTypes = [
+	"multi_variable_declaration",
+	"variable_declaration"
+]
 export class TreeProvider {
 	public hasPackageHeader: boolean = false;
 	public currentScope: Scope = new Scope(null);
@@ -92,159 +108,135 @@ export class TreeProvider {
 		this.highlightQuery = highlightQuery
 		this.tree = this.parser.parse(document.getText());
 	}
-	updateTokens(document: vscode.TextDocument, editedRanges: vscode.Range[] | null = null): void {
+	updateTokens(document: vscode.TextDocument): void {
 		console.log("parsing new contents...");
-		if (this.lastDocument == null) {
+
+		if (!this.lastDocument) {
 			this.lastDocument = document.getText();
 		}
+
 		this.tree = this.parser.parse(this.lastDocument);
 		this.lastDocument = document.getText();
 		const newTree = this.parser.parse(document.getText(), this.tree);
+
 		const currentVariables: Set<string> = new Set();
 		const currentImports: Set<string> = new Set();
-		const changedRanges = newTree.getChangedRanges(this.tree);
-		if (changedRanges.length > 0) {
-			console.log("change length: " + changedRanges.length)
-			newTree.rootNode.children.forEach(node => {
-				var mutableNode: SyntaxNode = node
-				while (mutableNode) {
-					mutableNode.children.forEach((node, index) => {
-						var range = new vscode.Range(
-							node.startPosition.row,
-							node.startPosition.column,
-							node.endPosition.row,
-							node.endPosition.column
-						);
-						if (mutableNode?.type == "property_declaration") {
-							const hasRelevantChanges = this.nodeHasRelevantChanges(mutableNode, changedRanges);
-							console.log("hasrelevantchanges: " + hasRelevantChanges)
-							mutableNode.children.forEach((valueNode, index) => {
-								if (this.isValueInDeclaration(valueNode)) {
-									console.log("valueNode: " + valueNode.text + ", valueType: " + valueNode.type)
-									try {
-										const firstChild = valueNode.firstChild
-										if (firstChild) {
-											const secondChild = firstChild.firstChild
-											if (secondChild) {
-												var newRange = new vscode.Range(
-													secondChild.startPosition.row,
-													secondChild.startPosition.column,
-													secondChild.endPosition.row,
-													secondChild.endPosition.column
-												)
-												this.processVariableDeclaration(secondChild, valueNode, newRange, currentVariables);
-											}
-										}
-									} catch (error) {
-										console.error(error)
-									}
+
+		const processPropertyDeclaration = (node: SyntaxNode): void => {
+			const valueNodes = this.findChildren(node, expressionTypes, "property_declaration");
+			valueNodes.forEach(valueNode => {
+				if (this.isValueInDeclaration(valueNode)) {
+					const variables: Map<SyntaxNode, vscode.Range> = new Map();
+					const declarationNodes = this.findChildren(node, variableDeclarationTypes);
+					declarationNodes.forEach(declaration => {
+						if (declaration.type === "multi_variable_declaration") {
+							const individualDeclarations = this.findChildren(declaration, ["variable_declaration"]);
+							individualDeclarations.forEach(variable => {
+								const userTypeNode = this.findChild(variable, "user_type");
+								const variableNode = userTypeNode ? variable.firstChild : variable;
+								if (variableNode) {
+									const range = this.supplyRange(variableNode);
+									if (variableNode) variables.set(variableNode, range);
 								}
-							})
-						} else if (this.isImportDeclaration(node)) {
-							this.processImportDeclaration(node, range, currentImports);
+							});
+						} else if (declaration.type === "variable_declaration") {
+							const userTypeNode = this.findChild(declaration, "user_type");
+							const variableNode = userTypeNode ? declaration.firstChild : declaration;
+							if (variableNode) {
+								const range = this.supplyRange(variableNode);
+								if (variableNode) variables.set(variableNode, range);
+							}
 						}
-					})
-					if (mutableNode.parent) {
-						mutableNode = mutableNode?.parent
-					} else break
+					});
+
+					variables.forEach((range, variableNode) => {
+						this.processVariableDeclaration(variableNode, valueNode, range, currentVariables);
+					});
 				}
-			})
-			this.cleanupStaleEntries(this.scopedVariables, currentVariables);
-			this.cleanupStaleEntries(this.imports, currentImports);
-			this.tree = newTree;
-			newTree.delete()
-		}
+			});
+		};
+
+		const processImportDeclarations = (node: SyntaxNode): void => {
+			const importNodes = this.findChildren(node, ["import_declaration"]);
+			importNodes.forEach(importNode => {
+				const range = this.supplyRange(importNode);
+				this.processImportDeclaration(importNode, range, currentImports);
+			});
+		};
+
+		const traverseTree = (node: SyntaxNode): void => {
+			console.log("Node type: " + node.type + ", Node Text: " + node.text);
+			if (node.type === "property_declaration") {
+				processPropertyDeclaration(node);
+			} else if (this.isImportDeclaration(node)) {
+				processImportDeclarations(node);
+			}
+
+			node.children.forEach(traverseTree);
+		};
+
+		traverseTree(newTree.rootNode);
+
+		this.cleanupStaleEntries(this.scopedVariables, currentVariables);
+		this.cleanupStaleEntries(this.imports, currentImports);
+
+		this.tree = newTree;
+		newTree.delete();
 	}
 
 
-	/* updateTokens(document: vscode.TextDocument): void {
-		console.log("parsing new contents...");
-		if (this.lastDocument == null) {
-			this.lastDocument = document.getText();
-		}
-		this.tree = this.parser.parse(this.lastDocument);
-		this.lastDocument = document.getText();
-		const newTree = this.parser.parse(document.getText(), this.tree);
-		const currentVariables: Set<string> = new Set();
-		const currentImports: Set<string> = new Set();
-		const changedRanges = this.tree.getChangedRanges(newTree);
-		if (changedRanges.length > 0) {
-			console.log("change length: " + changedRanges.length)
-			const matches = this.highlightQuery.matches(newTree.rootNode);
-			var currentCaptures: TSParser.QueryCapture[] = []
-			matches.forEach((match, matchIndex) => {
-				match.captures.forEach((capture, captureIndex) => {
-					currentCaptures.push(capture)
-				});
-			});
-			currentCaptures.forEach((capture, captureIndex) => {
-				const node = capture.node;
-				const hasRelevantChanges = this.nodeHasRelevantChanges(node, changedRanges);
-				var range = new vscode.Range(
-					node.startPosition.row,
-					node.startPosition.column,
-					node.endPosition.row,
-					node.endPosition.column
-				);
-				if (hasRelevantChanges) {
-					if (capture.name == "variableIdentifier") {
-						let valueCapture: TSParser.QueryCapture | undefined;
-						for (let i = captureIndex - 1; i >= 0; i++) {
-							const potentialParent = currentCaptures[i];
-							if (this.isValueInDeclaration(potentialParent.node)) {
-								valueCapture = potentialParent;
-								break;
-							}
-						}
-						let valueNode = valueCapture?.node
-						if (!valueNode) return
-						if (this.isValueInDeclaration(valueNode)) {
-							try {
-								let parentCapture: TSParser.QueryCapture | undefined;
-								for (let i = captureIndex - 1; i >= 0; i--) {
-									const potentialParent = currentCaptures[i];
-									if (this.isVariableIdentifier(potentialParent.node, potentialParent)) {
-										parentCapture = potentialParent;
-										break;
-									}
-								}
-								if (!parentCapture) return
-								const parentNode = parentCapture.node
-								if (parentNode) {
-									var newRange = new vscode.Range(
-										parentNode.startPosition.row,
-										parentNode.startPosition.column,
-										parentNode.endPosition.row,
-										parentNode.endPosition.column
-									);
-									this.processVariableDeclaration(parentNode, valueNode, newRange, currentVariables);
-								}
-							} catch (error) {
-								console.error(error)
-							}
-
-
-						}
-					} else if (this.isImportDeclaration(node)) {
-						this.processImportDeclaration(node, range, currentImports);
-					}
-
-				}
-			})
-			this.cleanupStaleEntries(this.scopedVariables, currentVariables);
-			this.cleanupStaleEntries(this.imports, currentImports);
-			this.tree = newTree;
-			newTree.delete()
-		}
-	} */
 	private isValueInDeclaration(node: TSParser.SyntaxNode): boolean {
 		// Detects the `10` in `var x = 10`
 		return node.parent?.type === 'property_declaration' && expressionTypes.includes(node.type);
 	}
-	private isVariableIdentifier(node: TSParser.SyntaxNode, capture: TSParser.QueryCapture): boolean {
-		// Detects the `x` in `var x = 10`
-		return node.parent?.type === 'variable_declaration' && capture.name === 'variable';
+	private findChildren(
+		node: SyntaxNode,
+		types: string[],
+		expectedParent: string | null = null
+	): SyntaxNode[] {
+		const result: SyntaxNode[] = [];
+
+		const traverse = (currentNode: SyntaxNode) => {
+			for (const child of currentNode.children) {
+				if (types.includes(child.type)) {
+					if (!expectedParent || (child.parent && child.parent.type === expectedParent)) {
+						result.push(child);
+					}
+				}
+				traverse(child);
+			}
+		};
+
+		traverse(node);
+		return result;
 	}
+
+
+	private findChild(node: SyntaxNode, type: string, expectedParent: string | null = null): SyntaxNode | null {
+		for (const child of node.children) {
+			if (child.type === type) {
+				if (!expectedParent || (child.parent && child.parent.type === expectedParent)) {
+					return child;
+				}
+			}
+			const found = this.findChild(child, type, expectedParent);
+			if (found) {
+				return found;
+			}
+		}
+		return null;
+	}
+
+
+	private supplyRange(node: SyntaxNode) {
+		return new vscode.Range(
+			node.startPosition.row,
+			node.startPosition.column,
+			node.endPosition.row,
+			node.endPosition.column
+		)
+	}
+
 	private nodeHasRelevantChanges(node: TSParser.SyntaxNode, changedRanges: TSParser.Range[]): boolean {
 		const result = changedRanges.some((range, rangeIndex) => {
 			const nodeStart = node.startPosition;
@@ -263,27 +255,14 @@ export class TreeProvider {
 
 
 	private processVariableDeclaration(identifierNode: TSParser.SyntaxNode, variableNode: TSParser.SyntaxNode, range: vscode.Range, currentVariables: Set<string>) {
-		const variableName = identifierNode.text
+		var variableName = identifierNode.text
+
 		if (currentVariables.has(variableName)) return;
 
 		currentVariables.add(variableName);
 
 		if (!this.scopedVariables.has(variableName)) {
 			variablRanges.set(variableName, []);
-			this.enterVariableDeclaration(identifierNode, variableNode, range);
-		} else {
-			variablRanges.get(variableName)?.push(range);
-		}
-	}
-
-
-	enterVariableDeclaration(identifierNode: TSParser.SyntaxNode, variableNode: TSParser.SyntaxNode, range: vscode.Range) {
-		try {
-			const variableName = identifierNode.text;
-			if (!variableName) {
-				logGlobals("Variable name not found.");
-				return;
-			}
 
 			//console.log("Adding definition for variable: " + variableName);
 			const variableType = variableNode.type ? variableNode.type : "Any";
@@ -299,9 +278,9 @@ export class TreeProvider {
 			//console.log("Variable Symbol:", variableSymbol);
 			variablRanges.get(variableName)?.push(range);
 
-			//console.log(`Declared variable: ${variableName} with type: ${variableType}, value: ${variableValue}`);
-		} catch (error) {
-			console.error(error);
+			console.log(`Declared variable: ${variableName} with type: ${variableType}, value: ${variableValue}`);
+		} else {
+			variablRanges.get(variableName)?.push(range);
 		}
 	}
 
@@ -560,11 +539,11 @@ export async function activate(context: vscode.ExtensionContext) {
 		const documentUri = event.document.uri.toString();
 		const data = documentData.get(documentUri);
 		if (data) {
-			var editedRanges: vscode.Range[] = []
+			/* var editedRanges: vscode.Range[] = []
 			event.contentChanges.forEach(content => {
 				editedRanges.push(content.range)
-			})
-			data.treeProvider.updateTokens(event.document, editedRanges);
+			}) */
+			data.treeProvider.updateTokens(event.document);
 			if (editor) {
 				updateDecorationsForVisibleRanges(editor, data.treeProvider);
 				const variableDefinitionProvider = new KotlinScriptDefinitionProvider(data.treeProvider.getscopedVariables());
