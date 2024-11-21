@@ -463,16 +463,14 @@ function updateDecorationsForVisibleRanges(editor: vscode.TextEditor, parser: Tr
 	});
 	editor.setDecorations(VariableDecorationType, rangesToDecorate);
 }
-let intervalId: NodeJS.Timeout | undefined;
-function startPeriodicDecorationUpdate(provider: TreeProvider, context: vscode.ExtensionContext, selector: vscode.DocumentSelector) {
-	return
-	if (intervalId) clearInterval(intervalId);
-	intervalId = setInterval(() => {
-		if (editor) {
-			updateTokensForDocument(editor.document, context, selector)
-		}
-	}, 100);
+function debounce(fn: Function, delay: number): (...args: any[]) => void {
+	let timeout: NodeJS.Timeout | null = null;
+	return (...args: any[]) => {
+		if (timeout) clearTimeout(timeout);
+		timeout = setTimeout(() => fn(...args), delay);
+	};
 }
+
 const documentData = new Map<string, CustomData>();
 interface CustomData {
 	treeProvider: TreeProvider;
@@ -584,15 +582,21 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	});
 	// Not really needed because of the periodic updates though we might want to use this instead later on
+	const debouncedUpdateTokens = debounce(
+		(document: vscode.TextDocument, context: vscode.ExtensionContext, selector: vscode.DocumentSelector) => {
+			updateTokensForDocument(document, context, selector);
+		},
+		100
+	);
 	vscode.window.onDidChangeTextEditorVisibleRanges(event => {
-		updateTokensForDocument(event.textEditor.document, context, selector)
+		debouncedUpdateTokens(event.textEditor.document, context, selector);
 	});
+
 	// Runs on start
 	if (editor) {
 		addDocumentIfNotExists(editor.document);
 		var doc = documentData.get(editor.document.uri.toString())
 		if (doc) {
-			startPeriodicDecorationUpdate(doc.treeProvider, context, selector);
 			semanticTokensProvider = new SemanticTokensProvider(doc.treeProvider, highlightQuery);
 			context.subscriptions.push(
 				vscode.languages.registerDocumentSemanticTokensProvider(selector, semanticTokensProvider, LEGEND)
