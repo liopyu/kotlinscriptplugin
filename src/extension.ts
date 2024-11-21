@@ -13,11 +13,8 @@ import {
 	VariableType,
 	Scope
 } from './symbols';
-import { resourceUsage } from 'process';
 const individualLogging = false;
 const globalLogging = false;
-const exitGlobals = false;
-const enterGlobals = false;
 const editor = vscode.window.activeTextEditor;
 const variablRanges: Map<string, vscode.Range[]> = new Map()
 function logContent(...data: any[]) {
@@ -25,7 +22,6 @@ function logContent(...data: any[]) {
 		console.log(data)
 	}
 }
-
 function logGlobals(...data: any[]) {
 	if (globalLogging) {
 		console.log(data)
@@ -112,8 +108,6 @@ export class TreeProvider {
 		this.tree = this.parser.parse(fullText);
 		this.traverseTree(this.tree.rootNode, [new vscode.Range(0, 0, document.lineCount, 0)]);
 	}
-
-
 	updateTokens(visibleRanges: vscode.Range[]): void {
 		this.isUpdating = true;
 
@@ -134,9 +128,6 @@ export class TreeProvider {
 		this.currentImports.clear();
 		this.isUpdating = false;
 	}
-
-
-
 	private processPropertyDeclaration(node: SyntaxNode) {
 		const valueNodes = this.findChildren(node, expressionTypes, "property_declaration");
 		valueNodes.forEach(valueNode => {
@@ -170,7 +161,6 @@ export class TreeProvider {
 			}
 		});
 	};
-
 	private processImportDeclarations(node: SyntaxNode) {
 		const importNodes = this.findChildren(node, ["import_declaration"]);
 		importNodes.forEach(importNode => {
@@ -211,8 +201,6 @@ export class TreeProvider {
 		}
 		node.children.forEach(child => this.traverseTree(child, visibleRanges));
 	}
-
-
 	private isValueInDeclaration(node: TSParser.SyntaxNode): boolean {
 		// Detects the `10` in `var x = 10`
 		return node.parent?.type === 'property_declaration' && expressionTypes.includes(node.type);
@@ -236,9 +224,6 @@ export class TreeProvider {
 		traverse(node);
 		return result;
 	}
-
-
-
 	private findChild(node: SyntaxNode, type: string, expectedParent: string | null = null): SyntaxNode | null {
 		for (const child of node.children) {
 
@@ -256,8 +241,6 @@ export class TreeProvider {
 		}
 		return null;
 	}
-
-
 	private supplyRange(node: SyntaxNode) {
 		return new vscode.Range(
 			node.startPosition.row,
@@ -266,7 +249,6 @@ export class TreeProvider {
 			node.endPosition.column
 		)
 	}
-
 	private isRangeVisible(range: vscode.Range): boolean {
 		const visibleRanges = vscode.window.activeTextEditor?.visibleRanges;
 		return visibleRanges ? visibleRanges.some(visibleRange => visibleRange.intersection(range) !== undefined) : false;
@@ -296,7 +278,6 @@ export class TreeProvider {
 			console.error(error);
 		}
 	}
-
 	private processImportDeclaration(node: TSParser.SyntaxNode, range: vscode.Range, currentImports: Set<string>) {
 		const importName = node.text;
 		currentImports.add(importName);
@@ -317,10 +298,6 @@ export class TreeProvider {
 			}
 		}
 	}
-
-
-
-
 	private isImportDeclaration(node: TSParser.SyntaxNode): boolean {
 		const isSimpleIdentifier = node.type === 'simple_identifier';
 		const hasParentIdentifier = node.parent?.type === 'identifier';
@@ -328,11 +305,9 @@ export class TreeProvider {
 		const isLastChild = node.nextSibling === null;
 		return isSimpleIdentifier && hasParentIdentifier && hasGrandparentImportHeader && isLastChild;
 	}
-
 	getscopedVariables(): Map<string, VariableSymbol> {
 		return this.scopedVariables;
 	}
-
 	getimports(): Map<string, ImportSymbol> {
 		return this.imports;
 	}
@@ -341,13 +316,11 @@ export class TreeProvider {
 		newScope.parentScope = this.currentScope;
 		this.currentScope = newScope;
 	}
-
 	exitScope() {
 		if (this.currentScope.parentScope) {
 			this.currentScope = this.currentScope.parentScope;
 		}
 	}
-
 }
 export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
 	private readonly highlightQuery: TSParser.Query;
@@ -425,7 +398,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		builder.push(range, tokenType);
 	}
 }
-
 class ImportDefinitionProvider implements vscode.DefinitionProvider {
 	private readonly imports: Map<string, ImportSymbol>;
 	constructor(imports: Map<string, ImportSymbol>) {
@@ -444,7 +416,6 @@ class ImportDefinitionProvider implements vscode.DefinitionProvider {
 		);
 	}
 }
-
 class KotlinScriptDefinitionProvider implements vscode.DefinitionProvider {
 	private readonly scopedVariables: Map<string, VariableSymbol>;
 	constructor(scopedVariables: Map<string, VariableSymbol>) {
@@ -466,7 +437,6 @@ class KotlinScriptDefinitionProvider implements vscode.DefinitionProvider {
 function updateDecorationsForVisibleRanges(editor: vscode.TextEditor, parser: TreeProvider) {
 	const visibleRanges = editor.visibleRanges;
 	const rangesToDecorate: vscode.Range[] = [];
-
 	parser.getscopedVariables().forEach(variable => {
 		const allRanges = variablRanges.get(variable.name);
 		if (allRanges) {
@@ -495,15 +465,14 @@ function updateDecorationsForVisibleRanges(editor: vscode.TextEditor, parser: Tr
 }
 let intervalId: NodeJS.Timeout | undefined;
 function startPeriodicDecorationUpdate(provider: TreeProvider, context: vscode.ExtensionContext, selector: vscode.DocumentSelector) {
+	return
 	if (intervalId) clearInterval(intervalId);
-
 	intervalId = setInterval(() => {
 		if (editor) {
 			updateTokensForDocument(editor.document, context, selector)
 		}
-	}, 1000);
+	}, 100);
 }
-
 const documentData = new Map<string, CustomData>();
 interface CustomData {
 	treeProvider: TreeProvider;
@@ -516,11 +485,9 @@ function applyTreeEdit(tree: TSParser.Tree, change: vscode.TextDocumentContentCh
 		row: startPosition.row + change.text.split('\n').length - 1,
 		column: change.text.split('\n').pop()?.length || 0
 	};
-
 	const startIndex = change.rangeOffset;
 	const oldEndIndex = startIndex + (change.rangeLength || 0);
 	const newEndIndex = startIndex + change.text.length;
-
 	tree.edit({
 		startIndex,
 		oldEndIndex,
@@ -530,7 +497,6 @@ function applyTreeEdit(tree: TSParser.Tree, change: vscode.TextDocumentContentCh
 		newEndPosition,
 	});
 }
-
 function updateTokensForDocument(
 	document: vscode.TextDocument,
 	context: vscode.ExtensionContext,
@@ -538,40 +504,31 @@ function updateTokensForDocument(
 ) {
 	const documentUri = document.uri.toString();
 	const data = documentData.get(documentUri);
-
 	if (!data) return;
-
 	const editor = vscode.window.visibleTextEditors.find(e => e.document.uri.toString() === documentUri);
-
 	if (editor) {
 		const { treeProvider } = data;
-
 		const changes = document.getText();
 		if (treeProvider.tree) {
 			const newTree = treeProvider.parser.parse(changes, treeProvider.tree);
 			treeProvider.tree = newTree;
 		}
-
 		if (!treeProvider.isUpdating) {
 			treeProvider.updateTokens(editor.visibleRanges);
 		}
 		updateDecorationsForVisibleRanges(editor, treeProvider);
-
 		const variableDefinitionProvider = new KotlinScriptDefinitionProvider(treeProvider.getscopedVariables());
 		context.subscriptions.push(
 			vscode.languages.registerDefinitionProvider(selector, variableDefinitionProvider)
 		);
 	}
 }
-
 export async function activate(context: vscode.ExtensionContext) {
 	const config = vscode.workspace.getConfiguration('kotlinscript');
 	const ktsDirectory = config.get<string>('ktsDirectory', 'config/scripts');
 	const absoluteKtsDirectory = path.isAbsolute(ktsDirectory) ? ktsDirectory : path.join(vscode.workspace.rootPath || '', ktsDirectory);
 	await TSParser.init();
-
 	var semanticTokensProvider: SemanticTokensProvider | undefined = undefined
-
 	const parser = new TSParser();
 	const wasmPath = context.asAbsolutePath('parsers/tree-sitter-kotlin.wasm');
 	const lang = await TSParser.Language.load(wasmPath);
@@ -592,16 +549,11 @@ export async function activate(context: vscode.ExtensionContext) {
 			});
 		}
 	}
-
-
-
-
 	const selector: vscode.DocumentSelector = {
 		language: 'kotlin',
 		scheme: 'file',
 		pattern: new vscode.RelativePattern(absoluteKtsDirectory, '*.kts')
 	};
-
 	vscode.workspace.onDidChangeTextDocument(event => {
 		const documentUri = event.document.uri.toString();
 		const data = documentData.get(documentUri);
@@ -631,8 +583,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 		}
 	});
-
-
+	// Not really needed because of the periodic updates though we might want to use this instead later on
 	vscode.window.onDidChangeTextEditorVisibleRanges(event => {
 		updateTokensForDocument(event.textEditor.document, context, selector)
 	});
@@ -668,8 +619,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	});
 }
-
-
 export function deactivate() {
 	logGlobals(`Deactivating KotlinScript extension...`);
 }
