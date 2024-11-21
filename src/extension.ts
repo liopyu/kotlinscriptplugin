@@ -94,94 +94,137 @@ export class TreeProvider {
 	public scopes: Scope[] = [];
 	public ranges: Map<VariableType, vscode.Range[]> = new Map();
 	public simpleRanges: vscode.Range[] = []
-	private readonly parser: TSParser;
+	public readonly parser: TSParser;
 	private readonly highlightQuery: TSParser.Query;
 	private scopedVariables: Map<string, VariableSymbol> = new Map();
 	private imports: Map<string, ImportSymbol> = new Map();
 	private hasInited: boolean = false;
-	private tree: TSParser.Tree;
+	public tree: TSParser.Tree | undefined = undefined;
 	private lastDocument: string | null = null;
+	private currentVariables: Set<string> = new Set();
+	private currentImports: Set<string> = new Set();
+	public isUpdating: boolean = false;
 	constructor(parser: TSParser, highlightQuery: TSParser.Query, document: vscode.TextDocument) {
 		this.parser = parser;
 		console.log("initializing tokens provider")
 		this.scopes.push(this.currentScope)
 		this.highlightQuery = highlightQuery
-		this.tree = this.parser.parse(document.getText());
-	}
-	updateTokens(document: vscode.TextDocument): void {
-		console.log("parsing new contents...");
 
-		if (!this.lastDocument) {
-			this.lastDocument = document.getText();
+		const fullText = document.getText();
+		this.tree = this.parser.parse(fullText);
+		this.traverseTree(this.tree.rootNode, [new vscode.Range(0, 0, document.lineCount, 0)]);
+	}
+
+
+	updateTokens(visibleRanges: vscode.Range[]): void {
+		this.isUpdating = true;
+
+		console.log("Updating tokens for visible ranges...");
+
+		if (!this.tree) {
+			console.error("Tree is not initialized.");
+			this.isUpdating = false;
+			return;
 		}
 
-		this.tree = this.parser.parse(this.lastDocument);
-		this.lastDocument = document.getText();
-		const newTree = this.parser.parse(document.getText(), this.tree);
+		// Traverse the updated tree
+		this.traverseTree(this.tree.rootNode, visibleRanges);
 
-		const currentVariables: Set<string> = new Set();
-		const currentImports: Set<string> = new Set();
+		// Retain existing ranges for variables outside visible ranges
+		/* this.cleanupStaleEntries(this.scopedVariables, this.currentVariables);
+		this.cleanupStaleEntries(this.imports, this.currentImports); */
 
-		const processPropertyDeclaration = (node: SyntaxNode): void => {
-			const valueNodes = this.findChildren(node, expressionTypes, "property_declaration");
-			valueNodes.forEach(valueNode => {
-				if (this.isValueInDeclaration(valueNode)) {
-					const variables: Map<SyntaxNode, vscode.Range> = new Map();
-					const declarationNodes = this.findChildren(node, variableDeclarationTypes);
-					declarationNodes.forEach(declaration => {
-						if (declaration.type === "multi_variable_declaration") {
-							const individualDeclarations = this.findChildren(declaration, ["variable_declaration"]);
-							individualDeclarations.forEach(variable => {
-								const userTypeNode = this.findChild(variable, "user_type");
-								const variableNode = userTypeNode ? variable.firstChild : variable;
-								if (variableNode) {
-									const range = this.supplyRange(variableNode);
-									if (variableNode) variables.set(variableNode, range);
-								}
-							});
-						} else if (declaration.type === "variable_declaration") {
-							const userTypeNode = this.findChild(declaration, "user_type");
-							const variableNode = userTypeNode ? declaration.firstChild : declaration;
+		// Clear temporary states
+		this.currentVariables.clear();
+		this.currentImports.clear();
+		this.isUpdating = false;
+	}
+
+
+
+	private processPropertyDeclaration(node: SyntaxNode) {
+		const valueNodes = this.findChildren(node, expressionTypes, "property_declaration");
+		valueNodes.forEach(valueNode => {
+			if (this.isValueInDeclaration(valueNode)) {
+				const variables: Map<SyntaxNode, vscode.Range> = new Map();
+				const declarationNodes = this.findChildren(node, variableDeclarationTypes);
+				declarationNodes.forEach(declaration => {
+					if (declaration.type === "multi_variable_declaration") {
+						const individualDeclarations = this.findChildren(declaration, ["variable_declaration"]);
+						individualDeclarations.forEach(variable => {
+							const userTypeNode = this.findChild(variable, "user_type");
+							const variableNode = userTypeNode ? variable.firstChild : variable;
 							if (variableNode) {
 								const range = this.supplyRange(variableNode);
 								if (variableNode) variables.set(variableNode, range);
 							}
+						});
+					} else if (declaration.type === "variable_declaration") {
+						const userTypeNode = this.findChild(declaration, "user_type");
+						const variableNode = userTypeNode ? declaration.firstChild : declaration;
+						if (variableNode) {
+							const range = this.supplyRange(variableNode);
+							if (variableNode) variables.set(variableNode, range);
 						}
-					});
+					}
+				});
 
-					variables.forEach((range, variableNode) => {
-						this.processVariableDeclaration(variableNode, valueNode, range, currentVariables);
-					});
-				}
-			});
-		};
-
-		const processImportDeclarations = (node: SyntaxNode): void => {
-			const importNodes = this.findChildren(node, ["import_declaration"]);
-			importNodes.forEach(importNode => {
-				const range = this.supplyRange(importNode);
-				this.processImportDeclaration(importNode, range, currentImports);
-			});
-		};
-
-		const traverseTree = (node: SyntaxNode): void => {
-			console.log("Node type: " + node.type + ", Node Text: " + node.text);
-			if (node.type === "property_declaration") {
-				processPropertyDeclaration(node);
-			} else if (this.isImportDeclaration(node)) {
-				processImportDeclarations(node);
+				variables.forEach((range, variableNode) => {
+					this.processVariableDeclaration(variableNode, valueNode, range, this.currentVariables);
+				});
 			}
+		});
+	};
 
-			node.children.forEach(traverseTree);
-		};
+	private processImportDeclarations(node: SyntaxNode) {
+		const importNodes = this.findChildren(node, ["import_declaration"]);
+		importNodes.forEach(importNode => {
+			const range = this.supplyRange(importNode);
+			this.processImportDeclaration(importNode, range, this.currentImports);
+		});
+	};
+	private isVisibleParsing(node: SyntaxNode): boolean {
+		return this.isRangeVisible(
+			new vscode.Range(
+				node.startPosition.row,
+				node.startPosition.column,
+				node.endPosition.row,
+				node.endPosition.column
+			)
+		);
+	}
+	private adjustRangeForVisibleText(node: SyntaxNode, visibleRanges: vscode.Range[]): vscode.Range {
+		const offset = visibleRanges[0].start; // Start of the first visible range
+		//consoleLogVisibleRanges(visibleRanges)
+		return new vscode.Range(
+			node.startPosition.row + offset.line,
+			node.startPosition.column + offset.character,
+			node.endPosition.row + offset.line,
+			node.endPosition.column + offset.character
+		);
+	}
+	private traverseTree(node: SyntaxNode, visibleRanges: vscode.Range[]): void {
+		const nodeRange = new vscode.Range(
+			node.startPosition.row,
+			node.startPosition.column,
+			node.endPosition.row,
+			node.endPosition.column
+		);
 
-		traverseTree(newTree.rootNode);
+		const isInVisibleRange = visibleRanges.some(visibleRange =>
+			visibleRange.intersection(nodeRange) !== undefined
+		);
 
-		this.cleanupStaleEntries(this.scopedVariables, currentVariables);
-		this.cleanupStaleEntries(this.imports, currentImports);
+		if (!isInVisibleRange) {
+			return;
+		}
 
-		this.tree = newTree;
-		newTree.delete();
+		if (node.type === "property_declaration") {
+			this.processPropertyDeclaration(node);
+		} else if (this.isImportDeclaration(node)) {
+			this.processImportDeclarations(node);
+		}
+		node.children.forEach(child => this.traverseTree(child, visibleRanges));
 	}
 
 
@@ -195,7 +238,6 @@ export class TreeProvider {
 		expectedParent: string | null = null
 	): SyntaxNode[] {
 		const result: SyntaxNode[] = [];
-
 		const traverse = (currentNode: SyntaxNode) => {
 			for (const child of currentNode.children) {
 				if (types.includes(child.type)) {
@@ -206,22 +248,25 @@ export class TreeProvider {
 				traverse(child);
 			}
 		};
-
 		traverse(node);
 		return result;
 	}
 
 
+
 	private findChild(node: SyntaxNode, type: string, expectedParent: string | null = null): SyntaxNode | null {
 		for (const child of node.children) {
-			if (child.type === type) {
-				if (!expectedParent || (child.parent && child.parent.type === expectedParent)) {
-					return child;
+
+			if (this.isVisibleParsing(child)) {
+				if (child.type === type) {
+					if (!expectedParent || (child.parent && child.parent.type === expectedParent)) {
+						return child;
+					}
 				}
-			}
-			const found = this.findChild(child, type, expectedParent);
-			if (found) {
-				return found;
+				const found = this.findChild(child, type, expectedParent);
+				if (found) {
+					return found;
+				}
 			}
 		}
 		return null;
@@ -237,50 +282,41 @@ export class TreeProvider {
 		)
 	}
 
-	private nodeHasRelevantChanges(node: TSParser.SyntaxNode, changedRanges: TSParser.Range[]): boolean {
-		const result = changedRanges.some((range, rangeIndex) => {
-			const nodeStart = node.startPosition;
-			const nodeEnd = node.endPosition;
-			const intersects = (
-				(nodeStart.row < range.endPosition.row ||
-					(nodeStart.row === range.endPosition.row && nodeStart.column <= range.endPosition.column)) &&
-				(nodeEnd.row > range.startPosition.row ||
-					(nodeEnd.row === range.startPosition.row && nodeEnd.column >= range.startPosition.column))
-			);
-			return intersects;
-		});
-		return result;
+	private isRangeVisible(range: vscode.Range): boolean {
+		const visibleRanges = vscode.window.activeTextEditor?.visibleRanges;
+		//consoleLogVisibleRanges(visibleRanges)
+		return visibleRanges ? visibleRanges.some(visibleRange => visibleRange.intersection(range) !== undefined) : false;
 	}
-
-
-
 	private processVariableDeclaration(identifierNode: TSParser.SyntaxNode, variableNode: TSParser.SyntaxNode, range: vscode.Range, currentVariables: Set<string>) {
 		var variableName = identifierNode.text
 
 		if (currentVariables.has(variableName)) return;
 
 		currentVariables.add(variableName);
+		try {
+			if (!this.scopedVariables.has(variableName)) {
+				variablRanges.set(variableName, []);
 
-		if (!this.scopedVariables.has(variableName)) {
-			variablRanges.set(variableName, []);
+				//console.log("Adding definition for variable: " + variableName);
+				const variableType = variableNode.type ? variableNode.type : "Any";
+				const variableValue = variableNode.text;
+				// Create the VariableSymbol with the extracted value
+				const variableSymbol = new VariableSymbol(variableName, range, identifierNode, variableValue);
 
-			//console.log("Adding definition for variable: " + variableName);
-			const variableType = variableNode.type ? variableNode.type : "Any";
-			const variableValue = variableNode.text;
-			// Create the VariableSymbol with the extracted value
-			const variableSymbol = new VariableSymbol(variableName, range, identifierNode, variableValue);
+				// Define the symbol in the current scope and add to scopedVariables
+				this.currentScope.define(variableSymbol);
+				this.scopedVariables.set(variableName, variableSymbol);
 
-			// Define the symbol in the current scope and add to scopedVariables
-			this.currentScope.define(variableSymbol);
-			this.scopedVariables.set(variableName, variableSymbol);
+				// Log the symbol details including its value
+				//console.log("Variable Symbol:", variableSymbol);
+				variablRanges.get(variableName)?.push(range);
 
-			// Log the symbol details including its value
-			//console.log("Variable Symbol:", variableSymbol);
-			variablRanges.get(variableName)?.push(range);
-
-			console.log(`Declared variable: ${variableName} with type: ${variableType}, value: ${variableValue}`);
-		} else {
-			variablRanges.get(variableName)?.push(range);
+				//console.log(`Declared variable: ${variableName} with type: ${variableType}, value: ${variableValue}`);
+			} else {
+				variablRanges.get(variableName)?.push(range);
+			}
+		} catch (error) {
+			console.error(error);
 		}
 	}
 
@@ -294,14 +330,18 @@ export class TreeProvider {
 			this.imports.set(importName, new ImportSymbol(importName, range, node));
 		}
 	}
-	private cleanupStaleEntries(map: Map<string, any>, currentEntries: Set<string>) {
+	private cleanupStaleEntries(map: Map<string, any>, currentEntries: Set<string>): void {
 		for (const key of map.keys()) {
 			if (!currentEntries.has(key)) {
 				map.delete(key);
-				variablRanges.delete(key)
+				// Only delete from variablRanges if no ranges exist for the variable
+				if (variablRanges.has(key) && variablRanges.get(key)?.length === 0) {
+					variablRanges.delete(key);
+				}
 			}
 		}
 	}
+
 
 
 
@@ -424,54 +464,162 @@ class KotlinScriptDefinitionProvider implements vscode.DefinitionProvider {
 		);
 	}
 }
-
-
-function isRangeVisible(range: vscode.Range): boolean {
-	const visibleRanges = vscode.window.activeTextEditor?.visibleRanges;
-	return visibleRanges ? visibleRanges.some(visibleRange => visibleRange.intersection(range) !== undefined) : false;
-}
-
 function updateDecorationsForVisibleRanges(editor: vscode.TextEditor, parser: TreeProvider) {
-	//return
 	const visibleRanges = editor.visibleRanges;
-	var rangesToDecorate: vscode.Range[] = [];
+	const rangesToDecorate: vscode.Range[] = [];
+
 	parser.getscopedVariables().forEach(variable => {
-		const allRanges = variablRanges.get(variable.name)
+		const allRanges = variablRanges.get(variable.name);
 		if (allRanges) {
-			allRanges.filter(range => {
-				var r = visibleRanges.some(visibleRange => visibleRange.intersection(range) !== undefined)
-				if (r) {
-					rangesToDecorate.push(range)
+			allRanges.forEach(range => {
+				//console.log(`Checking Variable Range: (${range.start.line}, ${range.start.character}) - (${range.end.line}, ${range.end.character})`);
+				const isVisible = visibleRanges.some(visibleRange => {
+					const overlaps =
+						range.start.line < visibleRange.end.line &&
+						range.end.line > visibleRange.start.line ||
+						(
+							range.start.line === visibleRange.end.line &&
+							range.start.character <= visibleRange.end.character
+						) ||
+						(
+							range.end.line === visibleRange.start.line &&
+							range.end.character >= visibleRange.start.character
+						);
+					//console.log(`Visible Range: (${visibleRange.start.line}, ${visibleRange.start.character}) - (${visibleRange.end.line}, ${visibleRange.end.character}), Overlaps: ${overlaps}`);
+					return overlaps;
+				});
+				if (isVisible) {
+					rangesToDecorate.push(range);
 				}
 			});
 		}
-	})
-	parser.getimports().forEach(variable => {
-		const allRanges = variablRanges.get(variable.name)
-		if (allRanges) {
-			allRanges.filter(range => {
-				var r = visibleRanges.some(visibleRange => visibleRange.intersection(range) !== undefined)
-				if (r) {
-					rangesToDecorate.push(range)
-				}
-			});
-		}
-	})
+	});
+
+
+	//console.log(`Total Ranges to Decorate: ${rangesToDecorate.length}`);
 	editor.setDecorations(VariableDecorationType, rangesToDecorate);
 }
+
+
+
 let intervalId: NodeJS.Timeout | undefined;
-function startPeriodicDecorationUpdate(editor: vscode.TextEditor, provider: any) {
+function startPeriodicDecorationUpdate(provider: TreeProvider) {
+	return
 	if (intervalId) clearInterval(intervalId);
+
 	intervalId = setInterval(() => {
-		updateDecorationsForVisibleRanges(editor, provider);
+		if (editor) {
+			const visibleText = editor.visibleRanges
+				.map(range => editor.document.getText(range))
+				.join('\n'); // Combine visible ranges into a single text block
+			//consoleLogVisibleRanges(editor.visibleRanges)
+			provider.updateTokens(editor.visibleRanges);
+			updateDecorationsForVisibleRanges(editor, provider);
+		}
 	}, 1000);
 }
+
 const documentData = new Map<string, CustomData>();
 interface CustomData {
 	treeProvider: TreeProvider;
 	document: vscode.TextDocument;
 }
-let totalDocuments = 0;
+function isRangeVisible(range: vscode.Range): boolean {
+	const visibleRanges = vscode.window.activeTextEditor?.visibleRanges;
+	return visibleRanges ? visibleRanges.some(visibleRange => visibleRange.intersection(range) !== undefined) : false;
+}
+function consoleLogVisibleRanges(visibleRanges: vscode.Range[] | undefined) {
+	console.log("Visible ranges:");
+	if (visibleRanges)
+		visibleRanges.forEach(range => {
+			console.log("start line: " + range.start.line + " end line: " + range.end.line)
+		})
+}
+function applyTreeEdit(tree: TSParser.Tree, change: vscode.TextDocumentContentChangeEvent): void {
+	const startPosition = { row: change.range.start.line, column: change.range.start.character };
+	const oldEndPosition = { row: change.range.end.line, column: change.range.end.character };
+	const newEndPosition = {
+		row: startPosition.row + change.text.split('\n').length - 1,
+		column: change.text.split('\n').pop()?.length || 0
+	};
+
+	const startIndex = change.rangeOffset;
+	const oldEndIndex = startIndex + (change.rangeLength || 0);
+	const newEndIndex = startIndex + change.text.length;
+
+	tree.edit({
+		startIndex,
+		oldEndIndex,
+		newEndIndex,
+		startPosition,
+		oldEndPosition,
+		newEndPosition,
+	});
+}
+
+function getNodesInRange(rootNode: SyntaxNode, range: vscode.Range): SyntaxNode[] {
+	const nodes: SyntaxNode[] = [];
+	const traverse = (node: SyntaxNode) => {
+		const nodeRange = new vscode.Range(
+			node.startPosition.row,
+			node.startPosition.column,
+			node.endPosition.row,
+			node.endPosition.column
+		);
+
+		if (
+			nodeRange.end.isBefore(range.start) || // Node ends before range starts
+			nodeRange.start.isAfter(range.end)    // Node starts after range ends
+		) {
+			return; // Skip nodes outside the range
+		}
+
+		// Add node if it's fully or partially within the range
+		nodes.push(node);
+
+		// Traverse children
+		node.children.forEach(traverse);
+	};
+
+	traverse(rootNode);
+	return nodes;
+}
+function updateTokensForDocument(
+	document: vscode.TextDocument,
+	context: vscode.ExtensionContext,
+	selector: vscode.DocumentSelector
+) {
+	const documentUri = document.uri.toString();
+	const data = documentData.get(documentUri);
+
+	if (!data) return;
+
+	const editor = vscode.window.visibleTextEditors.find(e => e.document.uri.toString() === documentUri);
+
+	if (editor) {
+		const { treeProvider } = data;
+
+		// Apply incremental tree edits based on document content changes
+		const changes = document.getText(); // This can be replaced with finer-grained change handling if needed
+		if (treeProvider.tree) {
+			const newTree = treeProvider.parser.parse(changes, treeProvider.tree);
+			treeProvider.tree = newTree;
+		}
+
+		// Update tokens and decorations
+		if (!treeProvider.isUpdating) {
+			treeProvider.updateTokens(editor.visibleRanges);
+		}
+		updateDecorationsForVisibleRanges(editor, treeProvider);
+
+		// Register updated definition providers
+		const variableDefinitionProvider = new KotlinScriptDefinitionProvider(treeProvider.getscopedVariables());
+		context.subscriptions.push(
+			vscode.languages.registerDefinitionProvider(selector, variableDefinitionProvider)
+		);
+	}
+}
+
 export async function activate(context: vscode.ExtensionContext) {
 
 	const config = vscode.workspace.getConfiguration('kotlinscript');
@@ -506,6 +654,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.workspace.onDidOpenTextDocument(document => {
 		addDocumentIfNotExists(document);
+		const data = documentData.get(document.uri.toString());
+		if (editor && data)
+			startPeriodicDecorationUpdate(data.treeProvider);
 	});
 
 	vscode.window.onDidChangeVisibleTextEditors(editors => {
@@ -536,35 +687,28 @@ export async function activate(context: vscode.ExtensionContext) {
 		pattern: new vscode.RelativePattern(absoluteKtsDirectory, '*.kts')
 	};
 	vscode.workspace.onDidChangeTextDocument(event => {
-		const documentUri = event.document.uri.toString();
-		const data = documentData.get(documentUri);
-		if (data) {
-			/* var editedRanges: vscode.Range[] = []
-			event.contentChanges.forEach(content => {
-				editedRanges.push(content.range)
-			}) */
-			data.treeProvider.updateTokens(event.document);
-			if (editor) {
-				updateDecorationsForVisibleRanges(editor, data.treeProvider);
-				const variableDefinitionProvider = new KotlinScriptDefinitionProvider(data.treeProvider.getscopedVariables());
-				context.subscriptions.push(
-					vscode.languages.registerDefinitionProvider(selector, variableDefinitionProvider)
-				);
-			}
-		}
+		updateTokensForDocument(event.document, context, selector)
 	});
-	/* vscode.window.onDidChangeTextEditorVisibleRanges(event => {
-		const documentUri = event.textEditor.document.uri.toString();
+
+
+	vscode.window.onDidChangeTextEditorVisibleRanges(event => {
+		updateTokensForDocument(event.textEditor.document, context, selector)
+		/* const documentUri = event.textEditor.document.uri.toString();
 		const data = documentData.get(documentUri);
+
 		if (data) {
-			data.treeProvider.updateTokens(event.textEditor.document);
+			const editor = vscode.window.visibleTextEditors.find(e => e.document.uri.toString() === documentUri);
+			if (editor)
+				if (!data.treeProvider.isUpdating) {
+					data.treeProvider.updateTokens(event.textEditor.document.getText());
+				}
 			updateDecorationsForVisibleRanges(event.textEditor, data.treeProvider);
 			const variableDefinitionProvider = new KotlinScriptDefinitionProvider(data.treeProvider.getscopedVariables());
 			context.subscriptions.push(
 				vscode.languages.registerDefinitionProvider(selector, variableDefinitionProvider)
 			);
-		}
-	}); */
+		} */
+	});
 
 	if (vscode.window.activeTextEditor) {
 		var doc = documentData.get(vscode.window.activeTextEditor.document.uri.toString())
@@ -574,14 +718,13 @@ export async function activate(context: vscode.ExtensionContext) {
 			context.subscriptions.push(
 				vscode.languages.registerDefinitionProvider(selector, importDefinitionProvider)
 			);
-
 		}
 	}
 	if (editor) {
 		addDocumentIfNotExists(editor.document);
 		var doc = documentData.get(editor.document.uri.toString())
 		if (doc) {
-			startPeriodicDecorationUpdate(editor, doc.treeProvider);
+			startPeriodicDecorationUpdate(doc.treeProvider);
 		}
 	}
 
