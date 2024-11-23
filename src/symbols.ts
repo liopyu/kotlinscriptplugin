@@ -20,6 +20,9 @@ export const ImportDecorationType = vscode.window.createTextEditorDecorationType
 export const MethodDecorationType = vscode.window.createTextEditorDecorationType({
     color: '#FFD700',
 });
+export const OtherDecorationType = vscode.window.createTextEditorDecorationType({
+    color: '#a824ef',
+});
 export function applyDecorations(parser: TreeProvider, document: vscode.TextDocument): void {
     const editor = vscode.window.activeTextEditor;
     if (editor && editor.document === document) {
@@ -69,6 +72,7 @@ export class Scope {
         return this.variables.get(name) || (this.parentScope ? this.parentScope.resolveVariable(name) : undefined);
     }
 
+
 }
 
 class Symbol {
@@ -95,8 +99,9 @@ export class VariableSymbol extends Symbol {
     node: Parser.SyntaxNode;
     childNodes: Parser.SyntaxNode[];
     value: string
+    scope: Scope
 
-    constructor(name: string, range: vscode.Range, node: Parser.SyntaxNode, value: string, isImport: boolean = false) {
+    constructor(name: string, range: vscode.Range, node: Parser.SyntaxNode, value: string, scope: Scope, isImport: boolean = false) {
         super(name);
         this.name = name;
         this.range = range;
@@ -104,6 +109,10 @@ export class VariableSymbol extends Symbol {
         this.childNodes = node.children;
         this.isImport = isImport;
         this.value = value;
+        this.scope = scope;
+    }
+    public setRange(range: vscode.Range) {
+        this.range = range;
     }
 }
 export class ImportSymbol {
