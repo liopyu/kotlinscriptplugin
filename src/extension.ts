@@ -156,10 +156,10 @@ export class TreeProvider {
 		this.scopes = [];
 		this.currentScope = new Scope(null);
 		this.scopes.push(this.currentScope);
+		this.semanticTokensProvider?.updateTokens()
 
 		this.validateVariables(this.tree);
 		this.traverseTree(this.tree.rootNode, changedRanges);
-		//this.semanticTokensProvider?.updateTokens()
 		if (editor && !semanticTokensEnabled) {
 			editor.setDecorations(OtherDecorationType, this.enter);
 			editor.setDecorations(ImportDecorationType, this.exit);
@@ -607,11 +607,11 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 				const singleLineRange = new vscode.Range(line, startCharacter, line, endCharacter);
 				builder.push(singleLineRange, tokenType);
-				console.log(`Multi-line token split: name="${name}", type="${tokenType}", range=[${line}:${startCharacter} - ${line}:${endCharacter}]`);
+				//console.log(`Multi-line token split: name="${name}", type="${tokenType}", range=[${line}:${startCharacter} - ${line}:${endCharacter}]`);
 			}
 		} else {
 			builder.push(range, tokenType);
-			console.log(`Token processed: name="${name}", flatName: ${capture.node.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
+			//console.log(`Token processed: name="${name}", flatName: ${capture.node.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
 		}
 	}
 	/**

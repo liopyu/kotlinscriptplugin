@@ -24,7 +24,8 @@
       "extensions": [
         ".kts",
         ".kt"
-      ]
+      ],
+      "configuration": "./language-configuration.json"
     }
   ],
   "contributes": {
