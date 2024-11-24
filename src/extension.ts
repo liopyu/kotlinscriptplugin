@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import TSParser, { SyntaxNode, Tree } from 'web-tree-sitter';
+import TSParser, { QueryCapture, SyntaxNode, Tree } from 'web-tree-sitter';
 import {
 	VariableSymbol,
 	ImportSymbol,
@@ -14,7 +14,8 @@ import {
 	VariableType,
 	Scope
 } from './symbols';
-const individualLogging = true;
+import { Console } from 'console';
+const individualLogging = false;
 const globalLogging = false;
 const editor = vscode.window.activeTextEditor;
 function logContent(...data: any[]) {
@@ -28,8 +29,24 @@ function logGlobals(...data: any[]) {
 	}
 }
 const TOKEN_TYPES = [
-	'keyword', 'type', 'function', 'string', 'variable', 'property', 'parameter', 'comment', 'operator', 'return'
-];
+	"type",
+	"scope",
+	"function",
+	"variable",
+	"number",
+	'parameter',
+	"string",
+	"comment",
+	"constant",
+	"directive",
+	"control",
+	"operator",
+	"modifier",
+	"punctuation",
+	"return",
+	"keyword",
+	"property"
+]
 const TOKEN_MODIFIERS: string[] = [];
 const LEGEND = new vscode.SemanticTokensLegend(TOKEN_TYPES, TOKEN_MODIFIERS);
 const expressionTypes: string[] = [
@@ -84,7 +101,7 @@ const variableDeclarationTypes = [
 	"multi_variable_declaration",
 	"variable_declaration"
 ]
-let blockParents = [
+const blockParents = [
 	"anonymous_initializer",
 	"secondary_constructor",
 	"control_structure_body",
@@ -93,7 +110,7 @@ let blockParents = [
 	"finally_block",
 	"when_expression"
 ];
-let blocks = [
+const blocks = [
 	"annotated_lambda",
 	"lambda_literal",
 	"function_body",
@@ -101,13 +118,17 @@ let blocks = [
 	"class_body",
 ]
 export class TreeProvider {
+	public semanticTokensProvider: SemanticTokensProvider | undefined = undefined
+	public varId: number
 	public hasPackageHeader: boolean = false;
 	public currentScope: Scope = new Scope(null);
 	public scopes: Scope[] = [];
 	public ranges: Map<VariableType, vscode.Range[]> = new Map();
 	public simpleRanges: vscode.Range[] = []
+	public init: boolean = false;
 	public readonly parser: TSParser;
 	public scopedVariables: Map<string, VariableSymbol> = new Map();
+	public rangesToDecorate: Map<string, vscode.Range[]> = new Map();
 	private imports: Map<string, ImportSymbol> = new Map();
 	public tree: TSParser.Tree | undefined = undefined;
 	private currentImports: Set<string> = new Set();
@@ -116,7 +137,7 @@ export class TreeProvider {
 		this.parser = parser;
 		logGlobals("initializing tokens provider")
 		this.scopes.push(this.currentScope)
-
+		this.varId = 0
 		const fullText = document.getText();
 		this.tree = this.parser.parse(fullText);
 		var allRanges = [new vscode.Range(0, 0, document.lineCount, 0)]
@@ -125,22 +146,30 @@ export class TreeProvider {
 	updateTokens(changedRanges: vscode.Range[]): void {
 		this.isUpdating = true;
 		logGlobals("Updating tokens for changed ranges...");
+
 		if (!this.tree) {
 			console.error("Tree is not initialized.");
 			this.isUpdating = false;
 			return;
 		}
+		this.varId = 0
+		this.scopes = [];
+		this.currentScope = new Scope(null);
+		this.scopes.push(this.currentScope);
+
 		this.validateVariables(this.tree);
 		this.traverseTree(this.tree.rootNode, changedRanges);
+		//this.semanticTokensProvider?.updateTokens()
 		if (editor && !semanticTokensEnabled) {
-			editor.setDecorations(OtherDecorationType, this.enter)
-			editor.setDecorations(ImportDecorationType, this.exit)
-			this.enter = []
-			this.exit = []
+			editor.setDecorations(OtherDecorationType, this.enter);
+			editor.setDecorations(ImportDecorationType, this.exit);
+			this.enter = [];
+			this.exit = [];
 		}
 
 		this.isUpdating = false;
 	}
+
 	public getAffectedRange(node: TSParser.SyntaxNode): TSParser.SyntaxNode {
 		let current = node;
 		while (current.parent && current.parent.type !== "source_file") {
@@ -148,47 +177,87 @@ export class TreeProvider {
 		}
 		return current;
 	}
+	private fromKey(string: string, part: number = 0) {
+		const parts = string.split("@");
+		return parts[part];
+	}
 	private validateVariables(tree: TSParser.Tree): void {
 		const variablesToRemove: string[] = [];
-		for (const [variableName, variableSymbol] of this.scopedVariables.entries()) {
+
+		for (const [variableKey, variableSymbol] of this.scopedVariables.entries()) {
+			const variableName = this.fromKey(variableKey)
 			const expectedRange = variableSymbol.range;
+
 			const node = tree.rootNode.descendantForPosition({
 				row: expectedRange.start.line,
 				column: expectedRange.start.character,
 			});
-			if (!node || node.text !== variableName) {
-				console.log(`Node mismatch for variable: ${variableName}`);
-				variablesToRemove.push(variableName);
+
+			if (!node) {
+				variablesToRemove.push(variableKey);
 				continue;
 			}
+
+			if (node.text !== variableName) {
+				variablesToRemove.push(variableKey);
+				continue;
+			}
+
 			const actualRange = this.supplyRange(node);
+
 			if (!this.rangesEqual(expectedRange, actualRange)) {
-				console.log(`Range mismatch for variable '${variableName}': updating to ${actualRange}`);
 				variableSymbol.setRange(actualRange);
 				continue;
 			}
+
 			let currentNode: TSParser.SyntaxNode | null = node;
 			let isValid = false;
+
 			while (currentNode) {
-				if (currentNode.type === 'property_declaration' || currentNode.type === 'variable_declaration') {
+				if (
+					currentNode.type === 'property_declaration' ||
+					currentNode.type === 'variable_declaration'
+				) {
 					isValid = true;
 					break;
 				}
+
 				currentNode = currentNode.parent;
 			}
+
 			if (!isValid) {
-				console.log(`Invalid context for variable: ${variableName}`);
-				variablesToRemove.push(variableName);
+				variablesToRemove.push(variableKey);
+				continue;
+			}
+			if (!variableSymbol.scope.hasVariableInScopeChain(variableName)) {
+				variablesToRemove.push(variableKey);
 			}
 		}
-		for (const variableName of variablesToRemove) {
-			this.scopedVariables.delete(variableName);
-			if (rangesToDecorate.has(variableName)) {
-				rangesToDecorate.delete(variableName);
+
+		for (const variableKey of variablesToRemove) {
+			var symbol = this.scopedVariables.get(variableKey)
+			console.log(`Removed stale variable '${this.fromKey(variableKey)}' from scope: ` + symbol?.scope.depth);
+			if (symbol)
+				symbol.scope.undefine(symbol)
+			if (this.rangesToDecorate.has(variableKey)) {
+				this.rangesToDecorate.delete(variableKey);
 			}
-			logContent(`Removed stale variable '${variableName}'`);
+			this.scopedVariables.delete(variableKey);
 		}
 	}
+
+	/* private isVariableInScope(variableSymbol: VariableSymbol): boolean {
+		let currentScope: Scope | null = variableSymbol.scope;
+		while (currentScope) {
+			const variableInScope = currentScope.variables.get(variableSymbol.name);
+			if (variableInScope === variableSymbol) {
+				return true;
+			}
+			currentScope = currentScope.parentScope;
+		}
+		return false;
+	} */
+
 
 	private rangesEqual(range1: vscode.Range, range2: vscode.Range): boolean {
 		return range1.start.line === range2.start.line &&
@@ -243,26 +312,32 @@ export class TreeProvider {
 	private exit: vscode.Range[] = [];
 
 	private traverseTree(node: SyntaxNode, ranges: vscode.Range[]): void {
-		const nodeRange = this.supplyRange(node)
+		const nodeRange = this.supplyRange(node);
 		const isInRange = ranges.some(range => range.intersection(nodeRange) !== undefined);
 		if (!isInRange) {
 			return;
 		}
-		console.log("Node Type: " + node.type + ", Node Text: " + node.text + ", Node Child: " + node.firstChild?.type + ", Node Parent: " + node.parent?.type)
 		if (node.type === "property_declaration") {
 			this.processPropertyDeclaration(node);
 		} else if (this.isImportDeclaration(node)) {
 			this.processImportDeclarations(node);
-		} else if (this.isBlockNode(node)) {
-			this.enterScope(this.currentScope)
-			this.enter.push(this.supplyRange(node))
-		} else if (this.isBlockExitNode(node)) {
+		}
+
+
+		if (this.isBlockNode(node)) {
+			this.enterScope(this.currentScope);
+			this.enter.push(this.supplyRange(node));
+		}
+
+
+		if (this.isBlockExitNode(node)) {
 			this.exitScope();
-			this.exit.push(this.supplyRange(node))
+			this.exit.push(this.supplyRange(node));
 		}
 
 		node.children.forEach(child => this.traverseTree(child, ranges));
 	}
+
 	private isBlockNode(node: SyntaxNode): boolean {
 		if (blocks.includes(node.type)) {
 			return true;
@@ -340,13 +415,32 @@ export class TreeProvider {
 		const visibleRanges = vscode.window.activeTextEditor?.visibleRanges;
 		return visibleRanges ? visibleRanges.some(visibleRange => visibleRange.intersection(range) !== undefined) : false;
 	}
-	private processVariableDeclaration(identifierNode: TSParser.SyntaxNode, variableNode: TSParser.SyntaxNode, range: vscode.Range) {
+
+	private processVariableDeclaration(
+		identifierNode: TSParser.SyntaxNode,
+		variableNode: TSParser.SyntaxNode,
+		range: vscode.Range
+	): void {
 		const variableName = identifierNode.text;
-		if (this.scopedVariables.has(variableName)) return
-		const variableSymbol = new VariableSymbol(variableName, range, identifierNode, variableNode.text, this.currentScope);
+		if (this.currentScope.hasVariableInScopeChain(variableName)) {
+			//console.log("Variable already defined in current scope: " + variableName + ", Depth: " + this.currentScope.depth)
+			return;
+		}
+		this.varId++
+		const variableSymbol = new VariableSymbol(
+			variableName,
+			range,
+			identifierNode,
+			variableNode.text,
+			this.currentScope
+		);
+		//console.log("Defining variable in current scope: " + variableName + ", Depth: " + this.currentScope.depth)
 		this.currentScope.define(variableSymbol);
-		this.scopedVariables.set(variableName, variableSymbol);
+		this.scopedVariables.set(`${variableName}@${this.currentScope.depth}@${this.varId}`, variableSymbol);
 	}
+
+
+
 	private processImportDeclaration(node: TSParser.SyntaxNode, range: vscode.Range, currentImports: Set<string>) {
 		const importName = node.text;
 		currentImports.add(importName);
@@ -371,18 +465,26 @@ export class TreeProvider {
 	getimports(): Map<string, ImportSymbol> {
 		return this.imports;
 	}
-	enterScope(newScope: Scope) {
+	enterScope(parentScope: Scope): void {
+		if (!parentScope) {
+			throw new Error("Parent scope is required to enter a new scope.");
+		}
+		const newScope = new Scope(parentScope);
 		this.scopes.push(newScope);
-		newScope.parentScope = this.currentScope;
 		this.currentScope = newScope;
 	}
-	exitScope() {
-		if (this.currentScope.parentScope) {
-			this.currentScope = this.currentScope.parentScope;
+
+
+	exitScope(): void {
+		if (!this.currentScope.parentScope) {
+			return;
 		}
+		this.currentScope = this.currentScope.parentScope;
 	}
+
 }
 export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
+
 	private readonly highlightQuery: TSParser.Query;
 	private readonly treeProvider: TreeProvider;
 	constructor(treeProvider: TreeProvider, highlightQuery: TSParser.Query) {
@@ -394,70 +496,141 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		const builder = new vscode.SemanticTokensBuilder(LEGEND);
 		if (!tree) return builder.build()
 		const matches = this.highlightQuery.matches(tree.rootNode);
+		console.log("updating semantic tokens...");
 		matches.forEach(match => {
 			match.captures.forEach(capture => {
 				const node = capture.node;
-				const range = new vscode.Range(
-					node.startPosition.row,
-					node.startPosition.column,
-					node.endPosition.row,
-					node.endPosition.column
-				);
-				this.processTokenType(capture.name, range, builder);
+				var range = this.treeProvider.supplyRange(node)
+				if (capture.name == "keyword.return" && node.firstChild) {
+					range = this.treeProvider.supplyRange(node.firstChild)
+					this.processTokenType(capture, range, builder);
+				} else
+					this.processTokenType(capture, range, builder);
 			});
 		});
 		return builder.build();
 	}
-	provideDocumentSemanticTokens(): vscode.ProviderResult<vscode.SemanticTokens> {
-		return this.updateTokens()
-	}
-	private processTokenType(name: string, range: vscode.Range, builder: vscode.SemanticTokensBuilder) {
-		let tokenType = '';
 
+
+	provideDocumentSemanticTokens = (): vscode.ProviderResult<vscode.SemanticTokens> => this.updateTokens();
+
+	private processTokenType(capture: QueryCapture, range: vscode.Range, builder: vscode.SemanticTokensBuilder): void {
+		let tokenType: string;
+		let name = capture.name
 		switch (name) {
+			case 'constructor':
+				if (capture?.node?.text === "constructor") {
+					tokenType = 'keyword';
+				} else {
+					return
+				}
+				break;
 			case 'keyword':
 			case 'include':
 			case 'keyword.function':
 			case 'return':
+			case 'keyword.return':
 			case 'conditional':
+			case 'none':
+			case 'attribute':
+			case 'class':
+			case 'enum_class':
+			case 'repeat':
 				tokenType = 'keyword';
 				break;
 			case 'type':
 			case 'type.builtin':
 				tokenType = 'type';
 				break;
+
 			case 'function':
 			case 'function.builtin':
 				tokenType = 'function';
 				break;
+
 			case 'string':
 			case 'string.escape':
 			case 'string.regex':
 				tokenType = 'string';
 				break;
-			//Variables are handled separately
-			/* case 'variable':
-				tokenType = 'variable';
-				break; */
+
 			case 'property':
 				tokenType = 'property';
 				break;
+
 			case 'parameter':
 				tokenType = 'parameter';
 				break;
+
 			case 'comment':
+			case 'comment.multiline':
 				tokenType = 'comment';
 				break;
+
 			case 'operator':
 				tokenType = 'operator';
 				break;
+
+			case 'variable':
+			case 'variable.builtin':
+			case 'variableIdentifier':
+				tokenType = 'variable';
+				break;
+
+			case 'number':
+				tokenType = 'number';
+				break;
+
+			case 'punctuation.delimiter':
+			case 'punctuation.special':
+			case 'punctuation.bracket':
+				tokenType = 'punctuation';
+				break;
+			case 'constant':
+				tokenType = 'constant';
+				break;
+
 			default:
+				console.error(`Unrecognized token name: "${name}" in range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]..`);
+				tokenType = 'number';
 				return;
 		}
 
-		builder.push(range, tokenType);
+		// Handle multi-line ranges
+		if (name === 'comment.multiline' && range.start.line !== range.end.line) {
+			for (let line = range.start.line; line <= range.end.line; line++) {
+				const startCharacter = line === range.start.line ? range.start.character : 0;
+				const endCharacter =
+					line === range.end.line
+						? range.end.character
+						: this.getLineLength(line); // Dynamically get line length for intermediate lines
+
+				const singleLineRange = new vscode.Range(line, startCharacter, line, endCharacter);
+				builder.push(singleLineRange, tokenType);
+				console.log(`Multi-line token split: name="${name}", type="${tokenType}", range=[${line}:${startCharacter} - ${line}:${endCharacter}]`);
+			}
+		} else {
+			builder.push(range, tokenType);
+			console.log(`Token processed: name="${name}", flatName: ${capture.node.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
+		}
 	}
+	/**
+ * Helper function to get the length of a line from the document.
+ * This ensures endCharacter is accurately calculated.
+ */
+	private getLineLength(line: number): number {
+		const document = vscode.window.activeTextEditor?.document;
+		if (!document) {
+			console.error(`Failed to access document for line length calculation.`);
+			return 0;
+		}
+		return document.lineAt(line).text.length;
+	}
+
+
 }
+
+
 class ImportDefinitionProvider implements vscode.DefinitionProvider {
 	private readonly imports: Map<string, ImportSymbol>;
 	constructor(imports: Map<string, ImportSymbol>) {
@@ -478,28 +651,46 @@ class ImportDefinitionProvider implements vscode.DefinitionProvider {
 }
 class KotlinScriptDefinitionProvider implements vscode.DefinitionProvider {
 	private readonly scopedVariables: Map<string, VariableSymbol>;
+
 	constructor(scopedVariables: Map<string, VariableSymbol>) {
 		this.scopedVariables = scopedVariables;
 	}
-	provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Definition> {
+
+	provideDefinition(
+		document: vscode.TextDocument,
+		position: vscode.Position,
+		token: vscode.CancellationToken
+	): vscode.ProviderResult<vscode.Definition> {
 		const wordRange = document.getWordRangeAtPosition(position);
 		const word = document.getText(wordRange);
-		const variableSymbol = this.scopedVariables.get(word);
-		if (!variableSymbol) {
+
+		let matchingSymbol: VariableSymbol | undefined;
+
+		for (const [key, variableSymbol] of this.scopedVariables.entries()) {
+			const [variableName, scopeDepth] = key.split("@");
+
+			if (variableName === word) {
+				matchingSymbol = Array.from(this.scopedVariables.entries())
+					.filter(([key, _]) => key.startsWith(`${word}@`))
+					.sort((a, b) => parseInt(a[0].split("@")[1]) - parseInt(b[0].split("@")[1]))
+					.map(([_, symbol]) => symbol)[0];
+				break;
+			}
+		}
+
+		if (!matchingSymbol) {
 			return null;
 		}
-		return new vscode.Location(
-			document.uri,
-			variableSymbol.range
-		);
+
+		return new vscode.Location(document.uri, matchingSymbol.range);
 	}
 }
-const rangesToDecorate: Map<string, vscode.Range[]> = new Map();
-let init: boolean = false;
+
+
+
 
 function updateDecorationsForVisibleRanges(editor: vscode.TextEditor, parser: TreeProvider) {
 	const visibleRanges = editor.visibleRanges;
-
 	parser.getscopedVariables().forEach((variable, name) => {
 		const range = variable.range;
 		if (range) {
@@ -519,19 +710,19 @@ function updateDecorationsForVisibleRanges(editor: vscode.TextEditor, parser: Tr
 				return overlaps;
 			});
 
-			if (isVisible || !init) {
+			if (isVisible || !parser.init) {
 				filteredRanges.push(range);
 			}
 
 			if (filteredRanges.length > 0) {
-				rangesToDecorate.set(name, filteredRanges);
+				parser.rangesToDecorate.set(name, filteredRanges);
 			}
 		}
 	});
 
-	init = true;
+	parser.init = true;
 
-	const allRanges = Array.from(rangesToDecorate.values()).flat();
+	const allRanges = Array.from(parser.rangesToDecorate.values()).flat();
 	editor.setDecorations(VariableDecorationType, allRanges);
 }
 
@@ -599,7 +790,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	const ktsDirectory = config.get<string>('ktsDirectory', 'config/scripts');
 	const absoluteKtsDirectory = path.isAbsolute(ktsDirectory) ? ktsDirectory : path.join(vscode.workspace.rootPath || '', ktsDirectory);
 	await TSParser.init();
-	var semanticTokensProvider: SemanticTokensProvider | undefined = undefined
+
 	const parser = new TSParser();
 	const wasmPath = context.asAbsolutePath('parsers/tree-sitter-kotlin.wasm');
 	const lang = await TSParser.Language.load(wasmPath);
@@ -664,7 +855,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		(document: vscode.TextDocument, context: vscode.ExtensionContext, selector: vscode.DocumentSelector) => {
 			updateTokensForDocument(document, context, selector);
 		},
-		1000
+		10
 	);
 	vscode.window.onDidChangeTextEditorVisibleRanges(event => {
 		debouncedUpdateTokens(event.textEditor.document, context, selector);
@@ -677,9 +868,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		if (doc) {
 			debouncedUpdateTokens(editor.document, context, selector);
 			if (semanticTokensEnabled) {
-				semanticTokensProvider = new SemanticTokensProvider(doc.treeProvider, highlightQuery);
+				doc.treeProvider.semanticTokensProvider = new SemanticTokensProvider(doc.treeProvider, highlightQuery);
 				context.subscriptions.push(
-					vscode.languages.registerDocumentSemanticTokensProvider(selector, semanticTokensProvider, LEGEND)
+					vscode.languages.registerDocumentSemanticTokensProvider(selector, doc.treeProvider.semanticTokensProvider, LEGEND)
 				);
 			}
 		}

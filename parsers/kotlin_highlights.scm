@@ -21,11 +21,26 @@
 (#eq? @variable.builtin "field"))
 
 ; `this` this keyword inside classes
-(this_expression) @variable.builtin
+(this_expression) @keyword
 
 ; `super` keyword inside classes
 (super_expression) @variable.builtin
-((class_declaration) @class)
+; Match `enum class` specifically
+(
+  (class_declaration
+    "enum" @enum_class                     ; Match `enum` keyword
+    "class" @enum_class                    ; Match `class` keyword
+    (type_identifier) @type                ; Match the type name (e.g., `Direction`)
+  )
+)
+
+; Match regular `class` declarations
+(
+  (class_declaration
+    "class" @class                         ; Match `class` keyword
+    (type_identifier) @type                ; Match the type name
+  )
+)
 
 (class_parameter
 	(simple_identifier) @property)
@@ -191,10 +206,13 @@
 ;;; Literals
 
 [
-	(line_comment)
-	(multiline_comment)
-	(shebang_line)
+    (line_comment)               ; Single-line comments (e.g., // comment)
+    ;(multiline_comment)          ; Multi-line comments (e.g., /* ... */)
+    (shebang_line)               ; Shebang lines (e.g., #!/bin/kotlin)
 ] @comment
+
+; Explicit handling for multiline comments
+(multiline_comment) @comment.multiline
 
 (real_literal) @float
 [
@@ -272,6 +290,8 @@
 	"interface"
 ;	"typeof" ; NOTE: It is reserved for future use
 ] @keyword
+
+
 
 ("fun") @keyword.function
 ("return") @return

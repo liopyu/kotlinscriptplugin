@@ -66,24 +66,22 @@
             "type",
             "type.builtin"
           ],
+          "constant": [
+            "constant"
+          ],
           "function": [
             "function",
             "function.builtin"
+          ],
+          "variable": [
+            "variable",
+            "variable.builtin",
+            "variableIdentifier"
           ],
           "string": [
             "string",
             "string.escape",
             "string.regex"
-          ],
-          "variable": [
-            "variable",
-            "variable.builtin"
-          ],
-          "property": [
-            "property"
-          ],
-          "parameter": [
-            "parameter"
           ],
           "comment": [
             "comment"
@@ -91,8 +89,10 @@
           "operator": [
             "operator"
           ],
-          "return": [
-            "return"
+          "punctuation": [
+            "punctuation",
+            "punctuation.delimiter",
+            "punctuation.special"
           ]
         }
       }

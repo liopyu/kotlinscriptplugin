@@ -40,6 +40,14 @@ export function applyDecorations(parser: TreeProvider, document: vscode.TextDocu
         }
     }
 }
+class Symbol {
+    name: string;
+    type: string | null;
+    constructor(name: string, type: string | null = "kotlin.Unit") {
+        this.name = name;
+        this.type = type;
+    }
+}
 export class Scope {
     parentScope: Scope | null;
     symbols: Map<string, Symbol>;
@@ -69,28 +77,34 @@ export class Scope {
     }
 
     resolveVariable(name: string): VariableSymbol | undefined {
-        return this.variables.get(name) || (this.parentScope ? this.parentScope.resolveVariable(name) : undefined);
+        const result = this.variables.get(name);
+        if (result) return result;
+        if (this.parentScope) {
+            return this.parentScope.resolveVariable(name);
+        }
+        return undefined;
+    }
+    /**
+         * Checks if a variable exists in the current scope or any parent scope.
+         * @param name - The name of the variable to search for.
+         * @returns True if the variable exists in the current or parent scope chain.
+         */
+    hasVariableInScopeChain(name: string): boolean {
+        let currentScope: Scope | null = this; // Start with the current scope
+
+        while (currentScope) {
+            // Check if the variable exists in the current scope
+            if (currentScope.variables.has(name)) {
+                return true;
+            }
+
+            // Traverse to the parent scope
+            currentScope = currentScope.parentScope;
+        }
+
+        return false; // Variable not found in the entire scope chain
     }
 
-
-}
-
-class Symbol {
-    name: string;
-    type: string | null;
-    constructor(name: string, type: string | null = "kotlin.Unit") {
-        this.name = name;
-        this.type = type;
-    }
-}
-export class FunctionSymbol extends Symbol {
-    public args: Symbol[];
-    public returnType: string | null;
-    constructor(name: string, args: Symbol[], returnType: string | null) {
-        super(name, returnType);
-        this.args = args;
-        this.returnType = returnType;
-    }
 }
 export class VariableSymbol extends Symbol {
     public isImport: boolean;
@@ -113,6 +127,17 @@ export class VariableSymbol extends Symbol {
     }
     public setRange(range: vscode.Range) {
         this.range = range;
+    }
+}
+
+
+export class FunctionSymbol extends Symbol {
+    public args: Symbol[];
+    public returnType: string | null;
+    constructor(name: string, args: Symbol[], returnType: string | null) {
+        super(name, returnType);
+        this.args = args;
+        this.returnType = returnType;
     }
 }
 export class ImportSymbol {
