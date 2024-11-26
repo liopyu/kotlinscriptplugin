@@ -12,7 +12,7 @@ export const SimpleDecorationType = vscode.window.createTextEditorDecorationType
 });
 export const VariableDecorationType = vscode.window.createTextEditorDecorationType({
     color: '#4bb4ec',
-    textDecoration: 'underline'
+    //textDecoration: 'underline'
 });
 export const ImportDecorationType = vscode.window.createTextEditorDecorationType({
     color: '#4ec9b0',

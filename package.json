@@ -35,7 +35,8 @@
         "extensions": [
           ".kt",
           ".kts"
-        ]
+        ],
+        "configuration": "./language-configuration.json"
       }
     ],
     "semanticTokenScopes": [

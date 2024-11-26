@@ -14,7 +14,6 @@ import {
 	VariableType,
 	Scope
 } from './symbols';
-import { Console } from 'console';
 const individualLogging = false;
 const globalLogging = false;
 const editor = vscode.window.activeTextEditor;
@@ -196,8 +195,7 @@ export class TreeProvider {
 	}
 	updateTokens(changedRanges: vscode.Range[]): void {
 		this.isUpdating = true;
-		/* logGlobals("Updating tokens for changed ranges...");
-		//this.semanticTokensProvider?.updateTokens()
+		logGlobals("Updating tokens for changed ranges...");
 		if (!this.tree) {
 			console.error("Tree is not initialized.");
 			this.isUpdating = false;
@@ -217,7 +215,7 @@ export class TreeProvider {
 			this.enter = [];
 			this.exit = [];
 		}
- */
+
 		this.isUpdating = false;
 	}
 
@@ -295,7 +293,7 @@ export class TreeProvider {
 
 		for (const variableKey of variablesToRemove) {
 			var symbol = this.scopedVariables.get(variableKey)
-			console.log(`Removed stale variable '${this.nameFromKey(variableKey)}' from scope: ` + symbol?.scope.depth);
+			logContent(`Removed stale variable '${this.nameFromKey(variableKey)}' from scope: ` + symbol?.scope.depth);
 			if (symbol)
 				symbol.scope.undefine(symbol)
 			if (this.rangesToDecorate.has(variableKey)) {
@@ -372,13 +370,13 @@ export class TreeProvider {
 		}
 
 
-		if (this.isBlockNode(node)) {
+		if (this.isBlockNode(node) || node.text == "{") {
 			this.enterScope(this.currentScope);
 			this.enter.push(this.supplyRange(node));
 		}
 
 
-		if (this.isBlockExitNode(node)) {
+		if (this.isBlockExitNode(node) || node.text == "}") {
 			this.exitScope();
 			this.exit.push(this.supplyRange(node));
 		}
@@ -467,7 +465,9 @@ export class TreeProvider {
 	): void {
 		const variableName = identifierNode.text;
 		if (this.currentScope.variables.has(variableName)) {
-			console.log("Variable already defined in current scope: " + variableName + ", Depth: " + this.currentScope.depth)
+			logContent("Variable already defined in current scope: " + variableName + ", Depth: " + this.currentScope.depth +
+				", Position: " + range.start.line + ":" + range.start.character
+			)
 			return;
 		}
 		this.varId++
@@ -541,16 +541,16 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		if (!tree) return builder.build()
 		const matches = this.highlightQuery.matches(tree.rootNode);
 		console.log("updating semantic tokens...");
-		this.num = -1
 		matches.forEach(match => {
 			match.captures.forEach(capture => {
 				const node = capture.node;
 				var range = this.treeProvider.supplyRange(node)
 				if (capture.name == "keyword.return" && node.firstChild) {
 					range = this.treeProvider.supplyRange(node.firstChild)
-					this.processTokenType(capture, range, builder);
-				} else
-					this.processTokenType(capture, range, builder);
+				} else if (capture.name == 'namespace' && node.firstChild) {
+					range = this.treeProvider.supplyRange(node.firstChild)
+				}
+				this.processTokenType(capture, range, builder);
 			});
 		});
 		return builder.build();
@@ -558,19 +558,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 
 	provideDocumentSemanticTokens = (): vscode.ProviderResult<vscode.SemanticTokens> => this.updateTokens();
-	private num = -1
 	private processTokenType(capture: QueryCapture, range: vscode.Range, builder: vscode.SemanticTokensBuilder): void {
 		let tokenType: string;
 		let name = capture.name
-		/* if (this.num < TOKEN_TYPES.length - 1) {
-			this.num++
-		} else {
-			this.num = -1
-		}
-		tokenType = TOKEN_TYPES[this.num]
-		console.log(this.num + "- " + `Token processed: name="${name}", flatName: ${capture.node.text}, type="${tokenType}"`);
-		builder.push(range, tokenType);
-		return */
 		switch (name) {
 			case 'function':
 				if (reservedWords.includes(capture?.node?.text)) {
@@ -586,7 +576,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 					return
 				}
 				break;
+			case 'namespace':
 			case 'keyword':
+			case 'exception':
 			case 'include':
 			case 'keyword.function':
 			case 'return':
@@ -657,6 +649,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			case 'constant':
 				tokenType = 'enumMember';
 				break;
+			case 'boolean':
+				tokenType = 'macro';
+				break;
 
 			default:
 				console.error(`Unrecognized token name: "${name}" in range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]..`);
@@ -679,7 +674,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			}
 		} else {
 			builder.push(range, tokenType);
-			console.log(`Token processed: name="${name}", flatName: ${capture.node.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
+			//console.log(`Token processed: name="${name}", flatName: ${capture.node.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
 		}
 	}
 	/**
