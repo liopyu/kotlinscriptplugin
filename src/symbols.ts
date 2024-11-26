@@ -53,12 +53,14 @@ export class Scope {
     symbols: Map<string, Symbol>;
     variables: Map<string, VariableSymbol>;
     depth: number;
+    id: number
 
     constructor(parentScope: Scope | null) {
         this.depth = (parentScope ? parentScope.depth + 1 : 0);
         this.parentScope = parentScope;
         this.symbols = new Map();
         this.variables = new Map();
+        this.id = parentScope ? parentScope.id + 1 : 0
     }
 
     define(symbol: Symbol): void {

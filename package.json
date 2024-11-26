@@ -38,23 +38,6 @@
         ]
       }
     ],
-    "semanticTokenTypes": [
-      {
-        "id": "return",
-        "description": "Token type for return keywords",
-        "superType": "keyword"
-      },
-      {
-        "id": "conditional",
-        "description": "Token type for conditional keywords",
-        "superType": "keyword"
-      },
-      {
-        "id": "keyword_variable",
-        "description": "Token type for conditional keywords",
-        "superType": "keyword"
-      }
-    ],
     "semanticTokenScopes": [
       {
         "language": "kotlin",
@@ -89,11 +72,6 @@
           ],
           "operator": [
             "operator"
-          ],
-          "punctuation": [
-            "punctuation",
-            "punctuation.delimiter",
-            "punctuation.special"
           ]
         }
       }
