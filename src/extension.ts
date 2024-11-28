@@ -9,6 +9,7 @@ import {
 	MethodDecorationType,
 	SimpleDecorationType,
 	ImportDecorationType,
+	DelimiterDecorationType,
 	VariableDecorationType,
 	OtherDecorationType,
 	VariableType,
@@ -183,6 +184,8 @@ export class TreeProvider {
 	public tree: TSParser.Tree | undefined = undefined;
 	private currentImports: Set<string> = new Set();
 	public isUpdating: boolean = false;
+	public call: vscode.Range[] = []
+	public call2: vscode.Range[] = []
 	constructor(parser: TSParser, document: vscode.TextDocument) {
 		this.parser = parser;
 		logGlobals("initializing tokens provider")
@@ -201,20 +204,28 @@ export class TreeProvider {
 			this.isUpdating = false;
 			return;
 		}
+		this.call = []
+		this.call2 = []
 		this.varId = 0
 		this.scopes.clear()
 		this.currentScope = new Scope(null);
 		this.scopes.set(this.currentScope.id, this.currentScope)
 
-
 		this.traverseTree(this.tree.rootNode, changedRanges);
 		this.validateVariables(this.tree);
+		/* if (editor)
+			editor.setDecorations(OtherDecorationType, changedRanges); */
 		if (editor && !semanticTokensEnabled) {
 			editor.setDecorations(OtherDecorationType, this.enter);
 			editor.setDecorations(ImportDecorationType, this.exit);
 			this.enter = [];
 			this.exit = [];
 		}
+		if (editor) {
+			editor.setDecorations(DelimiterDecorationType, this.call);
+			editor.setDecorations(ImportDecorationType, this.call2);
+		}
+		this.semanticTokensProvider?.updateTokens()
 
 		this.isUpdating = false;
 	}
@@ -363,6 +374,33 @@ export class TreeProvider {
 		if (!isInRange) {
 			return;
 		}
+		//console.log("Type: " + node.type + ", ParentType: " + node.parent?.type + ", Grandparent: " + node.parent?.parent?.type)
+
+
+		/* if (editor && node.type == "call_expression") {
+			var c = this.findChild(node, "interpolated_identifier")
+			if (c)
+				this.call.push(this.supplyRange(c))
+		} */
+		if (editor && node.type == "string_literal") {
+			var c1 = this.findChildren(node, ["${"])
+			var c2 = this.findChildren(node, ["$"])
+			var c3 = this.findChildren(node, ["}"])
+			var c4 = this.findChildren(node, ["interpolated_expression"])
+			var c5 = this.findChildren(node, ["interpolated_identifier"])
+
+			c1.forEach(c => this.call.push(this.supplyRange(c)))
+			c2.forEach(c => this.call.push(this.supplyRange(c)))
+			c3.forEach(c => this.call.push(this.supplyRange(c)))
+			c4.forEach(c => {
+				//this.call2.push(this.supplyRange(c))
+				this.traverseTree(c, [this.supplyRange(c)])
+			})
+			c5.forEach(c => {
+				//this.call2.push(this.supplyRange(c))
+				this.traverseTree(c, [this.supplyRange(c)])
+			})
+		}
 		if (node.type === "property_declaration") {
 			this.processPropertyDeclaration(node);
 		} else if (this.isImportDeclaration(node)) {
@@ -402,7 +440,7 @@ export class TreeProvider {
 		return hasOpeningBracket || isExplicitBlock;
 	}
 
-	private findChildren(
+	public findChildren(
 		node: SyntaxNode,
 		types: string[],
 		expectedParent: string | null = null
@@ -559,8 +597,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 	provideDocumentSemanticTokens = (): vscode.ProviderResult<vscode.SemanticTokens> => this.updateTokens();
 	private processTokenType(capture: QueryCapture, range: vscode.Range, builder: vscode.SemanticTokensBuilder): void {
-		let tokenType: string;
+		let tokenType: string = '';
 		let name = capture.name
+
 		switch (name) {
 			case 'function':
 				if (reservedWords.includes(capture?.node?.text)) {
@@ -584,7 +623,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			case 'return':
 			case 'keyword.return':
 			case 'conditional':
-			case 'none':
 			case 'attribute':
 			case 'class':
 			case 'enum_class':
@@ -599,14 +637,15 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			case 'function':
 				tokenType = 'function';
 				break;
-			case 'string':
 			case 'string.escape':
-			case 'string.regex':
 				tokenType = 'string';
 				break;
-
 			case 'property':
-				tokenType = 'property';
+				if (capture.node.parent?.parent?.parent?.type === "call_expression") {
+					tokenType = 'method';
+				} else {
+					tokenType = 'property';
+				}
 				break;
 
 			case 'parameter':
@@ -624,6 +663,10 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			case 'operator':
 				tokenType = 'operator';
 				break;
+
+			case 'string.regex':
+				tokenType = 'regexp';
+				break;
 			case 'variable':
 				if (capture?.node.parent?.type == "function_declaration") {
 					tokenType = 'function';
@@ -632,8 +675,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 					return
 				}
 				break;
-			case 'variable.builtin':
 			case 'variableIdentifier':
+			case 'variable.builtin':
+			case 'none':
 				tokenType = 'variable';
 				break;
 			case 'number':
@@ -642,8 +686,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				break;
 
 			case 'punctuation.delimiter':
-			case 'punctuation.special':
 			case 'punctuation.bracket':
+				//case 'punctuation.special':
 				tokenType = 'decorator';
 				break;
 			case 'constant':
@@ -652,14 +696,64 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			case 'boolean':
 				tokenType = 'macro';
 				break;
+			case 'string':
+				const stringRange = this.treeProvider.supplyRange(capture.node);
+				const interpolatedNodes = [
+					...this.treeProvider.findChildren(capture.node, ['interpolated_expression']),
+					...this.treeProvider.findChildren(capture.node, ['interpolated_identifier']),
+				];
+				const excludedRanges: vscode.Range[] = [];
 
+				let currentLine = stringRange.start.line;
+				let currentCharacter = stringRange.start.character;
+
+				interpolatedNodes.forEach((interpolatedNode) => {
+					const interpolatedRange = this.treeProvider.supplyRange(interpolatedNode);
+					if (
+						interpolatedRange.start.line > currentLine ||
+						interpolatedRange.start.character > currentCharacter
+					) {
+						excludedRanges.push(
+							new vscode.Range(
+								currentLine,
+								currentCharacter,
+								interpolatedRange.start.line,
+								interpolatedRange.start.character
+							)
+						);
+					}
+					currentLine = interpolatedRange.end.line;
+					currentCharacter = interpolatedRange.end.character;
+				});
+				if (
+					currentLine < stringRange.end.line ||
+					currentCharacter < stringRange.end.character
+				) {
+					excludedRanges.push(
+						new vscode.Range(
+							currentLine,
+							currentCharacter,
+							stringRange.end.line,
+							stringRange.end.character
+						)
+					);
+				}
+				excludedRanges.forEach((range) => {
+					builder.push(range, 'string');
+				});
+				/* interpolatedNodes.forEach((interpolatedNode) => {
+					const range = this.treeProvider.supplyRange(interpolatedNode);
+					builder.push(range, 'variable');
+				}); */
+				break;
+			case 'punctuation.special':
+				break
 			default:
 				console.error(`Unrecognized token name: "${name}" in range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]..`);
-				tokenType = 'number';
+				tokenType = 'variable';
 				return;
 		}
-
-		// Handle multi-line ranges
+		if (tokenType === '') return
 		if (name === 'comment.multiline' && range.start.line !== range.end.line) {
 			for (let line = range.start.line; line <= range.end.line; line++) {
 				const startCharacter = line === range.start.line ? range.start.character : 0;
@@ -674,8 +768,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			}
 		} else {
 			builder.push(range, tokenType);
-			//console.log(`Token processed: name="${name}", flatName: ${capture.node.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
-		}
+			/* console.log(`Token processed: name="${name}", flatName: ${capture.node.text}, ParentName: ${capture.node.parent?.text}, GrandParentName: ${capture.node.parent?.parent?.text}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
+			console.log(`Token processed: name="${name}", flatName: ${capture.node.type}, ParentName: ${capture.node.parent?.type}, GrandParentName: ${capture.node.parent?.parent?.type}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.type}`);
+		 */}
 	}
 	/**
  * Helper function to get the length of a line from the document.
@@ -837,8 +932,24 @@ function updateTokensForDocument(
 			const newTree = treeProvider.parser.parse(changes, treeProvider.tree);
 			treeProvider.tree = newTree;
 		}
-		if (!treeProvider.isUpdating) {
+		/* if (!treeProvider.isUpdating) {
 			treeProvider.updateTokens(editor.visibleRanges);
+		} */
+		if (!treeProvider.isUpdating) {
+			const documentLineCount = document.lineCount;
+			const lineBoundary = 1000;
+			const startLine = Math.max(0, editor.visibleRanges[0].start.line - lineBoundary);
+			const endLine = Math.min(documentLineCount - 1, editor.visibleRanges[0].end.line + lineBoundary);
+
+			const affectedRanges = [
+				new vscode.Range(
+					startLine,
+					0,
+					endLine,
+					Number.MAX_SAFE_INTEGER
+				),
+			];
+			treeProvider.updateTokens(affectedRanges);
 		}
 		updateDecorationsForVisibleRanges(editor, treeProvider);
 		const variableDefinitionProvider = new KotlinScriptDefinitionProvider(treeProvider.getscopedVariables());
@@ -878,7 +989,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		scheme: 'file',
 		pattern: new vscode.RelativePattern(absoluteKtsDirectory, '*.kts')
 	};
-	const debouncedChangeTokens = debounce((event: vscode.TextDocumentChangeEvent) => {
+	vscode.workspace.onDidChangeTextDocument(event => {
 		const documentUri = event.document.uri.toString();
 		const data = documentData.get(documentUri);
 		if (data) {
@@ -910,19 +1021,10 @@ export async function activate(context: vscode.ExtensionContext) {
 				updateDecorationsForVisibleRanges(editor, treeProvider);
 			}
 		}
-	}, 100);
-	const debouncedUpdateTokens = debounce(
-		(document: vscode.TextDocument, context: vscode.ExtensionContext, selector: vscode.DocumentSelector) => {
-			updateTokensForDocument(document, context, selector);
-		},
-		10
-	);
-	vscode.workspace.onDidChangeTextDocument(event => {
-		debouncedChangeTokens(event);
 	});
 
 	vscode.window.onDidChangeTextEditorVisibleRanges(event => {
-		debouncedUpdateTokens(event.textEditor.document, context, selector);
+		updateTokensForDocument(event.textEditor.document, context, selector);
 	});
 
 	// Runs on start
@@ -930,7 +1032,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		addDocumentIfNotExists(editor.document);
 		var doc = documentData.get(editor.document.uri.toString())
 		if (doc) {
-			debouncedUpdateTokens(editor.document, context, selector);
+			updateTokensForDocument(editor.document, context, selector);
 			if (semanticTokensEnabled) {
 				doc.treeProvider.semanticTokensProvider = new SemanticTokensProvider(doc.treeProvider, highlightQuery);
 				context.subscriptions.push(

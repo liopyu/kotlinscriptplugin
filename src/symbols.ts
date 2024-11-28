@@ -21,7 +21,10 @@ export const MethodDecorationType = vscode.window.createTextEditorDecorationType
     color: '#FFD700',
 });
 export const OtherDecorationType = vscode.window.createTextEditorDecorationType({
-    color: '#a824ef',
+    color: '#ca27ea',
+});
+export const DelimiterDecorationType = vscode.window.createTextEditorDecorationType({
+    color: '#a258ab',
 });
 export function applyDecorations(parser: TreeProvider, document: vscode.TextDocument): void {
     const editor = vscode.window.activeTextEditor;
