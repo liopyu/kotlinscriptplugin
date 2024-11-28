@@ -190,6 +190,7 @@ export class TreeProvider {
 	public call2: vscode.Range[] = []
 	public defaultBlue: vscode.Range[] = []
 	public variableBlue: vscode.Range[] = []
+	public importRanges: vscode.Range[] = []
 	constructor(parser: TSParser, document: vscode.TextDocument) {
 		this.parser = parser;
 		logGlobals("initializing tokens provider")
@@ -212,8 +213,10 @@ export class TreeProvider {
 		this.call2 = []
 		this.defaultBlue = []
 		this.variableBlue = []
+		this.importRanges = []
 		this.varId = 0
 		this.scopes.clear()
+		this.imports.clear()
 		this.currentScope = new Scope(null);
 		this.scopes.set(this.currentScope.id, this.currentScope)
 
@@ -231,8 +234,11 @@ export class TreeProvider {
 			editor.setDecorations(DelimiterDecorationType, this.call);
 			editor.setDecorations(ImportDecorationType, this.call2);
 			editor.setDecorations(DefaultBlueDecorationType, this.defaultBlue);
-
-			editor.setDecorations(SubVariableDecorationType, this.variableBlue);
+			editor.setDecorations(VariableDecorationType, this.variableBlue);
+			this.imports.forEach((i, n) => {
+				this.importRanges.push(i.range)
+				editor.setDecorations(ImportDecorationType, this.importRanges);
+			})
 		}
 		this.semanticTokensProvider?.updateTokens()
 
@@ -373,11 +379,10 @@ export class TreeProvider {
 		return userTypeNode ? declaration.firstChild : declaration;
 	}
 	private processImportDeclarations(node: SyntaxNode) {
-		const importNodes = this.findChildren(node, ["import_declaration"]);
-		importNodes.forEach(importNode => {
-			const range = this.supplyRange(importNode);
-			this.processImportDeclaration(importNode, range, this.currentImports);
-		});
+		const importNode = this.findChild(node, "identifier");
+		if (!importNode) return
+		const range = this.supplyRange(importNode);
+		this.processImportDeclaration(importNode, range, this.currentImports);
 	};
 	private enter: vscode.Range[] = [];
 	private exit: vscode.Range[] = [];
@@ -388,14 +393,15 @@ export class TreeProvider {
 		if (!isInRange) {
 			return;
 		}
-		console.log("Type: " + node.type + ", ParentType: " + node.parent?.type + ", Grandparent: " + node.parent?.parent?.type)
-		console.log("Type: " + node.text + ", ParentType: " + node.parent?.text + ", Grandparent: " + node.parent?.parent?.text)
+		/* console.log("Type: " + node.type + ", ParentType: " + node.parent?.type + ", GrandparentType: " + node.parent?.parent?.type)
+		console.log("Text: " + node.text + ", ParentText: " + node.parent?.text + ", GrandparentText: " + node.parent?.parent?.text) */
 		if (node.type == "lambda_parameters") {
 			const variables = this.extractVariables(node);
 			variables.forEach((range, variableNode) => {
 				this.processVariableDeclaration(variableNode, null, range);
 			})
 		}
+
 		this.handleSimpleIdentifier(node)
 
 		if (this.isSpecialHandleWord(node)) {
@@ -419,7 +425,7 @@ export class TreeProvider {
 
 		if (node.type === "property_declaration") {
 			this.processPropertyDeclaration(node);
-		} else if (this.isImportDeclaration(node)) {
+		} else if (node.type == 'import_header') {
 			this.processImportDeclarations(node);
 		}
 
@@ -437,11 +443,28 @@ export class TreeProvider {
 
 		node.children.forEach(child => this.traverseTree(child, ranges));
 	}
+	private givePath(path: string, segments: number): string {
+		const parts = path.split('.');
+		if (segments <= 0 || segments > parts.length) {
+			return ""
+		}
+		return parts.slice(0, segments).join('.');
+	}
+
 	private handleSimpleIdentifier(node: SyntaxNode, byPassSI: boolean = false): void {
-		if (((node.type === "simple_identifier" && node.parent?.type != "catch_block") || byPassSI) &&
+		if (node.type == "navigation_expression") {
+			var splitNodes = this.findChildren(node, ["simple_identifier"])
+			var splitText = node.text.split(".");
+			this.imports.forEach((i, key) => {
+				var barePath = this.givePath(node.text, i.segmentCount)
+				if (barePath == key) {
+					this.importRanges.push(this.supplyRange(splitNodes[i.segmentCount - 1]))
+				}
+			})
+		} else if (((node.type === "simple_identifier" && node.parent?.type != "catch_block") || byPassSI) &&
 			!this.isSpecialHandleWord(node)
 		) {
-			const isUpperCase = /^[A-Z_0-9]+$/.test(node.text);
+			const isUpperCase = /^[A-Z_0-9]+$/.test(node.text) && !this.hasParent(node, "import_list");
 			const variableRange = this.currentScope.resolveVariable(node.text)?.range;
 
 			if (node.parent?.type !== "navigation_suffix") {
@@ -593,22 +616,11 @@ export class TreeProvider {
 
 	private processImportDeclaration(node: TSParser.SyntaxNode, range: vscode.Range, currentImports: Set<string>) {
 		const importName = node.text;
-		currentImports.add(importName);
-
-		if (this.imports.has(importName)) {
-			this.imports.delete(importName);
-		} else {
+		if (!this.imports.has(importName)) {
 			this.imports.set(importName, new ImportSymbol(importName, range, node));
 		}
 	}
 
-	private isImportDeclaration(node: TSParser.SyntaxNode): boolean {
-		const isSimpleIdentifier = node.type === 'simple_identifier';
-		const hasParentIdentifier = node.parent?.type === 'identifier';
-		const hasGrandparentImportHeader = node.parent?.parent?.type === 'import_header';
-		const isLastChild = node.nextSibling === null;
-		return isSimpleIdentifier && hasParentIdentifier && hasGrandparentImportHeader && isLastChild;
-	}
 	getscopedVariables(): Map<string, VariableSymbol> {
 		return this.scopedVariables;
 	}

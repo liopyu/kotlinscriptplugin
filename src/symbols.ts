@@ -153,14 +153,24 @@ export class FunctionSymbol extends Symbol {
     }
 }
 export class ImportSymbol {
-    name: string;
+    simpleName: string;
+    path: string;
     range: vscode.Range;
     node: Parser.SyntaxNode;
+    segmentCount: number = 0;
 
-    constructor(name: string, range: vscode.Range, node: Parser.SyntaxNode) {
-        this.name = name;
+    constructor(path: string, range: vscode.Range, node: Parser.SyntaxNode) {
+        this.path = path;
         this.range = range;
         this.node = node;
+        this.simpleName = this.getClassName();
+    }
+
+    getClassName() {
+        var name = this.path.split('.');
+        var finalName = name.pop()
+        this.segmentCount = name.length + 1
+        return finalName ? finalName : ""
     }
 }
 function getClassName(type: string): string {
