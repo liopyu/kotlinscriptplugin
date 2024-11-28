@@ -231,6 +231,7 @@ export class TreeProvider {
 			editor.setDecorations(DelimiterDecorationType, this.call);
 			editor.setDecorations(ImportDecorationType, this.call2);
 			editor.setDecorations(DefaultBlueDecorationType, this.defaultBlue);
+
 			editor.setDecorations(SubVariableDecorationType, this.variableBlue);
 		}
 		this.semanticTokensProvider?.updateTokens()
@@ -332,16 +333,21 @@ export class TreeProvider {
 	}
 	private processPropertyDeclaration(node: SyntaxNode): void {
 		const valueNodes = this.findChildren(node, expressionTypes, "property_declaration");
+		const variables = this.extractVariables(node);
+		if (valueNodes.length > 0) {
+			valueNodes.forEach(valueNode => {
+				if (!this.isValueInDeclaration(valueNode)) return;
 
-		valueNodes.forEach(valueNode => {
-			if (!this.isValueInDeclaration(valueNode)) return;
 
-			const variables = this.extractVariables(node);
-
-			variables.forEach((range, variableNode) => {
-				this.processVariableDeclaration(variableNode, valueNode, range);
+				variables.forEach((range, variableNode) => {
+					this.processVariableDeclaration(variableNode, valueNode, range);
+				});
 			});
-		});
+		} else {
+			variables.forEach((range, variableNode) => {
+				this.processVariableDeclaration(variableNode, null, range);
+			})
+		}
 	}
 	private extractVariables(node: SyntaxNode): Map<SyntaxNode, vscode.Range> {
 		const variables: Map<SyntaxNode, vscode.Range> = new Map();
@@ -382,20 +388,16 @@ export class TreeProvider {
 		if (!isInRange) {
 			return;
 		}
-		/* console.log("Type: " + node.type + ", ParentType: " + node.parent?.type + ", Grandparent: " + node.parent?.parent?.type)
-		console.log("Type: " + node.text + ", ParentType: " + node.parent?.text + ", Grandparent: " + node.parent?.parent?.text) */
-		if (node.type == "simple_identifier" && !this.isSpecialHandleWord(node)) {
-			if (node.parent?.type != "navigation_suffix") {
-				if (this.currentScope.hasVariableInScopeChain(node.text)) {
-					var variableRange = this.currentScope.resolveVariable(node.text)?.range
-					if (variableRange && !this.rangesEqual(variableRange, this.supplyRange(node))) {
-						this.variableBlue.push(this.supplyRange(node))
-					}
-				}
-			} else if (/^[A-Z]+$/.test(node.text)) {
-				this.variableBlue.push(this.supplyRange(node));
-			}
+		console.log("Type: " + node.type + ", ParentType: " + node.parent?.type + ", Grandparent: " + node.parent?.parent?.type)
+		console.log("Type: " + node.text + ", ParentType: " + node.parent?.text + ", Grandparent: " + node.parent?.parent?.text)
+		if (node.type == "lambda_parameters") {
+			const variables = this.extractVariables(node);
+			variables.forEach((range, variableNode) => {
+				this.processVariableDeclaration(variableNode, null, range);
+			})
 		}
+		this.handleSimpleIdentifier(node)
+
 		if (this.isSpecialHandleWord(node)) {
 			this.defaultBlue.push(this.supplyRange(node))
 		}
@@ -403,9 +405,16 @@ export class TreeProvider {
 			var c1 = this.findChildren(node, ["${"])
 			var c2 = this.findChildren(node, ["$"])
 			var c3 = this.findChildren(node, ["}"])
+			var c4 = this.findChildren(node, ["interpolated_identifier"])
 			c1.forEach(c => this.call.push(this.supplyRange(c)))
 			c2.forEach(c => this.call.push(this.supplyRange(c)))
 			c3.forEach(c => this.call.push(this.supplyRange(c)))
+			c4.forEach(c => {
+				var resolvedVariable = this.currentScope.hasVariableInScopeChain(c.text)
+				if (resolvedVariable) {
+					this.handleSimpleIdentifier(c, true)
+				}
+			})
 		}
 
 		if (node.type === "property_declaration") {
@@ -428,6 +437,29 @@ export class TreeProvider {
 
 		node.children.forEach(child => this.traverseTree(child, ranges));
 	}
+	private handleSimpleIdentifier(node: SyntaxNode, byPassSI: boolean = false): void {
+		if (((node.type === "simple_identifier" && node.parent?.type != "catch_block") || byPassSI) &&
+			!this.isSpecialHandleWord(node)
+		) {
+			const isUpperCase = /^[A-Z_0-9]+$/.test(node.text);
+			const variableRange = this.currentScope.resolveVariable(node.text)?.range;
+
+			if (node.parent?.type !== "navigation_suffix") {
+				if (this.currentScope.hasVariableInScopeChain(node.text)) {
+					if (variableRange && !this.rangesEqual(variableRange, this.supplyRange(node))) {
+						this.variableBlue.push(this.supplyRange(node));
+					} else if (isUpperCase) {
+						this.variableBlue.push(this.supplyRange(node));
+					}
+				} else if (isUpperCase) {
+					this.variableBlue.push(this.supplyRange(node));
+				}
+			} else if (isUpperCase) {
+				this.variableBlue.push(this.supplyRange(node));
+			}
+		}
+	}
+
 	private isSpecialHandleWord(node: SyntaxNode): boolean {
 		return (node.type == "->" ||
 			node.type == "!!" ||
@@ -534,7 +566,7 @@ export class TreeProvider {
 
 	private processVariableDeclaration(
 		identifierNode: TSParser.SyntaxNode,
-		variableNode: TSParser.SyntaxNode,
+		variableNode: TSParser.SyntaxNode | null,
 		range: vscode.Range
 	): void {
 		const variableName = identifierNode.text;
@@ -549,7 +581,7 @@ export class TreeProvider {
 			variableName,
 			range,
 			identifierNode,
-			variableNode.text,
+			variableNode ? variableNode.text : "",
 			this.currentScope
 		);
 		//console.log("Defining variable in current scope: " + variableName + ", Depth: " + this.currentScope.depth)
@@ -674,6 +706,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				tokenType = 'function';
 				break;
 			case 'string.escape':
+			case 'character':
 				tokenType = 'string';
 				break;
 			case 'property':
@@ -801,7 +834,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				return;
 		}
 		if (name === 'comment.multiline' && range.start.line !== range.end.line) {
-			console.log("multiline token")
 			for (let line = range.start.line; line <= range.end.line; line++) {
 				const startCharacter = line === range.start.line ? range.start.character : 0;
 				const endCharacter =
