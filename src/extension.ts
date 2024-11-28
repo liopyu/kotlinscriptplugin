@@ -8,6 +8,8 @@ import {
 	applyDecorations,
 	MethodDecorationType,
 	SimpleDecorationType,
+	DefaultBlueDecorationType,
+	SubVariableDecorationType,
 	ImportDecorationType,
 	DelimiterDecorationType,
 	VariableDecorationType,
@@ -186,6 +188,8 @@ export class TreeProvider {
 	public isUpdating: boolean = false;
 	public call: vscode.Range[] = []
 	public call2: vscode.Range[] = []
+	public defaultBlue: vscode.Range[] = []
+	public variableBlue: vscode.Range[] = []
 	constructor(parser: TSParser, document: vscode.TextDocument) {
 		this.parser = parser;
 		logGlobals("initializing tokens provider")
@@ -206,6 +210,8 @@ export class TreeProvider {
 		}
 		this.call = []
 		this.call2 = []
+		this.defaultBlue = []
+		this.variableBlue = []
 		this.varId = 0
 		this.scopes.clear()
 		this.currentScope = new Scope(null);
@@ -224,6 +230,8 @@ export class TreeProvider {
 		if (editor) {
 			editor.setDecorations(DelimiterDecorationType, this.call);
 			editor.setDecorations(ImportDecorationType, this.call2);
+			editor.setDecorations(DefaultBlueDecorationType, this.defaultBlue);
+			editor.setDecorations(SubVariableDecorationType, this.variableBlue);
 		}
 		this.semanticTokensProvider?.updateTokens()
 
@@ -374,33 +382,32 @@ export class TreeProvider {
 		if (!isInRange) {
 			return;
 		}
-		//console.log("Type: " + node.type + ", ParentType: " + node.parent?.type + ", Grandparent: " + node.parent?.parent?.type)
-
-
-		/* if (editor && node.type == "call_expression") {
-			var c = this.findChild(node, "interpolated_identifier")
-			if (c)
-				this.call.push(this.supplyRange(c))
-		} */
-		if (editor && node.type == "string_literal") {
+		/* console.log("Type: " + node.type + ", ParentType: " + node.parent?.type + ", Grandparent: " + node.parent?.parent?.type)
+		console.log("Type: " + node.text + ", ParentType: " + node.parent?.text + ", Grandparent: " + node.parent?.parent?.text) */
+		if (node.type == "simple_identifier" && !this.isSpecialHandleWord(node)) {
+			if (node.parent?.type != "navigation_suffix") {
+				if (this.currentScope.hasVariableInScopeChain(node.text)) {
+					var variableRange = this.currentScope.resolveVariable(node.text)?.range
+					if (variableRange && !this.rangesEqual(variableRange, this.supplyRange(node))) {
+						this.variableBlue.push(this.supplyRange(node))
+					}
+				}
+			} else if (/^[A-Z]+$/.test(node.text)) {
+				this.variableBlue.push(this.supplyRange(node));
+			}
+		}
+		if (this.isSpecialHandleWord(node)) {
+			this.defaultBlue.push(this.supplyRange(node))
+		}
+		if (node.type == "string_literal") {
 			var c1 = this.findChildren(node, ["${"])
 			var c2 = this.findChildren(node, ["$"])
 			var c3 = this.findChildren(node, ["}"])
-			var c4 = this.findChildren(node, ["interpolated_expression"])
-			var c5 = this.findChildren(node, ["interpolated_identifier"])
-
 			c1.forEach(c => this.call.push(this.supplyRange(c)))
 			c2.forEach(c => this.call.push(this.supplyRange(c)))
 			c3.forEach(c => this.call.push(this.supplyRange(c)))
-			c4.forEach(c => {
-				//this.call2.push(this.supplyRange(c))
-				this.traverseTree(c, [this.supplyRange(c)])
-			})
-			c5.forEach(c => {
-				//this.call2.push(this.supplyRange(c))
-				this.traverseTree(c, [this.supplyRange(c)])
-			})
 		}
+
 		if (node.type === "property_declaration") {
 			this.processPropertyDeclaration(node);
 		} else if (this.isImportDeclaration(node)) {
@@ -421,7 +428,26 @@ export class TreeProvider {
 
 		node.children.forEach(child => this.traverseTree(child, ranges));
 	}
-
+	private isSpecialHandleWord(node: SyntaxNode): boolean {
+		return (node.type == "->" ||
+			node.type == "!!" ||
+			node.type == "is" ||
+			node.type == "?:" ||
+			node.type == "in" ||
+			node.type == "companion" && node.parent?.type == "companion_object" ||
+			(node.type == "simple_identifier" &&
+				node.text == "to" &&
+				node.parent?.type == "infix_expression") ||
+			((node.type == "as" || node.type == "as?") && node.parent?.type == "as_expression") ||
+			(node.type == "?" && node.parent?.type == "nullable_type") ||
+			(node.type == "?." && node.parent?.type == "navigation_suffix") ||
+			node.type == "by" ||
+			(node.text == "it" &&
+				this.hasParent(node, "lambda_literal") &&
+				!this.currentScope.hasVariableInScopeChain("it") &&
+				node.parent?.type != "navigation_suffix")
+		)
+	}
 	private isBlockNode(node: SyntaxNode): boolean {
 		if (blocks.includes(node.type)) {
 			return true;
@@ -438,6 +464,16 @@ export class TreeProvider {
 		const hasOpeningBracket = parent.children.some(child => child.type === "{");
 		const isExplicitBlock = blocks.includes(parent.type);
 		return hasOpeningBracket || isExplicitBlock;
+	}
+	private hasParent(node: SyntaxNode, parentType: string): boolean {
+		let currentNode = node.parent;
+		while (currentNode) {
+			if (currentNode.type === parentType) {
+				return true;
+			}
+			currentNode = currentNode.parent;
+		}
+		return false;
 	}
 
 	public findChildren(
@@ -599,7 +635,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 	private processTokenType(capture: QueryCapture, range: vscode.Range, builder: vscode.SemanticTokensBuilder): void {
 		let tokenType: string = '';
 		let name = capture.name
-
+		//console.log("Name: " + name + ", Type: " + capture.node.type)
 		switch (name) {
 			case 'function':
 				if (reservedWords.includes(capture?.node?.text)) {
@@ -675,8 +711,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 					return
 				}
 				break;
-			case 'variableIdentifier':
 			case 'variable.builtin':
+			case 'variableIdentifier':
 			case 'none':
 				tokenType = 'variable';
 				break;
@@ -687,7 +723,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 			case 'punctuation.delimiter':
 			case 'punctuation.bracket':
-				//case 'punctuation.special':
 				tokenType = 'decorator';
 				break;
 			case 'constant':
@@ -739,13 +774,25 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 					);
 				}
 				excludedRanges.forEach((range) => {
-					builder.push(range, 'string');
+					for (let line = range.start.line; line <= range.end.line; line++) {
+						const startCharacter = line === range.start.line ? range.start.character : 0;
+						const endCharacter =
+							line === range.end.line
+								? range.end.character
+								: this.getLineLength(line);
+
+						const singleLineRange = new vscode.Range(
+							line,
+							startCharacter,
+							line,
+							endCharacter
+						);
+						builder.push(singleLineRange, 'string');
+					}
 				});
-				/* interpolatedNodes.forEach((interpolatedNode) => {
-					const range = this.treeProvider.supplyRange(interpolatedNode);
-					builder.push(range, 'variable');
-				}); */
+
 				break;
+
 			case 'punctuation.special':
 				break
 			default:
@@ -753,20 +800,21 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				tokenType = 'variable';
 				return;
 		}
-		if (tokenType === '') return
 		if (name === 'comment.multiline' && range.start.line !== range.end.line) {
+			console.log("multiline token")
 			for (let line = range.start.line; line <= range.end.line; line++) {
 				const startCharacter = line === range.start.line ? range.start.character : 0;
 				const endCharacter =
 					line === range.end.line
 						? range.end.character
-						: this.getLineLength(line); // Dynamically get line length for intermediate lines
+						: this.getLineLength(line);
 
 				const singleLineRange = new vscode.Range(line, startCharacter, line, endCharacter);
 				builder.push(singleLineRange, tokenType);
 				//console.log(`Multi-line token split: name="${name}", type="${tokenType}", range=[${line}:${startCharacter} - ${line}:${endCharacter}]`);
 			}
 		} else {
+			if (tokenType === '') return
 			builder.push(range, tokenType);
 			/* console.log(`Token processed: name="${name}", flatName: ${capture.node.text}, ParentName: ${capture.node.parent?.text}, GrandParentName: ${capture.node.parent?.parent?.text}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
 			console.log(`Token processed: name="${name}", flatName: ${capture.node.type}, ParentName: ${capture.node.parent?.type}, GrandParentName: ${capture.node.parent?.parent?.type}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.type}`);
@@ -952,10 +1000,10 @@ function updateTokensForDocument(
 			treeProvider.updateTokens(affectedRanges);
 		}
 		updateDecorationsForVisibleRanges(editor, treeProvider);
-		const variableDefinitionProvider = new KotlinScriptDefinitionProvider(treeProvider.getscopedVariables());
+		/* const variableDefinitionProvider = new KotlinScriptDefinitionProvider(treeProvider.getscopedVariables());
 		context.subscriptions.push(
 			vscode.languages.registerDefinitionProvider(selector, variableDefinitionProvider)
-		);
+		); */
 	}
 }
 const semanticTokensEnabled = true

@@ -14,6 +14,10 @@ export const VariableDecorationType = vscode.window.createTextEditorDecorationTy
     color: '#4bb4ec',
     //textDecoration: 'underline'
 });
+export const SubVariableDecorationType = vscode.window.createTextEditorDecorationType({
+    color: '#4bb4ec',
+    //textDecoration: 'underline'
+});
 export const ImportDecorationType = vscode.window.createTextEditorDecorationType({
     color: '#4ec9b0',
 });
@@ -25,6 +29,9 @@ export const OtherDecorationType = vscode.window.createTextEditorDecorationType(
 });
 export const DelimiterDecorationType = vscode.window.createTextEditorDecorationType({
     color: '#a258ab',
+});
+export const DefaultBlueDecorationType = vscode.window.createTextEditorDecorationType({
+    color: '#569CD6',
 });
 export function applyDecorations(parser: TreeProvider, document: vscode.TextDocument): void {
     const editor = vscode.window.activeTextEditor;
