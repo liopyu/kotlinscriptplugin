@@ -5,7 +5,6 @@ import TSParser, { QueryCapture, SyntaxNode, Tree } from 'web-tree-sitter';
 import {
 	VariableSymbol,
 	ImportSymbol,
-	applyDecorations,
 	MethodDecorationType,
 	SimpleDecorationType,
 	DefaultBlueDecorationType,
@@ -184,10 +183,8 @@ export class TreeProvider {
 	public rangesToDecorate: Map<string, vscode.Range[]> = new Map();
 	private imports: Map<string, ImportSymbol> = new Map();
 	public tree: TSParser.Tree | undefined = undefined;
-	private currentImports: Set<string> = new Set();
 	public isUpdating: boolean = false;
-	public call: vscode.Range[] = []
-	public call2: vscode.Range[] = []
+	public purpleType: vscode.Range[] = []
 	public defaultBlue: vscode.Range[] = []
 	public variableBlue: vscode.Range[] = []
 	public importRanges: vscode.Range[] = []
@@ -202,6 +199,8 @@ export class TreeProvider {
 		this.updateTokens(allRanges)
 	}
 	updateTokens(changedRanges: vscode.Range[]): void {
+		var t = true
+		//if (t) return
 		this.isUpdating = true;
 		logGlobals("Updating tokens for changed ranges...");
 		if (!this.tree) {
@@ -209,10 +208,9 @@ export class TreeProvider {
 			this.isUpdating = false;
 			return;
 		}
-		this.call = []
-		this.call2 = []
 		this.defaultBlue = []
 		this.variableBlue = []
+		this.purpleType = []
 		this.importRanges = []
 		this.varId = 0
 		this.scopes.clear()
@@ -222,25 +220,16 @@ export class TreeProvider {
 
 		this.traverseTree(this.tree.rootNode, changedRanges);
 		this.validateVariables(this.tree);
-		/* if (editor)
-			editor.setDecorations(OtherDecorationType, changedRanges); */
-		if (editor && !semanticTokensEnabled) {
-			editor.setDecorations(OtherDecorationType, this.enter);
-			editor.setDecorations(ImportDecorationType, this.exit);
-			this.enter = [];
-			this.exit = [];
-		}
+		// TODO: this should be done in the semantic tokens provider or limited to visible ranges 
 		if (editor) {
-			editor.setDecorations(DelimiterDecorationType, this.call);
-			editor.setDecorations(ImportDecorationType, this.call2);
 			editor.setDecorations(DefaultBlueDecorationType, this.defaultBlue);
-			editor.setDecorations(VariableDecorationType, this.variableBlue);
+			editor.setDecorations(SubVariableDecorationType, this.variableBlue);
 			this.imports.forEach((i, n) => {
 				this.importRanges.push(i.range)
-				editor.setDecorations(ImportDecorationType, this.importRanges);
 			})
+			editor.setDecorations(ImportDecorationType, this.importRanges);
+			editor.setDecorations(DelimiterDecorationType, this.purpleType);
 		}
-		this.semanticTokensProvider?.updateTokens()
 
 		this.isUpdating = false;
 	}
@@ -343,8 +332,6 @@ export class TreeProvider {
 		if (valueNodes.length > 0) {
 			valueNodes.forEach(valueNode => {
 				if (!this.isValueInDeclaration(valueNode)) return;
-
-
 				variables.forEach((range, variableNode) => {
 					this.processVariableDeclaration(variableNode, valueNode, range);
 				});
@@ -382,7 +369,7 @@ export class TreeProvider {
 		const importNode = this.findChild(node, "identifier");
 		if (!importNode) return
 		const range = this.supplyRange(importNode);
-		this.processImportDeclaration(importNode, range, this.currentImports);
+		this.processImportDeclaration(importNode, range);
 	};
 	private enter: vscode.Range[] = [];
 	private exit: vscode.Range[] = [];
@@ -412,9 +399,9 @@ export class TreeProvider {
 			var c2 = this.findChildren(node, ["$"])
 			var c3 = this.findChildren(node, ["}"])
 			var c4 = this.findChildren(node, ["interpolated_identifier"])
-			c1.forEach(c => this.call.push(this.supplyRange(c)))
-			c2.forEach(c => this.call.push(this.supplyRange(c)))
-			c3.forEach(c => this.call.push(this.supplyRange(c)))
+			c1.forEach(c => this.purpleType.push(this.supplyRange(c)))
+			c2.forEach(c => this.purpleType.push(this.supplyRange(c)))
+			c3.forEach(c => this.purpleType.push(this.supplyRange(c)))
 			c4.forEach(c => {
 				var resolvedVariable = this.currentScope.hasVariableInScopeChain(c.text)
 				if (resolvedVariable) {
@@ -424,7 +411,9 @@ export class TreeProvider {
 		}
 
 		if (node.type === "property_declaration") {
-			this.processPropertyDeclaration(node);
+			if (!(this.findChild(node, "val") && this.findChild(node, "val")?.text != "val")) {
+				this.processPropertyDeclaration(node);
+			}
 		} else if (node.type == 'import_header') {
 			this.processImportDeclarations(node);
 		}
@@ -453,10 +442,10 @@ export class TreeProvider {
 
 	private handleSimpleIdentifier(node: SyntaxNode, byPassSI: boolean = false): void {
 		if (node.type == "navigation_expression") {
+			const normalizedText = node.text.replace(/\s+/g, '').trim();
 			var splitNodes = this.findChildren(node, ["simple_identifier"])
-			var splitText = node.text.split(".");
 			this.imports.forEach((i, key) => {
-				var barePath = this.givePath(node.text, i.segmentCount)
+				const barePath = this.givePath(normalizedText, i.segmentCount);
 				if (barePath == key) {
 					this.importRanges.push(this.supplyRange(splitNodes[i.segmentCount - 1]))
 				}
@@ -466,7 +455,12 @@ export class TreeProvider {
 		) {
 			const isUpperCase = /^[A-Z_0-9]+$/.test(node.text) && !this.hasParent(node, "import_list");
 			const variableRange = this.currentScope.resolveVariable(node.text)?.range;
-
+			var isRecordedImport = false
+			this.imports.forEach((i, key) => {
+				if (!isRecordedImport && node.text == i.simpleName) {
+					isRecordedImport = true
+				}
+			})
 			if (node.parent?.type !== "navigation_suffix") {
 				if (this.currentScope.hasVariableInScopeChain(node.text)) {
 					if (variableRange && !this.rangesEqual(variableRange, this.supplyRange(node))) {
@@ -474,6 +468,9 @@ export class TreeProvider {
 					} else if (isUpperCase) {
 						this.variableBlue.push(this.supplyRange(node));
 					}
+				} else if (isRecordedImport) {
+					this.importRanges.push(this.supplyRange(node))
+
 				} else if (isUpperCase) {
 					this.variableBlue.push(this.supplyRange(node));
 				}
@@ -614,8 +611,8 @@ export class TreeProvider {
 
 
 
-	private processImportDeclaration(node: TSParser.SyntaxNode, range: vscode.Range, currentImports: Set<string>) {
-		const importName = node.text;
+	private processImportDeclaration(node: TSParser.SyntaxNode, range: vscode.Range) {
+		const importName = node.text.replace(/\s+/g, '').trim();
 		if (!this.imports.has(importName)) {
 			this.imports.set(importName, new ImportSymbol(importName, range, node));
 		}
