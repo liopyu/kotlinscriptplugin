@@ -53,9 +53,14 @@ export function applyDecorations(parser: TreeProvider, document: vscode.TextDocu
 class Symbol {
     name: string;
     type: string | null;
+    range: vscode.Range | null;
     constructor(name: string, type: string | null = "kotlin.Unit") {
         this.name = name;
         this.type = type;
+        this.range = null;
+    }
+    public setRange(range: vscode.Range) {
+        this.range = range;
     }
 }
 export class Scope {
@@ -137,9 +142,7 @@ export class VariableSymbol extends Symbol {
         this.value = value;
         this.scope = scope;
     }
-    public setRange(range: vscode.Range) {
-        this.range = range;
-    }
+
 }
 
 
@@ -152,7 +155,7 @@ export class FunctionSymbol extends Symbol {
         this.returnType = returnType;
     }
 }
-export class ImportSymbol {
+export class ImportSymbol extends Symbol {
     simpleName: string;
     path: string;
     range: vscode.Range;
@@ -160,6 +163,8 @@ export class ImportSymbol {
     segmentCount: number = 0;
 
     constructor(path: string, range: vscode.Range, node: Parser.SyntaxNode) {
+        var somePath = path.split(".").pop()
+        super(somePath ? somePath : "", path);
         this.path = path;
         this.range = range;
         this.node = node;

@@ -16,6 +16,7 @@ import {
 	VariableType,
 	Scope
 } from './symbols';
+const t = true
 const individualLogging = false;
 const globalLogging = false;
 const editor = vscode.window.activeTextEditor;
@@ -208,51 +209,125 @@ export class TreeProvider {
 			this.isUpdating = false;
 			return;
 		}
+
 		this.defaultBlue = []
 		this.variableBlue = []
 		this.purpleType = []
 		this.importRanges = []
 		this.varId = 0
 		this.scopes.clear()
-		this.imports.clear()
+		//this.imports.clear()
 		this.currentScope = new Scope(null);
 		this.scopes.set(this.currentScope.id, this.currentScope)
-
 		this.traverseTree(this.tree.rootNode, changedRanges);
+		this.validateImports(this.tree)
 		this.validateVariables(this.tree);
+		this.imports.forEach((i, n) => {
+			this.importRanges.push(i.range)
+		})
 		// TODO: this should be done in the semantic tokens provider or limited to visible ranges 
 		if (editor) {
 			editor.setDecorations(DefaultBlueDecorationType, this.defaultBlue);
 			editor.setDecorations(SubVariableDecorationType, this.variableBlue);
-			this.imports.forEach((i, n) => {
-				this.importRanges.push(i.range)
-			})
+
 			editor.setDecorations(ImportDecorationType, this.importRanges);
 			editor.setDecorations(DelimiterDecorationType, this.purpleType);
 		}
 
 		this.isUpdating = false;
 	}
-
-	public getAffectedRange(node: TSParser.SyntaxNode): TSParser.SyntaxNode {
-		let current = node;
-		while (current.parent && current.parent.type !== "source_file") {
-			current = current.parent;
+	private traverseTree(node: SyntaxNode, ranges: vscode.Range[]): void {
+		const nodeRange = this.supplyRange(node);
+		const isInRange = ranges.some(range => range.intersection(nodeRange) !== undefined);
+		if (!isInRange) {
+			return;
 		}
-		return current;
+		/* console.log("Type: " + node.type + ", ParentType: " + node.parent?.type + ", GrandparentType: " + node.parent?.parent?.type)
+		console.log("Text: " + node.text + ", ParentText: " + node.parent?.text + ", GrandparentText: " + node.parent?.parent?.text) */
+		if (node.type == "lambda_parameters") {
+			const variables = this.extractVariables(node);
+			variables.forEach((range, variableNode) => {
+				this.processVariableDeclaration(variableNode, null, range);
+			})
+		}
+
+		this.handleSimpleIdentifier(node)
+
+		if (this.isSpecialHandleWord(node)) {
+			this.defaultBlue.push(this.supplyRange(node))
+		}
+		if (node.type == "string_literal") {
+			var c1 = this.findChildren(node, ["${"])
+			var c2 = this.findChildren(node, ["$"])
+			var c3 = this.findChildren(node, ["}"])
+			var c4 = this.findChildren(node, ["interpolated_identifier"])
+			c1.forEach(c => this.purpleType.push(this.supplyRange(c)))
+			c2.forEach(c => this.purpleType.push(this.supplyRange(c)))
+			c3.forEach(c => this.purpleType.push(this.supplyRange(c)))
+			c4.forEach(c => {
+				var resolvedVariable = this.currentScope.hasVariableInScopeChain(c.text)
+				if (resolvedVariable) {
+					this.handleSimpleIdentifier(c, true)
+				}
+			})
+		}
+
+		if (node.type === "property_declaration") {
+			if (!(this.findChild(node, "val") && this.findChild(node, "val")?.text != "val")) {
+				this.processPropertyDeclaration(node);
+			}
+		} else if (node.type == 'import_header') {
+			this.processImportDeclarations(node);
+		}
+
+
+		if (this.isBlockNode(node) || node.text == "{") {
+			this.enterScope(this.currentScope);
+			this.enter.push(this.supplyRange(node));
+		}
+
+
+		if (this.isBlockExitNode(node) || node.text == "}") {
+			this.exitScope();
+			this.exit.push(this.supplyRange(node));
+		}
+
+		node.children.forEach(child => this.traverseTree(child, ranges));
 	}
-	private nameFromKey(string: string) {
-		const parts = string.split("@");
-		return parts[0];
+	private validateImports(tree: TSParser.Tree): void {
+		const importsToRemove: string[] = [];
+		for (const [importKey, importSymbol] of this.imports.entries()) {
+			const expectedRange = importSymbol.range;
+			const identifierNode =
+				this.findParent(tree.rootNode.descendantForPosition({
+					row: expectedRange.start.line,
+					column: expectedRange.start.character,
+				}), "identifier")
+			if (!identifierNode) {
+				importsToRemove.push(importKey);
+				continue;
+			}
+			const actualRange = this.supplyRange(identifierNode);
+			const normalizedText = identifierNode.text.replace(/\s+/g, '').trim();
+			if (!this.rangesEqual(expectedRange, actualRange)) {
+				if (normalizedText == importSymbol.path) {
+					importSymbol.setRange(actualRange)
+					continue;
+				}
+			}
+			if (normalizedText !== importSymbol.path) {
+				importsToRemove.push(importKey);
+			}
+		}
+		for (const importKey of importsToRemove) {
+			this.imports.delete(importKey);
+			logContent(`Removed stale import '${importKey}'`);
+		}
 	}
-	private scopeIdFromKey(string: string) {
-		const parts = string.split("@");
-		return parts[1];
-	}
-	private variableIdFromKey(string: string) {
-		const parts = string.split("@");
-		return parts[2];
-	}
+
+
+
+
 	private validateVariables(tree: TSParser.Tree): void {
 		const variablesToRemove: string[] = [];
 
@@ -317,8 +392,25 @@ export class TreeProvider {
 			this.scopedVariables.delete(variableKey);
 		}
 	}
-
-
+	public getAffectedRange(node: TSParser.SyntaxNode): TSParser.SyntaxNode {
+		let current = node;
+		while (current.parent && current.parent.type !== "source_file") {
+			current = current.parent;
+		}
+		return current;
+	}
+	private nameFromKey(string: string) {
+		const parts = string.split("@");
+		return parts[0];
+	}
+	private scopeIdFromKey(string: string) {
+		const parts = string.split("@");
+		return parts[1];
+	}
+	private variableIdFromKey(string: string) {
+		const parts = string.split("@");
+		return parts[2];
+	}
 
 	private rangesEqual(range1: vscode.Range, range2: vscode.Range): boolean {
 		return range1.start.line === range2.start.line &&
@@ -374,64 +466,7 @@ export class TreeProvider {
 	private enter: vscode.Range[] = [];
 	private exit: vscode.Range[] = [];
 
-	private traverseTree(node: SyntaxNode, ranges: vscode.Range[]): void {
-		const nodeRange = this.supplyRange(node);
-		const isInRange = ranges.some(range => range.intersection(nodeRange) !== undefined);
-		if (!isInRange) {
-			return;
-		}
-		/* console.log("Type: " + node.type + ", ParentType: " + node.parent?.type + ", GrandparentType: " + node.parent?.parent?.type)
-		console.log("Text: " + node.text + ", ParentText: " + node.parent?.text + ", GrandparentText: " + node.parent?.parent?.text) */
-		if (node.type == "lambda_parameters") {
-			const variables = this.extractVariables(node);
-			variables.forEach((range, variableNode) => {
-				this.processVariableDeclaration(variableNode, null, range);
-			})
-		}
 
-		this.handleSimpleIdentifier(node)
-
-		if (this.isSpecialHandleWord(node)) {
-			this.defaultBlue.push(this.supplyRange(node))
-		}
-		if (node.type == "string_literal") {
-			var c1 = this.findChildren(node, ["${"])
-			var c2 = this.findChildren(node, ["$"])
-			var c3 = this.findChildren(node, ["}"])
-			var c4 = this.findChildren(node, ["interpolated_identifier"])
-			c1.forEach(c => this.purpleType.push(this.supplyRange(c)))
-			c2.forEach(c => this.purpleType.push(this.supplyRange(c)))
-			c3.forEach(c => this.purpleType.push(this.supplyRange(c)))
-			c4.forEach(c => {
-				var resolvedVariable = this.currentScope.hasVariableInScopeChain(c.text)
-				if (resolvedVariable) {
-					this.handleSimpleIdentifier(c, true)
-				}
-			})
-		}
-
-		if (node.type === "property_declaration") {
-			if (!(this.findChild(node, "val") && this.findChild(node, "val")?.text != "val")) {
-				this.processPropertyDeclaration(node);
-			}
-		} else if (node.type == 'import_header') {
-			this.processImportDeclarations(node);
-		}
-
-
-		if (this.isBlockNode(node) || node.text == "{") {
-			this.enterScope(this.currentScope);
-			this.enter.push(this.supplyRange(node));
-		}
-
-
-		if (this.isBlockExitNode(node) || node.text == "}") {
-			this.exitScope();
-			this.exit.push(this.supplyRange(node));
-		}
-
-		node.children.forEach(child => this.traverseTree(child, ranges));
-	}
 	private givePath(path: string, segments: number): string {
 		const parts = path.split('.');
 		if (segments <= 0 || segments > parts.length) {
@@ -441,7 +476,7 @@ export class TreeProvider {
 	}
 
 	private handleSimpleIdentifier(node: SyntaxNode, byPassSI: boolean = false): void {
-		if (node.type == "navigation_expression") {
+		if (node.type == "navigation_expression" && !this.hasParent(node, "import_header")) {
 			const normalizedText = node.text.replace(/\s+/g, '').trim();
 			var splitNodes = this.findChildren(node, ["simple_identifier"])
 			this.imports.forEach((i, key) => {
@@ -468,7 +503,7 @@ export class TreeProvider {
 					} else if (isUpperCase) {
 						this.variableBlue.push(this.supplyRange(node));
 					}
-				} else if (isRecordedImport) {
+				} else if (isRecordedImport && !this.hasParent(node, "import_header")) {
 					this.importRanges.push(this.supplyRange(node))
 
 				} else if (isUpperCase) {
@@ -563,6 +598,17 @@ export class TreeProvider {
 		}
 		return null;
 	}
+	private findParent(node: TSParser.SyntaxNode | null, type: string): TSParser.SyntaxNode | null {
+		let currentNode = node;
+		while (currentNode) {
+			if (currentNode.type === type) {
+				return currentNode;
+			}
+			currentNode = currentNode.parent;
+		}
+		return null;
+	}
+
 	private isValueInDeclaration(node: TSParser.SyntaxNode): boolean {
 		// Detects the `10` in `var x = 10`
 		return node.parent?.type === 'property_declaration' && expressionTypes.includes(node.type);
@@ -650,6 +696,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		this.treeProvider = treeProvider;
 		this.highlightQuery = highlightQuery;
 	}
+
 	updateTokens() {
 		const tree = this.treeProvider.tree
 		const builder = new vscode.SemanticTokensBuilder(LEGEND);
@@ -665,6 +712,23 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				} else if (capture.name == 'namespace' && node.firstChild) {
 					range = this.treeProvider.supplyRange(node.firstChild)
 				}
+				/* try {
+					this.treeProvider.variableBlue.forEach(range => {
+						builder.push(range, 'enumMember')
+					})
+					this.treeProvider.importRanges.forEach(range => {
+						builder.push(range, 'class')
+					})
+					this.treeProvider.defaultBlue.forEach(range => {
+						builder.push(range, 'keyword')
+					})
+
+					this.treeProvider.purpleType.forEach(range => {
+						builder.push(range, 'method')
+					})
+				} catch (error) {
+					console.error(error)
+				} */
 				this.processTokenType(capture, range, builder);
 			});
 		});
