@@ -287,6 +287,7 @@
 	"enum"
 	"class"
 	"object"
+	"companion"
 	"interface"
 ;	"typeof" ; NOTE: It is reserved for future use
 ] @keyword
@@ -366,6 +367,7 @@
 	"/="
 	"%"
 	"%="
+	"?"
 	"?."
 	"?:"
 	"!!"
@@ -377,6 +379,7 @@
 	"as?"
 	".."
 	"->"
+	"by"
 ] @operator
 
 [
