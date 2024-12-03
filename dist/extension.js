@@ -147,7 +147,17 @@ const blocks = [
     "control_structure_body",
     "class_body",
 ];
-const reservedWords = [
+const reservedCharacters = [
+    "_", "__", "...", "___",
+    "abstract", "as", "break", "class", "continue",
+    "do", "else", "false", "for", "fun",
+    "if", "in", "interface",
+    "is", "null", "object",
+    "package",
+    "return", "super", "this", "throw", "true", "try",
+    "typealias", "val", "var", "when", "while"
+];
+const reservedFunctions = [
     "arrayOf",
     "arrayOfNulls",
     "byteArrayOf",
@@ -354,16 +364,12 @@ class TreeProvider {
                 if (!this.isValueInDeclaration(valueNode))
                     return;
                 variables.forEach((range, variableNode) => {
-                    if (["_", "__", "...", "___"].includes(variableNode.text))
-                        return;
                     this.processVariableDeclaration(variableNode, valueNode, range, builder);
                 });
             });
         }
         else {
             variables.forEach((range, variableNode) => {
-                if (["_", "__", "...", "___"].includes(variableNode.text))
-                    return;
                 this.processVariableDeclaration(variableNode, null, range, builder);
             });
         }
@@ -418,7 +424,7 @@ class TreeProvider {
         }
         else if (((node.type === "simple_identifier" && node.parent?.type != "catch_block") || byPassSI) &&
             !this.isSpecialHandleWord(node)) {
-            const isUpperCase = /^[A-Z_0-9]+$/.test(node.text) && !this.hasParent(node, "import_list");
+            const isUpperCase = /^[A-Z_0-9]+$/.test(node.text) && !this.hasParent(node, "import_list") && !/^(_|__|___)$/.test(node.text);
             const variableRange = this.currentScope.resolveVariable(node.text)?.range;
             var isRecordedImport = false;
             this.imports.forEach((i, key) => {
@@ -547,6 +553,8 @@ class TreeProvider {
     }
     processVariableDeclaration(identifierNode, variableNode, range, builder) {
         const variableName = identifierNode.text;
+        if (reservedCharacters.includes(variableName))
+            return;
         if (this.currentScope.variables.has(variableName)) {
             logContent("Variable already defined in current scope: " + variableName + ", Depth: " + this.currentScope.depth +
                 ", Position: " + range.start.line + ":" + range.start.character);
@@ -679,8 +687,6 @@ class SemanticTokensProvider {
                     if (grand) {
                         const variables = this.treeProvider.extractVariables(grand);
                         variables.forEach((range, variableNode) => {
-                            if (["_", "__", "...", "___"].includes(variableNode.text))
-                                return;
                             this.treeProvider.processVariableDeclaration(variableNode, null, range, builder);
                         });
                     }
@@ -690,8 +696,6 @@ class SemanticTokensProvider {
                     if (n) {
                         const variables = this.treeProvider.extractVariables(n);
                         variables.forEach((range, variableNode) => {
-                            if (["_", "__", "...", "___"].includes(variableNode.text))
-                                return;
                             this.treeProvider.processVariableDeclaration(variableNode, null, range, builder);
                         });
                     }
@@ -735,7 +739,7 @@ class SemanticTokensProvider {
                     const foundNode = capture.node.parent?.parent;
                     const normalizedText = foundNode.text.replace(/\s+/g, '').trim();
                     var splitNodes = this.treeProvider.findChildren(foundNode, ["simple_identifier"]);
-                    const isUpperCase = /^[A-Z_0-9]+$/.test(foundNode.text) && !this.treeProvider.hasParent(foundNode, "import_list");
+                    const isUpperCase = /^[A-Z_0-9]+$/.test(foundNode.text) && !this.treeProvider.hasParent(foundNode, "import_list") && !/^(_|__|___)$/.test(node.text);
                     if (!isUpperCase) {
                         this.treeProvider.imports.forEach((i, key) => {
                             const barePath = this.treeProvider.givePath(normalizedText, i.segmentCount);
@@ -755,7 +759,7 @@ class SemanticTokensProvider {
                     tokenType = 'variable';
                 break;
             case 'function':
-                if (reservedWords.includes(capture?.node?.text)) {
+                if (reservedFunctions.includes(capture?.node?.text)) {
                     tokenType = 'function';
                 }
                 else {
@@ -903,7 +907,8 @@ class SemanticTokensProvider {
             builder.push(range, tokenType);
             /* console.log(`Token processed: name="${name}", flatName: ${capture.node.text}, ParentName: ${capture.node.parent?.text}, GrandParentName: ${capture.node.parent?.parent?.text}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
             console.log(`Token processed: name="${name}", flatName: ${capture.node.type}, ParentName: ${capture.node.parent?.type}, GrandParentName: ${capture.node.parent?.parent?.type}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.type}`);
-             */ //console.log(`Token processed: name="${name}", flatName: ${capture.node.type}, FirstChild: ${capture.node.firstChild?.type}, SecondChild: ${capture.node.child(1)?.type}, ThirdChild: ${capture.node.child(2)?.type}`);
+             */
+            //console.log(`Token processed: name="${name}", flatName: ${capture.node.type}, FirstChild: ${capture.node.firstChild?.type}, SecondChild: ${capture.node.child(1)?.type}, ThirdChild: ${capture.node.child(2)?.type}`);
         }
     }
     handleSimpleIdentifier(node, builder, byPassSI = false) {
@@ -911,7 +916,7 @@ class SemanticTokensProvider {
         console.log("handling simple identifier parent: " + node.parent?.type + ": " + node.parent?.text) */
         if (((node.type === "simple_identifier" && node.parent?.type != "catch_block") || byPassSI) &&
             !this.treeProvider.isSpecialHandleWord(node)) {
-            const isUpperCase = /^[A-Z_0-9]+$/.test(node.text) && !this.treeProvider.hasParent(node, "import_list");
+            const isUpperCase = /^[A-Z_0-9]+$/.test(node.text) && !this.treeProvider.hasParent(node, "import_list") && !/^(_|__|___)$/.test(node.text);
             var isRecordedImport = false;
             this.treeProvider.imports.forEach((i, key) => {
                 if (!isRecordedImport && node.text == i.simpleName) {
@@ -989,15 +994,6 @@ class KotlinScriptDefinitionProvider {
         return new vscode.Location(document.uri, matchingSymbol.range);
     }
 }
-function debounce(func, delay) {
-    let timeout;
-    return (...args) => {
-        clearTimeout(timeout);
-        return new Promise((resolve) => {
-            timeout = setTimeout(() => resolve(func(...args)), delay);
-        });
-    };
-}
 const documentData = new Map();
 function applyTreeEdit(tree, change) {
     const startPosition = { row: change.range.start.line, column: change.range.start.character };
@@ -1032,17 +1028,7 @@ function updateTokensForDocument(document) {
             const newTree = treeProvider.parser.parse(changes, treeProvider.tree);
             treeProvider.tree = newTree;
         }
-        /* if (!treeProvider.isUpdating) {
-            treeProvider.updateTokens(editor.visibleRanges);
-        } */
         if (!treeProvider.isUpdating) {
-            const documentLineCount = document.lineCount;
-            const lineBoundary = 1000;
-            const startLine = Math.max(0, editor.visibleRanges[0].start.line - lineBoundary);
-            const endLine = Math.min(documentLineCount - 1, editor.visibleRanges[0].end.line + lineBoundary);
-            const affectedRanges = [
-                new vscode.Range(startLine, 0, endLine, Number.MAX_SAFE_INTEGER),
-            ];
             treeProvider.updateTokens();
         }
         /* const variableDefinitionProvider = new KotlinScriptDefinitionProvider(treeProvider.getscopedVariables());
@@ -1118,7 +1104,6 @@ async function activate(context) {
         addDocumentIfNotExists(editor.document);
         var doc = documentData.get(editor.document.uri.toString());
         if (doc) {
-            //updateTokensForDocument(editor.document);
             if (semanticTokensEnabled) {
                 doc.treeProvider.semanticTokensProvider = new SemanticTokensProvider(doc.treeProvider, highlightQuery);
                 context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider(selector, doc.treeProvider.semanticTokensProvider, LEGEND));
