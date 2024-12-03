@@ -670,7 +670,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		const builder = new vscode.SemanticTokensBuilder(LEGEND);
 		if (!tree) return builder.build()
 		const matches = this.highlightQuery.matches(tree.rootNode);
-		console.log("updating semantic tokens...");
+		//console.log("updating semantic tokens...");
 		this.treeProvider.updateTokens()
 		this.tempInterpolatedRanges = []
 		matches.forEach(match => {
