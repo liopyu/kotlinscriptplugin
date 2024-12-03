@@ -199,6 +199,9 @@ export class TreeProvider {
 	public defaultBlue: vscode.Range[] = []
 	public variableBlue: vscode.Range[] = []
 	public importRanges: vscode.Range[] = []
+	public diagnostics: vscode.Diagnostic[] = [];
+	public diagnosticsMap: Map<string, vscode.Diagnostic[]> = new Map();
+	public diagnosticCollection: vscode.DiagnosticCollection = vscode.languages.createDiagnosticCollection("kotlinscript");
 	constructor(parser: TSParser, document: vscode.TextDocument) {
 		this.parser = parser;
 		logGlobals("initializing tokens provider")
@@ -221,12 +224,13 @@ export class TreeProvider {
 		this.purpleType = []
 		this.importRanges = []
 		this.varId = 0
+		if (this.diagnosticCollection) {
+			this.diagnosticCollection.dispose();
+		}
+		this.diagnosticCollection = vscode.languages.createDiagnosticCollection("kotlinscript");
 		this.scopes.clear()
 		this.currentScope = new Scope(null);
 		this.scopes.set(this.currentScope.id, this.currentScope)
-		//if (t) return
-		this.validateImports(this.tree)
-		this.validateVariables(this.tree);
 		this.isUpdating = false;
 	}
 
@@ -564,7 +568,37 @@ export class TreeProvider {
 			node.endPosition.column
 		)
 	}
+	public createDiagnostic(range: vscode.Range, message: string): vscode.Diagnostic {
+		return new vscode.Diagnostic(range, message, vscode.DiagnosticSeverity.Error);
+	}
 
+	// add diagnostics to the collection with deduplication
+	public addDiagnostics(diagnostics: vscode.Diagnostic[]): void {
+		const uri = vscode.window.activeTextEditor?.document.uri;
+		if (!uri) return;
+
+		// retrieve current diagnostics for the document
+		const currentDiagnostics = this.diagnosticsMap.get(uri.toString()) || [];
+
+		// deduplicate diagnostics
+		const newDiagnostics = diagnostics.filter(newDiagnostic =>
+			!currentDiagnostics.some(existingDiagnostic =>
+				this.areDiagnosticsEqual(existingDiagnostic, newDiagnostic)
+			)
+		);
+
+		// update the map and diagnostic collection
+		const updatedDiagnostics = [...currentDiagnostics, ...newDiagnostics];
+		this.diagnosticsMap.set(uri.toString(), updatedDiagnostics);
+		this.diagnosticCollection.set(uri, updatedDiagnostics);
+	}
+
+	// helper to compare two diagnostics for equality
+	public areDiagnosticsEqual(a: vscode.Diagnostic, b: vscode.Diagnostic): boolean {
+		return a.message === b.message &&
+			a.range.isEqual(b.range) &&
+			a.severity === b.severity;
+	}
 	public processVariableDeclaration(
 		identifierNode: TSParser.SyntaxNode,
 		variableNode: TSParser.SyntaxNode | null,
@@ -572,7 +606,12 @@ export class TreeProvider {
 		builder: vscode.SemanticTokensBuilder
 	): void {
 		const variableName = identifierNode.text;
-		if (reservedCharacters.includes(variableName)) return;
+		if (reservedCharacters.includes(variableName)) {
+			const errorMessage = `Cannot define reserved identifier: '${variableName}'`;
+			this.diagnostics.push(this.createDiagnostic(range, errorMessage));
+			return
+		}
+
 		if (this.currentScope.variables.has(variableName)) {
 			logContent("Variable already defined in current scope: " + variableName + ", Depth: " + this.currentScope.depth +
 				", Position: " + range.start.line + ":" + range.start.character
@@ -730,6 +769,11 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			this.treeProvider.validateImports(this.treeProvider.tree)
 			this.treeProvider.validateVariables(this.treeProvider.tree);
 		}
+		if (this.treeProvider.diagnostics.length > 0) {
+			this.treeProvider.addDiagnostics(this.treeProvider.diagnostics);
+		}
+		this.treeProvider.diagnostics = []
+		this.treeProvider.diagnosticsMap.clear();
 		return builder.build();
 	}
 
@@ -1076,8 +1120,13 @@ function updateTokensForDocument(
 			const newTree = treeProvider.parser.parse(changes, treeProvider.tree);
 			treeProvider.tree = newTree;
 		}
+		/* if (treeProvider.diagnostics.length > 0) {
+			treeProvider.addDiagnostics(treeProvider.diagnostics);
+			return;
+		} */
 		if (!treeProvider.isUpdating) {
 			treeProvider.updateTokens();
+			treeProvider.semanticTokensProvider?.updateTokens()
 		}
 		/* const variableDefinitionProvider = new KotlinScriptDefinitionProvider(treeProvider.getscopedVariables());
 		context.subscriptions.push(
@@ -1086,6 +1135,7 @@ function updateTokensForDocument(
 	}
 }
 const semanticTokensEnabled = true
+
 export async function activate(context: vscode.ExtensionContext) {
 	const config = vscode.workspace.getConfiguration('kotlinscript');
 	const ktsDirectory = config.get<string>('ktsDirectory', 'config/scripts');
@@ -1145,7 +1195,12 @@ export async function activate(context: vscode.ExtensionContext) {
 						Number.MAX_SAFE_INTEGER
 					));
 				});
+				/* if (treeProvider.diagnostics.length > 0) {
+					treeProvider.addDiagnostics(treeProvider.diagnostics);
+					return;
+				} */
 				treeProvider.updateTokens();
+
 			}
 		}
 	});
