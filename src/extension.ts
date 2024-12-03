@@ -925,7 +925,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			builder.push(range, tokenType);
 			/* console.log(`Token processed: name="${name}", flatName: ${capture.node.text}, ParentName: ${capture.node.parent?.text}, GrandParentName: ${capture.node.parent?.parent?.text}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
 			console.log(`Token processed: name="${name}", flatName: ${capture.node.type}, ParentName: ${capture.node.parent?.type}, GrandParentName: ${capture.node.parent?.parent?.type}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.type}`);
-			 *///console.log(`Token processed: name="${name}", flatName: ${capture.node.type}, FirstChild: ${capture.node.firstChild?.type}, SecondChild: ${capture.node.child(1)?.type}, ThirdChild: ${capture.node.child(2)?.type}`);
+			 */
+			//console.log(`Token processed: name="${name}", flatName: ${capture.node.type}, FirstChild: ${capture.node.firstChild?.type}, SecondChild: ${capture.node.child(1)?.type}, ThirdChild: ${capture.node.child(2)?.type}`);
 
 		}
 	}
@@ -1029,17 +1030,6 @@ class KotlinScriptDefinitionProvider implements vscode.DefinitionProvider {
 	}
 }
 
-function debounce<T extends (...args: any[]) => any>(func: T, delay: number) {
-	let timeout: NodeJS.Timeout;
-	return (...args: Parameters<T>) => {
-		clearTimeout(timeout);
-		return new Promise<ReturnType<T>>((resolve) => {
-			timeout = setTimeout(() => resolve(func(...args)), delay);
-		});
-	};
-}
-
-
 const documentData = new Map<string, CustomData>();
 interface CustomData {
 	treeProvider: TreeProvider;
@@ -1079,23 +1069,7 @@ function updateTokensForDocument(
 			const newTree = treeProvider.parser.parse(changes, treeProvider.tree);
 			treeProvider.tree = newTree;
 		}
-		/* if (!treeProvider.isUpdating) {
-			treeProvider.updateTokens(editor.visibleRanges);
-		} */
 		if (!treeProvider.isUpdating) {
-			const documentLineCount = document.lineCount;
-			const lineBoundary = 1000;
-			const startLine = Math.max(0, editor.visibleRanges[0].start.line - lineBoundary);
-			const endLine = Math.min(documentLineCount - 1, editor.visibleRanges[0].end.line + lineBoundary);
-
-			const affectedRanges = [
-				new vscode.Range(
-					startLine,
-					0,
-					endLine,
-					Number.MAX_SAFE_INTEGER
-				),
-			];
 			treeProvider.updateTokens();
 		}
 		/* const variableDefinitionProvider = new KotlinScriptDefinitionProvider(treeProvider.getscopedVariables());
@@ -1178,7 +1152,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		addDocumentIfNotExists(editor.document);
 		var doc = documentData.get(editor.document.uri.toString())
 		if (doc) {
-			//updateTokensForDocument(editor.document);
 			if (semanticTokensEnabled) {
 				doc.treeProvider.semanticTokensProvider = new SemanticTokensProvider(doc.treeProvider, highlightQuery);
 				context.subscriptions.push(
