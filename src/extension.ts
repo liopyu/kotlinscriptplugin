@@ -125,7 +125,17 @@ const blocks = [
 	"control_structure_body",
 	"class_body",
 ]
-const reservedWords = [
+const reservedCharacters = [
+	"_", "__", "...", "___",
+	"abstract", "as", "break", "class", "continue",
+	"do", "else", "false", "for", "fun",
+	"if", "in", "interface",
+	"is", "null", "object",
+	"package",
+	"return", "super", "this", "throw", "true", "try",
+	"typealias", "val", "var", "when", "while"
+]
+const reservedFunctions = [
 	"arrayOf",
 	"arrayOfNulls",
 	"byteArrayOf",
@@ -348,13 +358,11 @@ export class TreeProvider {
 			valueNodes.forEach(valueNode => {
 				if (!this.isValueInDeclaration(valueNode)) return;
 				variables.forEach((range, variableNode) => {
-					if (["_", "__", "...", "___"].includes(variableNode.text)) return;
 					this.processVariableDeclaration(variableNode, valueNode, range, builder)
 				});
 			});
 		} else {
 			variables.forEach((range, variableNode) => {
-				if (["_", "__", "...", "___"].includes(variableNode.text)) return;
 				this.processVariableDeclaration(variableNode, null, range, builder);
 			})
 		}
@@ -414,7 +422,7 @@ export class TreeProvider {
 		} else if (((node.type === "simple_identifier" && node.parent?.type != "catch_block") || byPassSI) &&
 			!this.isSpecialHandleWord(node)
 		) {
-			const isUpperCase = /^[A-Z_0-9]+$/.test(node.text) && !this.hasParent(node, "import_list");
+			const isUpperCase = /^[A-Z_0-9]+$/.test(node.text) && !this.hasParent(node, "import_list") && !/^(_|__|___)$/.test(node.text)
 			const variableRange = this.currentScope.resolveVariable(node.text)?.range;
 			var isRecordedImport = false
 			this.imports.forEach((i, key) => {
@@ -564,6 +572,7 @@ export class TreeProvider {
 		builder: vscode.SemanticTokensBuilder
 	): void {
 		const variableName = identifierNode.text;
+		if (reservedCharacters.includes(variableName)) return;
 		if (this.currentScope.variables.has(variableName)) {
 			logContent("Variable already defined in current scope: " + variableName + ", Depth: " + this.currentScope.depth +
 				", Position: " + range.start.line + ":" + range.start.character
@@ -702,7 +711,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 					if (grand) {
 						const variables = this.treeProvider.extractVariables(grand);
 						variables.forEach((range, variableNode) => {
-							if (["_", "__", "...", "___"].includes(variableNode.text)) return;
 							this.treeProvider.processVariableDeclaration(variableNode, null, range, builder);
 						})
 					}
@@ -711,7 +719,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 					if (n) {
 						const variables = this.treeProvider.extractVariables(n);
 						variables.forEach((range, variableNode) => {
-							if (["_", "__", "...", "___"].includes(variableNode.text)) return;
 							this.treeProvider.processVariableDeclaration(variableNode, null, range, builder);
 						})
 					}
@@ -755,7 +762,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 					const foundNode = capture.node.parent?.parent
 					const normalizedText = foundNode.text.replace(/\s+/g, '').trim();
 					var splitNodes = this.treeProvider.findChildren(foundNode, ["simple_identifier"])
-					const isUpperCase = /^[A-Z_0-9]+$/.test(foundNode.text) && !this.treeProvider.hasParent(foundNode, "import_list");
+					const isUpperCase = /^[A-Z_0-9]+$/.test(foundNode.text) && !this.treeProvider.hasParent(foundNode, "import_list") && !/^(_|__|___)$/.test(node.text)
 					if (!isUpperCase) {
 						this.treeProvider.imports.forEach((i, key) => {
 							const barePath = this.treeProvider.givePath(normalizedText, i.segmentCount);
@@ -771,7 +778,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				} else tokenType = 'variable';
 				break
 			case 'function':
-				if (reservedWords.includes(capture?.node?.text)) {
+				if (reservedFunctions.includes(capture?.node?.text)) {
 					tokenType = 'function';
 				} else {
 					return
@@ -936,7 +943,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		if (((node.type === "simple_identifier" && node.parent?.type != "catch_block") || byPassSI) &&
 			!this.treeProvider.isSpecialHandleWord(node)
 		) {
-			const isUpperCase = /^[A-Z_0-9]+$/.test(node.text) && !this.treeProvider.hasParent(node, "import_list");
+			const isUpperCase = /^[A-Z_0-9]+$/.test(node.text) && !this.treeProvider.hasParent(node, "import_list") && !/^(_|__|___)$/.test(node.text)
 			var isRecordedImport = false
 			this.treeProvider.imports.forEach((i, key) => {
 				if (!isRecordedImport && node.text == i.simpleName) {
