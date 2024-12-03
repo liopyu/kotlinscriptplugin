@@ -224,10 +224,11 @@ export class TreeProvider {
 		this.purpleType = []
 		this.importRanges = []
 		this.varId = 0
-		if (this.diagnosticCollection) {
+		console.log("Updating tokens")
+		/* if (this.diagnosticCollection) {
 			this.diagnosticCollection.dispose();
-		}
-		this.diagnosticCollection = vscode.languages.createDiagnosticCollection("kotlinscript");
+		} */
+		//this.diagnosticCollection = vscode.languages.createDiagnosticCollection("kotlinscript");
 		this.scopes.clear()
 		this.currentScope = new Scope(null);
 		this.scopes.set(this.currentScope.id, this.currentScope)
@@ -673,6 +674,10 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		//console.log("updating semantic tokens...");
 		this.treeProvider.updateTokens()
 		this.tempInterpolatedRanges = []
+		if (this.treeProvider.diagnosticCollection) {
+			this.treeProvider.diagnosticCollection.dispose();
+		}
+		this.treeProvider.diagnosticCollection = vscode.languages.createDiagnosticCollection("kotlinscript");
 		matches.forEach(match => {
 			match.captures.forEach(capture => {
 				const node = capture.node;
@@ -1116,7 +1121,7 @@ function updateTokensForDocument(
 		} */
 		if (!treeProvider.isUpdating) {
 			treeProvider.updateTokens();
-			treeProvider.semanticTokensProvider?.updateTokens()
+			/* treeProvider.semanticTokensProvider?.updateTokens() */
 		}
 		/* const variableDefinitionProvider = new KotlinScriptDefinitionProvider(treeProvider.getscopedVariables());
 		context.subscriptions.push(
@@ -1185,11 +1190,7 @@ export async function activate(context: vscode.ExtensionContext) {
 						Number.MAX_SAFE_INTEGER
 					));
 				});
-				/* if (treeProvider.diagnostics.length > 0) {
-					treeProvider.addDiagnostics(treeProvider.diagnostics);
-					return;
-				} */
-				treeProvider.updateTokens();
+				//treeProvider.updateTokens();
 
 			}
 		}
