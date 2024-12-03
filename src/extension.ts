@@ -571,29 +571,19 @@ export class TreeProvider {
 	public createDiagnostic(range: vscode.Range, message: string): vscode.Diagnostic {
 		return new vscode.Diagnostic(range, message, vscode.DiagnosticSeverity.Error);
 	}
-
-	// add diagnostics to the collection with deduplication
 	public addDiagnostics(diagnostics: vscode.Diagnostic[]): void {
 		const uri = vscode.window.activeTextEditor?.document.uri;
 		if (!uri) return;
-
-		// retrieve current diagnostics for the document
 		const currentDiagnostics = this.diagnosticsMap.get(uri.toString()) || [];
-
-		// deduplicate diagnostics
 		const newDiagnostics = diagnostics.filter(newDiagnostic =>
 			!currentDiagnostics.some(existingDiagnostic =>
 				this.areDiagnosticsEqual(existingDiagnostic, newDiagnostic)
 			)
 		);
-
-		// update the map and diagnostic collection
 		const updatedDiagnostics = [...currentDiagnostics, ...newDiagnostics];
 		this.diagnosticsMap.set(uri.toString(), updatedDiagnostics);
 		this.diagnosticCollection.set(uri, updatedDiagnostics);
 	}
-
-	// helper to compare two diagnostics for equality
 	public areDiagnosticsEqual(a: vscode.Diagnostic, b: vscode.Diagnostic): boolean {
 		return a.message === b.message &&
 			a.range.isEqual(b.range) &&
