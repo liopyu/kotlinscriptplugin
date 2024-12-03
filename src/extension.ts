@@ -697,6 +697,24 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				} else if (this.treeProvider.isBlockExitNode(node) || (capture.name == "punctuation.bracket" && node.text == "}" && node.type == "}")) {
 					this.treeProvider.exitScope();
 					this.treeProvider.exit.push(this.treeProvider.supplyRange(node));
+				} else if (node.parent?.parent?.type == "lambda_parameters") {
+					var grand = node.parent?.parent
+					if (grand) {
+						const variables = this.treeProvider.extractVariables(grand);
+						variables.forEach((range, variableNode) => {
+							if (["_", "__", "...", "___"].includes(variableNode.text)) return;
+							this.treeProvider.processVariableDeclaration(variableNode, null, range, builder);
+						})
+					}
+				} else if (capture.name == "repeat") {
+					var n = this.treeProvider.findParent(node, "for_statement")
+					if (n) {
+						const variables = this.treeProvider.extractVariables(n);
+						variables.forEach((range, variableNode) => {
+							if (["_", "__", "...", "___"].includes(variableNode.text)) return;
+							this.treeProvider.processVariableDeclaration(variableNode, null, range, builder);
+						})
+					}
 				}
 				this.processTokenType(capture, range, builder);
 			});
