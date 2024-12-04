@@ -19,7 +19,8 @@ export const SubVariableDecorationType = vscode.window.createTextEditorDecoratio
     //textDecoration: 'underline'
 });
 export const ImportDecorationType = vscode.window.createTextEditorDecorationType({
-    color: '#4ec9b0',
+    color: '#ff0000',
+    textDecoration: 'underline'
 });
 export const MethodDecorationType = vscode.window.createTextEditorDecorationType({
     color: '#FFD700',

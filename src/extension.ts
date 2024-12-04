@@ -610,6 +610,17 @@ export class TreeProvider {
 	public provideErrorKey(start: vscode.Position, end: vscode.Position): string {
 		return `${start.line}@${start.character}@${end.line}@${end.character}`;
 	}
+	public static addError(range: vscode.Range, message: string, errorText: string) {
+		if (editor) {
+			const documentUri = editor.document.uri.toString();
+			const data = documentData.get(documentUri);
+			if (data) {
+				const treeProvider = data.treeProvider
+				treeProvider.diagnostics.push(treeProvider.createDiagnostic(range, message));
+				treeProvider.diagnosticsValues.set(treeProvider.provideErrorKey(range.start, range.end), errorText);
+			}
+		}
+	}
 	public processVariableDeclaration(
 		identifierNode: TSParser.SyntaxNode,
 		variableNode: TSParser.SyntaxNode | null,
@@ -619,15 +630,13 @@ export class TreeProvider {
 		const variableName = identifierNode.text;
 		if (reservedCharacters.includes(variableName)) {
 			const errorMessage = `Cannot define reserved identifier: '${variableName}'`;
-			this.diagnostics.push(this.createDiagnostic(range, errorMessage));
-			this.diagnosticsValues.set(this.provideErrorKey(range.start, range.end), variableName);
+			TreeProvider.addError(range, errorMessage, variableName)
 			return
 		}
 
 		if (this.currentScope.variables.has(variableName)) {
-			logContent("Variable already defined in current scope: " + variableName + ", Depth: " + this.currentScope.depth +
-				", Position: " + range.start.line + ":" + range.start.character
-			)
+			const errorMessage = `Variable "${variableName}" is already defined in current scope.`;
+			TreeProvider.addError(range, errorMessage, variableName)
 			return;
 		}
 		this.varId++
@@ -669,9 +678,9 @@ export class TreeProvider {
 	}
 
 
-	exitScope(): void {
+	exitScope(node: SyntaxNode): void {
 		if (!this.currentScope.parentScope) {
-			console.error("cannot exit gloabl scope:")
+			TreeProvider.addError(this.supplyRange(node), "Cannot exit global scope", node.text)
 			return;
 		}
 		this.currentScope = this.currentScope.parentScope;
@@ -687,13 +696,18 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		this.highlightQuery = highlightQuery;
 	}
 	private tempInterpolatedRanges: vscode.Range[] = [];
+	public errorType: vscode.Range[] = []
 	updateTokens() {
 		const tree = this.treeProvider.tree
 		const builder = new vscode.SemanticTokensBuilder(LEGEND);
 		if (!tree) return builder.build()
 		const matches = this.highlightQuery.matches(tree.rootNode);
+		console.log("Updating SemanticTokens")
 		this.treeProvider.updateTokens()
 		this.tempInterpolatedRanges = []
+		this.errorType = []
+		this.map = []
+		this.traverseTree(tree.rootNode)
 		matches.forEach(match => {
 			match.captures.forEach(capture => {
 				const node = capture.node;
@@ -754,7 +768,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 					this.treeProvider.enterScope(this.treeProvider.currentScope);
 					this.treeProvider.enter.push(this.treeProvider.supplyRange(node));
 				} else if (this.treeProvider.isBlockExitNode(node) || (capture.name == "punctuation.bracket" && node.text == "}" && node.type == "}")) {
-					this.treeProvider.exitScope();
+					this.treeProvider.exitScope(node);
 					this.treeProvider.exit.push(this.treeProvider.supplyRange(node));
 				} else if (node.parent?.parent?.type == "lambda_parameters") {
 					var grand = node.parent?.parent
@@ -779,8 +793,10 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		if (this.treeProvider.tree) {
 			this.treeProvider.validateImports(this.treeProvider.tree)
 			this.treeProvider.validateVariables(this.treeProvider.tree);
-			if (editor)
+			if (editor) {
 				this.treeProvider.validateDiagnostics(editor?.document)
+				editor.setDecorations(ImportDecorationType, this.errorType);
+			}
 		}
 		if (this.treeProvider.diagnostics.length > 0) {
 			this.treeProvider.addDiagnostics(this.treeProvider.diagnostics);
@@ -992,6 +1008,221 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 		}
 	}
+	public traverseTree(node: SyntaxNode): void {
+		const erroringNode = node.firstChild?.nextNamedSibling ? node.firstChild.nextNamedSibling : node.firstChild
+		if (node.isError && erroringNode) {
+			const range = this.treeProvider.supplyRange(erroringNode);
+			const expectedType = this.getExpectedNextType(erroringNode);
+
+			const actualText = erroringNode.text || "none";
+
+			const errorMessage = expectedType ? `Unexpected token: "${actualText}", expected: "${expectedType}"` : `Unexpected token: "${actualText}"`;
+			TreeProvider.addError(range, errorMessage, node.text)
+		}
+		node.children.forEach(child => this.traverseTree(child));
+	}
+
+	private map: string[] = []
+
+	private getExpectedNextType(node: SyntaxNode): string | null {
+		switch (node.type) {
+			case "parameter":
+				return "typeAnnotation";
+			case "class_declaration":
+			case "function_declaration":
+			case "object_declaration":
+				return "{";
+			case "type_alias":
+				return "=";
+			case "variable_declaration":
+				return "typeAnnotation";
+			case "assignment":
+				return "expression";
+			case "if_expression":
+			case "while_statement":
+			case "do_while_statement":
+				return "(";
+			case "for_statement":
+				return "in";
+			case "type_parameter":
+				return ":";
+			case "when_expression":
+				return "{";
+			case "annotation":
+				return "identifier";
+			case "value_arguments":
+				return "(";
+			case "value_argument":
+				return "expression";
+			case "primary_expression":
+				return "operator";
+			case "_block":
+			case "control_structure_body":
+				return "}";
+			case "lambda_literal":
+				return "statements";
+			case "type_constraint":
+				return ":";
+			case "type_parameters":
+				return ">";
+			case "line_comment":
+			case "multiline_comment":
+				return null;
+
+			case "fun":
+				return "function_value_parameters";
+
+			case "user_type":
+			case "type_identifier":
+			case "simple_identifier":
+				return null;
+
+			case ":":
+				return "type";
+
+			case "{":
+				return "statements";
+
+			case "statements":
+				return "}";
+
+			case "call_expression":
+				return "call_suffix";
+
+			case "call_suffix":
+				return null;
+
+			case "(":
+				return "parameters";
+
+			case "string_literal":
+			case "string_content":
+			case "interpolated_identifier":
+				return null;
+
+			case ")":
+				return null;
+
+			case "}":
+				return null;
+
+			case "function_value_parameters":
+				return ":";
+
+			case ",":
+				return "parameter";
+
+			case "function_body":
+				return null;
+
+			case "=":
+				return "expression";
+
+			case "additive_expression":
+				return "+";
+
+			case "+":
+				return "expression";
+
+			case "if":
+				return "(";
+
+			case "infix_expression":
+				return "operator";
+
+			case "boolean_literal":
+				return null;
+
+			case "annotated_lambda":
+				return "statements";
+
+			case "property_declaration":
+				return "=";
+
+			case "binding_pattern_kind":
+				return "identifier";
+
+			case "val":
+				return "variable_declaration";
+
+			case "integer_literal":
+				return null;
+
+			case "comparison_expression":
+				return "operator";
+
+			case ">":
+				return null;
+
+			case "anonymous_function":
+				return "function_body";
+
+			case "collection_literal":
+				return "]";
+
+			case "[":
+				return "elements";
+
+			case "]":
+				return null;
+
+			case "jump_expression":
+				return null;
+
+			case "return":
+				return "expression";
+
+			case "class":
+				return "class_body";
+
+			case "class_body":
+				return "}";
+
+			case "anonymous_initializer":
+				return "statements";
+
+			case "init":
+				return "statements";
+
+			case "navigation_expression":
+				return "navigation_suffix";
+
+			case "super_expression":
+				return null;
+
+			case "super":
+				return ".";
+
+			case "navigation_suffix":
+				return "identifier";
+
+			case ".":
+				return "identifier";
+
+			case "type_modifiers":
+				return "type";
+
+			case "@":
+				return "annotation";
+
+			case ";":
+				return null;
+			case "$":
+				return "interpolation";
+
+			case "true":
+				return null;
+			case "source_file":
+				return null
+
+			default:
+				/* if (!this.map.includes(node.type)) {
+					console.log("Unknown type: " + node.type);
+					this.map.push(node.type);
+				} */
+				return null;
+		}
+	}
 	public handleSimpleIdentifier(node: SyntaxNode, builder: vscode.SemanticTokensBuilder, byPassSI: boolean = false): void {
 		/* console.log("handling simple identifier: " + node.type + ": " + node.text)
 		console.log("handling simple identifier parent: " + node.parent?.type + ": " + node.parent?.text) */
@@ -1011,7 +1242,10 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			} else if (node.parent?.type !== "navigation_suffix") {
 				const variableRange = this.treeProvider.currentScope.resolveVariable(node.text)?.range;
 				if (this.treeProvider.currentScope.hasVariableInScopeChain(node.text)) {
-					if (variableRange && !this.treeProvider.rangesEqual(variableRange, this.treeProvider.supplyRange(node))) {
+					if (variableRange &&
+						/* !this.treeProvider.rangesEqual(variableRange, this.treeProvider.supplyRange(node)) && */
+						node.parent?.type != "variable_declaration"
+					) {
 						builder.push(this.treeProvider.supplyRange(node), "enumMember")
 						return
 					}
