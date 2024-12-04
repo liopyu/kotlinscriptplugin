@@ -229,6 +229,9 @@ export class TreeProvider {
 		this.currentScope = new Scope(null);
 		this.scopes.set(this.currentScope.id, this.currentScope)
 		this.isUpdating = false;
+		if (editor) {
+			this.validateDiagnostics(editor?.document)
+		}
 	}
 	public validateDiagnostics(document: vscode.TextDocument): void {
 		const diagnosticsToRemove: string[] = [];
@@ -249,11 +252,11 @@ export class TreeProvider {
 		diagnosticsToRemove.forEach(errorKey => {
 			const uri = vscode.window.activeTextEditor?.document.uri;
 			if (!uri) return;
-			this.diagnosticsValues.delete(errorKey);
 			const currentDiagnostics = this.diagnosticsMap.get(uri.toString()) || [];
 			const updatedDiagnostics = currentDiagnostics.filter(
-				diagnostic => this.provideErrorKey(diagnostic.range.start, diagnostic.range.end) !== errorKey
+				diagnostic => this.provideErrorKey(diagnostic.range.start, diagnostic.range.end, diagnostic.message) !== errorKey
 			);
+			this.diagnosticsValues.delete(errorKey);
 			this.diagnostics = updatedDiagnostics
 			this.diagnosticsMap.set(uri.toString(), updatedDiagnostics);
 			this.diagnosticCollection.set(uri, updatedDiagnostics);
@@ -607,8 +610,8 @@ export class TreeProvider {
 			a.range.isEqual(b.range) &&
 			a.severity === b.severity;
 	}
-	public provideErrorKey(start: vscode.Position, end: vscode.Position): string {
-		return `${start.line}@${start.character}@${end.line}@${end.character}`;
+	public provideErrorKey(start: vscode.Position, end: vscode.Position, errorMessage: string): string {
+		return `${start.line}@${start.character}@${end.line}@${end.character}@${errorMessage}`;
 	}
 	public static addError(range: vscode.Range, message: string, errorText: string) {
 		if (editor) {
@@ -616,8 +619,11 @@ export class TreeProvider {
 			const data = documentData.get(documentUri);
 			if (data) {
 				const treeProvider = data.treeProvider
-				treeProvider.diagnostics.push(treeProvider.createDiagnostic(range, message));
-				treeProvider.diagnosticsValues.set(treeProvider.provideErrorKey(range.start, range.end), errorText);
+				const errorKey = treeProvider.provideErrorKey(range.start, range.end, message);
+				if (!treeProvider.diagnosticsValues.has(errorKey)) {
+					treeProvider.diagnostics.push(treeProvider.createDiagnostic(range, message));
+					treeProvider.diagnosticsValues.set(treeProvider.provideErrorKey(range.start, range.end, message), errorText);
+				}
 			}
 		}
 	}
@@ -635,8 +641,13 @@ export class TreeProvider {
 		}
 
 		if (this.currentScope.variables.has(variableName)) {
-			const errorMessage = `Variable "${variableName}" is already defined in current scope.`;
-			TreeProvider.addError(range, errorMessage, variableName)
+			const originalRange = this.currentScope.resolveVariable(variableName)?.range
+			if (originalRange) {
+				if (!this.rangesEqual(originalRange, range)) {
+					const errorMessage = `Variable "${variableName}" is already defined in current scope`
+					TreeProvider.addError(range, errorMessage, variableName)
+				}
+			}
 			return;
 		}
 		this.varId++
@@ -795,7 +806,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			this.treeProvider.validateVariables(this.treeProvider.tree);
 			if (editor) {
 				this.treeProvider.validateDiagnostics(editor?.document)
-				editor.setDecorations(ImportDecorationType, this.errorType);
 			}
 		}
 		if (this.treeProvider.diagnostics.length > 0) {
