@@ -200,6 +200,7 @@ export class TreeProvider {
 	public variableBlue: vscode.Range[] = []
 	public importRanges: vscode.Range[] = []
 	public diagnostics: vscode.Diagnostic[] = [];
+	public diagnosticsValues: Map<string, string> = new Map();
 	public diagnosticsMap: Map<string, vscode.Diagnostic[]> = new Map();
 	public diagnosticCollection: vscode.DiagnosticCollection = vscode.languages.createDiagnosticCollection("kotlinscript");
 	constructor(parser: TSParser, document: vscode.TextDocument) {
@@ -224,15 +225,39 @@ export class TreeProvider {
 		this.purpleType = []
 		this.importRanges = []
 		this.varId = 0
-		console.log("Updating tokens")
-		/* if (this.diagnosticCollection) {
-			this.diagnosticCollection.dispose();
-		} */
-		//this.diagnosticCollection = vscode.languages.createDiagnosticCollection("kotlinscript");
 		this.scopes.clear()
 		this.currentScope = new Scope(null);
 		this.scopes.set(this.currentScope.id, this.currentScope)
 		this.isUpdating = false;
+	}
+	public validateDiagnostics(document: vscode.TextDocument): void {
+		const diagnosticsToRemove: string[] = [];
+		for (const [errorKey, variableName] of this.diagnosticsValues.entries()) {
+			const startLine = parseInt(this.fromKey(errorKey, 0));
+			const startCharacter = parseInt(this.fromKey(errorKey, 1));
+			const endLine = parseInt(this.fromKey(errorKey, 2));
+			const endCharacter = parseInt(this.fromKey(errorKey, 3));
+			const expectedRange = new vscode.Range(
+				new vscode.Position(startLine, startCharacter),
+				new vscode.Position(endLine, endCharacter)
+			);
+			const currentText = document.getText(expectedRange);
+			if (currentText !== variableName) {
+				diagnosticsToRemove.push(errorKey);
+			}
+		}
+		diagnosticsToRemove.forEach(errorKey => {
+			const uri = vscode.window.activeTextEditor?.document.uri;
+			if (!uri) return;
+			this.diagnosticsValues.delete(errorKey);
+			const currentDiagnostics = this.diagnosticsMap.get(uri.toString()) || [];
+			const updatedDiagnostics = currentDiagnostics.filter(
+				diagnostic => this.provideErrorKey(diagnostic.range.start, diagnostic.range.end) !== errorKey
+			);
+			this.diagnostics = updatedDiagnostics
+			this.diagnosticsMap.set(uri.toString(), updatedDiagnostics);
+			this.diagnosticCollection.set(uri, updatedDiagnostics);
+		});
 	}
 
 	public validateImports(tree: TSParser.Tree): void {
@@ -269,7 +294,7 @@ export class TreeProvider {
 	public validateVariables(tree: TSParser.Tree): void {
 		const variablesToRemove: string[] = [];
 		for (const [variableKey, variableSymbol] of this.scopedVariables.entries()) {
-			const variableName = this.nameFromKey(variableKey)
+			const variableName = this.fromKey(variableKey)
 			const expectedRange = variableSymbol.range;
 
 			const node = tree.rootNode.descendantForPosition({
@@ -320,7 +345,7 @@ export class TreeProvider {
 
 		for (const variableKey of variablesToRemove) {
 			var symbol = this.scopedVariables.get(variableKey)
-			logContent(`Removed stale variable '${this.nameFromKey(variableKey)}' from scope: ` + symbol?.scope.depth);
+			logContent(`Removed stale variable '${this.fromKey(variableKey)}' from scope: ` + symbol?.scope.depth);
 			if (symbol)
 				symbol.scope.undefine(symbol)
 			if (this.rangesToDecorate.has(variableKey)) {
@@ -336,17 +361,9 @@ export class TreeProvider {
 		}
 		return current;
 	}
-	public nameFromKey(string: string) {
+	public fromKey(string: string, index: number = 0) {
 		const parts = string.split("@");
-		return parts[0];
-	}
-	public scopeIdFromKey(string: string) {
-		const parts = string.split("@");
-		return parts[1];
-	}
-	public variableIdFromKey(string: string) {
-		const parts = string.split("@");
-		return parts[2];
+		return parts[index];
 	}
 
 	public rangesEqual(range1: vscode.Range, range2: vscode.Range): boolean {
@@ -590,6 +607,9 @@ export class TreeProvider {
 			a.range.isEqual(b.range) &&
 			a.severity === b.severity;
 	}
+	public provideErrorKey(start: vscode.Position, end: vscode.Position): string {
+		return `${start.line}@${start.character}@${end.line}@${end.character}`;
+	}
 	public processVariableDeclaration(
 		identifierNode: TSParser.SyntaxNode,
 		variableNode: TSParser.SyntaxNode | null,
@@ -600,6 +620,7 @@ export class TreeProvider {
 		if (reservedCharacters.includes(variableName)) {
 			const errorMessage = `Cannot define reserved identifier: '${variableName}'`;
 			this.diagnostics.push(this.createDiagnostic(range, errorMessage));
+			this.diagnosticsValues.set(this.provideErrorKey(range.start, range.end), variableName);
 			return
 		}
 
@@ -671,13 +692,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		const builder = new vscode.SemanticTokensBuilder(LEGEND);
 		if (!tree) return builder.build()
 		const matches = this.highlightQuery.matches(tree.rootNode);
-		//console.log("updating semantic tokens...");
 		this.treeProvider.updateTokens()
 		this.tempInterpolatedRanges = []
-		if (this.treeProvider.diagnosticCollection) {
-			this.treeProvider.diagnosticCollection.dispose();
-		}
-		this.treeProvider.diagnosticCollection = vscode.languages.createDiagnosticCollection("kotlinscript");
 		matches.forEach(match => {
 			match.captures.forEach(capture => {
 				const node = capture.node;
@@ -763,12 +779,12 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		if (this.treeProvider.tree) {
 			this.treeProvider.validateImports(this.treeProvider.tree)
 			this.treeProvider.validateVariables(this.treeProvider.tree);
+			if (editor)
+				this.treeProvider.validateDiagnostics(editor?.document)
 		}
 		if (this.treeProvider.diagnostics.length > 0) {
 			this.treeProvider.addDiagnostics(this.treeProvider.diagnostics);
 		}
-		this.treeProvider.diagnostics = []
-		this.treeProvider.diagnosticsMap.clear();
 		return builder.build();
 	}
 
@@ -1115,13 +1131,8 @@ function updateTokensForDocument(
 			const newTree = treeProvider.parser.parse(changes, treeProvider.tree);
 			treeProvider.tree = newTree;
 		}
-		/* if (treeProvider.diagnostics.length > 0) {
-			treeProvider.addDiagnostics(treeProvider.diagnostics);
-			return;
-		} */
 		if (!treeProvider.isUpdating) {
 			treeProvider.updateTokens();
-			/* treeProvider.semanticTokensProvider?.updateTokens() */
 		}
 		/* const variableDefinitionProvider = new KotlinScriptDefinitionProvider(treeProvider.getscopedVariables());
 		context.subscriptions.push(
@@ -1176,22 +1187,6 @@ export async function activate(context: vscode.ExtensionContext) {
 				});
 				const newTree = treeProvider.parser.parse(event.document.getText(), treeProvider.tree);
 				treeProvider.tree = newTree;
-				const documentLineCount = event.document.lineCount;
-				const lineBoundary = 1000;
-				const affectedRanges: vscode.Range[] = [];
-				event.contentChanges.forEach(change => {
-					const editedLine = change.range.start.line;
-					const startLine = Math.max(0, editedLine - lineBoundary);
-					const endLine = Math.min(documentLineCount - 1, editedLine + lineBoundary);
-					affectedRanges.push(new vscode.Range(
-						startLine,
-						0,
-						endLine,
-						Number.MAX_SAFE_INTEGER
-					));
-				});
-				//treeProvider.updateTokens();
-
 			}
 		}
 	});
