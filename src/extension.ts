@@ -620,10 +620,10 @@ export class TreeProvider {
 			if (data) {
 				const treeProvider = data.treeProvider
 				const errorKey = treeProvider.provideErrorKey(range.start, range.end, message);
-				if (!treeProvider.diagnosticsValues.has(errorKey)) {
-					treeProvider.diagnostics.push(treeProvider.createDiagnostic(range, message));
-					treeProvider.diagnosticsValues.set(treeProvider.provideErrorKey(range.start, range.end, message), errorText);
-				}
+				//if (!treeProvider.diagnosticsValues.has(errorKey)) {
+				treeProvider.diagnostics.push(treeProvider.createDiagnostic(range, message));
+				treeProvider.diagnosticsValues.set(treeProvider.provideErrorKey(range.start, range.end, message), errorText);
+				//}
 			}
 		}
 	}
