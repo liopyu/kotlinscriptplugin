@@ -334,10 +334,12 @@ export class TreeProvider {
 
 	public validateVariables(tree: TSParser.Tree): void {
 		const variablesToRemove: string[] = [];
+
 		for (const [variableKey, variableSymbol] of this.scopedVariables.entries()) {
-			const variableName = this.fromKey(variableKey)
+			const [variableName, scopeId, rangeKey] = variableKey.split("@");
 			const expectedRange = variableSymbol.range;
 
+			// Find the node in the syntax tree based on the expected range
 			const node = tree.rootNode.descendantForPosition({
 				row: expectedRange.start.line,
 				column: expectedRange.start.character,
@@ -348,30 +350,35 @@ export class TreeProvider {
 				continue;
 			}
 
+			// Ensure the node text matches the variable name
 			if (node.text !== variableName) {
 				variablesToRemove.push(variableKey);
 				continue;
 			}
 
+			// Validate the range
 			const actualRange = this.supplyRange(node);
-
-			if (!this.rangesEqual(expectedRange, actualRange)) {
+			const actualRangeKey = this.getRangeKey(actualRange);
+			if (!this.rangesEqual(expectedRange, actualRange) || actualRangeKey !== rangeKey) {
 				variableSymbol.setRange(actualRange);
+				variablesToRemove.push(variableKey); // Add old key for removal
+				const newVarKey = `${variableName}@${scopeId}@${actualRangeKey}`;
+				this.scopedVariables.set(newVarKey, variableSymbol); // Add updated key
 				continue;
 			}
 
+			// Check if the variable is still valid in the tree (e.g., as a property or variable declaration)
 			let currentNode: TSParser.SyntaxNode | null = node;
 			let isValid = false;
 
 			while (currentNode) {
 				if (
-					currentNode.type === 'property_declaration' ||
-					currentNode.type === 'variable_declaration'
+					currentNode.type === "property_declaration" ||
+					currentNode.type === "variable_declaration"
 				) {
 					isValid = true;
 					break;
 				}
-
 				currentNode = currentNode.parent;
 			}
 
@@ -379,22 +386,27 @@ export class TreeProvider {
 				variablesToRemove.push(variableKey);
 				continue;
 			}
-			if (!variableSymbol.scope.variables.has(variableName)) {
+
+			if (!variableSymbol.scope.variables.has(variableKey)) {
 				variablesToRemove.push(variableKey);
 			}
 		}
 
 		for (const variableKey of variablesToRemove) {
-			var symbol = this.scopedVariables.get(variableKey)
-			logContent(`Removed stale variable '${this.fromKey(variableKey)}' from scope: ` + symbol?.scope.depth);
-			if (symbol)
-				symbol.scope.undefine(symbol)
-			if (this.rangesToDecorate.has(variableKey)) {
-				this.rangesToDecorate.delete(variableKey);
+			const symbol = this.scopedVariables.get(variableKey);
+			console.log(
+				`Removed stale variable '${this.fromKey(variableKey)}' from scope: ${symbol?.scope.depth}`
+			);
+
+			if (symbol) {
+				symbol.scope.undefine(symbol);
 			}
+
 			this.scopedVariables.delete(variableKey);
 		}
 	}
+
+
 	public getAffectedRange(node: TSParser.SyntaxNode): TSParser.SyntaxNode {
 		let current = node;
 		while (current.parent && current.parent.type !== "source_file") {
@@ -666,6 +678,12 @@ export class TreeProvider {
 			}
 		}
 	}
+	public getRangeKey(range: vscode.Range): string {
+		const start = `${range.start.line}:${range.start.character}`;
+		const end = `${range.end.line}:${range.end.character}`;
+		return `${start}-${end}`;
+	}
+
 	public processVariableDeclaration(
 		identifierNode: TSParser.SyntaxNode,
 		variableNode: TSParser.SyntaxNode | null,
@@ -673,38 +691,38 @@ export class TreeProvider {
 		builder: vscode.SemanticTokensBuilder
 	): void {
 		const variableName = identifierNode.text;
+
+		// Generate varKey using the new range-based key format
+		const varKey = `${variableName}@${this.currentScope.id}@${this.getRangeKey(range)}`;
+
+		// Check for reserved characters
 		if (reservedCharacters.includes(variableName)) {
 			const errorMessage = `Cannot define reserved identifier: '${variableName}'`;
-			TreeProvider.addError(range, errorMessage, variableName)
-			return
-		}
-
-		if (this.currentScope.variables.has(variableName)) {
-			const originalRange = this.currentScope.resolveVariable(variableName)?.range
-			if (originalRange) {
-				if (!this.rangesEqual(originalRange, range)) {
-					const errorMessage = `Variable "${variableName}" is already defined in current scope and may cause ambiguity`
-					TreeProvider.addError(range, errorMessage, variableName, vscode.DiagnosticSeverity.Warning)
-					builder.push(range, "enumMember")
-				}
-			}
+			TreeProvider.addError(range, errorMessage, variableName);
 			return;
 		}
-		this.varId++
+
+		// Check if a variable with the same name exists in the current scope
+		if (this.currentScope.countVariablesByName(variableName) > 0) {
+			const errorMessage = `Variable "${variableName}" is already defined in the current scope and may cause ambiguity.`;
+			TreeProvider.addError(range, errorMessage, variableName, vscode.DiagnosticSeverity.Warning);
+		}
+
+		// Define the variable symbol
 		const variableSymbol = new VariableSymbol(
 			variableName,
 			range,
 			identifierNode,
 			variableNode ? variableNode.text : "",
-			this.currentScope
+			this.currentScope,
+			varKey
 		);
-		//console.log("Defining variable in current scope: " + variableName + ", Depth: " + this.currentScope.depth)
+
+		// Add the variable to the scope and semantic tokens
 		this.currentScope.define(variableSymbol);
-		builder.push(range, "enumMember")
-		this.scopedVariables.set(`${variableName}@${this.currentScope.id}@${this.varId}`, variableSymbol);
+		builder.push(range, "enumMember");
+		this.scopedVariables.set(varKey, variableSymbol);
 	}
-
-
 
 	public processImportDeclaration(node: TSParser.SyntaxNode, range: vscode.Range) {
 		const importName = node.text.replace(/\s+/g, '').trim();
@@ -1061,10 +1079,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		}
 	}
 	public traverseTree(node: SyntaxNode): void {
-		console.log(`flatName: ${node.type}, ParentName: ${node.parent?.type}, GrandParentName: ${node.parent?.parent?.type}, GreatGrandParentName: ${node.parent?.parent?.parent?.type}`);
-		console.log(`flatName: ${node.text}, ParentName: ${node.parent?.text}, GrandParentName: ${node.parent?.parent?.text}, GreatGrandParentName: ${node.parent?.parent?.parent?.text}`);
-
-		const erroringNode = node.firstChild?.nextNamedSibling ? node.firstChild.nextNamedSibling : node.firstChild
+		const erroringNode = node.firstChild?.nextSibling ? node.firstChild.nextSibling : node.firstChild
 		if (node.isError && erroringNode) {
 			const range = this.treeProvider.supplyRange(node);
 			const expectedType = this.getExpectedNextType(erroringNode);
@@ -1076,7 +1091,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		}
 		node.children.forEach(child => this.traverseTree(child));
 	}
-
 	private map: string[] = []
 
 	private getExpectedNextType(node: SyntaxNode): string | null {
@@ -1278,6 +1292,11 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				return null;
 		}
 	}
+	public isMultipleDefinedVariable(node: SyntaxNode): boolean {
+		console.log(this.treeProvider.currentScope.countVariablesByName(node.text))
+		return this.treeProvider.currentScope.countVariablesByName(node.text) > 1;
+	}
+
 	public handleSimpleIdentifier(node: SyntaxNode, builder: vscode.SemanticTokensBuilder, byPassSI: boolean = false): void {
 		/* console.log("handling simple identifier: " + node.type + ": " + node.text)
 		console.log("handling simple identifier parent: " + node.parent?.type + ": " + node.parent?.text) */
@@ -1295,12 +1314,14 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				builder.push(this.treeProvider.supplyRange(node), "enumMember")
 				return
 			} else if (node.parent?.type !== "navigation_suffix") {
-				const variableRange = this.treeProvider.currentScope.resolveVariable(node.text)?.range;
 				if (this.treeProvider.currentScope.hasVariableInScopeChain(node.text)) {
-					if (variableRange &&
-						/* !this.treeProvider.rangesEqual(variableRange, this.treeProvider.supplyRange(node)) && */
+					if (
 						node.parent?.type != "variable_declaration"
 					) {
+						if (this.isMultipleDefinedVariable(node)) {
+							const errorMessage = `Ambiguous variable declaration: '${node.text}'`;
+							TreeProvider.addError(this.treeProvider.supplyRange(node), errorMessage, node.text);
+						}
 						builder.push(this.treeProvider.supplyRange(node), "enumMember")
 						return
 					}
@@ -1430,13 +1451,59 @@ function updateTokensForDocument(
 	}
 }
 const semanticTokensEnabled = true
+let availableClasses: Set<string>;
+
+export async function loadAvailableClasses(ktsDirectory: string): Promise<Set<string>> {
+	const availableClasses = new Set<string>();
+
+	const typingsPath = path.join(ktsDirectory, 'typings');
+	const jsonFilePath = path.join(typingsPath, 'available_classes.json');
+	const binaryFilePath = path.join(typingsPath, 'available_classes.bin');
+
+	try {
+		if (fs.existsSync(binaryFilePath)) {
+			console.log('Loading classes from binary file...');
+			const buffer = fs.readFileSync(binaryFilePath);
+			buffer
+				.toString('utf-8')
+				.split('\n')
+				.forEach(cls => availableClasses.add(cls));
+			console.log(`Loaded ${availableClasses.size} classes from binary file.`);
+			return availableClasses;
+		}
+
+		// Fallback to JSON file
+		if (fs.existsSync(jsonFilePath)) {
+			console.log('Loading classes from JSON file...');
+			const fileContent = fs.readFileSync(jsonFilePath, 'utf-8');
+			const classes = JSON.parse(fileContent);
+
+			if (Array.isArray(classes)) {
+				classes.forEach(cls => availableClasses.add(cls));
+				const buffer = Buffer.from(classes.join('\n'), 'utf-8');
+				fs.writeFileSync(binaryFilePath, buffer);
+			} else {
+				throw new Error('Invalid JSON format: expected an array of classes');
+			}
+
+			console.log(`Loaded ${availableClasses.size} classes from JSON file.`);
+			return availableClasses;
+		}
+		console.warn('No available_classes.json or binary file found.');
+		return availableClasses;
+	} catch (error) {
+		console.error(`Error loading available classes: ${error}`);
+		return availableClasses;
+	}
+}
+
 
 export async function activate(context: vscode.ExtensionContext) {
 	const config = vscode.workspace.getConfiguration('kotlinscript');
 	const ktsDirectory = config.get<string>('ktsDirectory', 'config/scripts');
 	const absoluteKtsDirectory = path.isAbsolute(ktsDirectory) ? ktsDirectory : path.join(vscode.workspace.rootPath || '', ktsDirectory);
 	await TSParser.init();
-
+	availableClasses = await loadAvailableClasses(absoluteKtsDirectory);
 	const parser = new TSParser();
 	const wasmPath = context.asAbsolutePath('parsers/tree-sitter-kotlin.wasm');
 	const lang = await TSParser.Language.load(wasmPath);

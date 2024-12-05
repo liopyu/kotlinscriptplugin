@@ -81,65 +81,78 @@ export class Scope {
 
     define(symbol: Symbol): void {
         if (symbol instanceof VariableSymbol) {
-            this.variables.set(symbol.name, symbol);
+            this.variables.set(symbol.varKey, symbol);
         } else {
             this.symbols.set(symbol.name, symbol);
         }
     }
     undefine(symbol: Symbol): void {
         if (symbol instanceof VariableSymbol) {
-            this.variables.delete(symbol.name);
+            this.variables.delete(symbol.varKey);
         } else {
             this.symbols.delete(symbol.name);
         }
     }
-
     resolveVariable(name: string): VariableSymbol | undefined {
-        const result = this.variables.get(name);
-        if (result) return result;
-        if (this.parentScope) {
-            return this.parentScope.resolveVariable(name);
-        }
-        return undefined;
-    }
-    /**
-         * Checks if a variable exists in the current scope or any parent scope.
-         * @param name - The name of the variable to search for.
-         * @returns True if the variable exists in the current or parent scope chain.
-         */
-    hasVariableInScopeChain(name: string): boolean {
-        let currentScope: Scope | null = this; // Start with the current scope
-
+        let currentScope: Scope | null = this;
         while (currentScope) {
-            // Check if the variable exists in the current scope
-            if (currentScope.variables.has(name)) {
-                return true;
+            const variable = Array.from(currentScope.variables.entries()).find(([key]) => {
+                const [keyName] = key.split("@");
+                return keyName === name;
+            });
+            if (variable) {
+                return variable[1];
             }
-
-            // Traverse to the parent scope
             currentScope = currentScope.parentScope;
         }
 
-        return false; // Variable not found in the entire scope chain
+        return undefined;
+    }
+
+
+    hasVariableInScopeChain(name: string, scopeId?: number): boolean {
+        let currentScope: Scope | null = this;
+
+        while (currentScope) {
+            const found = Array.from(currentScope.variables.keys()).some(key => {
+                const [keyName, keyScopeId] = key.split("@");
+                return keyName === name && (scopeId === undefined || parseInt(keyScopeId) === scopeId);
+            });
+
+            if (found) {
+                return true;
+            }
+
+            currentScope = currentScope.parentScope;
+        }
+
+        return false;
+    }
+
+    countVariablesByName(variableName: string): number {
+        return Array.from(this.variables.keys()).filter(key => {
+            const name = key.split("@")[0];
+            return name === variableName;
+        }).length;
     }
 
 }
 export class VariableSymbol extends Symbol {
-    public isImport: boolean;
     name: string;
     range: vscode.Range;
     node: Parser.SyntaxNode;
     childNodes: Parser.SyntaxNode[];
     value: string
     scope: Scope
+    varKey: string
 
-    constructor(name: string, range: vscode.Range, node: Parser.SyntaxNode, value: string, scope: Scope, isImport: boolean = false) {
+    constructor(name: string, range: vscode.Range, node: Parser.SyntaxNode, value: string, scope: Scope, varKey: string) {
         super(name);
         this.name = name;
         this.range = range;
         this.node = node;
         this.childNodes = node.children;
-        this.isImport = isImport;
+        this.varKey = varKey;
         this.value = value;
         this.scope = scope;
     }
