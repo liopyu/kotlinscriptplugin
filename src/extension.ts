@@ -229,9 +229,9 @@ export class TreeProvider {
 		this.currentScope = new Scope(null);
 		this.scopes.set(this.currentScope.id, this.currentScope)
 		this.isUpdating = false;
-		if (editor) {
+		/* if (editor) {
 			this.validateDiagnostics(editor?.document)
-		}
+		} */
 	}
 	public validateDiagnostics(document: vscode.TextDocument): void {
 		const diagnosticsToRemove: string[] = [];
@@ -241,11 +241,16 @@ export class TreeProvider {
 			const endLine = parseInt(this.fromKey(errorKey, 2));
 			const endCharacter = parseInt(this.fromKey(errorKey, 3));
 			const expectedRange = new vscode.Range(
-				new vscode.Position(startLine, startCharacter),
-				new vscode.Position(endLine, endCharacter)
+				new vscode.Position(Math.max(0, startLine - 1), Math.max(0, startCharacter)),
+				new vscode.Position(Math.max(0, endLine - 1), Math.max(0, endCharacter))
 			);
+			if (startLine > document.lineCount || endLine > document.lineCount) {
+				diagnosticsToRemove.push(errorKey);
+				continue;
+			}
 			const currentText = document.getText(expectedRange);
-			if (currentText !== variableName) {
+			const expectedErrorMessage = this.fromKey(errorKey, 4);
+			if (currentText !== variableName || !this.isErrorStillRelevant(expectedRange, expectedErrorMessage)) {
 				diagnosticsToRemove.push(errorKey);
 			}
 		}
@@ -254,13 +259,46 @@ export class TreeProvider {
 			if (!uri) return;
 			const currentDiagnostics = this.diagnosticsMap.get(uri.toString()) || [];
 			const updatedDiagnostics = currentDiagnostics.filter(
-				diagnostic => this.provideErrorKey(diagnostic.range.start, diagnostic.range.end, diagnostic.message) !== errorKey
+				diagnostic =>
+					this.provideErrorKey(
+						diagnostic.range.start,
+						diagnostic.range.end,
+						this.fromKey(errorKey, 4)
+					) !== errorKey
 			);
 			this.diagnosticsValues.delete(errorKey);
-			this.diagnostics = updatedDiagnostics
+			this.diagnostics = updatedDiagnostics;
 			this.diagnosticsMap.set(uri.toString(), updatedDiagnostics);
 			this.diagnosticCollection.set(uri, updatedDiagnostics);
 		});
+	}
+	private isErrorStillRelevant(range: vscode.Range, errorMessage: string): boolean {
+		const editor = vscode.window.activeTextEditor;
+		if (!editor) {
+			return false;
+		}
+		const currentText = editor.document.getText(range);
+		if (currentText?.trim() === errorMessage.trim()) {
+			return true;
+		}
+		const documentUri = editor.document.uri.toString();
+		const data = documentData.get(documentUri);
+		if (data) {
+			const tree = data.treeProvider.tree;
+			if (tree) {
+				const node = tree.rootNode.descendantForPosition(
+					{ row: range.start.line, column: range.start.character },
+					{ row: range.end.line, column: range.end.character }
+				);
+
+				if (node) {
+					if (node.type === "valid_node_type") {
+						return false;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	public validateImports(tree: TSParser.Tree): void {
@@ -383,7 +421,8 @@ export class TreeProvider {
 			valueNodes.forEach(valueNode => {
 				if (!this.isValueInDeclaration(valueNode)) return;
 				variables.forEach((range, variableNode) => {
-					this.processVariableDeclaration(variableNode, valueNode, range, builder)
+					if (variableNode.parent?.type != "lambda_parameters")
+						this.processVariableDeclaration(variableNode, valueNode, range, builder)
 				});
 			});
 		} else {
@@ -589,8 +628,8 @@ export class TreeProvider {
 			node.endPosition.column
 		)
 	}
-	public createDiagnostic(range: vscode.Range, message: string): vscode.Diagnostic {
-		return new vscode.Diagnostic(range, message, vscode.DiagnosticSeverity.Error);
+	public createDiagnostic(range: vscode.Range, message: string, severity: vscode.DiagnosticSeverity = vscode.DiagnosticSeverity.Error): vscode.Diagnostic {
+		return new vscode.Diagnostic(range, message, severity);
 	}
 	public addDiagnostics(diagnostics: vscode.Diagnostic[]): void {
 		const uri = vscode.window.activeTextEditor?.document.uri;
@@ -613,17 +652,17 @@ export class TreeProvider {
 	public provideErrorKey(start: vscode.Position, end: vscode.Position, errorMessage: string): string {
 		return `${start.line}@${start.character}@${end.line}@${end.character}@${errorMessage}`;
 	}
-	public static addError(range: vscode.Range, message: string, errorText: string) {
+	public static addError(range: vscode.Range, message: string, errorText: string, severity: vscode.DiagnosticSeverity = vscode.DiagnosticSeverity.Error) {
 		if (editor) {
 			const documentUri = editor.document.uri.toString();
 			const data = documentData.get(documentUri);
 			if (data) {
 				const treeProvider = data.treeProvider
 				const errorKey = treeProvider.provideErrorKey(range.start, range.end, message);
-				//if (!treeProvider.diagnosticsValues.has(errorKey)) {
-				treeProvider.diagnostics.push(treeProvider.createDiagnostic(range, message));
-				treeProvider.diagnosticsValues.set(treeProvider.provideErrorKey(range.start, range.end, message), errorText);
-				//}
+				if (!treeProvider.diagnosticsValues.has(errorKey)) {
+					treeProvider.diagnostics.push(treeProvider.createDiagnostic(range, message, severity));
+					treeProvider.diagnosticsValues.set(treeProvider.provideErrorKey(range.start, range.end, message), errorText);
+				}
 			}
 		}
 	}
@@ -644,8 +683,9 @@ export class TreeProvider {
 			const originalRange = this.currentScope.resolveVariable(variableName)?.range
 			if (originalRange) {
 				if (!this.rangesEqual(originalRange, range)) {
-					const errorMessage = `Variable "${variableName}" is already defined in current scope`
-					TreeProvider.addError(range, errorMessage, variableName)
+					const errorMessage = `Variable "${variableName}" is already defined in current scope and may cause ambiguity`
+					TreeProvider.addError(range, errorMessage, variableName, vscode.DiagnosticSeverity.Warning)
+					builder.push(range, "enumMember")
 				}
 			}
 			return;
@@ -718,6 +758,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		this.tempInterpolatedRanges = []
 		this.errorType = []
 		this.map = []
+		if (editor) {
+			this.treeProvider.validateDiagnostics(editor?.document)
+		}
 		this.traverseTree(tree.rootNode)
 		matches.forEach(match => {
 			match.captures.forEach(capture => {
@@ -776,9 +819,11 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 						this.tempInterpolatedRanges.push(range);
 					});
 				} else if (this.treeProvider.isBlockNode(node) || (node.text == "{" || node.text == "${")) {
+					//console.log("Entering Scope: " + node.text)
 					this.treeProvider.enterScope(this.treeProvider.currentScope);
 					this.treeProvider.enter.push(this.treeProvider.supplyRange(node));
 				} else if (this.treeProvider.isBlockExitNode(node) || (capture.name == "punctuation.bracket" && node.text == "}" && node.type == "}")) {
+					//console.log("Exiting Scope: " + node.text)
 					this.treeProvider.exitScope(node);
 					this.treeProvider.exit.push(this.treeProvider.supplyRange(node));
 				} else if (node.parent?.parent?.type == "lambda_parameters") {
@@ -804,9 +849,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		if (this.treeProvider.tree) {
 			this.treeProvider.validateImports(this.treeProvider.tree)
 			this.treeProvider.validateVariables(this.treeProvider.tree);
-			if (editor) {
-				this.treeProvider.validateDiagnostics(editor?.document)
-			}
 		}
 		if (this.treeProvider.diagnostics.length > 0) {
 			this.treeProvider.addDiagnostics(this.treeProvider.diagnostics);
@@ -1019,9 +1061,12 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		}
 	}
 	public traverseTree(node: SyntaxNode): void {
+		console.log(`flatName: ${node.type}, ParentName: ${node.parent?.type}, GrandParentName: ${node.parent?.parent?.type}, GreatGrandParentName: ${node.parent?.parent?.parent?.type}`);
+		console.log(`flatName: ${node.text}, ParentName: ${node.parent?.text}, GrandParentName: ${node.parent?.parent?.text}, GreatGrandParentName: ${node.parent?.parent?.parent?.text}`);
+
 		const erroringNode = node.firstChild?.nextNamedSibling ? node.firstChild.nextNamedSibling : node.firstChild
 		if (node.isError && erroringNode) {
-			const range = this.treeProvider.supplyRange(erroringNode);
+			const range = this.treeProvider.supplyRange(node);
 			const expectedType = this.getExpectedNextType(erroringNode);
 
 			const actualText = erroringNode.text || "none";
