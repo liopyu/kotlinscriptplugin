@@ -302,6 +302,7 @@
 	"if"
 	"else"
 	"when"
+	"where"
 ] @conditional
 
 [

@@ -199,3 +199,12 @@ function getClassName(type: string): string {
     }
     return "kotlin.Unit";
 }
+export class TypingSuggestion {
+    constructor(
+        public fullyQualifiedName: string,
+        public simpleName: string,
+        public source: string | null,
+        public type: string | null,
+        public path: string | null
+    ) { }
+}

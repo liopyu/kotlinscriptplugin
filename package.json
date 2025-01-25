@@ -15,16 +15,20 @@
     "Programming Languages"
   ],
   "activationEvents": [
-    "onLanguage"
+    "onLanguage:kotlin"
   ],
   "main": "./dist/extension.js",
   "languages": [
     {
       "id": "kotlin",
+      "aliases": [
+        "kotlin"
+      ],
       "extensions": [
-        ".kts",
-        ".kt"
-      ]
+        ".kt",
+        ".kts"
+      ],
+      "configuration": "./language-configuration.json"
     }
   ],
   "contributes": {
