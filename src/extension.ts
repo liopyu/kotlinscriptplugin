@@ -222,8 +222,6 @@ export class TreeProvider {
 			this.isUpdating = false;
 			return;
 		}
-		console.log("test")
-		console.log(this.tree.rootNode)
 
 		//console.log("rootnode: " + this.tree.rootNode)
 		this.defaultBlue = []
@@ -1089,7 +1087,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 		}
 	}
-	public traverseTree(node: SyntaxNode): void {
+	/* public traverseTree(node: SyntaxNode): void {
 		console.log("Current Node:", { type: node.type, text: node.text });
 		// If the current node is an ERROR node
 		if (node.type === "ERROR") {
@@ -1125,8 +1123,20 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		node.children.forEach((child) => {
 			this.traverseTree(child);
 		});
-	}
+	} */
+	public traverseTree(node: SyntaxNode): void {
+		const erroringNode = node.firstChild?.nextSibling ? node.firstChild.nextSibling : node.firstChild
+		if (node.isError && erroringNode) {
+			const range = this.treeProvider.supplyRange(node);
+			const expectedType = this.getExpectedNextType(erroringNode);
 
+			const actualText = erroringNode.text || "none";
+
+			const errorMessage = expectedType ? `Unexpected token: "${actualText}", expected: "${expectedType}"` : `Unexpected token: "${actualText}"`;
+			TreeProvider.addError(range, errorMessage, node.text)
+		}
+		node.children.forEach(child => this.traverseTree(child));
+	}
 
 	private map: string[] = []
 
@@ -1665,16 +1675,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		console.log(`- ${suggestion.fullyQualifiedName}`);
 	}); */
 	const parser = new TSParser();
-	console.log("test1")
 	const wasmPath = context.asAbsolutePath('parsers/tree-sitter-kotlin.wasm');
 	const lang = await TSParser.Language.load(wasmPath);
-	console.log("test2")
 	parser.setLanguage(lang);
-	console.log("test3")
 	const highlightsPath = context.asAbsolutePath('parsers/kotlin_highlights.scm');
 	const queryText = fs.readFileSync(highlightsPath, 'utf-8');
 	const highlightQuery = lang.query(queryText);
-	console.log("test4")
 	function addDocumentIfNotExists(document: vscode.TextDocument) {
 		const documentUri = document.uri.toString();
 		if (!document.fileName.endsWith(".kts")) return

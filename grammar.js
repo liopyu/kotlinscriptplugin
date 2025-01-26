@@ -261,14 +261,19 @@ module.exports = grammar({
     ),
 
     _delegation_specifiers: $ => prec.left(sep1(
-      $.delegation_specifier,
-      // $._annotated_delegation_specifier, // TODO: Annotations cause ambiguities with type modifiers
+      choice(
+        $.explicit_delegation, // Prioritize explicit delegation
+        $.constructor_invocation,
+        $.user_type,
+        $.function_type
+      ),
       ","
     )),
 
+
     delegation_specifier: $ => prec.left(choice(
+      $.explicit_delegation, // Handle `by` delegation first
       $.constructor_invocation,
-      $.explicit_delegation,
       $.user_type,
       $.function_type
     )),
@@ -279,11 +284,14 @@ module.exports = grammar({
 
     explicit_delegation: $ => seq(
       choice(
-        $.user_type,
-        $.function_type
+        $.user_type,         // Delegation to a type
+        $.function_type      // Delegation to a function type
       ),
       "by",
-      $._expression
+      choice(
+        $._expression,       // Allow any valid expression after `by`
+        $.call_expression    // Specifically handle call expressions like `MyInterface()`
+      )
     ),
 
     type_parameters: $ => seq("<", sep1($.type_parameter, ","), ">"),
@@ -342,7 +350,7 @@ module.exports = grammar({
 
     receiver_type: $ => seq(
       optional($.type_modifiers),
-      choice (
+      choice(
         $.parenthesized_type,
         $.nullable_type,
         $._type_reference,
