@@ -1661,7 +1661,18 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 	}
 }
 
-
+function name(context: vscode.ExtensionContext, lang: TSParser.Language) {
+	const highlightsPath = context.asAbsolutePath('parsers/kotlin_highlights.scm');
+	console.log(`Highlights file path: ${highlightsPath}`);
+	if (!fs.existsSync(highlightsPath)) {
+		console.error('Highlights file does not exist. Ensure the file is in the correct location.');
+		return;
+	}
+	const queryText = fs.readFileSync(highlightsPath, 'utf-8');
+	console.log('Highlight query loaded:', queryText.slice(0, 100), '...'); // Log the first 100 characters
+	const highlightQuery = lang.query(queryText);
+	console.log('Highlight query successfully compiled.');
+}
 
 export async function activate(context: vscode.ExtensionContext) {
 	const config = vscode.workspace.getConfiguration('kotlinscript');
@@ -1675,12 +1686,18 @@ export async function activate(context: vscode.ExtensionContext) {
 		console.log(`- ${suggestion.fullyQualifiedName}`);
 	}); */
 	const parser = new TSParser();
-	const wasmPath = context.asAbsolutePath('parsers/tree-sitter-kotlin.wasm');
+	const wasmPath = context.asAbsolutePath('tree-sitter-kotlin.wasm');
 	const lang = await TSParser.Language.load(wasmPath);
 	parser.setLanguage(lang);
 	const highlightsPath = context.asAbsolutePath('parsers/kotlin_highlights.scm');
 	const queryText = fs.readFileSync(highlightsPath, 'utf-8');
 	const highlightQuery = lang.query(queryText);
+	const testCode = `
+    object : MyInterface by MyInterface() {}
+`;
+	const tree = parser.parse(testCode);
+	console.log('Syntax tree for test input:', tree.rootNode.toString());
+	name(context, lang);
 	function addDocumentIfNotExists(document: vscode.TextDocument) {
 		const documentUri = document.uri.toString();
 		if (!document.fileName.endsWith(".kts")) return

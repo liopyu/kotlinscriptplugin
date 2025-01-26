@@ -1878,7 +1878,7 @@
     },
     "object_declaration": {
       "type": "PREC_RIGHT",
-      "value": 0,
+      "value": 1,
       "content": {
         "type": "SEQ",
         "members": [
@@ -1899,13 +1899,21 @@
             "value": "object"
           },
           {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "simple_identifier"
-            },
-            "named": true,
-            "value": "type_identifier"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "simple_identifier"
+                },
+                "named": true,
+                "value": "type_identifier"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
           },
           {
             "type": "CHOICE",

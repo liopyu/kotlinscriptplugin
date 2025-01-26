@@ -261,19 +261,14 @@ module.exports = grammar({
     ),
 
     _delegation_specifiers: $ => prec.left(sep1(
-      choice(
-        $.explicit_delegation, // Prioritize explicit delegation
-        $.constructor_invocation,
-        $.user_type,
-        $.function_type
-      ),
+      $.delegation_specifier,
+      // $._annotated_delegation_specifier, // TODO: Annotations cause ambiguities with type modifiers
       ","
     )),
 
-
     delegation_specifier: $ => prec.left(choice(
-      $.explicit_delegation, // Handle `by` delegation first
       $.constructor_invocation,
+      $.explicit_delegation,
       $.user_type,
       $.function_type
     )),
@@ -284,14 +279,11 @@ module.exports = grammar({
 
     explicit_delegation: $ => seq(
       choice(
-        $.user_type,         // Delegation to a type
-        $.function_type      // Delegation to a function type
+        $.user_type,
+        $.function_type
       ),
       "by",
-      choice(
-        $._expression,       // Allow any valid expression after `by`
-        $.call_expression    // Specifically handle call expressions like `MyInterface()`
-      )
+      $._expression
     ),
 
     type_parameters: $ => seq("<", sep1($.type_parameter, ","), ">"),
@@ -429,14 +421,17 @@ module.exports = grammar({
     ),
 
     parameter: $ => seq($.simple_identifier, ":", $._type),
-
-    object_declaration: $ => prec.right(seq(
+    object_declaration: $ => prec.right(PREC.ASSIGNMENT, seq(
       optional($.modifiers),
       "object",
-      alias($.simple_identifier, $.type_identifier),
-      optional(seq(":", $._delegation_specifiers)),
-      optional($.class_body)
+      optional(alias($.simple_identifier, $.type_identifier)), // Optional type identifier
+      optional(seq(
+        ":",
+        $._delegation_specifiers // Handle delegation specifiers
+      )),
+      optional($.class_body) // Optional class body
     )),
+
 
     secondary_constructor: $ => seq(
       optional($.modifiers),
