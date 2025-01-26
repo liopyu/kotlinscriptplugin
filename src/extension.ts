@@ -1088,51 +1088,43 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		}
 	}
 	public traverseTree(node: SyntaxNode): void {
-		console.log("Current Node: ", {
-			type: node.type,
-			text: node.text,
-		});
+		console.log("Current Node:", { type: node.type, text: node.text });
+		// If the current node is an ERROR node
+		if (node.type === "ERROR") {
+			console.log("Error Node Detected:", { type: node.type, text: node.text });
 
-		const erroringNode = node.firstChild?.nextSibling ? node.firstChild.nextSibling : node.firstChild;
-
-		if (node.isError) {
-			console.log("Error Node Detected: ", {
-				type: node.type,
-				text: node.text,
-			});
+			// Check if this ERROR node is caused by explicit delegation
 			const containsExplicitDelegation = node.children.some(
 				(child) => child.type === "explicit_delegation"
 			);
 
 			if (containsExplicitDelegation) {
-				console.log("Skipping known explicit delegation syntax error.");
-				return;
-			}
+				console.log("Skipping explicit delegation error check, but continuing traversal.");
+				// Do not return here; continue traversing its children to catch other errors
+			} else {
+				// Handle other errors within the ERROR node
+				const erroringNode = node.firstChild?.nextSibling ? node.firstChild.nextSibling : node.firstChild;
+				if (erroringNode) {
+					const range = this.treeProvider.supplyRange(node);
+					const expectedType = this.getExpectedNextType(erroringNode);
 
-			if (erroringNode) {
-				const range = this.treeProvider.supplyRange(node);
-				const expectedType = this.getExpectedNextType(erroringNode);
+					const actualText = erroringNode.text || "none";
+					const errorMessage = expectedType
+						? `Unexpected token: "${actualText}", expected: "${expectedType}"`
+						: `Unexpected token: "${actualText}"`;
 
-				const actualText = erroringNode.text || "none";
-				const errorMessage = expectedType
-					? `Unexpected token: "${actualText}", expected: "${expectedType}"`
-					: `Unexpected token: "${actualText}"`;
-
-				console.log("Adding error:", { range, errorMessage });
-				TreeProvider.addError(range, errorMessage, node.text);
+					console.log("Adding error:", { errorMessage });
+					TreeProvider.addError(range, errorMessage, node.text);
+				}
 			}
 		}
 
-		if (!node.isError || !node.children.some((child) => child.type === "explicit_delegation")) {
-			node.children.forEach((child) => {
-				console.log("Traversing child node:", {
-					type: child.type,
-					text: child.text,
-				});
-				this.traverseTree(child);
-			});
-		}
+		// Continue traversing all child nodes, even within ERROR nodes
+		node.children.forEach((child) => {
+			this.traverseTree(child);
+		});
 	}
+
 
 	private map: string[] = []
 

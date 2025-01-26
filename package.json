@@ -18,6 +18,9 @@
     "onLanguage:kotlin"
   ],
   "main": "./dist/extension.js",
+  "tree-sitter": {
+    "parser-dir": "./"
+  },
   "languages": [
     {
       "id": "kotlin",
@@ -122,6 +125,7 @@
   },
   "dependencies": {
     "@vscode/vsce": "^2.24.0",
+    "tree-sitter-json": "^0.24.8",
     "vscode": "^1.1.37",
     "web-tree-sitter": "^0.24.4"
   }
