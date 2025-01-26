@@ -222,6 +222,8 @@ export class TreeProvider {
 			this.isUpdating = false;
 			return;
 		}
+		console.log("test")
+		console.log(this.tree.rootNode)
 
 		//console.log("rootnode: " + this.tree.rootNode)
 		this.defaultBlue = []
@@ -1663,12 +1665,16 @@ export async function activate(context: vscode.ExtensionContext) {
 		console.log(`- ${suggestion.fullyQualifiedName}`);
 	}); */
 	const parser = new TSParser();
+	console.log("test1")
 	const wasmPath = context.asAbsolutePath('parsers/tree-sitter-kotlin.wasm');
 	const lang = await TSParser.Language.load(wasmPath);
+	console.log("test2")
 	parser.setLanguage(lang);
+	console.log("test3")
 	const highlightsPath = context.asAbsolutePath('parsers/kotlin_highlights.scm');
 	const queryText = fs.readFileSync(highlightsPath, 'utf-8');
 	const highlightQuery = lang.query(queryText);
+	console.log("test4")
 	function addDocumentIfNotExists(document: vscode.TextDocument) {
 		const documentUri = document.uri.toString();
 		if (!document.fileName.endsWith(".kts")) return
