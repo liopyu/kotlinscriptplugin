@@ -223,7 +223,7 @@ export class TreeProvider {
 			return;
 		}
 
-		//console.log("rootnode: " + this.tree.rootNode)
+		console.log("rootnode: " + this.tree.rootNode)
 		this.defaultBlue = []
 		this.variableBlue = []
 		this.purpleType = []
@@ -1692,12 +1692,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	const highlightsPath = context.asAbsolutePath('parsers/kotlin_highlights.scm');
 	const queryText = fs.readFileSync(highlightsPath, 'utf-8');
 	const highlightQuery = lang.query(queryText);
-	const testCode = `
-    object : MyInterface by MyInterface() {}
-`;
-	const tree = parser.parse(testCode);
-	console.log('Syntax tree for test input:', tree.rootNode.toString());
-	name(context, lang);
 	function addDocumentIfNotExists(document: vscode.TextDocument) {
 		const documentUri = document.uri.toString();
 		if (!document.fileName.endsWith(".kts")) return
@@ -1780,3 +1774,15 @@ export async function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
 	logGlobals(`Deactivating KotlinScript extension...`);
 }
+
+
+
+
+
+
+
+
+
+
+
+
