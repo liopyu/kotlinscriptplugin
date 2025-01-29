@@ -762,8 +762,21 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "SYMBOL",
-            "name": "delegation_specifier"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "delegation_specifier"
+              },
+              {
+                "type": "PREC",
+                "value": 1,
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_annotated_delegation_specifier"
+                }
+              }
+            ]
           },
           {
             "type": "REPEAT",
@@ -775,8 +788,21 @@
                   "value": ","
                 },
                 {
-                  "type": "SYMBOL",
-                  "name": "delegation_specifier"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "delegation_specifier"
+                    },
+                    {
+                      "type": "PREC",
+                      "value": 1,
+                      "content": {
+                        "type": "SYMBOL",
+                        "name": "_annotated_delegation_specifier"
+                      }
+                    }
+                  ]
                 }
               ]
             }
@@ -823,20 +849,24 @@
       ]
     },
     "_annotated_delegation_specifier": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "REPEAT",
-          "content": {
+      "type": "PREC",
+      "value": 2,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "REPEAT1",
+            "content": {
+              "type": "SYMBOL",
+              "name": "annotation"
+            }
+          },
+          {
             "type": "SYMBOL",
-            "name": "annotation"
+            "name": "delegation_specifier"
           }
-        },
-        {
-          "type": "SYMBOL",
-          "name": "delegation_specifier"
-        }
-      ]
+        ]
+      }
     },
     "explicit_delegation": {
       "type": "SEQ",
@@ -4183,38 +4213,50 @@
       ]
     },
     "object_literal": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "object"
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": ":"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "_delegation_specifiers"
-                }
-              ]
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "SYMBOL",
-          "name": "class_body"
-        }
-      ]
+      "type": "PREC_RIGHT",
+      "value": 16,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "object"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": ":"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_delegation_specifiers"
+                  }
+                ]
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "class_body"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        ]
+      }
     },
     "this_expression": {
       "type": "CHOICE",
@@ -6284,6 +6326,10 @@
     }
   ],
   "conflicts": [
+    [
+      "_annotated_delegation_specifier",
+      "_type_modifier"
+    ],
     [
       "_primary_expression",
       "callable_reference"

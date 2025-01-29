@@ -61,7 +61,7 @@ module.exports = grammar({
     // Ambiguous when used in an explicit delegation expression,
     // since the '{' could either be interpreted as the class body
     // or as the anonymous function body. Consider the following sequence:
-
+    [$._annotated_delegation_specifier, $._type_modifier],
     // Member access operator '::' conflicts with callable reference
     [$._primary_expression, $.callable_reference],
 
@@ -261,8 +261,10 @@ module.exports = grammar({
     ),
 
     _delegation_specifiers: $ => prec.left(sep1(
-      $.delegation_specifier,
-      // $._annotated_delegation_specifier, // TODO: Annotations cause ambiguities with type modifiers
+      choice(
+        $.delegation_specifier,
+        prec(1, $._annotated_delegation_specifier) // Ensure priority
+      ),
       ","
     )),
 
@@ -275,7 +277,10 @@ module.exports = grammar({
 
     constructor_invocation: $ => seq($.user_type, $.value_arguments),
 
-    _annotated_delegation_specifier: $ => seq(repeat($.annotation), $.delegation_specifier),
+    _annotated_delegation_specifier: $ => prec(2, seq( // Higher precedence than `_type_modifier`
+      repeat1($.annotation),
+      $.delegation_specifier
+    )),
 
     explicit_delegation: $ => seq(
       choice(
@@ -823,11 +828,13 @@ module.exports = grammar({
       $.anonymous_function
     ),
 
-    object_literal: $ => seq(
+    object_literal: $ => prec.right(PREC.POSTFIX, seq(
       "object",
       optional(seq(":", $._delegation_specifiers)),
-      $.class_body
-    ),
+      optional($.class_body)
+    )),
+
+
 
     this_expression: $ => choice(
       "this",
