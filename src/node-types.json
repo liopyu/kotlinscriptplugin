@@ -873,7 +873,11 @@
           "named": true
         },
         {
-          "type": "type_identifier",
+          "type": "type_arguments",
+          "named": true
+        },
+        {
+          "type": "user_type",
           "named": true
         }
       ]

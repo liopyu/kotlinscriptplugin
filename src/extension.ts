@@ -126,6 +126,9 @@ const blocks = [
 	"control_structure_body",
 	"class_body",
 ]
+const standinReserved = [
+	"_", "__", "...", "___",
+]
 const reservedCharacters = [
 	"_", "__", "...", "___",
 	"abstract", "as", "break", "class", "continue",
@@ -586,12 +589,21 @@ export class TreeProvider {
 		const result: SyntaxNode[] = [];
 		const traverse = (currentNode: SyntaxNode) => {
 			for (const child of currentNode.children) {
+				if (this.isBlockNode(child) || child.type == "{") {
+					continue
+				}
 				if (types.includes(child.type)) {
 					if (!expectedParent || (child.parent && child.parent.type === expectedParent)) {
 						result.push(child);
 					}
 				}
-				traverse(child);
+				if (!this.isBlockExitNode(child)) {
+					traverse(child);
+				}
+
+				if (this.isBlockExitNode(child)) {
+					continue
+				}
 			}
 		};
 		traverse(node);
@@ -701,13 +713,18 @@ export class TreeProvider {
 
 		// Check for reserved characters
 		if (reservedCharacters.includes(variableName)) {
-			const errorMessage = `Cannot define reserved identifier: '${variableName}'`;
-			TreeProvider.addError(range, errorMessage, variableName);
-			return;
+			if (standinReserved.includes(variableName) && identifierNode.parent?.type == "lambda_parameters") {
+				builder.push(range, "enumMember");
+				return
+			} else {
+				const errorMessage = `Cannot define reserved identifier: '${variableName}'`;
+				TreeProvider.addError(range, errorMessage, variableName);
+				return;
+			}
 		}
-
+		//console.log("VariableName: " + variableName + ", Current Scope: " + this.currentScope.id)
 		// Check if a variable with the same name exists in the current scope
-		if (this.currentScope.countVariablesByName(variableName) > 0) {
+		if (this.currentScope.countVariablesByName(variableName) > 0 && identifierNode.parent?.type != "lambda_parameters") {
 			const errorMessage = `Variable "${variableName}" is already defined in the current scope and may cause ambiguity.`;
 			TreeProvider.addError(range, errorMessage, variableName, vscode.DiagnosticSeverity.Warning);
 		}
@@ -796,6 +813,11 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				/* console.log(`Token processed: name="${capture.name}", flatName: ${capture.node.type}, ParentName: ${capture.node.parent?.type}, GrandParentName: ${capture.node.parent?.parent?.type}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.type}`);
 				console.log(`Token processed: name="${capture.name}", flatName: ${capture.node.text}, ParentName: ${capture.node.parent?.text}, GrandParentName: ${capture.node.parent?.parent?.text}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.text}`);
  */
+				if (this.treeProvider.isBlockNode(node) || (node.text == "{" || node.text == "${")) {
+					//console.log("Entering Scope: " + node.text)
+					this.treeProvider.enterScope(this.treeProvider.currentScope);
+					this.treeProvider.enter.push(this.treeProvider.supplyRange(node));
+				}
 				if (capture.name == "keyword.return" && node.firstChild) {
 					range = this.treeProvider.supplyRange(node.firstChild)
 				} else if (capture.name == 'namespace' && node.firstChild) {
@@ -845,10 +867,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 						});
 						this.tempInterpolatedRanges.push(range);
 					});
-				} else if (this.treeProvider.isBlockNode(node) || (node.text == "{" || node.text == "${")) {
-					//console.log("Entering Scope: " + node.text)
-					this.treeProvider.enterScope(this.treeProvider.currentScope);
-					this.treeProvider.enter.push(this.treeProvider.supplyRange(node));
 				} else if (this.treeProvider.isBlockExitNode(node) || (capture.name == "punctuation.bracket" && node.text == "}" && node.type == "}")) {
 					//console.log("Exiting Scope: " + node.text)
 					this.treeProvider.exitScope(node);
@@ -1186,7 +1204,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				return null;
 
 			case "fun":
-				return "function_value_parameters";
+				return "function_name";
 
 			case "user_type":
 			case "type_identifier":
@@ -1308,7 +1326,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 			case "super":
 				return ".";
-
 			case "navigation_suffix":
 				return "identifier";
 
@@ -1621,7 +1638,7 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 			column: character,
 		});
 
-		console.log("Type: " + node.type + ", ParentType: " + node.parent?.type)
+		//console.log("Type: " + node.type + ", ParentType: " + node.parent?.type)
 		if (!(
 			(node.type === "simple_identifier" && node.parent?.type == "statements") ||
 			(node.type === "simple_identifier" && node.parent?.type === "property_declaration") ||
