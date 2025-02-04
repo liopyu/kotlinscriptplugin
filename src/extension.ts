@@ -227,6 +227,15 @@ export class TreeProvider {
 		}
 
 		console.log("rootnode: " + this.tree.rootNode)
+		this.tree.rootNode.children.forEach(c => {
+			console.log("Child - Text: " + c.text + ", Type: " + c.type)
+			c.children.forEach(cc => {
+				console.log("GrandChild - Text: " + cc.text + ", Type: " + cc.type)
+				cc.children.forEach(ccc => {
+					console.log("GreatGrandChild - Text: " + ccc.text + ", Type: " + ccc.type)
+				})
+			})
+		})
 		this.defaultBlue = []
 		this.variableBlue = []
 		this.purpleType = []
