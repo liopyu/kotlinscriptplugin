@@ -58,6 +58,12 @@ module.exports = grammar({
   name: "kotlin",
 
   conflicts: $ => [
+    [$.callable_reference],
+    [$.call_expression, $.multiplicative_expression, $.infix_expression],
+    [$.call_expression, $.additive_expression, $.infix_expression],
+    [$.call_expression, $.range_expression, $.infix_expression],
+    [$.navigation_expression, $.callable_reference],
+    [$.callable_reference, $.comparison_expression],
     // Ambiguous when used in an explicit delegation expression,
     // since the '{' could either be interpreted as the class body
     // or as the anonymous function body. Consider the following sequence:
@@ -507,17 +513,20 @@ module.exports = grammar({
     //       to prevent nested types from being recognized as
     //       unary expresions with navigation suffixes.
 
-    user_type: $ => sep1($._simple_user_type, "."),
+    user_type: $ => prec.right(PREC.TYPE_RHS, seq(
+      sep1($._simple_user_type, "."), // ✅ Ensures `AttributeSupplier.Builder` is a single `user_type`
+      optional($.type_arguments)
+    )),
+
+
 
     _simple_user_type: $ => prec.right(PREC.SIMPLE_USER_TYPE, seq(
       alias($.simple_identifier, $.type_identifier),
       optional($.type_arguments)
     )),
 
-    type_projection: $ => choice(
-      seq(optional($.type_projection_modifiers), $._type),
-      "*"
-    ),
+    type_projection: $ =>
+      seq(optional($.type_projection_modifiers), choice("*", $._type)),
 
     type_projection_modifiers: $ => repeat1($._type_projection_modifier),
 
@@ -708,11 +717,11 @@ module.exports = grammar({
     ),
 
     call_suffix: $ => prec.left(seq(
-      // this introduces ambiguities with 'less than' for comparisons
       optional($.type_arguments),
       choice(
         prec(PREC.ARGUMENTS, seq(optional($.value_arguments), $.annotated_lambda)),
-        $.value_arguments
+        $.value_arguments,
+        $.callable_reference // ✅ Ensures `::some{}` is recognized before `{}`.
       )
     )),
 
@@ -959,7 +968,7 @@ module.exports = grammar({
 
     _postfix_unary_operator: $ => choice("++", "--", "!!"),
 
-    _member_access_operator: $ => choice(".", "::", alias($.safe_nav, '?.')),
+    _member_access_operator: $ => choice("."/* , "::" */, alias($.safe_nav, '?.')),
 
     _indexing_suffix: $ => seq(
       '[',

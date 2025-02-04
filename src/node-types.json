@@ -850,6 +850,10 @@
           "named": true
         },
         {
+          "type": "callable_reference",
+          "named": true
+        },
+        {
           "type": "type_arguments",
           "named": true
         },
@@ -873,11 +877,7 @@
           "named": true
         },
         {
-          "type": "type_arguments",
-          "named": true
-        },
-        {
-          "type": "user_type",
+          "type": "type_identifier",
           "named": true
         }
       ]

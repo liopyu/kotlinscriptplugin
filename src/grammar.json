@@ -2350,29 +2350,50 @@
       "value": "?"
     },
     "user_type": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "_simple_user_type"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
+      "type": "PREC_RIGHT",
+      "value": 14,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
             "type": "SEQ",
             "members": [
               {
-                "type": "STRING",
-                "value": "."
-              },
-              {
                 "type": "SYMBOL",
                 "name": "_simple_user_type"
+              },
+              {
+                "type": "REPEAT",
+                "content": {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "."
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "_simple_user_type"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "type_arguments"
+              },
+              {
+                "type": "BLANK"
               }
             ]
           }
-        }
-      ]
+        ]
+      }
     },
     "_simple_user_type": {
       "type": "PREC_RIGHT",
@@ -2405,32 +2426,32 @@
       }
     },
     "type_projection": {
-      "type": "CHOICE",
+      "type": "SEQ",
       "members": [
         {
-          "type": "SEQ",
+          "type": "CHOICE",
           "members": [
             {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "type_projection_modifiers"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
+              "type": "SYMBOL",
+              "name": "type_projection_modifiers"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "*"
             },
             {
               "type": "SYMBOL",
               "name": "_type"
             }
           ]
-        },
-        {
-          "type": "STRING",
-          "value": "*"
         }
       ]
     },
@@ -3525,6 +3546,10 @@
               {
                 "type": "SYMBOL",
                 "name": "value_arguments"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "callable_reference"
               }
             ]
           }
@@ -4774,25 +4799,13 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "user_type"
-                },
-                {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "type_arguments"
-                    },
-                    {
-                      "type": "BLANK"
-                    }
-                  ]
-                }
-              ]
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "simple_identifier"
+              },
+              "named": true,
+              "value": "type_identifier"
             },
             {
               "type": "BLANK"
@@ -5002,10 +5015,6 @@
         {
           "type": "STRING",
           "value": "."
-        },
-        {
-          "type": "STRING",
-          "value": "::"
         },
         {
           "type": "ALIAS",
@@ -6338,6 +6347,32 @@
     }
   ],
   "conflicts": [
+    [
+      "callable_reference"
+    ],
+    [
+      "call_expression",
+      "multiplicative_expression",
+      "infix_expression"
+    ],
+    [
+      "call_expression",
+      "additive_expression",
+      "infix_expression"
+    ],
+    [
+      "call_expression",
+      "range_expression",
+      "infix_expression"
+    ],
+    [
+      "navigation_expression",
+      "callable_reference"
+    ],
+    [
+      "callable_reference",
+      "comparison_expression"
+    ],
     [
       "_annotated_delegation_specifier",
       "_type_modifier"
