@@ -205,6 +205,7 @@ export class TypingSuggestion {
         public simpleName: string,
         public source: string | null,
         public type: string | null,
-        public path: string | null
+        public path: string | null,
+        public parentType: string | null
     ) { }
 }

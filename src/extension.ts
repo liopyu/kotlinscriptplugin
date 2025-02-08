@@ -226,7 +226,7 @@ export class TreeProvider {
 			return;
 		}
 
-		console.log("rootnode: " + this.tree.rootNode)
+		//console.log("rootnode: " + this.tree.rootNode)
 		/* this.tree.rootNode.children.forEach(c => {
 			console.log("Child - Text: " + c.text + ", Type: " + c.type)
 			c.children.forEach(cc => {
@@ -547,10 +547,9 @@ export class TreeProvider {
 			node.type == "is" ||
 			node.type == "?:" ||
 			node.type == "in" ||
-			((node.text == "or" || node.text == "and") && node.type == "simple_identifier" && node.parent?.type == "infix_expression") ||
 			node.type == "companion" && node.parent?.type == "companion_object" ||
 			(node.type == "simple_identifier" &&
-				node.text == "to" &&
+				typingSuggestions.some(suggestion => node.text == suggestion.simpleName) &&
 				node.parent?.type == "infix_expression") ||
 			((node.type == "as" || node.type == "as?") && node.parent?.type == "as_expression") ||
 			(node.type == "?" && node.parent?.type == "nullable_type") ||
@@ -916,8 +915,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		let name = capture.name
 		const node = capture.node
 		/* console.log(`Token processed: name="${name}", flatName: ${capture.node.type}, ParentName: ${capture.node.parent?.type}, GrandParentName: ${capture.node.parent?.parent?.type}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.type}`);
-		console.log(`Token processed: name="${name}", flatName: ${capture.node.text}, ParentName: ${capture.node.parent?.text}, GrandParentName: ${capture.node.parent?.parent?.text}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
- */
+		console.log('node text: ' + node.text + ", node type: " + node.type) */
 		switch (name) {
 			case 'variableIdentifier':
 			case 'variable':
@@ -968,6 +966,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 					return
 				}
 				break;
+			case 'variable.builtin':
 			case 'keyword':
 				if (node.type === "var" || node.type === "val") {
 					const pD = this.treeProvider.findParent(node, "property_declaration")
@@ -1025,10 +1024,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			case '_function':
 				tokenType = 'regexp';
 				break;
-			case 'variable.builtin':
-			case 'none':
-				tokenType = 'variable';
-				break;
+
 			case 'number':
 			case 'float':
 				tokenType = 'number';
@@ -1087,6 +1083,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				break;
 			case 'punctuation.special':
 				break
+			case 'none':
+				tokenType = 'variable';
+				break;
 			default:
 				console.error(`Unrecognized token name: "${name}" in range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]..`);
 				tokenType = 'variable';
@@ -1166,6 +1165,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 	}
 
 	private map: string[] = []
+
 
 	private getExpectedNextType(node: SyntaxNode): string | null {
 		switch (node.type) {
@@ -1586,17 +1586,18 @@ export async function loadTypingSuggestions(ktsDirectory: string): Promise<Typin
 			if (Array.isArray(parsedData)) {
 				parsedData.forEach(item => {
 					// Ensure the required fields are present and valid
-					if (item.fullyQualifiedName?.startsWith('kotlin.')) {
-						suggestions.push(
-							new TypingSuggestion(
-								item.fullyQualifiedName,
-								item.simpleName || '',
-								item.source || null,
-								item.type || null,
-								item.path || null
-							)
-						);
-					}
+					//if (item.fullyQualifiedName?.startsWith('kotlin.')) {
+					suggestions.push(
+						new TypingSuggestion(
+							item.fullyQualifiedName,
+							item.simpleName || '',
+							item.source || null,
+							item.type || null,
+							item.path || null,
+							item.parentType || null
+						)
+					);
+					//}
 				});
 				console.log(`Loaded ${suggestions.length} typing suggestions.`);
 			} else {
@@ -1646,47 +1647,79 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 			row: line,
 			column: character,
 		});
-
-		//console.log("Type: " + node.type + ", ParentType: " + node.parent?.type)
-		if (!(
-			(node.type === "simple_identifier" && node.parent?.type == "statements") ||
-			(node.type === "simple_identifier" && node.parent?.type === "property_declaration") ||
-			(node.type === "simple_identifier" && node.parent?.type === "for_statement") ||
-			(node.type === "simple_identifier" && node.parent?.type === "if_expression") ||
-			(node.type === "simple_identifier" && node.parent?.type === "value_argument") ||
-			(node.type === "simple_identifier" && node.parent?.type === "source_file") ||
-			(node.type === "simple_identifier" && node.parent?.type === "when_subject") ||
-			(node.type === "simple_identifier" && node.parent?.type === "infix_expression") ||
-			(node.type === "simple_identifier" && node.parent?.type === "indexing_suffix") ||
-			(node.type === "simple_identifier" && node.parent?.type === "control_structure_body") ||
-			(node.type === "simple_identifier" && node.parent?.type === "function_body") ||
-			(node.type === "simple_identifier" && node.parent?.type === "function_value_parameters") ||
-			(node.type === "simple_identifier" && node.parent?.type === "explicit_delegation") ||
-			(node.type === "simple_identifier" && node.parent?.type === "property_delegate") ||
-			(node.type === "simple_identifier" && node.parent?.type === "callable_reference")
-
-		)) {
+		let completionItems: vscode.CompletionItem[] = []
+		console.log("Type: " + node.type + ", ParentType: " + node.parent?.type, ", Text: " + node.text)
+		if (node.parent?.type == "infix_expression") {
+			console.log("in infix")
+			completionItems = this.suggestions
+				.filter(suggestion => (suggestion.type == "infix_lambda" || suggestion.type == "infix") && !suggestion.simpleName.includes("."))
+				.map(suggestion => {
+					const item = new vscode.CompletionItem(
+						suggestion.simpleName,
+						vscode.CompletionItemKind.Function
+					);
+					item.detail = suggestion.simpleName;
+					item.documentation = suggestion.source
+						? `Source: ${suggestion.source}\nType: ${suggestion.type}`
+						: `Type: ${suggestion.type}`;
+					item.insertText = suggestion.simpleName
+					return item;
+				});
+			return completionItems;
+		}
+		if (
+			(node.type !== "simple_identifier" ||
+				![
+					"statements",
+					"property_declaration",
+					"for_statement",
+					"if_expression",
+					"value_argument",
+					"source_file",
+					"when_subject",
+					"infix_expression",
+					"indexing_suffix",
+					"control_structure_body",
+					"function_body",
+					"function_value_parameters",
+					"explicit_delegation",
+					"property_delegate"
+				].includes(node.parent?.type ?? ""))
+		) {
 			//console.log("Skipping suggestions: Invalid context.");
 			return undefined;
 		}
 
-		const completionItems = this.suggestions.map(suggestion => {
-			const item = new vscode.CompletionItem(
-				suggestion.simpleName,
-				vscode.CompletionItemKind.Function
-			);
-			item.detail = suggestion.fullyQualifiedName;
-			item.documentation = suggestion.source
-				? `Source: ${suggestion.source}\nType: ${suggestion.type}`
-				: `Type: ${suggestion.type}`;
-			item.insertText = suggestion.simpleName;
-			return item;
-		});
+
+		completionItems = this.suggestions
+			.filter(suggestion => suggestion.parentType == null &&
+				suggestion.type != "lambda"
+			)
+			.map(suggestion => {
+				const item = new vscode.CompletionItem(
+					suggestion.simpleName,
+					vscode.CompletionItemKind.Function
+				);
+				item.detail = suggestion.fullyQualifiedName;
+				item.documentation = suggestion.source
+					? `Source: ${suggestion.source}\nType: ${suggestion.type}`
+					: `Type: ${suggestion.type}`;
+				item.insertText = some(suggestion, treeProvider, node);
+				return item;
+			});
 
 		return completionItems;
 	}
 }
+function some(suggestion: TypingSuggestion, treeProvider: TreeProvider, currentNode: SyntaxNode): string {
 
+	if (suggestion.path != "kotlin" && !treeProvider.imports.has(suggestion.path + "." + suggestion.simpleName)) {
+		return suggestion.fullyQualifiedName + (suggestion.type == "method" ? "()" : "")
+	} else if (suggestion.type == "lambda") {
+		return suggestion.simpleName + " {}"
+	}
+	return suggestion.simpleName + (suggestion.type == "method" ? "()" : "")
+}
 function name(context: vscode.ExtensionContext, lang: TSParser.Language) {
 	const highlightsPath = context.asAbsolutePath('parsers/kotlin_highlights.scm');
 	console.log(`Highlights file path: ${highlightsPath}`);
@@ -1699,14 +1732,14 @@ function name(context: vscode.ExtensionContext, lang: TSParser.Language) {
 	const highlightQuery = lang.query(queryText);
 	console.log('Highlight query successfully compiled.');
 }
-
+let typingSuggestions: TypingSuggestion[] = []
 export async function activate(context: vscode.ExtensionContext) {
 	const config = vscode.workspace.getConfiguration('kotlinscript');
 	const ktsDirectory = config.get<string>('ktsDirectory', 'config/scripts');
 	const absoluteKtsDirectory = path.isAbsolute(ktsDirectory) ? ktsDirectory : path.join(vscode.workspace.rootPath || '', ktsDirectory);
 	await TSParser.init();
 	availableClasses = await loadAvailableClasses(absoluteKtsDirectory);
-	const typingSuggestions = await loadTypingSuggestions(absoluteKtsDirectory);
+	typingSuggestions = await loadTypingSuggestions(absoluteKtsDirectory);
 	console.log(`Typing suggestions loaded: ${typingSuggestions.length}`);
 	/* typingSuggestions.forEach(suggestion => {
 		console.log(`- ${suggestion.fullyQualifiedName}`);
