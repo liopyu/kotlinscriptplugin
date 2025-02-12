@@ -58,12 +58,6 @@ module.exports = grammar({
   name: "kotlin",
 
   conflicts: $ => [
-    [$.callable_reference],
-    [$.call_expression, $.multiplicative_expression, $.infix_expression],
-    [$.call_expression, $.additive_expression, $.infix_expression],
-    [$.call_expression, $.range_expression, $.infix_expression],
-    [$.navigation_expression, $.callable_reference],
-    [$.callable_reference, $.comparison_expression],
     // Ambiguous when used in an explicit delegation expression,
     // since the '{' could either be interpreted as the class body
     // or as the anonymous function body. Consider the following sequence:
@@ -513,27 +507,25 @@ module.exports = grammar({
     //       to prevent nested types from being recognized as
     //       unary expresions with navigation suffixes.
 
-    user_type: $ => prec.right(PREC.TYPE_RHS, seq(
-      sep1($._simple_user_type, "."), // ✅ Ensures `AttributeSupplier.Builder` is a single `user_type`
-      optional($.type_arguments)
-    )),
-
-
+    user_type: $ => sep1($._simple_user_type, "."),
 
     _simple_user_type: $ => prec.right(PREC.SIMPLE_USER_TYPE, seq(
       alias($.simple_identifier, $.type_identifier),
       optional($.type_arguments)
     )),
 
-    type_projection: $ =>
-      seq(optional($.type_projection_modifiers), choice("*", $._type)),
+    type_projection: $ => choice(
+      seq(optional($.type_projection_modifiers), $._type),
+      token("*")
+    ),
+
 
     type_projection_modifiers: $ => repeat1($._type_projection_modifier),
 
     _type_projection_modifier: $ => $.variance_modifier,
 
     function_type: $ => seq(
-      optional(seq(field("receiver", $.receiver_type), ".")),
+      optional(seq(field("receiver", $.receiver_type), token("."))),
       $.function_type_parameters,
       "->",
       $._type
@@ -656,7 +648,12 @@ module.exports = grammar({
 
     indexing_expression: $ => prec.left(PREC.POSTFIX, seq($._expression, $.indexing_suffix)),
 
-    navigation_expression: $ => prec.left(PREC.POSTFIX, seq($._expression, $.navigation_suffix)),
+    navigation_expression: $ => prec.left(PREC.POSTFIX, seq(
+      $._expression,
+      optional($.type_arguments),
+      $.navigation_suffix
+    )),
+
 
     prefix_expression: $ => prec.right(seq(choice($.annotation, $.label, $._prefix_unary_operator), $._expression)),
 
@@ -717,13 +714,17 @@ module.exports = grammar({
     ),
 
     call_suffix: $ => prec.left(seq(
-      optional($.type_arguments),
+      optional(seq(
+        token.immediate("<"),
+        sep1($.type_projection, ","),
+        token.immediate(">")
+      )),
       choice(
         prec(PREC.ARGUMENTS, seq(optional($.value_arguments), $.annotated_lambda)),
-        $.value_arguments,
-        $.callable_reference // ✅ Ensures `::some{}` is recognized before `{}`.
+        $.value_arguments
       )
     )),
+
 
     annotated_lambda: $ => seq(
       repeat($.annotation),
@@ -731,7 +732,12 @@ module.exports = grammar({
       $.lambda_literal
     ),
 
-    type_arguments: $ => seq("<", sep1($.type_projection, ","), ">"),
+    type_arguments: $ => seq(
+      token.immediate("<"),
+      sep1($.type_projection, token.immediate(",")),
+      token.immediate(">")
+    ),
+
 
     value_arguments: $ => seq(
       "(",
@@ -968,7 +974,7 @@ module.exports = grammar({
 
     _postfix_unary_operator: $ => choice("++", "--", "!!"),
 
-    _member_access_operator: $ => choice("."/* , "::" */, alias($.safe_nav, '?.')),
+    _member_access_operator: $ => choice(".", "::", alias($.safe_nav, '?.')),
 
     _indexing_suffix: $ => seq(
       '[',

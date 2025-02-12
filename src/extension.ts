@@ -226,13 +226,19 @@ export class TreeProvider {
 			return;
 		}
 
-		//console.log("rootnode: " + this.tree.rootNode)
-		/* this.tree.rootNode.children.forEach(c => {
-			console.log("Child - Text: " + c.text + ", Type: " + c.type)
+		/* console.log("rootnode: " + this.tree.rootNode)
+		this.tree.rootNode.children.forEach(c => {
+			console.log("Child generation 1 - Text: " + c.text + ", Type: " + c.type)
 			c.children.forEach(cc => {
-				console.log("GrandChild - Text: " + cc.text + ", Type: " + cc.type)
+				console.log("Child generation 2 - Text: " + cc.text + ", Type: " + cc.type)
 				cc.children.forEach(ccc => {
-					console.log("GreatGrandChild - Text: " + ccc.text + ", Type: " + ccc.type)
+					console.log("Child generation 3 - Text: " + ccc.text + ", Type: " + ccc.type)
+					ccc.children.forEach(cccc => {
+						console.log("Child generation 4 - Text: " + cccc.text + ", Type: " + cccc.type)
+						cccc.children.forEach(ccccc => {
+							console.log("Child generation 5 - Text: " + ccccc.text + ", Type: " + ccccc.type)
+						})
+					})
 				})
 			})
 		}) */
@@ -1692,8 +1698,8 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 
 
 		completionItems = this.suggestions
-			.filter(suggestion => suggestion.parentType == null &&
-				suggestion.type != "lambda"
+			.filter(suggestion => suggestion.parentType == null ||
+				(suggestion.parentType != null && ["lambda", "infix_lambda"].includes(suggestion.type ? suggestion.type : ""))
 			)
 			.map(suggestion => {
 				const item = new vscode.CompletionItem(
@@ -1712,10 +1718,9 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 	}
 }
 function some(suggestion: TypingSuggestion, treeProvider: TreeProvider, currentNode: SyntaxNode): string {
-
 	if (suggestion.path != "kotlin" && !treeProvider.imports.has(suggestion.path + "." + suggestion.simpleName)) {
 		return suggestion.fullyQualifiedName + (suggestion.type == "method" ? "()" : "")
-	} else if (suggestion.type == "lambda") {
+	} else if (suggestion.type == "lambda" || suggestion.type == "infix_lambda") {
 		return suggestion.simpleName + " {}"
 	}
 	return suggestion.simpleName + (suggestion.type == "method" ? "()" : "")

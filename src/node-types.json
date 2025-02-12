@@ -850,11 +850,7 @@
           "named": true
         },
         {
-          "type": "callable_reference",
-          "named": true
-        },
-        {
-          "type": "type_arguments",
+          "type": "type_projection",
           "named": true
         },
         {
@@ -5728,6 +5724,10 @@
         },
         {
           "type": "try_expression",
+          "named": true
+        },
+        {
+          "type": "type_arguments",
           "named": true
         },
         {
