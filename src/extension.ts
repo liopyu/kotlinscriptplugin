@@ -810,23 +810,18 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		this.treeProvider.updateTokens()
 		this.tempInterpolatedRanges = []
 		this.errorType = []
-		this.map = []
 		if (editor) {
 			this.treeProvider.validateDiagnostics(editor?.document)
 		}
-		this.traverseTree(tree.rootNode)
+		this.traverseTree(tree.rootNode, builder)
 		//console.log("RootNode" + tree.rootNode)
 		matches.forEach(match => {
 			match.captures.forEach(capture => {
 				const node = capture.node;
-				//console.log("Node Id: " + node.id + " Type: " + node.type + " Text: " + node.text)
-				//console.log("Type: " + node.type + " Text: " + node.text)
-				let idNode = tree.rootNode.descendantForPosition(node.startPosition);
-				//console.log("trueidnodeType: " + idNode?.type + ", Text: " + idNode?.text + ", Position: " + JSON.stringify(idNode?.startPosition))
+				/* console.log("Type: " + node.type + " Text: " + node.text)
+				console.log("Child Type: " + node.firstChild?.type + " Text: " + node.firstChild?.text) */
 				var range = this.treeProvider.supplyRange(node)
-				/* console.log(`Token processed: name="${capture.name}", flatName: ${capture.node.type}, ParentName: ${capture.node.parent?.type}, GrandParentName: ${capture.node.parent?.parent?.type}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.type}`);
-				console.log(`Token processed: name="${capture.name}", flatName: ${capture.node.text}, ParentName: ${capture.node.parent?.text}, GrandParentName: ${capture.node.parent?.parent?.text}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.text}`);
- */
+
 				if (this.treeProvider.isBlockNode(node) || (node.text == "{" || node.text == "${")) {
 					//console.log("Entering Scope: " + node.text)
 					this.treeProvider.enterScope(this.treeProvider.currentScope);
@@ -922,6 +917,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		const node = capture.node
 		/* console.log(`Token processed: name="${name}", flatName: ${capture.node.type}, ParentName: ${capture.node.parent?.type}, GrandParentName: ${capture.node.parent?.parent?.type}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.type}`);
 		console.log('node text: ' + node.text + ", node type: " + node.type) */
+		//console.log('firstchild text: ' + node.firstChild?.text + ", node type: " + node.childCount)
 		switch (name) {
 			case 'variableIdentifier':
 			case 'variable':
@@ -1097,19 +1093,70 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				tokenType = 'variable';
 				return;
 		}
-		if (name === 'comment.multiline' && range.start.line !== range.end.line) {
+		if (name === 'comment.multiline' /* && range.start.line !== range.end.line */) {
 			for (let line = range.start.line; line <= range.end.line; line++) {
 				const startCharacter = line === range.start.line ? range.start.character : 0;
-				const endCharacter =
-					line === range.end.line
-						? range.end.character
-						: this.getLineLength(line);
+				const lineText = this.getLineText(line);
+				const tagRegex = /(@\w+)/g;
+				const bracketRegex = /\[([^\]]+)\]/g;
+				let lastIndex = 0;
+				let matches: { index: number; type: string; length: number }[] = [];
+				let match;
+				const docTags = [
+					"@param",
+					"@throws",
+					"@see",
+					"@author",
+					"@sample",
+					"@exception",
+					"@since",
+					"@suppress",
+					"@return"
+				];
+				while ((match = tagRegex.exec(lineText)) !== null) {
+					const matchStart = match.index;
+					const matchEnd = matchStart + match[0].length;
+					const tagText = match[0];
+					if (!docTags.includes(tagText)) {
+						continue;
+					}
+					matches.push({ index: matchStart, type: 'keyword', length: match[0].length });
+					if (tagText === "@param") {
+						const paramMatch = /\s+(\w+)/.exec(lineText.slice(matchEnd));
+						if (paramMatch) {
+							const paramStart = matchEnd + paramMatch.index + paramMatch[0].indexOf(paramMatch[1]);
+							const paramLength = paramMatch[1].length;
+							matches.push({ index: paramStart, type: 'variable', length: paramLength });
+						}
+					}
+				}
 
-				const singleLineRange = new vscode.Range(line, startCharacter, line, endCharacter);
-				builder.push(singleLineRange, tokenType);
-				//console.log(`Multi-line token split: name="${name}", type="${tokenType}", range=[${line}:${startCharacter} - ${line}:${endCharacter}]`);
+				while ((match = bracketRegex.exec(lineText)) !== null) {
+					const matchStart = match.index;
+					const matchEnd = match.index + match[0].length;
+					matches.push({ index: matchStart, type: 'decorator', length: 1 });
+					if (match[1].length > 0) {
+						matches.push({ index: matchStart + 1, type: 'variable', length: match[1].length });
+					}
+					matches.push({ index: matchEnd - 1, type: 'decorator', length: 1 });
+				}
+				matches.sort((a, b) => a.index - b.index);
+				for (const token of matches) {
+					if (token.index > lastIndex) {
+						const commentRange = new vscode.Range(line, startCharacter + lastIndex, line, startCharacter + token.index);
+						builder.push(commentRange, 'comment');
+					}
+					const tokenRange = new vscode.Range(line, startCharacter + token.index, line, startCharacter + token.index + token.length);
+					builder.push(tokenRange, token.type);
+					lastIndex = token.index + token.length;
+				}
+				if (lastIndex < lineText.length) {
+					const commentRange = new vscode.Range(line, startCharacter + lastIndex, line, startCharacter + lineText.length);
+					builder.push(commentRange, 'comment');
+				}
 			}
-		} else {
+		}
+		else {
 			if (tokenType === '') return
 			builder.push(range, tokenType);
 			/* console.log(`Token processed: name="${name}", flatName: ${capture.node.text}, ParentName: ${capture.node.parent?.text}, GrandParentName: ${capture.node.parent?.parent?.text}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
@@ -1119,45 +1166,34 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 		}
 	}
-	/* public traverseTree(node: SyntaxNode): void {
-		console.log("Current Node:", { type: node.type, text: node.text });
-		// If the current node is an ERROR node
-		if (node.type === "ERROR") {
-			console.log("Error Node Detected:", { type: node.type, text: node.text });
 
-			// Check if this ERROR node is caused by explicit delegation
-			const containsExplicitDelegation = node.children.some(
-				(child) => child.type === "explicit_delegation"
-			);
 
-			if (containsExplicitDelegation) {
-				console.log("Skipping explicit delegation error check, but continuing traversal.");
-				// Do not return here; continue traversing its children to catch other errors
-			} else {
-				// Handle other errors within the ERROR node
-				const erroringNode = node.firstChild?.nextSibling ? node.firstChild.nextSibling : node.firstChild;
-				if (erroringNode) {
-					const range = this.treeProvider.supplyRange(node);
-					const expectedType = this.getExpectedNextType(erroringNode);
+	private getLineText(line: number): string {
+		if (editor) {
 
-					const actualText = erroringNode.text || "none";
-					const errorMessage = expectedType
-						? `Unexpected token: "${actualText}", expected: "${expectedType}"`
-						: `Unexpected token: "${actualText}"`;
+			return editor?.document.lineAt(line).text;
+		}
+		return ""
+	}
 
-					console.log("Adding error:", { errorMessage });
-					TreeProvider.addError(range, errorMessage, node.text);
+	public traverseTree(node: SyntaxNode, builder: vscode.SemanticTokensBuilder): void {
+		const erroringNode = node.firstChild?.nextSibling ? node.firstChild.nextSibling : node.firstChild
+		if (node.type == "call_expression") {
+			if (typingSuggestions.some(suggestion => suggestion.fullyQualifiedName == node.firstChild?.text &&
+				node.child(1)?.firstChild?.type == "annotated_lambda"
+			)) {
+				builder.push(this.treeProvider.supplyRange(node), "keyword");
+			} else if (typingSuggestions.some(suggestion => {
+				return suggestion.fullyQualifiedName == node.firstChild?.child(1)?.child(1)?.text &&
+					node.child(1)?.type == "call_suffix" && node.child(1)?.text.startsWith("{")
+			}
+			)) {
+				let smartNode = node.firstChild?.child(1)?.child(1)
+				if (smartNode) {
+					builder.push(this.treeProvider.supplyRange(smartNode), "keyword");
 				}
 			}
 		}
-
-		// Continue traversing all child nodes, even within ERROR nodes
-		node.children.forEach((child) => {
-			this.traverseTree(child);
-		});
-	} */
-	public traverseTree(node: SyntaxNode): void {
-		const erroringNode = node.firstChild?.nextSibling ? node.firstChild.nextSibling : node.firstChild
 		if (node.isError && erroringNode) {
 			const range = this.treeProvider.supplyRange(node);
 			const expectedType = this.getExpectedNextType(erroringNode);
@@ -1167,10 +1203,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			const errorMessage = expectedType ? `Unexpected token: "${actualText}", expected: "${expectedType}"` : `Unexpected token: "${actualText}"`;
 			TreeProvider.addError(range, errorMessage, node.text)
 		}
-		node.children.forEach(child => this.traverseTree(child));
+		node.children.forEach(child => this.traverseTree(child, builder));
 	}
 
-	private map: string[] = []
 
 
 	private getExpectedNextType(node: SyntaxNode): string | null {
@@ -1487,12 +1522,13 @@ interface CustomData {
 	document: vscode.TextDocument;
 }
 function applyTreeEdit(tree: TSParser.Tree, change: vscode.TextDocumentContentChangeEvent): void {
-	const startPosition = { row: change.range.start.line, column: change.range.start.character };
-	const oldEndPosition = { row: change.range.end.line, column: change.range.end.character };
-	const newEndPosition = {
-		row: startPosition.row + change.text.split('\n').length - 1,
-		column: change.text.split('\n').pop()?.length || 0
-	};
+	const startPosition = new vscode.Position(change.range.start.line, change.range.start.character);
+	const oldEndPosition = new vscode.Position(change.range.end.line, change.range.end.character);
+	const newTextLines = change.text.split('\n');
+	const newEndPosition = new vscode.Position(
+		startPosition.line + newTextLines.length - 1,
+		newTextLines.pop()?.length || 0
+	);
 	const startIndex = change.rangeOffset;
 	const oldEndIndex = startIndex + (change.rangeLength || 0);
 	const newEndIndex = startIndex + change.text.length;
@@ -1500,11 +1536,19 @@ function applyTreeEdit(tree: TSParser.Tree, change: vscode.TextDocumentContentCh
 		startIndex,
 		oldEndIndex,
 		newEndIndex,
-		startPosition,
-		oldEndPosition,
-		newEndPosition,
+		startPosition: { row: startPosition.line, column: startPosition.character },
+		oldEndPosition: { row: oldEndPosition.line, column: oldEndPosition.character },
+		newEndPosition: { row: newEndPosition.line, column: newEndPosition.character },
 	});
+
+	// For debugging: highlight the edited region
+	const range = new vscode.Range(startPosition, newEndPosition);
+	const editor = vscode.window.activeTextEditor;
+	if (editor) {
+		editor.setDecorations(DelimiterDecorationType, [range]);
+	}
 }
+
 function updateTokensForDocument(
 	document: vscode.TextDocument
 ) {
@@ -1654,9 +1698,22 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 			column: character,
 		});
 		let completionItems: vscode.CompletionItem[] = []
-		console.log("Type: " + node.type + ", ParentType: " + node.parent?.type, ", Text: " + node.text)
+		const kotlinKeywords = [
+			"val", "var", "fun", "class", "object", "interface", "return",
+			"if", "else", "when", "for", "while", "do", "try", "catch", "finally"
+		];
+
+		const keywordCompletionItems = kotlinKeywords.map(keyword => {
+			const item = new vscode.CompletionItem(
+				keyword,
+				vscode.CompletionItemKind.Keyword
+			);
+			item.detail = "Kotlin Keyword";
+			item.sortText = "0";
+			return item;
+		});
+		//console.log("Type: " + node.type + ", ParentType: " + node.parent?.type, ", Text: " + node.text)
 		if (node.parent?.type == "infix_expression") {
-			console.log("in infix")
 			completionItems = this.suggestions
 				.filter(suggestion => (suggestion.type == "infix_lambda" || suggestion.type == "infix") && !suggestion.simpleName.includes("."))
 				.map(suggestion => {
@@ -1714,7 +1771,7 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 				return item;
 			});
 
-		return completionItems;
+		return [...keywordCompletionItems, ...completionItems];
 	}
 }
 function some(suggestion: TypingSuggestion, treeProvider: TreeProvider, currentNode: SyntaxNode): string {
@@ -1732,11 +1789,13 @@ function name(context: vscode.ExtensionContext, lang: TSParser.Language) {
 		console.error('Highlights file does not exist. Ensure the file is in the correct location.');
 		return;
 	}
+
 	const queryText = fs.readFileSync(highlightsPath, 'utf-8');
 	console.log('Highlight query loaded:', queryText.slice(0, 100), '...'); // Log the first 100 characters
 	const highlightQuery = lang.query(queryText);
 	console.log('Highlight query successfully compiled.');
 }
+
 let typingSuggestions: TypingSuggestion[] = []
 export async function activate(context: vscode.ExtensionContext) {
 	const config = vscode.workspace.getConfiguration('kotlinscript');
@@ -1815,13 +1874,11 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 		}
 	}
-	// For changes to a different document
 	vscode.window.onDidChangeActiveTextEditor(editor => {
 		if (editor) {
 			addDocumentIfNotExists(editor.document);
 		}
 	});
-	// For changes to all visible documents
 	vscode.window.onDidChangeVisibleTextEditors(editors => {
 		const openUris = new Set(editors.map(editor => editor.document.uri.toString()));
 		for (const editor of editors) {
@@ -1834,6 +1891,10 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 		}
 	});
+
+	/* context.subscriptions.push(
+		vscode.languages.registerOnTypeFormattingEditProvider(selector, new KotlinOnTypeFormattingProvider(), "\n")
+	); */
 }
 export function deactivate() {
 	logGlobals(`Deactivating KotlinScript extension...`);

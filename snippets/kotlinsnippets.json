@@ -1,0 +1,324 @@
+{
+    "fun name(): Unit": {
+        "prefix": "fun",
+        "body": [
+            "fun ${1:functionName}(): ${4:Unit} {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Basic function definition"
+    },
+    "fun name(param: String): Unit": {
+        "prefix": "fun",
+        "body": [
+            "fun ${1:functionName}(${2:param}: ${3:String}): ${4:Unit} {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Basic function with one param"
+    },
+    "fun name()": {
+        "prefix": "fun",
+        "body": [
+            "fun ${1:functionName}() {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Basic function definition"
+    },
+    "fun Unit.name(param: String): Unit": {
+        "prefix": "fun",
+        "body": [
+            "fun ${1:Unit}.${2:functionName}(${3:param}: ${4:String}): ${5:Unit} {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Kotlin extension function"
+    },
+    "fun name(param: (String) -> Unit)": {
+        "prefix": "fun",
+        "body": [
+            "fun ${1:functionName}(${2:param}: (${3:String}) -> ${4:Unit}) {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Higher-order function taking a lambda as a parameter"
+    },
+    "Class": {
+        "prefix": "class",
+        "body": [
+            "class ${1:ClassName} {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Basic class definition"
+    },
+    "Data Class": {
+        "prefix": "data",
+        "body": [
+            "data class ${1:ClassName}(${2:val} ${3:param1}: ${4:Unit}, ${5:val} ${6:param2}: ${7:Unit})"
+        ],
+        "description": "Data class with properties"
+    },
+    "Object": {
+        "prefix": "object",
+        "body": [
+            "object ${1:ObjectName} {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Singleton object"
+    },
+    "Interface": {
+        "prefix": "interface",
+        "body": [
+            "interface ${1:InterfaceName} {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Interface definition"
+    },
+    "Abstract Class": {
+        "prefix": "abstract",
+        "body": [
+            "abstract class ${1:ClassName} {",
+            "\tabstract fun ${2:functionName}()",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Abstract class with an abstract function"
+    },
+    "Sealed Class": {
+        "prefix": "sealed",
+        "body": [
+            "sealed class ${1:ClassName} {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Sealed class definition"
+    },
+    "Companion Object": {
+        "prefix": "companion",
+        "body": [
+            "companion object {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Companion object for static members"
+    },
+    "Lambda": {
+        "prefix": "lambda",
+        "body": [
+            "val ${1:lambdaName}: (${2:String}) -> ${3:Unit} = { ${4:param} -> ${0} }"
+        ],
+        "description": "Lambda function"
+    },
+    "Main Function": {
+        "prefix": "main",
+        "body": [
+            "fun main(${1:args: Array<String>}?) {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Main function entry point"
+    },
+    "Try Catch Statement": {
+        "prefix": "try",
+        "body": [
+            "try {",
+            "\t${0}",
+            "} catch (${1:e}: ${2:Exception}) {",
+            "\t${3:e.printStackTrace()}",
+            "}"
+        ],
+        "description": "Try-catch block for exception handling"
+    },
+    "If Else Statement": {
+        "prefix": "ifelse",
+        "body": [
+            "if (${1:true}) {",
+            "\t${2}",
+            "} else {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Basic if-else statement"
+    },
+    "For Loop": {
+        "prefix": "for",
+        "body": [
+            "for (${1:i} in ${2:collection}) {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "For loop iterating over a collection"
+    },
+    "While Loop": {
+        "prefix": "while",
+        "body": [
+            "while (${1:true}) {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "While loop with a condition"
+    },
+    "Do While Loop": {
+        "prefix": "dowhile",
+        "body": [
+            "do {",
+            "\t${0}",
+            "} while (${1:true})"
+        ],
+        "description": "Do-while loop"
+    },
+    "When Expression": {
+        "prefix": "when",
+        "body": [
+            "when (${1:value}) {",
+            "\t${2:case1} -> ${3}",
+            "\t${4:case2} -> ${5}",
+            "\telse -> ${0}",
+            "}"
+        ],
+        "description": "When expression for conditional branching"
+    },
+    "Suspend Function": {
+        "prefix": "suspend",
+        "body": [
+            "suspend fun ${1:functionName}(${2:param}: ${3:String}): ${4:Unit} {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Suspend function for use in coroutines"
+    },
+    "Lazy Property": {
+        "prefix": "lazy",
+        "body": [
+            "val ${1:propertyName} by lazy {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Lazy property initialization"
+    },
+    "Inline Function": {
+        "prefix": "inline",
+        "body": [
+            "inline fun ${1:functionName}(${2:crossinline action}: () -> Unit) {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Inline function with a lambda parameter"
+    },
+    "Singleton": {
+        "prefix": "singleton",
+        "body": [
+            "object ${1:SingletonName} {",
+            "\tinit { ${0} }",
+            "}"
+        ],
+        "description": "Singleton object with initialization block"
+    },
+    "Factory Companion": {
+        "prefix": "factory",
+        "body": [
+            "class ${1:ClassName} private constructor() {",
+            "\tcompanion object {",
+            "\t\tfun create(): ${1:ClassName} {",
+            "\t\t\treturn ${1:ClassName}()",
+            "\t\t}",
+            "\t}",
+            "}"
+        ],
+        "description": "Companion object factory method for instance creation"
+    },
+    "val valName: Unit = initialValue": {
+        "prefix": "val",
+        "body": [
+            "val ${1:valName}: ${2:Unit} = ${3:initialValue}"
+        ],
+        "description": "Immutable property declaration"
+    },
+    "var varName: Unit = initialValue": {
+        "prefix": "var",
+        "body": [
+            "var ${1:varName}: ${2:Unit} = ${3:initialValue}"
+        ],
+        "description": "Mutable property declaration"
+    },
+    "val mutableList: MutableList<Unit> = mutableListOf()": {
+        "prefix": "mutableList",
+        "body": [
+            "val ${1:listName}: MutableList<${2:Unit}> = mutableListOf(${3})"
+        ],
+        "description": "Create a mutable list"
+    },
+    "val immutableList: List<Unit> = listOf()": {
+        "prefix": "list",
+        "body": [
+            "val ${1:listName}: List<${2:Unit}> = listOf(${3})"
+        ],
+        "description": "Create an immutable list"
+    },
+    "val immutableMap: Map<String, Unit> = mapOf()": {
+        "prefix": "map",
+        "body": [
+            "val ${1:mapName}: Map<${2:String}, ${3:Unit}> = mapOf(${4})"
+        ],
+        "description": "Create an immutable map"
+    },
+    "val mutableMap: MutableMap<String, Unit> = mutableMapOf()": {
+        "prefix": "map",
+        "body": [
+            "val ${1:mapName}: MutableMap<${2:String}, ${3:Unit}> = mutableMapOf(${4})"
+        ],
+        "description": "Create a mutable map"
+    },
+    "lateinit var propertyName: Unit": {
+        "prefix": "lateinit",
+        "body": [
+            "lateinit var ${1:propertyName}: ${2:Unit}"
+        ],
+        "description": "Late-initialized property"
+    },
+    "Companion Function": {
+        "prefix": "companion",
+        "body": [
+            "companion object {",
+            "\tfun ${1:functionName}(${2:param}: ${3:String}): ${4:Unit} {",
+            "\t\t${0}",
+            "\t}",
+            "}"
+        ],
+        "description": "Companion object with a static function"
+    },
+    "Object Expression": {
+        "prefix": "objexp",
+        "body": [
+            "val ${1:instance} = object : ${2:InterfaceName} {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Create an anonymous object implementing an interface"
+    },
+    "Inline Reified": {
+        "prefix": "inline",
+        "body": [
+            "inline fun <reified ${1:T}> ${2:functionName}(): ${3:Unit} {",
+            "\t${0}",
+            "}"
+        ],
+        "description": "Inline function with a reified type parameter"
+    },
+    "Getter Setter": {
+        "prefix": "getterSetter",
+        "body": [
+            "var ${1:propertyName}: ${2:Unit} = ${3:initialValue}",
+            "    get() = field",
+            "    set(value) {",
+            "        field = value",
+            "        ${0}",
+            "    }"
+        ],
+        "description": "Property with custom getter and setter"
+    }
+}

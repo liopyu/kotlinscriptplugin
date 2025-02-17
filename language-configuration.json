@@ -6,7 +6,20 @@
             "*/"
         ]
     },
-    
+    "brackets": [
+        [
+            "{",
+            "}"
+        ],
+        [
+            "[",
+            "]"
+        ],
+        [
+            "(",
+            ")"
+        ]
+    ],
     "autoClosingPairs": [
         {
             "open": "{",
@@ -17,16 +30,8 @@
             "close": "]"
         },
         {
-            "open": "<",
-            "close": ">"
-        },
-        {
             "open": "(",
-            "close": ")",
-            "notIn": [
-                "string",
-                "comment"
-            ]
+            "close": ")"
         },
         {
             "open": "'",
@@ -44,7 +49,7 @@
             ]
         },
         {
-            "open": "/*",
+            "open": "/**",
             "close": " */",
             "notIn": [
                 "string"
@@ -80,13 +85,36 @@
     "folding": {
         "offSide": true,
         "markers": {
-            "start": "^\\s*//\\s*#?region",
-            "end": "^\\s*//\\s*#?endregion"
+            "start": "^\\s*//\\s*#region",
+            "end": "^\\s*//\\s*#endregion"
         }
     },
-    "wordPattern": "(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\@\\#\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s]+)",
+    "onEnterRules": [
+        {
+            "beforeText": "^\\s*/\\*\\*.*$",
+            "afterText": "^.*\\*/\\s*$",
+            "action": {
+                "indent": "indentOutdent",
+                "appendText": " * "
+            }
+        },
+        {
+            "beforeText": "^\\s*/\\*\\*.*$",
+            "action": {
+                "indent": "none",
+                "appendText": " * "
+            }
+        },
+        {
+            "beforeText": "^\\s*\\*(?=\\s|$).*$",
+            "action": {
+                "indent": "none",
+                "appendText": "* "
+            }
+        }
+    ],
     "indentationRules": {
-        "increaseIndentPattern": "^((?!\\/\\/).)*(\\{[^}\"'`]*|\\([^)\"'`]*|\\[[^\\]\"'`]*)$",
-        "decreaseIndentPattern": "^((?!.*?\\/\\*).*\\*/)?\\s*[\\)\\}\\]].*$"
+        "increaseIndentPattern": "^.*\\{[^}\"']*$",
+        "decreaseIndentPattern": "^(.*\\*/)?\\s*\\}.*$"
     }
 }

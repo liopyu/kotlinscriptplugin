@@ -25,7 +25,8 @@
     {
       "id": "kotlin",
       "aliases": [
-        "kotlin"
+        "kotlin",
+        "kotlinscript"
       ],
       "extensions": [
         ".kt",
@@ -35,6 +36,33 @@
     }
   ],
   "contributes": {
+    "snippets": [
+      {
+        "language": "kotlin",
+        "path": "./snippets/kotlinsnippets.json"
+      }
+    ],
+    "grammars": [
+      {
+        "scopeName": "source.kotlin",
+        "path": "./syntaxes/Kotlin.tmLanguage"
+      },
+      {
+        "scopeName": "markdown.kotlin.codeblock",
+        "path": "./syntaxes/codeblock.json",
+        "injectTo": [
+          "text.html.markdown"
+        ],
+        "embeddedLanguages": {
+          "meta.embedded.block.kotlin": "kotlin"
+        }
+      },
+      {
+        "language": "kotlin",
+        "scopeName": "source.kotlinscript",
+        "path": "./syntaxes/simple-comments.tmLanguage.json"
+      }
+    ],
     "languages": [
       {
         "id": "kotlin",

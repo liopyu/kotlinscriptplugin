@@ -1,0 +1,64 @@
+{
+    "name": "KotlinScript Comments",
+    "scopeName": "source.kotlinscript",
+    "fileTypes": [
+        "kt",
+        "kts"
+    ],
+    "patterns": [
+        {
+            "name": "comment.block.kdoc.kotlinscript",
+            "begin": "/\\*\\*",
+            "end": "\\*/",
+            "patterns": [
+                {
+                    "name": "keyword.documentation.tag.kotlinscript",
+                    "match": "@\\w+"
+                },
+                {
+                    "name": "markup.inline.reference.kotlinscript",
+                    "match": "\\[(?=\\S)(.+?)\\]"
+                },
+                {
+                    "name": "markup.inline.code.kotlinscript",
+                    "begin": "```kotlin",
+                    "end": "```"
+                },
+                {
+                    "name": "markup.inline.code.kotlinscript",
+                    "begin": "`",
+                    "end": "`"
+                },
+                {
+                    "name": "comment.block.ignore.brackets.kotlinscript",
+                    "match": "[\\[\\]\\(\\)\\{\\}]",
+                    "captures": {
+                        "0": {
+                            "name": "comment.bracket.ignored.kotlinscript"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "comment.block.regular.kotlinscript",
+            "begin": "/\\*",
+            "end": "\\*/",
+            "patterns": [
+                {
+                    "name": "comment.block.ignore.brackets.kotlinscript",
+                    "match": "[\\[\\]\\(\\)\\{\\}]",
+                    "captures": {
+                        "0": {
+                            "name": "comment.bracket.ignored.kotlinscript"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "comment.line.kdoc.kotlinscript",
+            "match": "//.*"
+        }
+    ]
+}
