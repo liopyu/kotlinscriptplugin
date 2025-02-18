@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import * as utils from './utils'
 import TSParser, { QueryCapture, SyntaxNode, Tree } from 'web-tree-sitter';
 import {
 	VariableSymbol,
@@ -207,9 +208,11 @@ export class TreeProvider {
 	public diagnosticsValues: Map<string, string> = new Map();
 	public diagnosticsMap: Map<string, vscode.Diagnostic[]> = new Map();
 	public diagnosticCollection: vscode.DiagnosticCollection = vscode.languages.createDiagnosticCollection("kotlinscript");
+	public document: vscode.TextDocument
 	constructor(parser: TSParser, document: vscode.TextDocument) {
 		this.parser = parser;
 		logGlobals("initializing tokens provider")
+		this.document = document
 		this.scopes.set(this.currentScope.id, this.currentScope)
 		this.varId = 0
 		const fullText = document.getText();
@@ -226,7 +229,7 @@ export class TreeProvider {
 			return;
 		}
 
-		/* console.log("rootnode: " + this.tree.rootNode)
+		/* log("rootnode: " + this.tree.rootNode)
 		this.tree.rootNode.children.forEach(c => {
 			console.log("Child generation 1 - Text: " + c.text + ", Type: " + c.type)
 			c.children.forEach(cc => {
@@ -294,7 +297,7 @@ export class TreeProvider {
 			this.diagnosticCollection.set(uri, updatedDiagnostics);
 		});
 	}
-	private isErrorStillRelevant(range: vscode.Range, errorMessage: string): boolean {
+	public isErrorStillRelevant(range: vscode.Range, errorMessage: string): boolean {
 		const editor = vscode.window.activeTextEditor;
 		if (!editor) {
 			return false;
@@ -416,7 +419,7 @@ export class TreeProvider {
 
 		for (const variableKey of variablesToRemove) {
 			const symbol = this.scopedVariables.get(variableKey);
-			/* console.log(
+			/* log(
 				`Removed stale variable '${this.fromKey(variableKey)}' from scope: ${symbol?.scope.depth}`
 			); */
 
@@ -736,7 +739,7 @@ export class TreeProvider {
 				return;
 			}
 		}
-		//console.log("VariableName: " + variableName + ", Current Scope: " + this.currentScope.id)
+		//log("VariableName: " + variableName + ", Current Scope: " + this.currentScope.id)
 		// Check if a variable with the same name exists in the current scope
 		if (this.currentScope.countVariablesByName(variableName) > 0 && identifierNode.parent?.type != "lambda_parameters") {
 			const errorMessage = `Variable "${variableName}" is already defined in the current scope and may cause ambiguity.`;
@@ -818,10 +821,14 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		matches.forEach(match => {
 			match.captures.forEach(capture => {
 				const node = capture.node;
-				/* console.log("Type: " + node.type + " Text: " + node.text)
-				console.log("Child Type: " + node.firstChild?.type + " Text: " + node.firstChild?.text) */
+				//console.log("Node Id: " + node.id + " Type: " + node.type + " Text: " + node.text)
+				//console.log("Type: " + node.type + " Text: " + node.text)
+				let idNode = tree.rootNode.descendantForPosition(node.startPosition);
+				//console.log("trueidnodeType: " + idNode?.type + ", Text: " + idNode?.text + ", Position: " + JSON.stringify(idNode?.startPosition))
 				var range = this.treeProvider.supplyRange(node)
-
+				/* console.log(`Token processed: name="${capture.name}", flatName: ${capture.node.type}, ParentName: ${capture.node.parent?.type}, GrandParentName: ${capture.node.parent?.parent?.type}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.type}`);
+				console.log(`Token processed: name="${capture.name}", flatName: ${capture.node.text}, ParentName: ${capture.node.parent?.text}, GrandParentName: ${capture.node.parent?.parent?.text}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.text}`);
+ */
 				if (this.treeProvider.isBlockNode(node) || (node.text == "{" || node.text == "${")) {
 					//console.log("Entering Scope: " + node.text)
 					this.treeProvider.enterScope(this.treeProvider.currentScope);
@@ -915,9 +922,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		let tokenType: string = '';
 		let name = capture.name
 		const node = capture.node
-		/* console.log(`Token processed: name="${name}", flatName: ${capture.node.type}, ParentName: ${capture.node.parent?.type}, GrandParentName: ${capture.node.parent?.parent?.type}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.type}`);
+		/* log(`Token processed: name="${name}", flatName: ${capture.node.type}, ParentName: ${capture.node.parent?.type}, GrandParentName: ${capture.node.parent?.parent?.type}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.type}`);
 		console.log('node text: ' + node.text + ", node type: " + node.type) */
-		//console.log('firstchild text: ' + node.firstChild?.text + ", node type: " + node.childCount)
+		//log('firstchild text: ' + node.firstChild?.text + ", node type: " + node.childCount)
 		switch (name) {
 			case 'variableIdentifier':
 			case 'variable':
@@ -1159,16 +1166,16 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		else {
 			if (tokenType === '') return
 			builder.push(range, tokenType);
-			/* console.log(`Token processed: name="${name}", flatName: ${capture.node.text}, ParentName: ${capture.node.parent?.text}, GrandParentName: ${capture.node.parent?.parent?.text}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
+			/* log(`Token processed: name="${name}", flatName: ${capture.node.text}, ParentName: ${capture.node.parent?.text}, GrandParentName: ${capture.node.parent?.parent?.text}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.text}, type="${tokenType}", range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]`);
 			console.log(`Token processed: name="${name}", flatName: ${capture.node.type}, ParentName: ${capture.node.parent?.type}, GrandParentName: ${capture.node.parent?.parent?.type}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.type}`);
 			 */
-			//console.log(`Token processed: name="${name}", flatName: ${capture.node.type}, FirstChild: ${capture.node.firstChild?.type}, SecondChild: ${capture.node.child(1)?.type}, ThirdChild: ${capture.node.child(2)?.type}`);
+			//log(`Token processed: name="${name}", flatName: ${capture.node.type}, FirstChild: ${capture.node.firstChild?.type}, SecondChild: ${capture.node.child(1)?.type}, ThirdChild: ${capture.node.child(2)?.type}`);
 
 		}
 	}
 
 
-	private getLineText(line: number): string {
+	public getLineText(line: number): string {
 		if (editor) {
 
 			return editor?.document.lineAt(line).text;
@@ -1208,7 +1215,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 
 
-	private getExpectedNextType(node: SyntaxNode): string | null {
+	public getExpectedNextType(node: SyntaxNode): string | null {
 		switch (node.type) {
 			case "parameter":
 				return "typeAnnotation";
@@ -1407,12 +1414,12 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		}
 	}
 	public isMultipleDefinedVariable(node: SyntaxNode): boolean {
-		//console.log(this.treeProvider.currentScope.countVariablesByName(node.text))
+		//log(this.treeProvider.currentScope.countVariablesByName(node.text))
 		return this.treeProvider.currentScope.countVariablesByName(node.text) > 1;
 	}
 
 	public handleSimpleIdentifier(node: SyntaxNode, builder: vscode.SemanticTokensBuilder, byPassSI: boolean = false): void {
-		/* console.log("handling simple identifier: " + node.type + ": " + node.text)
+		/* log("handling simple identifier: " + node.type + ": " + node.text)
 		console.log("handling simple identifier parent: " + node.parent?.type + ": " + node.parent?.text) */
 		if (((node.type === "simple_identifier" && node.parent?.type != "catch_block") || byPassSI) &&
 			!this.treeProvider.isSpecialHandleWord(node)
@@ -1521,7 +1528,7 @@ interface CustomData {
 	treeProvider: TreeProvider;
 	document: vscode.TextDocument;
 }
-function applyTreeEdit(tree: TSParser.Tree, change: vscode.TextDocumentContentChangeEvent): void {
+function applyTreeEdit(treeProvider: TreeProvider, change: vscode.TextDocumentContentChangeEvent, document: vscode.TextDocument): void {
 	const startPosition = new vscode.Position(change.range.start.line, change.range.start.character);
 	const oldEndPosition = new vscode.Position(change.range.end.line, change.range.end.character);
 	const newTextLines = change.text.split('\n');
@@ -1529,10 +1536,13 @@ function applyTreeEdit(tree: TSParser.Tree, change: vscode.TextDocumentContentCh
 		startPosition.line + newTextLines.length - 1,
 		newTextLines.pop()?.length || 0
 	);
+
 	const startIndex = change.rangeOffset;
 	const oldEndIndex = startIndex + (change.rangeLength || 0);
 	const newEndIndex = startIndex + change.text.length;
-	tree.edit({
+
+	if (!treeProvider.tree) return;
+	treeProvider.tree.edit({
 		startIndex,
 		oldEndIndex,
 		newEndIndex,
@@ -1540,14 +1550,9 @@ function applyTreeEdit(tree: TSParser.Tree, change: vscode.TextDocumentContentCh
 		oldEndPosition: { row: oldEndPosition.line, column: oldEndPosition.character },
 		newEndPosition: { row: newEndPosition.line, column: newEndPosition.character },
 	});
-
-	// For debugging: highlight the edited region
-	const range = new vscode.Range(startPosition, newEndPosition);
-	const editor = vscode.window.activeTextEditor;
-	if (editor) {
-		editor.setDecorations(DelimiterDecorationType, [range]);
-	}
 }
+
+
 
 function updateTokensForDocument(
 	document: vscode.TextDocument
@@ -1663,7 +1668,7 @@ export async function loadTypingSuggestions(ktsDirectory: string): Promise<Typin
 	return suggestions;
 }
 class TypingSuggestionProvider implements vscode.CompletionItemProvider {
-	private suggestions: TypingSuggestion[];
+	public suggestions: TypingSuggestion[];
 
 	constructor(suggestions: TypingSuggestion[]) {
 		this.suggestions = suggestions;
@@ -1712,7 +1717,7 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 			item.sortText = "0";
 			return item;
 		});
-		//console.log("Type: " + node.type + ", ParentType: " + node.parent?.type, ", Text: " + node.text)
+		//log("Type: " + node.type + ", ParentType: " + node.parent?.type, ", Text: " + node.text)
 		if (node.parent?.type == "infix_expression") {
 			completionItems = this.suggestions
 				.filter(suggestion => (suggestion.type == "infix_lambda" || suggestion.type == "infix") && !suggestion.simpleName.includes("."))
@@ -1749,7 +1754,7 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 					"property_delegate"
 				].includes(node.parent?.type ?? ""))
 		) {
-			//console.log("Skipping suggestions: Invalid context.");
+			//log("Skipping suggestions: Invalid context.");
 			return undefined;
 		}
 
@@ -1782,24 +1787,27 @@ function some(suggestion: TypingSuggestion, treeProvider: TreeProvider, currentN
 	}
 	return suggestion.simpleName + (suggestion.type == "method" ? "()" : "")
 }
-function name(context: vscode.ExtensionContext, lang: TSParser.Language) {
-	const highlightsPath = context.asAbsolutePath('parsers/kotlin_highlights.scm');
-	console.log(`Highlights file path: ${highlightsPath}`);
-	if (!fs.existsSync(highlightsPath)) {
-		console.error('Highlights file does not exist. Ensure the file is in the correct location.');
-		return;
-	}
-
-	const queryText = fs.readFileSync(highlightsPath, 'utf-8');
-	console.log('Highlight query loaded:', queryText.slice(0, 100), '...'); // Log the first 100 characters
-	const highlightQuery = lang.query(queryText);
-	console.log('Highlight query successfully compiled.');
-}
 
 let typingSuggestions: TypingSuggestion[] = []
+let util: utils.Utils
+let console = {
+	log,
+	warn,
+	error
+}
+function log(...args: any[]) {
+	util.log(...args)
+}
+function error(...args: any[]) {
+	util.error(...args)
+}
+function warn(...args: any[]) {
+	util.warn(...args)
+}
 export async function activate(context: vscode.ExtensionContext) {
 	const config = vscode.workspace.getConfiguration('kotlinscript');
 	const ktsDirectory = config.get<string>('ktsDirectory', 'config/scripts');
+	util = new utils.Utils(context)
 	const absoluteKtsDirectory = path.isAbsolute(ktsDirectory) ? ktsDirectory : path.join(vscode.workspace.rootPath || '', ktsDirectory);
 	await TSParser.init();
 	availableClasses = await loadAvailableClasses(absoluteKtsDirectory);
@@ -1842,7 +1850,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				const { treeProvider } = data;
 				event.contentChanges.forEach(change => {
 					if (treeProvider.tree) {
-						applyTreeEdit(treeProvider.tree, change);
+						applyTreeEdit(treeProvider, change, event.document);
 					}
 				});
 				const newTree = treeProvider.parser.parse(event.document.getText(), treeProvider.tree);
@@ -1892,11 +1900,17 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
+
 	/* context.subscriptions.push(
 		vscode.languages.registerOnTypeFormattingEditProvider(selector, new KotlinOnTypeFormattingProvider(), "\n")
 	); */
 }
 export function deactivate() {
+	if (util.flushInterval) clearInterval(util.flushInterval);
+	if (util.logBuffer.length > 0) {
+		fs.appendFileSync(util.logFile, util.logBuffer.join(''));
+		util.logBuffer = [];
+	}
 	logGlobals(`Deactivating KotlinScript extension...`);
 }
 

@@ -8,6 +8,13 @@
         ],
         "description": "Basic function definition"
     },
+    "fun name() = value": {
+        "prefix": "fun",
+        "body": [
+            "fun ${1:functionName}() = value"
+        ],
+        "description": "Basic value function"
+    },
     "fun name(param: String): Unit": {
         "prefix": "fun",
         "body": [
