@@ -206,6 +206,7 @@ export class TypingSuggestion {
         public source: string | null,
         public type: string | null,
         public path: string | null,
-        public parentType: string | null
+        public parentType: string | null,
+        public requiresImport: boolean
     ) { }
 }

@@ -811,6 +811,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		const matches = this.highlightQuery.matches(tree.rootNode);
 		console.log("Updating SemanticTokens")
 		this.treeProvider.updateTokens()
+
 		this.tempInterpolatedRanges = []
 		this.errorType = []
 		if (editor) {
@@ -961,13 +962,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 					tokenType = 'method';
 				} else tokenType = 'variable';
 				break
-			case 'function':
-				if (reservedFunctions.includes(capture?.node?.text)) {
-					tokenType = 'function';
-				} else {
-					return
-				}
-				break;
 			case 'constructor':
 				if (capture?.node?.text === "constructor") {
 					tokenType = 'keyword';
@@ -987,6 +981,14 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				}
 				tokenType = 'keyword';
 				break
+			case 'function':
+				if (typingSuggestions.some(suggestion => !suggestion.requiresImport && suggestion.simpleName == capture?.node?.text)) {
+					tokenType = 'type';
+				} else {
+					tokenType = 'function';
+					return
+				}
+				break;
 			case 'include':
 			case 'namespace':
 			case 'exception':
@@ -1121,8 +1123,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 					"@return"
 				];
 				while ((match = tagRegex.exec(lineText)) !== null) {
-					const matchStart = match.index;
-					const matchEnd = matchStart + match[0].length;
+					const matchStart = match.index - startCharacter;
+					const matchEnd = startCharacter + (matchStart + match[0].length);
 					const tagText = match[0];
 					if (!docTags.includes(tagText)) {
 						continue;
@@ -1139,14 +1141,18 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				}
 
 				while ((match = bracketRegex.exec(lineText)) !== null) {
-					const matchStart = match.index;
-					const matchEnd = match.index + match[0].length;
+					const matchStart = match.index - startCharacter;
+					const matchEnd = matchStart + match[0].length;
+
 					matches.push({ index: matchStart, type: 'decorator', length: 1 });
+
 					if (match[1].length > 0) {
 						matches.push({ index: matchStart + 1, type: 'variable', length: match[1].length });
 					}
-					matches.push({ index: matchEnd - 1, type: 'decorator', length: 1 });
+
+					matches.push({ index: matchStart + match[0].length - 1, type: 'decorator', length: 1 });
 				}
+
 				matches.sort((a, b) => a.index - b.index);
 				for (const token of matches) {
 					if (token.index > lastIndex) {
@@ -1177,43 +1183,145 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 	public getLineText(line: number): string {
 		if (editor) {
-
 			return editor?.document.lineAt(line).text;
 		}
 		return ""
 	}
 
 	public traverseTree(node: SyntaxNode, builder: vscode.SemanticTokensBuilder): void {
-		const erroringNode = node.firstChild?.nextSibling ? node.firstChild.nextSibling : node.firstChild
-		if (node.type == "call_expression") {
-			if (typingSuggestions.some(suggestion => suggestion.fullyQualifiedName == node.firstChild?.text &&
-				node.child(1)?.firstChild?.type == "annotated_lambda"
-			)) {
-				builder.push(this.treeProvider.supplyRange(node), "keyword");
-			} else if (typingSuggestions.some(suggestion => {
-				return suggestion.fullyQualifiedName == node.firstChild?.child(1)?.child(1)?.text &&
-					node.child(1)?.type == "call_suffix" && node.child(1)?.text.startsWith("{")
-			}
-			)) {
-				let smartNode = node.firstChild?.child(1)?.child(1)
-				if (smartNode) {
-					builder.push(this.treeProvider.supplyRange(smartNode), "keyword");
-				}
-			}
-		}
-		if (node.isError && erroringNode) {
-			const range = this.treeProvider.supplyRange(node);
-			const expectedType = this.getExpectedNextType(erroringNode);
+		//console.log(node.type)
+		// Handle function call expressions separately
+		this.handleCallExpression(node, builder);
 
-			const actualText = erroringNode.text || "none";
-
-			const errorMessage = expectedType ? `Unexpected token: "${actualText}", expected: "${expectedType}"` : `Unexpected token: "${actualText}"`;
-			TreeProvider.addError(range, errorMessage, node.text)
-		}
+		// Handle syntax errors and expected tokens
+		this.handleErrorNodes(node);
+		this.handleMissingNodes(node);
+		/* if (node.type == "source_file") {
+			console.log("Root Node: " + this.treeProvider.tree?.rootNode)
+		} */
+		// Recursively traverse child nodes
 		node.children.forEach(child => this.traverseTree(child, builder));
 	}
 
+	// ---------------------- MODULAR FUNCTIONS ----------------------
 
+	private handleMissingNodes(node: SyntaxNode): void {
+		if (node.isMissing) {
+			//console.log(`Missing node detected: ${node.type} at ${node.startPosition.row}:${node.startPosition.column}`);
+			const nextValidToken: SyntaxNode | null | undefined = this.findFirstBaseToken(this.findNextValidToken(node));
+			const nonNullToken: SyntaxNode = nextValidToken ? nextValidToken : node
+			const range = this.treeProvider.supplyRange(nonNullToken);
+			const errorMessage = `Missing token: ${node.type.replace(/_/g, " ")}`;
+
+			TreeProvider.addError(range, errorMessage, nonNullToken.text);
+		}
+	}
+
+	private handleCallExpression(node: SyntaxNode, builder: vscode.SemanticTokensBuilder): void {
+		if (node.type !== "call_expression") return;
+
+		if (typingSuggestions.some(suggestion =>
+			suggestion.fullyQualifiedName === node.firstChild?.text &&
+			node.child(1)?.firstChild?.type === "annotated_lambda"
+		)) {
+			builder.push(this.treeProvider.supplyRange(node), "keyword");
+		} else if (typingSuggestions.some(suggestion =>
+			suggestion.fullyQualifiedName === node.firstChild?.child(1)?.child(1)?.text &&
+			node.child(1)?.type === "call_suffix" && node.child(1)?.text.startsWith("{")
+		)) {
+			let smartNode: SyntaxNode | null | undefined = node.firstChild?.child(1)?.child(1);
+			if (smartNode) {
+				builder.push(this.treeProvider.supplyRange(smartNode), "keyword");
+			}
+		}
+	}
+
+	private handleErrorNodes(node: SyntaxNode): void {
+		if (!node.isError) return;
+
+		const erroringNode: SyntaxNode | null | undefined = node.firstChild?.nextSibling || node.firstChild;
+		if (!erroringNode) return;
+
+		//console.log(`Error detected at node: ${erroringNode?.type ?? "undefined"} - "${erroringNode?.text ?? "undefined"}"`);
+
+		const expectedType = this.getExpectedNextType(erroringNode);
+		//console.log(`Expected type: "${expectedType ?? "unknown"}"`);
+
+		// Find the actual next valid token
+		const nextValidToken: SyntaxNode | null | undefined = this.findFirstBaseToken(this.findNextValidToken(erroringNode));
+		let actualText: string = nextValidToken?.text ?? erroringNode?.text ?? "none";
+
+		// Format text
+		const range = this.treeProvider.supplyRange(nextValidToken || erroringNode);
+		actualText = this.formatTokenText(actualText);
+
+		//console.log(`Actual token to report: "${actualText}"`);
+
+		const formattedExpectedType = expectedType
+			? expectedType.replace(/_/g, " ").replace(/^./, str => str.toUpperCase())
+			: null;
+
+		const errorMessage = formattedExpectedType
+			? `${formattedExpectedType} expected`
+			: `Unexpected token: "${actualText}"`;
+
+		//console.log(`Generated error message: ${errorMessage}`);
+		TreeProvider.addError(range, errorMessage, node.text);
+	}
+
+	// ---------------------- UTILITY FUNCTIONS ----------------------
+
+	private findNextValidToken(errorNode: SyntaxNode | null | undefined): SyntaxNode | null | undefined {
+		let currentNode: SyntaxNode | null | undefined = errorNode;
+
+		//console.log(`Searching for next valid token after error node: ${errorNode?.type ?? "undefined"} - "${errorNode?.text ?? "undefined"}"`);
+
+		do {
+			currentNode = currentNode?.nextSibling || currentNode?.parent?.nextSibling || null;
+		} while (currentNode && (currentNode.isError || currentNode.text.trim() === "" || currentNode.text === errorNode?.text));
+
+		if (currentNode && currentNode.parent?.isError) {
+			//console.log(`Next token is inside an ERROR node, moving deeper.`);
+			currentNode = this.findDeepNextValidToken(currentNode);
+		}
+
+		if (currentNode) {
+			//console.log(`Next valid token found: ${currentNode.type} - "${currentNode.text}"`);
+		} else {
+			//console.log(`No valid next token found, checking deeper...`);
+			currentNode = this.findDeepNextValidToken(errorNode);
+		}
+
+		return currentNode;
+	}
+
+	private findDeepNextValidToken(node: SyntaxNode | null | undefined): SyntaxNode | null | undefined {
+		if (!node) return null;
+
+		let nextNode: SyntaxNode | null | undefined = node.parent?.nextSibling;
+		while (nextNode && (nextNode.isError || nextNode.text.trim() === "" || nextNode.text === node.text)) {
+			//console.log(`Skipping deeper node: ${nextNode?.type ?? "undefined"} - "${nextNode?.text ?? "undefined"}"`);
+			nextNode = nextNode.nextSibling;
+		}
+
+		return nextNode;
+	}
+
+	private findFirstBaseToken(node: SyntaxNode | null | undefined): SyntaxNode | null | undefined {
+		let currentNode: SyntaxNode | null | undefined = node;
+		while (currentNode && currentNode.firstChild) {
+			currentNode = currentNode.firstChild;
+		}
+		return currentNode;
+	}
+
+	private formatTokenText(text: string): string {
+		return text
+			.replace(/[\r\n]+/g, " ")  // Replace newlines with spaces
+			.replace(/ {4,}/g, " ")    // Collapse 4+ spaces into a single space
+			.trim()                     // Trim leading/trailing spaces
+			.substring(0, 25) + (text.length > 25 ? "..." : ""); // Truncate if necessary
+	}
 
 	public getExpectedNextType(node: SyntaxNode): string | null {
 		switch (node.type) {
@@ -1385,10 +1493,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				return ".";
 			case "navigation_suffix":
 				return "identifier";
-
 			case ".":
-				return "identifier";
-
+				return "identifier"//this.refineExpectedType(node, "identifier");
 			case "type_modifiers":
 				return "type";
 
@@ -1406,13 +1512,22 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				return null
 
 			default:
-				/* if (!this.map.includes(node.type)) {
-					console.log("Unknown type: " + node.type);
-					this.map.push(node.type);
-				} */
 				return null;
 		}
 	}
+	public refineExpectedType(node: SyntaxNode, defaultType: string): string {
+		let current: SyntaxNode | null = node;
+		//console.log("found error node: " + node.type)
+		while (current) {
+			if (current.type === "function_declaration") {
+				return "function_body"; // Adjusted expected type if inside a function declaration
+			}
+			current = current.parent;
+		}
+
+		return defaultType; // If no special case applies, return the default type
+	}
+
 	public isMultipleDefinedVariable(node: SyntaxNode): boolean {
 		//log(this.treeProvider.currentScope.countVariablesByName(node.text))
 		return this.treeProvider.currentScope.countVariablesByName(node.text) > 1;
@@ -1649,7 +1764,8 @@ export async function loadTypingSuggestions(ktsDirectory: string): Promise<Typin
 							item.source || null,
 							item.type || null,
 							item.path || null,
-							item.parentType || null
+							item.parentType || null,
+							item.requiresImport || false
 						)
 					);
 					//}
@@ -1717,7 +1833,7 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 			item.sortText = "0";
 			return item;
 		});
-		//log("Type: " + node.type + ", ParentType: " + node.parent?.type, ", Text: " + node.text)
+		log("Type: " + node.type + ", ParentType: " + node.parent?.type, ", Text: " + node.text)
 		if (node.parent?.type == "infix_expression") {
 			completionItems = this.suggestions
 				.filter(suggestion => (suggestion.type == "infix_lambda" || suggestion.type == "infix") && !suggestion.simpleName.includes("."))
@@ -1737,22 +1853,25 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 		}
 		if (
 			(node.type !== "simple_identifier" ||
-				![
-					"statements",
-					"property_declaration",
-					"for_statement",
-					"if_expression",
-					"value_argument",
-					"source_file",
-					"when_subject",
-					"infix_expression",
-					"indexing_suffix",
-					"control_structure_body",
-					"function_body",
-					"function_value_parameters",
-					"explicit_delegation",
-					"property_delegate"
-				].includes(node.parent?.type ?? ""))
+				(!expressionTypes.includes(node.parent?.type ?? "")
+					&& ![
+						"assignment",
+						"jump_expression",
+						"statements",
+						"property_declaration",
+						"for_statement",
+						"if_expression",
+						"value_argument",
+						"source_file",
+						"when_subject",
+						"infix_expression",
+						"indexing_suffix",
+						"control_structure_body",
+						"function_body",
+						"function_value_parameters",
+						"explicit_delegation",
+						"property_delegate"
+					].includes(node.parent?.type ?? "")))
 		) {
 			//log("Skipping suggestions: Invalid context.");
 			return undefined;
@@ -1780,7 +1899,7 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 	}
 }
 function some(suggestion: TypingSuggestion, treeProvider: TreeProvider, currentNode: SyntaxNode): string {
-	if (suggestion.path != "kotlin" && !treeProvider.imports.has(suggestion.path + "." + suggestion.simpleName)) {
+	if (suggestion.requiresImport && !treeProvider.imports.has(suggestion.path + "." + suggestion.simpleName)) {
 		return suggestion.fullyQualifiedName + (suggestion.type == "method" ? "()" : "")
 	} else if (suggestion.type == "lambda" || suggestion.type == "infix_lambda") {
 		return suggestion.simpleName + " {}"
