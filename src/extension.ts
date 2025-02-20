@@ -21,7 +21,7 @@ import {
 const t = true
 const individualLogging = false;
 const globalLogging = false;
-const editor = vscode.window.activeTextEditor;
+
 function logContent(...data: any[]) {
 	if (individualLogging) {
 		console.log(data)
@@ -698,6 +698,7 @@ export class TreeProvider {
 		return `${start.line}@${start.character}@${end.line}@${end.character}@${errorMessage}`;
 	}
 	public static addError(range: vscode.Range, message: string, errorText: string, severity: vscode.DiagnosticSeverity = vscode.DiagnosticSeverity.Error) {
+		let editor = vscode.window.activeTextEditor;
 		if (editor) {
 			const documentUri = editor.document.uri.toString();
 			const data = documentData.get(documentUri);
@@ -814,6 +815,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 		this.tempInterpolatedRanges = []
 		this.errorType = []
+		let editor = vscode.window.activeTextEditor;
 		if (editor) {
 			this.treeProvider.validateDiagnostics(editor?.document)
 		}
@@ -1182,6 +1184,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 
 	public getLineText(line: number): string {
+		let editor = vscode.window.activeTextEditor;
 		if (editor) {
 			return editor?.document.lineAt(line).text;
 		}
@@ -1739,24 +1742,24 @@ export async function loadAvailableClasses(ktsDirectory: string): Promise<Set<st
 		return availableClasses;
 	}
 }
-export async function loadTypingSuggestions(ktsDirectory: string): Promise<TypingSuggestion[]> {
-	const suggestions: TypingSuggestion[] = [];
+let cachedTypingSuggestions: TypingSuggestion[] | null = null;
 
-	const typingsPath = path.join(ktsDirectory, 'typings');
-	const jsonFilePath = path.join(typingsPath, 'kotlin_suggestions.json');
+export async function loadTypingSuggestions(ktsDirectory: string): Promise<TypingSuggestion[]> {
+	if (cachedTypingSuggestions) {
+		return cachedTypingSuggestions;
+	}
+
+	const suggestions: TypingSuggestion[] = [];
+	const jsonFilePath = path.join(ktsDirectory, 'typings', 'kotlin_suggestions.json');
 
 	try {
-		// Check if the JSON file exists
 		if (fs.existsSync(jsonFilePath)) {
 			console.log('Loading typing suggestions from JSON file...');
 			const fileContent = fs.readFileSync(jsonFilePath, 'utf-8');
 			const parsedData = JSON.parse(fileContent);
 
-			// Validate and process the JSON content
 			if (Array.isArray(parsedData)) {
 				parsedData.forEach(item => {
-					// Ensure the required fields are present and valid
-					//if (item.fullyQualifiedName?.startsWith('kotlin.')) {
 					suggestions.push(
 						new TypingSuggestion(
 							item.fullyQualifiedName,
@@ -1768,14 +1771,10 @@ export async function loadTypingSuggestions(ktsDirectory: string): Promise<Typin
 							item.requiresImport || false
 						)
 					);
-					//}
 				});
 				console.log(`Loaded ${suggestions.length} typing suggestions.`);
-			} else {
-				throw new Error('Invalid JSON format: expected an array of suggestions.');
+				cachedTypingSuggestions = suggestions;
 			}
-		} else {
-			console.warn(`No kotlin_suggestions.json found at ${jsonFilePath}.`);
 		}
 	} catch (error) {
 		console.error(`Error loading typing suggestions: ${error}`);
@@ -1783,6 +1782,7 @@ export async function loadTypingSuggestions(ktsDirectory: string): Promise<Typin
 
 	return suggestions;
 }
+
 class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 	public suggestions: TypingSuggestion[];
 
@@ -1923,6 +1923,7 @@ function error(...args: any[]) {
 function warn(...args: any[]) {
 	util.warn(...args)
 }
+
 export async function activate(context: vscode.ExtensionContext) {
 	const config = vscode.workspace.getConfiguration('kotlinscript');
 	const ktsDirectory = config.get<string>('ktsDirectory', 'config/scripts');
@@ -1944,9 +1945,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	const highlightQuery = lang.query(queryText);
 	function addDocumentIfNotExists(document: vscode.TextDocument) {
 		const documentUri = document.uri.toString();
-		if (!document.fileName.endsWith(".kts")) return
+		if (!document.fileName.endsWith(".kts")) return;
+
 		if (!documentData.has(documentUri)) {
-			logGlobals("Adding document");
+			logGlobals("Adding document: " + documentUri);
 			const treeProvider = new TreeProvider(parser, document);
 			documentData.set(documentUri, {
 				treeProvider: treeProvider,
@@ -1954,29 +1956,44 @@ export async function activate(context: vscode.ExtensionContext) {
 			});
 		}
 	}
+
 	const selector: vscode.DocumentSelector = {
 		language: 'kotlin',
 		scheme: 'file',
 		pattern: new vscode.RelativePattern(absoluteKtsDirectory, '*.kts')
 	};
-	vscode.workspace.onDidChangeTextDocument(event => {
-		//if (t) return
-		const documentUri = event.document.uri.toString();
-		const data = documentData.get(documentUri);
-		if (data) {
-			const editor = vscode.window.visibleTextEditors.find(e => e.document.uri.toString() === documentUri);
-			if (editor) {
-				const { treeProvider } = data;
-				event.contentChanges.forEach(change => {
-					if (treeProvider.tree) {
-						applyTreeEdit(treeProvider, change, event.document);
-					}
-				});
-				const newTree = treeProvider.parser.parse(event.document.getText(), treeProvider.tree);
-				treeProvider.tree = newTree;
+	vscode.workspace.onDidCloseTextDocument(document => {
+		const documentUri = document.uri.toString();
+		if (documentData.has(documentUri)) {
+			const data = documentData.get(documentUri);
+
+			// ✅ Dispose diagnostics & decorations
+			if (data?.treeProvider?.diagnosticCollection) {
+				data.treeProvider.diagnosticCollection.clear();
 			}
+
+			documentData.delete(documentUri);
+			logGlobals(`Removed closed document: ${documentUri}`);
 		}
 	});
+
+	vscode.workspace.onDidChangeTextDocument(event => {
+		const documentUri = event.document.uri.toString();
+		const data = documentData.get(documentUri);
+		if (!data) return;
+
+		const { treeProvider } = data;
+		event.contentChanges.forEach(change => {
+			if (treeProvider.tree) {
+				applyTreeEdit(treeProvider, change, event.document);
+			}
+		});
+
+		if (event.contentChanges.length > 0 && treeProvider.tree) {
+			treeProvider.tree = treeProvider.parser.parse(event.document.getText(), treeProvider.tree);
+		}
+	});
+
 	context.subscriptions.push(
 		vscode.languages.registerCompletionItemProvider(
 			selector,
@@ -1989,6 +2006,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	// Runs on start
+	let editor = vscode.window.activeTextEditor;
 	if (editor) {
 		addDocumentIfNotExists(editor.document);
 		var doc = documentData.get(editor.document.uri.toString())
@@ -2001,24 +2019,45 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 		}
 	}
-	vscode.window.onDidChangeActiveTextEditor(editor => {
-		if (editor) {
+	vscode.window.onDidChangeActiveTextEditor(async (editor) => {
+		if (editor && editor.document.fileName.endsWith(".kts")) {
 			addDocumentIfNotExists(editor.document);
-		}
-	});
-	vscode.window.onDidChangeVisibleTextEditors(editors => {
-		const openUris = new Set(editors.map(editor => editor.document.uri.toString()));
-		for (const editor of editors) {
-			addDocumentIfNotExists(editor.document);
-		}
-		for (const documentUri of documentData.keys()) {
-			if (!openUris.has(documentUri)) {
-				documentData.delete(documentUri);
-				logGlobals("Removed document")
+
+			const doc = documentData.get(editor.document.uri.toString());
+			if (doc) {
+				// ✅ Reset semanticTokensProvider to avoid carrying over old tokens
+				doc.treeProvider.semanticTokensProvider = new SemanticTokensProvider(doc.treeProvider, highlightQuery);
+
+				context.subscriptions.push(
+					vscode.languages.registerDocumentSemanticTokensProvider(selector, doc.treeProvider.semanticTokensProvider, LEGEND)
+				);
+
+				// ✅ Force a refresh for the new document
+				await vscode.commands.executeCommand("editor.action.refreshSemanticTokens");
 			}
+		} else {
+			logGlobals("Switched to non-KotlinScript file.");
 		}
 	});
 
+	vscode.window.onDidChangeVisibleTextEditors(editors => {
+		const openUris = new Set(editors.map(editor => editor.document.uri.toString()));
+
+		// Add only KotlinScript files
+		for (const editor of editors) {
+			if (editor.document.fileName.endsWith(".kts")) {
+				addDocumentIfNotExists(editor.document);
+			}
+		}
+
+		// Remove documents that are no longer open
+		for (const documentUri of documentData.keys()) {
+			if (!openUris.has(documentUri)) {
+				documentData.delete(documentUri);
+				logGlobals("Removed document: " + documentUri);
+			}
+		}
+	});
 
 	/* context.subscriptions.push(
 		vscode.languages.registerOnTypeFormattingEditProvider(selector, new KotlinOnTypeFormattingProvider(), "\n")
