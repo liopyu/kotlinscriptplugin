@@ -796,7 +796,6 @@ export class TreeProvider {
 
 }
 export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
-
 	public readonly highlightQuery: TSParser.Query;
 	public readonly treeProvider: TreeProvider;
 	constructor(treeProvider: TreeProvider, highlightQuery: TSParser.Query) {
@@ -825,16 +824,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		matches.forEach(match => {
 			match.captures.forEach(capture => {
 				const node = capture.node;
-				//console.log("Node Id: " + node.id + " Type: " + node.type + " Text: " + node.text)
-				//console.log("Type: " + node.type + " Text: " + node.text)
-				let idNode = tree.rootNode.descendantForPosition(node.startPosition);
-				//console.log("trueidnodeType: " + idNode?.type + ", Text: " + idNode?.text + ", Position: " + JSON.stringify(idNode?.startPosition))
 				var range = this.treeProvider.supplyRange(node)
-				/* console.log(`Token processed: name="${capture.name}", flatName: ${capture.node.type}, ParentName: ${capture.node.parent?.type}, GrandParentName: ${capture.node.parent?.parent?.type}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.type}`);
-				console.log(`Token processed: name="${capture.name}", flatName: ${capture.node.text}, ParentName: ${capture.node.parent?.text}, GrandParentName: ${capture.node.parent?.parent?.text}, GreatGrandParentName: ${capture.node.parent?.parent?.parent?.text}`);
- */
 				if (this.treeProvider.isBlockNode(node) || (node.text == "{" || node.text == "${")) {
-					//console.log("Entering Scope: " + node.text)
 					this.treeProvider.enterScope(this.treeProvider.currentScope);
 					this.treeProvider.enter.push(this.treeProvider.supplyRange(node));
 				}
@@ -888,7 +879,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 						this.tempInterpolatedRanges.push(range);
 					});
 				} else if (this.treeProvider.isBlockExitNode(node) || (capture.name == "punctuation.bracket" && node.text == "}" && node.type == "}")) {
-					//console.log("Exiting Scope: " + node.text)
 					this.treeProvider.exitScope(node);
 					this.treeProvider.exit.push(this.treeProvider.supplyRange(node));
 				} else if (node.parent?.parent?.type == "lambda_parameters") {
@@ -921,7 +911,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		return builder.build();
 	}
 
-	provideDocumentSemanticTokens = (): vscode.ProviderResult<vscode.SemanticTokens> => this.updateTokens();
+	provideDocumentSemanticTokens(): vscode.ProviderResult<vscode.SemanticTokens> {
+		return this.updateTokens();
+	}
 	public processTokenType(capture: QueryCapture, range: vscode.Range, builder: vscode.SemanticTokensBuilder): void {
 		let tokenType: string = '';
 		let name = capture.name
@@ -1966,11 +1958,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.workspace.onDidCloseTextDocument(document => {
 		const documentUri = document.uri.toString();
+		console.log("Closed document: " + documentUri);
 		if (documentData.has(documentUri)) {
 			const data = documentData.get(documentUri);
-
+			console.log("Data found: " + data);
 			// ✅ Dispose diagnostics & decorations
 			if (data?.treeProvider?.diagnosticCollection) {
+				console.log("Clearing diagnostics for closed document: " + documentUri);
 				data.treeProvider.diagnosticCollection.clear();
 			}
 
@@ -2086,15 +2080,4 @@ export function deactivate() {
 	}
 	logGlobals(`Deactivating KotlinScript extension...`);
 }
-
-
-
-
-
-
-
-
-
-
-
 
