@@ -1,10 +1,41 @@
-[2025-02-20 10:36:47] Loading classes from binary file...
-[2025-02-20 10:36:47] Loaded 48047 classes from binary file.
-[2025-02-20 10:36:47] Loading typing suggestions from JSON file...
-[2025-02-20 10:36:47] Loaded 1170 typing suggestions.
-[2025-02-20 10:36:47] Typing suggestions loaded: 1170
-(x2) [2025-02-20 10:36:48] Updating SemanticTokens
-[2025-02-20 10:41:20] Type: simple_identifier, ParentType: statements , Text: p
-(x15) [2025-02-20 10:41:21] Updating SemanticTokens
-[2025-02-20 10:41:30] Type: simple_identifier, ParentType: source_file , Text: p
-(x36) [2025-02-20 10:41:30] Updating SemanticTokens
+[2025-02-20 16:23:37] Loading classes from binary file...
+[2025-02-20 16:23:37] Loaded 48047 classes from binary file.
+[2025-02-20 16:23:37] Loading typing suggestions from JSON file...
+[2025-02-20 16:23:37] Loaded 1170 typing suggestions.
+[2025-02-20 16:23:37] Typing suggestions loaded: 1170
+[2025-02-20 16:23:37] Semantic Tokens Provider Initialized
+[2025-02-20 16:23:38] Updating SemanticTokens
+[2025-02-20 16:27:50] Semantic Tokens Provider Initialized
+[2025-02-20 16:27:50] Updating SemanticTokens
+[2025-02-20 16:27:52] Semantic Tokens Provider Initialized
+(x2) [2025-02-20 16:27:52] Updating SemanticTokens
+[2025-02-20 16:27:55] Semantic Tokens Provider Initialized
+(x2) [2025-02-20 16:27:56] Updating SemanticTokens
+[2025-02-20 16:27:56] Semantic Tokens Provider Initialized
+(x2) [2025-02-20 16:27:57] Updating SemanticTokens
+[2025-02-20 16:27:58] Semantic Tokens Provider Initialized
+(x2) [2025-02-20 16:27:59] Updating SemanticTokens
+[2025-02-20 16:28:01] Semantic Tokens Provider Initialized
+(x2) [2025-02-20 16:28:01] Updating SemanticTokens
+[2025-02-20 16:28:08] Semantic Tokens Provider Initialized
+(x2) [2025-02-20 16:28:08] Updating SemanticTokens
+[2025-02-20 16:28:33] Semantic Tokens Provider Initialized
+[2025-02-20 16:28:33] Updating SemanticTokens
+[2025-02-20 16:28:33] Semantic Tokens Provider Initialized
+[2025-02-20 16:28:34] Updating SemanticTokens
+[2025-02-20 16:29:08] Semantic Tokens Provider Initialized
+[2025-02-20 16:29:08] Updating SemanticTokens
+[2025-02-20 16:29:17] Semantic Tokens Provider Initialized
+(x2) [2025-02-20 16:29:17] Updating SemanticTokens
+[2025-02-20 16:29:18] Semantic Tokens Provider Initialized
+(x3) [2025-02-20 16:29:18] Updating SemanticTokens
+[2025-02-20 16:29:44] Semantic Tokens Provider Initialized
+(x2) [2025-02-20 16:29:44] Updating SemanticTokens
+[2025-02-20 16:29:44] Semantic Tokens Provider Initialized
+[2025-02-20 16:29:45] Updating SemanticTokens
+[2025-02-20 16:29:49] Semantic Tokens Provider Initialized
+[2025-02-20 16:29:49] Updating SemanticTokens
+(x2) [2025-02-20 16:29:49] Semantic Tokens Provider Initialized
+[2025-02-20 16:29:50] Updating SemanticTokens
+[2025-02-20 16:29:55] Semantic Tokens Provider Initialized
+(x3) [2025-02-20 16:29:55] Updating SemanticTokens

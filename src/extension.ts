@@ -802,6 +802,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 	constructor(treeProvider: TreeProvider, highlightQuery: TSParser.Query) {
 		this.treeProvider = treeProvider;
 		this.highlightQuery = highlightQuery;
+		console.log("Semantic Tokens Provider Initialized")
 	}
 	private tempInterpolatedRanges: vscode.Range[] = [];
 	public errorType: vscode.Range[] = []
@@ -1833,7 +1834,7 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 			item.sortText = "0";
 			return item;
 		});
-		log("Type: " + node.type + ", ParentType: " + node.parent?.type, ", Text: " + node.text)
+		//log("Type: " + node.type + ", ParentType: " + node.parent?.type, ", Text: " + node.text)
 		if (node.parent?.type == "infix_expression") {
 			completionItems = this.suggestions
 				.filter(suggestion => (suggestion.type == "infix_lambda" || suggestion.type == "infix") && !suggestion.simpleName.includes("."))
@@ -1925,9 +1926,9 @@ function warn(...args: any[]) {
 }
 
 export async function activate(context: vscode.ExtensionContext) {
+	util = utils.Utils.getInstance(context);
 	const config = vscode.workspace.getConfiguration('kotlinscript');
 	const ktsDirectory = config.get<string>('ktsDirectory', 'config/scripts');
-	util = new utils.Utils(context)
 	const absoluteKtsDirectory = path.isAbsolute(ktsDirectory) ? ktsDirectory : path.join(vscode.workspace.rootPath || '', ktsDirectory);
 	await TSParser.init();
 	availableClasses = await loadAvailableClasses(absoluteKtsDirectory);
@@ -1943,6 +1944,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	const highlightsPath = context.asAbsolutePath('parsers/kotlin_highlights.scm');
 	const queryText = fs.readFileSync(highlightsPath, 'utf-8');
 	const highlightQuery = lang.query(queryText);
+
+	const selector: vscode.DocumentSelector = [
+		{ language: 'kotlin', scheme: 'file', pattern: '**/*.kts' },
+		{ language: 'kotlin', scheme: 'file', pattern: path.join(absoluteKtsDirectory, '**/*.kts') }
+	];
+
 	function addDocumentIfNotExists(document: vscode.TextDocument) {
 		const documentUri = document.uri.toString();
 		if (!document.fileName.endsWith(".kts")) return;
@@ -1957,11 +1964,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	}
 
-	const selector: vscode.DocumentSelector = {
-		language: 'kotlin',
-		scheme: 'file',
-		pattern: new vscode.RelativePattern(absoluteKtsDirectory, '*.kts')
-	};
 	vscode.workspace.onDidCloseTextDocument(document => {
 		const documentUri = document.uri.toString();
 		if (documentData.has(documentUri)) {
@@ -2019,18 +2021,29 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 		}
 	}
+
+
+	let semanticTokensProvider: vscode.Disposable | null = null;
+
 	vscode.window.onDidChangeActiveTextEditor(async (editor) => {
 		if (editor && editor.document.fileName.endsWith(".kts")) {
 			addDocumentIfNotExists(editor.document);
 
 			const doc = documentData.get(editor.document.uri.toString());
 			if (doc) {
-				// ✅ Reset semanticTokensProvider to avoid carrying over old tokens
-				doc.treeProvider.semanticTokensProvider = new SemanticTokensProvider(doc.treeProvider, highlightQuery);
+				// ✅ Dispose of the existing provider to prevent duplicate registrations
+				if (semanticTokensProvider) {
+					semanticTokensProvider.dispose();
+				}
 
-				context.subscriptions.push(
-					vscode.languages.registerDocumentSemanticTokensProvider(selector, doc.treeProvider.semanticTokensProvider, LEGEND)
+				doc.treeProvider.semanticTokensProvider = new SemanticTokensProvider(doc.treeProvider, highlightQuery);
+				semanticTokensProvider = vscode.languages.registerDocumentSemanticTokensProvider(
+					selector,
+					doc.treeProvider.semanticTokensProvider,
+					LEGEND
 				);
+
+				context.subscriptions.push(semanticTokensProvider);
 
 				// ✅ Force a refresh for the new document
 				await vscode.commands.executeCommand("editor.action.refreshSemanticTokens");
@@ -2039,6 +2052,8 @@ export async function activate(context: vscode.ExtensionContext) {
 			logGlobals("Switched to non-KotlinScript file.");
 		}
 	});
+
+
 
 	vscode.window.onDidChangeVisibleTextEditors(editors => {
 		const openUris = new Set(editors.map(editor => editor.document.uri.toString()));

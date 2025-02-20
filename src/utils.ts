@@ -1,23 +1,27 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
-
 export class Utils {
+    private static instance: Utils | null = null;  // Singleton instance
     public logFile: string;
     public logBuffer: string[] = [];
     public flushInterval: NodeJS.Timeout | null = null;
     public outputChannel: vscode.OutputChannel;
     private lastMessage: string | null = null;
     private lastMessageCount: number = 1;
-    constructor(context: vscode.ExtensionContext) {
-        this.outputChannel = vscode.window.createOutputChannel("KotlinScript Logs")
+
+    private constructor(context: vscode.ExtensionContext) { // Private constructor
+        this.outputChannel = vscode.window.createOutputChannel("KotlinScript Logs");
         const basePath = context.extensionPath;
         this.logFile = path.join(basePath, 'debug.log');
+
         if (!fs.existsSync(basePath)) {
             fs.mkdirSync(basePath, { recursive: true });
         }
+
         fs.writeFileSync(this.logFile, '');
         console.log(`Logging to: ${this.logFile}`);
+
         this.flushInterval = setInterval(() => {
             if (this.logBuffer.length > 0) {
                 fs.appendFile(this.logFile, this.logBuffer.join(''), (err) => {
@@ -27,16 +31,19 @@ export class Utils {
             }
         }, 1000);
     }
+
+    public static getInstance(context: vscode.ExtensionContext): Utils {
+        if (!Utils.instance) {
+            Utils.instance = new Utils(context);
+        }
+        return Utils.instance;
+    }
+
     private getFormattedTimestamp(): string {
         const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        return now.toISOString().replace('T', ' ').split('.')[0]; // e.g. "2025-02-20 12:34:56"
     }
+
     private logToFile(type: 'log' | 'warn' | 'error', args: any[]) {
         const messageContent = args.map(arg => (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg)).join(' ');
         const timestampedMessage = `[${this.getFormattedTimestamp()}] ` + (type !== 'log' ? `[${type.toUpperCase()}]: ` : '') + messageContent;
