@@ -70,6 +70,8 @@ export class Scope {
     variables: Map<string, VariableSymbol>;
     depth: number;
     id: number
+    startPoint: vscode.Position | null = null;
+    endPoint: vscode.Position | null = null;
 
     constructor(parentScope: Scope | null) {
         this.depth = (parentScope ? parentScope.depth + 1 : 0);
@@ -78,7 +80,12 @@ export class Scope {
         this.variables = new Map();
         this.id = parentScope ? parentScope.id + 1 : 0
     }
-
+    public setStartPoint(range: vscode.Position) {
+        this.startPoint = range;
+    }
+    public setEndPoint(range: vscode.Position) {
+        this.endPoint = range;
+    }
     define(symbol: Symbol): void {
         if (symbol instanceof VariableSymbol) {
             this.variables.set(symbol.varKey, symbol);
