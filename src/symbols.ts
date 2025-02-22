@@ -69,16 +69,17 @@ export class Scope {
     symbols: Map<string, Symbol>;
     variables: Map<string, VariableSymbol>;
     depth: number;
-    id: number
+    id: string
     startPoint: vscode.Position | null = null;
     endPoint: vscode.Position | null = null;
 
-    constructor(parentScope: Scope | null) {
+    constructor(parentScope: Scope | null, startPoint: vscode.Position | null) {
         this.depth = (parentScope ? parentScope.depth + 1 : 0);
         this.parentScope = parentScope;
         this.symbols = new Map();
         this.variables = new Map();
-        this.id = parentScope ? parentScope.id + 1 : 0
+        this.startPoint = startPoint;
+        this.id = parentScope ? `${startPoint?.line}:${startPoint?.character}:` + (parentScope.depth + 1) : `global:` + 0
     }
     public setStartPoint(range: vscode.Position) {
         this.startPoint = range;

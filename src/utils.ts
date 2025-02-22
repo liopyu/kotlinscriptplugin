@@ -41,7 +41,7 @@ export class Utils {
 
     private getFormattedTimestamp(): string {
         const now = new Date();
-        return now.toISOString().replace('T', ' ').split('.')[0]; // e.g. "2025-02-20 12:34:56"
+        return "Log"//now.toISOString().replace('T', ' ').split('.')[0];
     }
 
     private logToFile(type: 'log' | 'warn' | 'error', args: any[]) {

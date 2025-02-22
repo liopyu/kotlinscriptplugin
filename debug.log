@@ -1,181 +1,2035 @@
-[2025-02-21 18:59:01] Loading classes from binary file...
-[2025-02-21 18:59:01] Loaded 48047 classes from binary file.
-[2025-02-21 18:59:01] Loading typing suggestions from JSON file...
-[2025-02-21 18:59:01] Loaded 1170 typing suggestions.
-[2025-02-21 18:59:01] Typing suggestions loaded: 1170
-[2025-02-21 18:59:01] Semantic Tokens Provider Initialized
-[2025-02-21 18:59:02] Updating SemanticTokens
-[2025-02-21 18:59:33] Final modified range will be: (141:94) - (1611:1)
-[2025-02-21 18:59:40] Updating SemanticTokens
-[2025-02-21 18:59:41] Final modified range will be: (141:94) - (1612:1)
-[2025-02-21 18:59:42] Updating SemanticTokens
-[2025-02-21 18:59:43] Final modified range will be: (141:94) - (1612:1)
-[2025-02-21 18:59:45] Updating SemanticTokens
-[2025-02-21 18:59:46] Final modified range will be: (141:94) - (1612:1)
-[2025-02-21 18:59:56] Updating SemanticTokens
-[2025-02-21 18:59:57] Final modified range will be: (141:94) - (1613:1)
-[2025-02-21 18:59:58] Updating SemanticTokens
-[2025-02-21 18:59:59] Final modified range will be: (141:94) - (1613:1)
-[2025-02-21 19:00:00] Updating SemanticTokens
-[2025-02-21 19:00:02] Final modified range will be: (141:94) - (1613:1)
-[2025-02-21 19:00:08] Updating SemanticTokens
-[2025-02-21 19:00:10] Final modified range will be: (141:94) - (1612:1)
-[2025-02-21 19:00:14] Updating SemanticTokens
-[2025-02-21 19:00:15] Final modified range will be: (141:94) - (1613:1)
-[2025-02-21 19:00:16] Updating SemanticTokens
-[2025-02-21 19:00:18] Final modified range will be: (141:94) - (1613:1)
-[2025-02-21 19:00:19] Updating SemanticTokens
-[2025-02-21 19:00:20] Final modified range will be: (141:94) - (1613:1)
-[2025-02-21 19:00:22] Updating SemanticTokens
-[2025-02-21 19:00:23] Final modified range will be: (141:94) - (1613:1)
-[2025-02-21 19:00:31] Updating SemanticTokens
-[2025-02-21 19:00:33] Final modified range will be: (141:94) - (1614:1)
-[2025-02-21 19:00:34] Updating SemanticTokens
-[2025-02-21 19:00:35] Final modified range will be: (141:94) - (1616:1)
-[2025-02-21 19:00:36] Updating SemanticTokens
-[2025-02-21 19:00:37] Final modified range will be: (141:94) - (1616:1)
-[2025-02-21 19:00:38] Updating SemanticTokens
-[2025-02-21 19:00:39] Final modified range will be: (141:94) - (1616:1)
-[2025-02-21 19:00:43] Updating SemanticTokens
-[2025-02-21 19:00:53] Final modified range will be: (0:0) - (0:2)
-[2025-02-21 19:00:54] Updating SemanticTokens
-[2025-02-21 19:00:55] Final modified range will be: (0:0) - (3:1)
-[2025-02-21 19:00:57] Updating SemanticTokens
-[2025-02-21 19:00:57] Final modified range will be: (0:0) - (4:1)
-[2025-02-21 19:00:58] Updating SemanticTokens
-[2025-02-21 19:00:58] Final modified range will be: (3:4) - (3:6)
-[2025-02-21 19:00:59] Updating SemanticTokens
-[2025-02-21 19:00:59] Final modified range will be: (0:0) - (6:1)
-[2025-02-21 19:01:02] Updating SemanticTokens
-[2025-02-21 19:01:02] Final modified range will be: (3:4) - (6:5)
-[2025-02-21 19:01:04] Updating SemanticTokens
-[2025-02-21 19:01:04] Final modified range will be: (3:4) - (7:5)
-[2025-02-21 19:01:05] Updating SemanticTokens
-[2025-02-21 19:01:05] Final modified range will be: (3:4) - (8:5)
-[2025-02-21 19:01:07] Updating SemanticTokens
-[2025-02-21 19:01:07] Final modified range will be: (7:8) - (7:10)
-[2025-02-21 19:01:08] Updating SemanticTokens
-[2025-02-21 19:01:08] Final modified range will be: (3:4) - (10:5)
-[2025-02-21 19:01:13] Updating SemanticTokens
-[2025-02-21 19:01:13] Final modified range will be: (7:8) - (9:9)
-[2025-02-21 19:01:14] Updating SemanticTokens
-[2025-02-21 19:01:14] Final modified range will be: (7:8) - (9:9)
-[2025-02-21 19:01:15] Updating SemanticTokens
-[2025-02-21 19:01:15] Final modified range will be: (7:8) - (9:9)
-[2025-02-21 19:01:18] Updating SemanticTokens
-[2025-02-21 19:01:18] Final modified range will be: (7:8) - (10:9)
-[2025-02-21 19:01:20] Updating SemanticTokens
-[2025-02-21 19:01:20] Final modified range will be: (7:8) - (10:9)
-[2025-02-21 19:01:22] Updating SemanticTokens
-[2025-02-21 19:01:22] Final modified range will be: (7:8) - (10:9)
-[2025-02-21 19:01:23] Updating SemanticTokens
-[2025-02-21 19:01:23] Final modified range will be: (7:8) - (10:9)
-[2025-02-21 19:01:26] Updating SemanticTokens
-[2025-02-21 19:01:26] Final modified range will be: (7:8) - (11:9)
-[2025-02-21 19:01:28] Updating SemanticTokens
-[2025-02-21 19:01:28] Final modified range will be: (7:8) - (12:9)
-[2025-02-21 19:01:30] Updating SemanticTokens
-[2025-02-21 19:01:30] Final modified range will be: (9:47) - (12:13)
-[2025-02-21 19:01:33] Updating SemanticTokens
-[2025-02-21 19:01:33] Final modified range will be: (9:47) - (12:13)
-[2025-02-21 19:01:34] Updating SemanticTokens
-[2025-02-21 19:01:34] Final modified range will be: (9:47) - (12:13)
-[2025-02-21 19:01:41] Updating SemanticTokens
-[2025-02-21 19:01:41] Final modified range will be: (3:4) - (14:5)
-[2025-02-21 19:01:42] Updating SemanticTokens
-[2025-02-21 19:01:42] Final modified range will be: (3:4) - (14:5)
-[2025-02-21 19:01:43] Updating SemanticTokens
-[2025-02-21 19:01:43] Final modified range will be: (3:4) - (14:5)
-[2025-02-21 19:01:59] Updating SemanticTokens
-[2025-02-21 19:01:59] Final modified range will be: (7:8) - (14:9)
-[2025-02-21 19:02:00] Updating SemanticTokens
-[2025-02-21 19:02:00] Final modified range will be: (7:8) - (14:9)
-[2025-02-21 19:02:03] Updating SemanticTokens
-[2025-02-21 19:02:03] Final modified range will be: (10:47) - (14:13)
-[2025-02-21 19:02:05] Updating SemanticTokens
-[2025-02-21 19:02:05] Final modified range will be: (10:47) - (14:13)
-[2025-02-21 19:02:06] Updating SemanticTokens
-[2025-02-21 19:02:06] Final modified range will be: (10:47) - (14:13)
-[2025-02-21 19:02:07] Updating SemanticTokens
-[2025-02-21 19:02:07] Final modified range will be: (10:47) - (14:13)
-[2025-02-21 19:02:13] Closed document: file:///d%3A/minecraft/instances/1.21%20fab/package.json
-[2025-02-21 19:02:24] Updating SemanticTokens
-[2025-02-21 19:02:32] Final modified range will be: (19:17) - (36:1)
-[2025-02-21 19:02:37] Updating SemanticTokens
-[2025-02-21 19:02:37] Final modified range will be: (22:4) - (35:5)
-[2025-02-21 19:02:38] Updating SemanticTokens
-[2025-02-21 19:02:38] Final modified range will be: (22:4) - (35:5)
-[2025-02-21 19:02:39] Updating SemanticTokens
-[2025-02-21 19:02:39] Final modified range will be: (22:4) - (35:5)
-[2025-02-21 19:02:40] Updating SemanticTokens
-[2025-02-21 19:02:40] Final modified range will be: (22:4) - (35:5)
-[2025-02-21 19:02:43] Updating SemanticTokens
-[2025-02-21 19:02:43] Final modified range will be: (22:4) - (45:5)
-[2025-02-21 19:02:45] Updating SemanticTokens
-[2025-02-21 19:02:45] Final modified range will be: (22:4) - (46:5)
-[2025-02-21 19:02:45] Updating SemanticTokens
-[2025-02-21 19:02:45] Final modified range will be: (22:4) - (46:5)
-[2025-02-21 19:02:46] Updating SemanticTokens
-[2025-02-21 19:02:46] Final modified range will be: (22:4) - (46:5)
-[2025-02-21 19:03:03] Updating SemanticTokens
-[2025-02-21 19:03:03] Final modified range will be: (19:17) - (47:1)
-[2025-02-21 19:03:07] Updating SemanticTokens
-[2025-02-21 19:03:07] Final modified range will be: (22:8) - (46:5)
-[2025-02-21 19:03:07] Updating SemanticTokens
-[2025-02-21 19:03:07] Final modified range will be: (22:4) - (46:5)
-[2025-02-21 19:03:10] Updating SemanticTokens
-[2025-02-21 19:03:10] Final modified range will be: (22:4) - (47:5)
-[2025-02-21 19:03:11] Updating SemanticTokens
-[2025-02-21 19:03:11] Final modified range will be: (22:4) - (47:5)
-[2025-02-21 19:03:12] Updating SemanticTokens
-[2025-02-21 19:03:12] Final modified range will be: (22:4) - (47:5)
-[2025-02-21 19:04:30] Updating SemanticTokens
-[2025-02-21 19:05:04] Final modified range will be: (20:16) - (51:1)
-[2025-02-21 19:05:07] Updating SemanticTokens
-[2025-02-21 19:05:16] Final modified range will be: (22:20) - (50:1)
-[2025-02-21 19:05:19] Updating SemanticTokens
-[2025-02-21 19:05:19] Final modified range will be: (24:4) - (50:5)
-[2025-02-21 19:05:21] Updating SemanticTokens
-[2025-02-21 19:05:21] Final modified range will be: (24:4) - (50:5)
-[2025-02-21 19:05:23] Updating SemanticTokens
-[2025-02-21 19:05:23] Final modified range will be: (24:4) - (51:5)
-[2025-02-21 19:05:25] Updating SemanticTokens
-[2025-02-21 19:05:25] Final modified range will be: (24:4) - (52:5)
-[2025-02-21 19:05:30] Updating SemanticTokens
-[2025-02-21 19:05:30] Final modified range will be: (21:16) - (52:1)
-[2025-02-21 19:05:31] Updating SemanticTokens
-[2025-02-21 19:05:31] Final modified range will be: (21:16) - (53:1)
-[2025-02-21 19:05:32] Updating SemanticTokens
-[2025-02-21 19:05:32] Final modified range will be: (23:4) - (51:5)
-[2025-02-21 19:05:36] Updating SemanticTokens
-[2025-02-21 19:05:36] Final modified range will be: (21:16) - (51:5)
-[2025-02-21 19:05:37] Updating SemanticTokens
-[2025-02-21 19:05:37] Final modified range will be: (21:16) - (52:1)
-[2025-02-21 19:05:41] Updating SemanticTokens
-[2025-02-21 19:05:43] Final modified range will be: (11:47) - (18:13)
-[2025-02-21 19:05:50] Updating SemanticTokens
-[2025-02-21 19:05:50] Final modified range will be: (7:8) - (20:9)
-[2025-02-21 19:05:52] Updating SemanticTokens
-[2025-02-21 19:05:52] Final modified range will be: (3:4) - (22:5)
-[2025-02-21 19:05:53] Updating SemanticTokens
-[2025-02-21 19:05:53] Final modified range will be: (0:0) - (24:1)
-[2025-02-21 19:05:56] Updating SemanticTokens
-[2025-02-21 19:05:56] Final modified range will be: (14:47) - (21:13)
-[2025-02-21 19:05:59] Updating SemanticTokens
-[2025-02-21 19:05:59] Final modified range will be: (3:4) - (21:5)
-[2025-02-21 19:06:00] Updating SemanticTokens
-[2025-02-21 19:06:00] Final modified range will be: (7:8) - (19:9)
-[2025-02-21 19:06:02] Updating SemanticTokens
-[2025-02-21 19:06:02] Final modified range will be: (11:47) - (17:13)
-[2025-02-21 19:06:27] Updating SemanticTokens
-[2025-02-21 19:06:27] Final modified range will be: (11:47) - (18:13)
-[2025-02-21 19:06:29] Updating SemanticTokens
-[2025-02-21 19:06:29] Final modified range will be: (7:8) - (20:9)
-[2025-02-21 19:06:33] Updating SemanticTokens
-[2025-02-21 19:06:33] Final modified range will be: (3:4) - (22:5)
-[2025-02-21 19:06:35] Updating SemanticTokens
-[2025-02-21 19:06:35] Final modified range will be: (0:0) - (23:1)
-[2025-02-21 19:06:38] Updating SemanticTokens
-[2025-02-21 19:06:38] Final modified range will be: (13:47) - (20:13)
-[2025-02-21 19:06:39] Updating SemanticTokens
-[2025-02-21 19:06:39] Final modified range will be: (13:47) - (20:13)
+[Log] Loading classes from binary file...
+[Log] Loaded 48047 classes from binary file.
+[Log] Loading typing suggestions from JSON file...
+[Log] Loaded 1170 typing suggestions.
+[Log] Typing suggestions loaded: 1170
+[Log] Semantic Tokens Provider Initialized
+[Log] Updating SemanticTokens
+[Log] Node number: 1, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: source_file
+[Log] Node number: 2, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: call_expression
+[Log] Node number: 3, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_expression
+[Log] Node number: 4, Text: {
+    a 
+        {
+            b      
+        }()  
+}, Type: lambda_literal
+[Log] Node number: 5, Text: {, Type: {
+[Log] Entering Scope: 5
+[Log] Node number: 6, Text: a 
+        {
+            b      
+        }(), Type: statements
+[Log] Node number: 7, Text: a 
+        {
+            b      
+        }(), Type: call_expression
+[Log] Node number: 8, Text: a 
+        {
+            b      
+        }, Type: call_expression
+[Log] Node number: 9, Text: a, Type: simple_identifier
+[Log] Node number: 10, Text: {
+            b      
+        }, Type: call_suffix
+[Log] Node number: 11, Text: {
+            b      
+        }, Type: annotated_lambda
+[Log] Node number: 12, Text: {
+            b      
+        }, Type: lambda_literal
+[Log] Node number: 13, Text: {, Type: {
+[Log] Entering Scope: 13
+[Log] Node number: 14, Text: b, Type: statements
+[Log] Node number: 15, Text: b, Type: simple_identifier
+[Log] Node number: 16, Text: }, Type: }
+[Log] Exiting Scope: 16
+[Log] Node number: 17, Text: (), Type: call_suffix
+[Log] Node number: 18, Text: (), Type: value_arguments
+[Log] Node number: 19, Text: (, Type: (
+[Log] Node number: 20, Text: ), Type: )
+[Log] Node number: 21, Text: }, Type: }
+[Log] Exiting Scope: 21
+[Log] Node number: 22, Text: ()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_suffix
+[Log] Node number: 23, Text: (), Type: value_arguments
+[Log] Node number: 24, Text: (, Type: (
+[Log] Node number: 25, Text: ), Type: )
+[Log] Node number: 26, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: annotated_lambda
+[Log] Node number: 27, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: lambda_literal
+[Log] Node number: 28, Text: {, Type: {
+[Log] Entering Scope: 28
+[Log] Node number: 29, Text: c
+        {
+            d  
+        }(), Type: statements
+[Log] Node number: 30, Text: c
+        {
+            d  
+        }(), Type: call_expression
+[Log] Node number: 31, Text: c
+        {
+            d  
+        }, Type: call_expression
+[Log] Node number: 32, Text: c, Type: simple_identifier
+[Log] Node number: 33, Text: {
+            d  
+        }, Type: call_suffix
+[Log] Node number: 34, Text: {
+            d  
+        }, Type: annotated_lambda
+[Log] Node number: 35, Text: {
+            d  
+        }, Type: lambda_literal
+[Log] Node number: 36, Text: {, Type: {
+[Log] Entering Scope: 36
+[Log] Node number: 37, Text: d, Type: statements
+[Log] Node number: 38, Text: d, Type: simple_identifier
+[Log] Node number: 39, Text: }, Type: }
+[Log] Exiting Scope: 39
+[Log] Node number: 40, Text: (), Type: call_suffix
+[Log] Node number: 41, Text: (), Type: value_arguments
+[Log] Node number: 42, Text: (, Type: (
+[Log] Node number: 43, Text: ), Type: )
+[Log] Node number: 44, Text: }, Type: }
+[Log] Exiting Scope: 44
+[Log] Node number: 45, Text: (), Type: call_suffix
+[Log] Node number: 46, Text: (), Type: value_arguments
+[Log] Node number: 47, Text: (, Type: (
+[Log] Node number: 48, Text: ), Type: )
+[Log] Scope ID: global:0
+[Log] StartPoint: : null
+[Log] EndPoint: : null
+[Log] Scope ID: 0:0:1
+[Log] Word at Range: "{
+    a 
+        {
+            b      
+        }()  
+}"
+[Log] StartPoint: : {"line":0,"character":0}
+[Log] EndPoint: : {"line":5,"character":1}
+[Log] Scope ID: 2:8:2
+[Log] Word at Range: "{
+            b      
+        }"
+[Log] StartPoint: : {"line":2,"character":8}
+[Log] EndPoint: : {"line":4,"character":9}
+[Log] Scope ID: 6:0:1
+[Log] Word at Range: "{
+    c
+        {
+            d  
+        }()
+}"
+[Log] StartPoint: : {"line":6,"character":0}
+[Log] EndPoint: : {"line":11,"character":1}
+[Log] Scope ID: 8:8:2
+[Log] Word at Range: "{
+            d  
+        }"
+[Log] StartPoint: : {"line":8,"character":8}
+[Log] EndPoint: : {"line":10,"character":9}
+[Log] Updating SemanticTokens
+[Log] Node number: 1, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: source_file
+[Log] Node number: 2, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: call_expression
+[Log] Node number: 3, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_expression
+[Log] Node number: 4, Text: {
+    a 
+        {
+            b      
+        }()  
+}, Type: lambda_literal
+[Log] Node number: 5, Text: {, Type: {
+[Log] Entering Scope: 5
+[Log] Node number: 6, Text: a 
+        {
+            b      
+        }(), Type: statements
+[Log] Node number: 7, Text: a 
+        {
+            b      
+        }(), Type: call_expression
+[Log] Node number: 8, Text: a 
+        {
+            b      
+        }, Type: call_expression
+[Log] Node number: 9, Text: a, Type: simple_identifier
+[Log] Node number: 10, Text: {
+            b      
+        }, Type: call_suffix
+[Log] Node number: 11, Text: {
+            b      
+        }, Type: annotated_lambda
+[Log] Node number: 12, Text: {
+            b      
+        }, Type: lambda_literal
+[Log] Node number: 13, Text: {, Type: {
+[Log] Entering Scope: 13
+[Log] Node number: 14, Text: b, Type: statements
+[Log] Node number: 15, Text: b, Type: simple_identifier
+[Log] Node number: 16, Text: }, Type: }
+[Log] Exiting Scope: 16
+[Log] Node number: 17, Text: (), Type: call_suffix
+[Log] Node number: 18, Text: (), Type: value_arguments
+[Log] Node number: 19, Text: (, Type: (
+[Log] Node number: 20, Text: ), Type: )
+[Log] Node number: 21, Text: }, Type: }
+[Log] Exiting Scope: 21
+[Log] Node number: 22, Text: ()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_suffix
+[Log] Node number: 23, Text: (), Type: value_arguments
+[Log] Node number: 24, Text: (, Type: (
+[Log] Node number: 25, Text: ), Type: )
+[Log] Node number: 26, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: annotated_lambda
+[Log] Node number: 27, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: lambda_literal
+[Log] Node number: 28, Text: {, Type: {
+[Log] Entering Scope: 28
+[Log] Node number: 29, Text: c
+        {
+            d  
+        }(), Type: statements
+[Log] Node number: 30, Text: c
+        {
+            d  
+        }(), Type: call_expression
+[Log] Node number: 31, Text: c
+        {
+            d  
+        }, Type: call_expression
+[Log] Node number: 32, Text: c, Type: simple_identifier
+[Log] Node number: 33, Text: {
+            d  
+        }, Type: call_suffix
+[Log] Node number: 34, Text: {
+            d  
+        }, Type: annotated_lambda
+[Log] Node number: 35, Text: {
+            d  
+        }, Type: lambda_literal
+[Log] Node number: 36, Text: {, Type: {
+[Log] Entering Scope: 36
+[Log] Node number: 37, Text: d, Type: statements
+[Log] Node number: 38, Text: d, Type: simple_identifier
+[Log] Node number: 39, Text: }, Type: }
+[Log] Exiting Scope: 39
+[Log] Node number: 40, Text: (), Type: call_suffix
+[Log] Node number: 41, Text: (), Type: value_arguments
+[Log] Node number: 42, Text: (, Type: (
+[Log] Node number: 43, Text: ), Type: )
+[Log] Node number: 44, Text: }, Type: }
+[Log] Exiting Scope: 44
+[Log] Node number: 45, Text: (), Type: call_suffix
+[Log] Node number: 46, Text: (), Type: value_arguments
+[Log] Node number: 47, Text: (, Type: (
+[Log] Node number: 48, Text: ), Type: )
+[Log] Scope ID: global:0
+[Log] StartPoint: : null
+[Log] EndPoint: : null
+[Log] Scope ID: 0:0:1
+[Log] Word at Range: "{
+    a 
+        {
+            b      
+        }()  
+}"
+[Log] StartPoint: : {"line":0,"character":0}
+[Log] EndPoint: : {"line":5,"character":1}
+[Log] Scope ID: 2:8:2
+[Log] Word at Range: "{
+            b      
+        }"
+[Log] StartPoint: : {"line":2,"character":8}
+[Log] EndPoint: : {"line":4,"character":9}
+[Log] Scope ID: 6:0:1
+[Log] Word at Range: "{
+    c
+        {
+            d  
+        }()
+}"
+[Log] StartPoint: : {"line":6,"character":0}
+[Log] EndPoint: : {"line":11,"character":1}
+[Log] Scope ID: 8:8:2
+[Log] Word at Range: "{
+            d  
+        }"
+[Log] StartPoint: : {"line":8,"character":8}
+[Log] EndPoint: : {"line":10,"character":9}
+[Log] Updating SemanticTokens
+[Log] Node number: 1, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: source_file
+[Log] Node number: 2, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: call_expression
+[Log] Node number: 3, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_expression
+[Log] Node number: 4, Text: {
+    a 
+        {
+            b      
+        }()  
+}, Type: lambda_literal
+[Log] Node number: 5, Text: {, Type: {
+[Log] Entering Scope: 5
+[Log] Node number: 6, Text: a 
+        {
+            b      
+        }(), Type: statements
+[Log] Node number: 7, Text: a 
+        {
+            b      
+        }(), Type: call_expression
+[Log] Node number: 8, Text: a 
+        {
+            b      
+        }, Type: call_expression
+[Log] Node number: 9, Text: a, Type: simple_identifier
+[Log] Node number: 10, Text: {
+            b      
+        }, Type: call_suffix
+[Log] Node number: 11, Text: {
+            b      
+        }, Type: annotated_lambda
+[Log] Node number: 12, Text: {
+            b      
+        }, Type: lambda_literal
+[Log] Node number: 13, Text: {, Type: {
+[Log] Entering Scope: 13
+[Log] Node number: 14, Text: b, Type: statements
+[Log] Node number: 15, Text: b, Type: simple_identifier
+[Log] Node number: 16, Text: }, Type: }
+[Log] Exiting Scope: 16
+[Log] Node number: 17, Text: (), Type: call_suffix
+[Log] Node number: 18, Text: (), Type: value_arguments
+[Log] Node number: 19, Text: (, Type: (
+[Log] Node number: 20, Text: ), Type: )
+[Log] Node number: 21, Text: }, Type: }
+[Log] Exiting Scope: 21
+[Log] Node number: 22, Text: ()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_suffix
+[Log] Node number: 23, Text: (), Type: value_arguments
+[Log] Node number: 24, Text: (, Type: (
+[Log] Node number: 25, Text: ), Type: )
+[Log] Node number: 26, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: annotated_lambda
+[Log] Node number: 27, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: lambda_literal
+[Log] Node number: 28, Text: {, Type: {
+[Log] Entering Scope: 28
+[Log] Node number: 29, Text: c
+        {
+            d  
+        }(), Type: statements
+[Log] Node number: 30, Text: c
+        {
+            d  
+        }(), Type: call_expression
+[Log] Node number: 31, Text: c
+        {
+            d  
+        }, Type: call_expression
+[Log] Node number: 32, Text: c, Type: simple_identifier
+[Log] Node number: 33, Text: {
+            d  
+        }, Type: call_suffix
+[Log] Node number: 34, Text: {
+            d  
+        }, Type: annotated_lambda
+[Log] Node number: 35, Text: {
+            d  
+        }, Type: lambda_literal
+[Log] Node number: 36, Text: {, Type: {
+[Log] Entering Scope: 36
+[Log] Node number: 37, Text: d, Type: statements
+[Log] Node number: 38, Text: d, Type: simple_identifier
+[Log] Node number: 39, Text: }, Type: }
+[Log] Exiting Scope: 39
+[Log] Node number: 40, Text: (), Type: call_suffix
+[Log] Node number: 41, Text: (), Type: value_arguments
+[Log] Node number: 42, Text: (, Type: (
+[Log] Node number: 43, Text: ), Type: )
+[Log] Node number: 44, Text: }, Type: }
+[Log] Exiting Scope: 44
+[Log] Node number: 45, Text: (), Type: call_suffix
+[Log] Node number: 46, Text: (), Type: value_arguments
+[Log] Node number: 47, Text: (, Type: (
+[Log] Node number: 48, Text: ), Type: )
+[Log] Scope ID: global:0
+[Log] StartPoint: : null
+[Log] EndPoint: : null
+[Log] Scope ID: 0:0:1
+[Log] Word at Range: "{
+    a 
+        {
+            b      
+        }()  
+}"
+[Log] StartPoint: : {"line":0,"character":0}
+[Log] EndPoint: : {"line":5,"character":1}
+[Log] Scope ID: 2:8:2
+[Log] Word at Range: "{
+            b      
+        }"
+[Log] StartPoint: : {"line":2,"character":8}
+[Log] EndPoint: : {"line":4,"character":9}
+[Log] Scope ID: 6:0:1
+[Log] Word at Range: "{
+    c
+        {
+            d  
+        }()
+}"
+[Log] StartPoint: : {"line":6,"character":0}
+[Log] EndPoint: : {"line":11,"character":1}
+[Log] Scope ID: 8:8:2
+[Log] Word at Range: "{
+            d  
+        }"
+[Log] StartPoint: : {"line":8,"character":8}
+[Log] EndPoint: : {"line":10,"character":9}
+[Log] Updating SemanticTokens
+[Log] Node number: 1, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: source_file
+[Log] Node number: 2, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: call_expression
+[Log] Node number: 3, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_expression
+[Log] Node number: 4, Text: {
+    a 
+        {
+            b      
+        }()  
+}, Type: lambda_literal
+[Log] Node number: 5, Text: {, Type: {
+[Log] Entering Scope: 5
+[Log] Node number: 6, Text: a 
+        {
+            b      
+        }(), Type: statements
+[Log] Node number: 7, Text: a 
+        {
+            b      
+        }(), Type: call_expression
+[Log] Node number: 8, Text: a 
+        {
+            b      
+        }, Type: call_expression
+[Log] Node number: 9, Text: a, Type: simple_identifier
+[Log] Node number: 10, Text: {
+            b      
+        }, Type: call_suffix
+[Log] Node number: 11, Text: {
+            b      
+        }, Type: annotated_lambda
+[Log] Node number: 12, Text: {
+            b      
+        }, Type: lambda_literal
+[Log] Node number: 13, Text: {, Type: {
+[Log] Entering Scope: 13
+[Log] Node number: 14, Text: b, Type: statements
+[Log] Node number: 15, Text: b, Type: simple_identifier
+[Log] Node number: 16, Text: }, Type: }
+[Log] Exiting Scope: 16
+[Log] Node number: 17, Text: (), Type: call_suffix
+[Log] Node number: 18, Text: (), Type: value_arguments
+[Log] Node number: 19, Text: (, Type: (
+[Log] Node number: 20, Text: ), Type: )
+[Log] Node number: 21, Text: }, Type: }
+[Log] Exiting Scope: 21
+[Log] Node number: 22, Text: ()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_suffix
+[Log] Node number: 23, Text: (), Type: value_arguments
+[Log] Node number: 24, Text: (, Type: (
+[Log] Node number: 25, Text: ), Type: )
+[Log] Node number: 26, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: annotated_lambda
+[Log] Node number: 27, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: lambda_literal
+[Log] Node number: 28, Text: {, Type: {
+[Log] Entering Scope: 28
+[Log] Node number: 29, Text: c
+        {
+            d  
+        }(), Type: statements
+[Log] Node number: 30, Text: c
+        {
+            d  
+        }(), Type: call_expression
+[Log] Node number: 31, Text: c
+        {
+            d  
+        }, Type: call_expression
+[Log] Node number: 32, Text: c, Type: simple_identifier
+[Log] Node number: 33, Text: {
+            d  
+        }, Type: call_suffix
+[Log] Node number: 34, Text: {
+            d  
+        }, Type: annotated_lambda
+[Log] Node number: 35, Text: {
+            d  
+        }, Type: lambda_literal
+[Log] Node number: 36, Text: {, Type: {
+[Log] Entering Scope: 36
+[Log] Node number: 37, Text: d, Type: statements
+[Log] Node number: 38, Text: d, Type: simple_identifier
+[Log] Node number: 39, Text: }, Type: }
+[Log] Exiting Scope: 39
+[Log] Node number: 40, Text: (), Type: call_suffix
+[Log] Node number: 41, Text: (), Type: value_arguments
+[Log] Node number: 42, Text: (, Type: (
+[Log] Node number: 43, Text: ), Type: )
+[Log] Node number: 44, Text: }, Type: }
+[Log] Exiting Scope: 44
+[Log] Node number: 45, Text: (), Type: call_suffix
+[Log] Node number: 46, Text: (), Type: value_arguments
+[Log] Node number: 47, Text: (, Type: (
+[Log] Node number: 48, Text: ), Type: )
+[Log] Scope ID: global:0
+[Log] StartPoint: : null
+[Log] EndPoint: : null
+[Log] Scope ID: 0:0:1
+[Log] Word at Range: "{
+    a 
+        {
+            b      
+        }()  
+}"
+[Log] StartPoint: : {"line":0,"character":0}
+[Log] EndPoint: : {"line":5,"character":1}
+[Log] Scope ID: 2:8:2
+[Log] Word at Range: "{
+            b      
+        }"
+[Log] StartPoint: : {"line":2,"character":8}
+[Log] EndPoint: : {"line":4,"character":9}
+[Log] Scope ID: 6:0:1
+[Log] Word at Range: "{
+    c
+        {
+            d  
+        }()
+}"
+[Log] StartPoint: : {"line":6,"character":0}
+[Log] EndPoint: : {"line":11,"character":1}
+[Log] Scope ID: 8:8:2
+[Log] Word at Range: "{
+            d  
+        }"
+[Log] StartPoint: : {"line":8,"character":8}
+[Log] EndPoint: : {"line":10,"character":9}
+[Log] Updating SemanticTokens
+[Log] Node number: 1, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: source_file
+[Log] Node number: 2, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: call_expression
+[Log] Node number: 3, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_expression
+[Log] Node number: 4, Text: {
+    a 
+        {
+            b      
+        }()  
+}, Type: lambda_literal
+[Log] Node number: 5, Text: {, Type: {
+[Log] Entering Scope: 5
+[Log] Node number: 6, Text: a 
+        {
+            b      
+        }(), Type: statements
+[Log] Node number: 7, Text: a 
+        {
+            b      
+        }(), Type: call_expression
+[Log] Node number: 8, Text: a 
+        {
+            b      
+        }, Type: call_expression
+[Log] Node number: 9, Text: a, Type: simple_identifier
+[Log] Node number: 10, Text: {
+            b      
+        }, Type: call_suffix
+[Log] Node number: 11, Text: {
+            b      
+        }, Type: annotated_lambda
+[Log] Node number: 12, Text: {
+            b      
+        }, Type: lambda_literal
+[Log] Node number: 13, Text: {, Type: {
+[Log] Entering Scope: 13
+[Log] Node number: 14, Text: b, Type: statements
+[Log] Node number: 15, Text: b, Type: simple_identifier
+[Log] Node number: 16, Text: }, Type: }
+[Log] Exiting Scope: 16
+[Log] Node number: 17, Text: (), Type: call_suffix
+[Log] Node number: 18, Text: (), Type: value_arguments
+[Log] Node number: 19, Text: (, Type: (
+[Log] Node number: 20, Text: ), Type: )
+[Log] Node number: 21, Text: }, Type: }
+[Log] Exiting Scope: 21
+[Log] Node number: 22, Text: ()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_suffix
+[Log] Node number: 23, Text: (), Type: value_arguments
+[Log] Node number: 24, Text: (, Type: (
+[Log] Node number: 25, Text: ), Type: )
+[Log] Node number: 26, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: annotated_lambda
+[Log] Node number: 27, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: lambda_literal
+[Log] Node number: 28, Text: {, Type: {
+[Log] Entering Scope: 28
+[Log] Node number: 29, Text: c
+        {
+            d  
+        }(), Type: statements
+[Log] Node number: 30, Text: c
+        {
+            d  
+        }(), Type: call_expression
+[Log] Node number: 31, Text: c
+        {
+            d  
+        }, Type: call_expression
+[Log] Node number: 32, Text: c, Type: simple_identifier
+[Log] Node number: 33, Text: {
+            d  
+        }, Type: call_suffix
+[Log] Node number: 34, Text: {
+            d  
+        }, Type: annotated_lambda
+[Log] Node number: 35, Text: {
+            d  
+        }, Type: lambda_literal
+[Log] Node number: 36, Text: {, Type: {
+[Log] Entering Scope: 36
+[Log] Node number: 37, Text: d, Type: statements
+[Log] Node number: 38, Text: d, Type: simple_identifier
+[Log] Node number: 39, Text: }, Type: }
+[Log] Exiting Scope: 39
+[Log] Node number: 40, Text: (), Type: call_suffix
+[Log] Node number: 41, Text: (), Type: value_arguments
+[Log] Node number: 42, Text: (, Type: (
+[Log] Node number: 43, Text: ), Type: )
+[Log] Node number: 44, Text: }, Type: }
+[Log] Exiting Scope: 44
+[Log] Node number: 45, Text: (), Type: call_suffix
+[Log] Node number: 46, Text: (), Type: value_arguments
+[Log] Node number: 47, Text: (, Type: (
+[Log] Node number: 48, Text: ), Type: )
+[Log] Scope ID: global:0
+[Log] StartPoint: : null
+[Log] EndPoint: : null
+[Log] Scope ID: 0:0:1
+[Log] Word at Range: "{
+    a 
+        {
+            b      
+        }()  
+}"
+[Log] StartPoint: : {"line":0,"character":0}
+[Log] EndPoint: : {"line":5,"character":1}
+[Log] Scope ID: 2:8:2
+[Log] Word at Range: "{
+            b      
+        }"
+[Log] StartPoint: : {"line":2,"character":8}
+[Log] EndPoint: : {"line":4,"character":9}
+[Log] Scope ID: 6:0:1
+[Log] Word at Range: "{
+    c
+        {
+            d  
+        }()
+}"
+[Log] StartPoint: : {"line":6,"character":0}
+[Log] EndPoint: : {"line":11,"character":1}
+[Log] Scope ID: 8:8:2
+[Log] Word at Range: "{
+            d  
+        }"
+[Log] StartPoint: : {"line":8,"character":8}
+[Log] EndPoint: : {"line":10,"character":9}
+[Log] Updating SemanticTokens
+[Log] Node number: 1, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: source_file
+[Log] Node number: 2, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: call_expression
+[Log] Node number: 3, Text: {
+    a 
+        {
+            b      
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_expression
+[Log] Node number: 4, Text: {
+    a 
+        {
+            b      
+        }()  
+}, Type: lambda_literal
+[Log] Node number: 5, Text: {, Type: {
+[Log] Entering Scope: 5
+[Log] Node number: 6, Text: a 
+        {
+            b      
+        }(), Type: statements
+[Log] Node number: 7, Text: a 
+        {
+            b      
+        }(), Type: call_expression
+[Log] Node number: 8, Text: a 
+        {
+            b      
+        }, Type: call_expression
+[Log] Node number: 9, Text: a, Type: simple_identifier
+[Log] Node number: 10, Text: {
+            b      
+        }, Type: call_suffix
+[Log] Node number: 11, Text: {
+            b      
+        }, Type: annotated_lambda
+[Log] Node number: 12, Text: {
+            b      
+        }, Type: lambda_literal
+[Log] Node number: 13, Text: {, Type: {
+[Log] Entering Scope: 13
+[Log] Node number: 14, Text: b, Type: statements
+[Log] Node number: 15, Text: b, Type: simple_identifier
+[Log] Node number: 16, Text: }, Type: }
+[Log] Exiting Scope: 16
+[Log] Node number: 17, Text: (), Type: call_suffix
+[Log] Node number: 18, Text: (), Type: value_arguments
+[Log] Node number: 19, Text: (, Type: (
+[Log] Node number: 20, Text: ), Type: )
+[Log] Node number: 21, Text: }, Type: }
+[Log] Exiting Scope: 21
+[Log] Node number: 22, Text: ()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_suffix
+[Log] Node number: 23, Text: (), Type: value_arguments
+[Log] Node number: 24, Text: (, Type: (
+[Log] Node number: 25, Text: ), Type: )
+[Log] Node number: 26, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: annotated_lambda
+[Log] Node number: 27, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: lambda_literal
+[Log] Node number: 28, Text: {, Type: {
+[Log] Entering Scope: 28
+[Log] Node number: 29, Text: c
+        {
+            d  
+        }(), Type: statements
+[Log] Node number: 30, Text: c
+        {
+            d  
+        }(), Type: call_expression
+[Log] Node number: 31, Text: c
+        {
+            d  
+        }, Type: call_expression
+[Log] Node number: 32, Text: c, Type: simple_identifier
+[Log] Node number: 33, Text: {
+            d  
+        }, Type: call_suffix
+[Log] Node number: 34, Text: {
+            d  
+        }, Type: annotated_lambda
+[Log] Node number: 35, Text: {
+            d  
+        }, Type: lambda_literal
+[Log] Node number: 36, Text: {, Type: {
+[Log] Entering Scope: 36
+[Log] Node number: 37, Text: d, Type: statements
+[Log] Node number: 38, Text: d, Type: simple_identifier
+[Log] Node number: 39, Text: }, Type: }
+[Log] Exiting Scope: 39
+[Log] Node number: 40, Text: (), Type: call_suffix
+[Log] Node number: 41, Text: (), Type: value_arguments
+[Log] Node number: 42, Text: (, Type: (
+[Log] Node number: 43, Text: ), Type: )
+[Log] Node number: 44, Text: }, Type: }
+[Log] Exiting Scope: 44
+[Log] Node number: 45, Text: (), Type: call_suffix
+[Log] Node number: 46, Text: (), Type: value_arguments
+[Log] Node number: 47, Text: (, Type: (
+[Log] Node number: 48, Text: ), Type: )
+[Log] Scope ID: global:0
+[Log] StartPoint: : null
+[Log] EndPoint: : null
+[Log] Scope ID: 0:0:1
+[Log] Word at Range: "{
+    a 
+        {
+            b      
+        }()  
+}"
+[Log] StartPoint: : {"line":0,"character":0}
+[Log] EndPoint: : {"line":5,"character":1}
+[Log] Scope ID: 2:8:2
+[Log] Word at Range: "{
+            b      
+        }"
+[Log] StartPoint: : {"line":2,"character":8}
+[Log] EndPoint: : {"line":4,"character":9}
+[Log] Scope ID: 6:0:1
+[Log] Word at Range: "{
+    c
+        {
+            d  
+        }()
+}"
+[Log] StartPoint: : {"line":6,"character":0}
+[Log] EndPoint: : {"line":11,"character":1}
+[Log] Scope ID: 8:8:2
+[Log] Word at Range: "{
+            d  
+        }"
+[Log] StartPoint: : {"line":8,"character":8}
+[Log] EndPoint: : {"line":10,"character":9}
+[Log] Updating SemanticTokens
+[Log] Node number: 1, Text: {
+    a 
+        {
+            b
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: source_file
+[Log] Node number: 2, Text: {
+    a 
+        {
+            b
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: call_expression
+[Log] Node number: 3, Text: {
+    a 
+        {
+            b
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_expression
+[Log] Node number: 4, Text: {
+    a 
+        {
+            b
+        }()  
+}, Type: lambda_literal
+[Log] Node number: 5, Text: {, Type: {
+[Log] Entering Scope: 5
+[Log] Node number: 6, Text: a 
+        {
+            b
+        }(), Type: statements
+[Log] Node number: 7, Text: a 
+        {
+            b
+        }(), Type: call_expression
+[Log] Node number: 8, Text: a 
+        {
+            b
+        }, Type: call_expression
+[Log] Node number: 9, Text: a, Type: simple_identifier
+[Log] Node number: 10, Text: {
+            b
+        }, Type: call_suffix
+[Log] Node number: 11, Text: {
+            b
+        }, Type: annotated_lambda
+[Log] Node number: 12, Text: {
+            b
+        }, Type: lambda_literal
+[Log] Node number: 13, Text: {, Type: {
+[Log] Entering Scope: 13
+[Log] Node number: 14, Text: b, Type: statements
+[Log] Node number: 15, Text: b, Type: simple_identifier
+[Log] Node number: 16, Text: }, Type: }
+[Log] Exiting Scope: 16
+[Log] Node number: 17, Text: (), Type: call_suffix
+[Log] Node number: 18, Text: (), Type: value_arguments
+[Log] Node number: 19, Text: (, Type: (
+[Log] Node number: 20, Text: ), Type: )
+[Log] Node number: 21, Text: }, Type: }
+[Log] Exiting Scope: 21
+[Log] Node number: 22, Text: ()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_suffix
+[Log] Node number: 23, Text: (), Type: value_arguments
+[Log] Node number: 24, Text: (, Type: (
+[Log] Node number: 25, Text: ), Type: )
+[Log] Node number: 26, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: annotated_lambda
+[Log] Node number: 27, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: lambda_literal
+[Log] Node number: 28, Text: {, Type: {
+[Log] Entering Scope: 28
+[Log] Node number: 29, Text: c
+        {
+            d  
+        }(), Type: statements
+[Log] Node number: 30, Text: c
+        {
+            d  
+        }(), Type: call_expression
+[Log] Node number: 31, Text: c
+        {
+            d  
+        }, Type: call_expression
+[Log] Node number: 32, Text: c, Type: simple_identifier
+[Log] Node number: 33, Text: {
+            d  
+        }, Type: call_suffix
+[Log] Node number: 34, Text: {
+            d  
+        }, Type: annotated_lambda
+[Log] Node number: 35, Text: {
+            d  
+        }, Type: lambda_literal
+[Log] Node number: 36, Text: {, Type: {
+[Log] Entering Scope: 36
+[Log] Node number: 37, Text: d, Type: statements
+[Log] Node number: 38, Text: d, Type: simple_identifier
+[Log] Node number: 39, Text: }, Type: }
+[Log] Exiting Scope: 39
+[Log] Node number: 40, Text: (), Type: call_suffix
+[Log] Node number: 41, Text: (), Type: value_arguments
+[Log] Node number: 42, Text: (, Type: (
+[Log] Node number: 43, Text: ), Type: )
+[Log] Node number: 44, Text: }, Type: }
+[Log] Exiting Scope: 44
+[Log] Node number: 45, Text: (), Type: call_suffix
+[Log] Node number: 46, Text: (), Type: value_arguments
+[Log] Node number: 47, Text: (, Type: (
+[Log] Node number: 48, Text: ), Type: )
+[Log] Scope ID: global:0
+[Log] StartPoint: : null
+[Log] EndPoint: : null
+[Log] Scope ID: 0:0:1
+[Log] Word at Range: "{
+    a 
+        {
+            b
+        }()  
+}"
+[Log] StartPoint: : {"line":0,"character":0}
+[Log] EndPoint: : {"line":5,"character":1}
+[Log] Scope ID: 2:8:2
+[Log] Word at Range: "{
+            b
+        }"
+[Log] StartPoint: : {"line":2,"character":8}
+[Log] EndPoint: : {"line":4,"character":9}
+[Log] Scope ID: 6:0:1
+[Log] Word at Range: "{
+    c
+        {
+            d  
+        }()
+}"
+[Log] StartPoint: : {"line":6,"character":0}
+[Log] EndPoint: : {"line":11,"character":1}
+[Log] Scope ID: 8:8:2
+[Log] Word at Range: "{
+            d  
+        }"
+[Log] StartPoint: : {"line":8,"character":8}
+[Log] EndPoint: : {"line":10,"character":9}
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (0:0) - (5:1)
+    - Changed Range: (3:12) - (3:13)
+    - INTERSECTS: true
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (2:8) - (4:9)
+    - Changed Range: (3:12) - (3:13)
+    - INTERSECTS: true
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (6:0) - (11:1)
+    - Changed Range: (3:12) - (3:13)
+    - INTERSECTS: false
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (8:8) - (10:9)
+    - Changed Range: (3:12) - (3:13)
+    - INTERSECTS: false
+[Log] 
+[findClosestParentScopeRange] Starting search from innermost scope ID 2:8:2
+[Log]   - Checking Parent Scope ID 2:8:2: (2:8) - (4:9)
+[Log]     - Found a valid parent scope: ID 2:8:2
+[Log] [getScopeRange] Scope ID 2:8:2 has range (2:8) - (4:9)
+[Log] [findClosestParentScopeRange] Found closest valid parent scope ID 2:8:2 with range (2:8) - (4:9)
+[Log] Final modified range will be: (2:8) - (4:9)
+[Log] Updating SemanticTokens
+[Log] Node number: 1, Text: {
+    a
+        {
+            b
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: source_file
+[Log] Node number: 2, Text: {
+    a
+        {
+            b
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: call_expression
+[Log] Node number: 3, Text: {
+    a
+        {
+            b
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_expression
+[Log] Node number: 4, Text: {
+    a
+        {
+            b
+        }()  
+}, Type: lambda_literal
+[Log] Node number: 5, Text: {, Type: {
+[Log] Entering Scope: 5
+[Log] Node number: 6, Text: a
+        {
+            b
+        }(), Type: statements
+[Log] Node number: 7, Text: a
+        {
+            b
+        }(), Type: call_expression
+[Log] Node number: 8, Text: a
+        {
+            b
+        }, Type: call_expression
+[Log] Node number: 9, Text: a, Type: simple_identifier
+[Log] Node number: 10, Text: {
+            b
+        }, Type: call_suffix
+[Log] Node number: 11, Text: {
+            b
+        }, Type: annotated_lambda
+[Log] Node number: 12, Text: {
+            b
+        }, Type: lambda_literal
+[Log] Node number: 13, Text: {, Type: {
+[Log] Entering Scope: 13
+[Log] Node number: 14, Text: b, Type: statements
+[Log] Node number: 15, Text: b, Type: simple_identifier
+[Log] Node number: 16, Text: }, Type: }
+[Log] Exiting Scope: 16
+[Log] Node number: 17, Text: (), Type: call_suffix
+[Log] Node number: 18, Text: (), Type: value_arguments
+[Log] Node number: 19, Text: (, Type: (
+[Log] Node number: 20, Text: ), Type: )
+[Log] Node number: 21, Text: }, Type: }
+[Log] Exiting Scope: 21
+[Log] Node number: 22, Text: ()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_suffix
+[Log] Node number: 23, Text: (), Type: value_arguments
+[Log] Node number: 24, Text: (, Type: (
+[Log] Node number: 25, Text: ), Type: )
+[Log] Node number: 26, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: annotated_lambda
+[Log] Node number: 27, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: lambda_literal
+[Log] Node number: 28, Text: {, Type: {
+[Log] Entering Scope: 28
+[Log] Node number: 29, Text: c
+        {
+            d  
+        }(), Type: statements
+[Log] Node number: 30, Text: c
+        {
+            d  
+        }(), Type: call_expression
+[Log] Node number: 31, Text: c
+        {
+            d  
+        }, Type: call_expression
+[Log] Node number: 32, Text: c, Type: simple_identifier
+[Log] Node number: 33, Text: {
+            d  
+        }, Type: call_suffix
+[Log] Node number: 34, Text: {
+            d  
+        }, Type: annotated_lambda
+[Log] Node number: 35, Text: {
+            d  
+        }, Type: lambda_literal
+[Log] Node number: 36, Text: {, Type: {
+[Log] Entering Scope: 36
+[Log] Node number: 37, Text: d, Type: statements
+[Log] Node number: 38, Text: d, Type: simple_identifier
+[Log] Node number: 39, Text: }, Type: }
+[Log] Exiting Scope: 39
+[Log] Node number: 40, Text: (), Type: call_suffix
+[Log] Node number: 41, Text: (), Type: value_arguments
+[Log] Node number: 42, Text: (, Type: (
+[Log] Node number: 43, Text: ), Type: )
+[Log] Node number: 44, Text: }, Type: }
+[Log] Exiting Scope: 44
+[Log] Node number: 45, Text: (), Type: call_suffix
+[Log] Node number: 46, Text: (), Type: value_arguments
+[Log] Node number: 47, Text: (, Type: (
+[Log] Node number: 48, Text: ), Type: )
+[Log] Scope ID: global:0
+[Log] StartPoint: : null
+[Log] EndPoint: : null
+[Log] Scope ID: 0:0:1
+[Log] Word at Range: "{
+    a
+        {
+            b
+        }()  
+}"
+[Log] StartPoint: : {"line":0,"character":0}
+[Log] EndPoint: : {"line":5,"character":1}
+[Log] Scope ID: 2:8:2
+[Log] Word at Range: "{
+            b
+        }"
+[Log] StartPoint: : {"line":2,"character":8}
+[Log] EndPoint: : {"line":4,"character":9}
+[Log] Scope ID: 6:0:1
+[Log] Word at Range: "{
+    c
+        {
+            d  
+        }()
+}"
+[Log] StartPoint: : {"line":6,"character":0}
+[Log] EndPoint: : {"line":11,"character":1}
+[Log] Scope ID: 8:8:2
+[Log] Word at Range: "{
+            d  
+        }"
+[Log] StartPoint: : {"line":8,"character":8}
+[Log] EndPoint: : {"line":10,"character":9}
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (0:0) - (5:1)
+    - Changed Range: (1:4) - (1:5)
+    - INTERSECTS: true
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (2:8) - (4:9)
+    - Changed Range: (1:4) - (1:5)
+    - INTERSECTS: false
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (6:0) - (11:1)
+    - Changed Range: (1:4) - (1:5)
+    - INTERSECTS: false
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (8:8) - (10:9)
+    - Changed Range: (1:4) - (1:5)
+    - INTERSECTS: false
+[Log] 
+[findClosestParentScopeRange] Starting search from innermost scope ID 0:0:1
+[Log]   - Checking Parent Scope ID 0:0:1: (0:0) - (5:1)
+[Log]     - Found a valid parent scope: ID 0:0:1
+[Log] [getScopeRange] Scope ID 0:0:1 has range (0:0) - (5:1)
+[Log] [findClosestParentScopeRange] Found closest valid parent scope ID 0:0:1 with range (0:0) - (5:1)
+[Log] Final modified range will be: (0:0) - (5:1)
+[Log] Updating SemanticTokens
+[Log] Node number: 1, Text: {
+    a
+        {
+            b
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: source_file
+[Log] Node number: 2, Text: {
+    a
+        {
+            b
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}(), Type: call_expression
+[Log] Node number: 3, Text: {
+    a
+        {
+            b
+        }()  
+}()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_expression
+[Log] Node number: 4, Text: {
+    a
+        {
+            b
+        }()  
+}, Type: lambda_literal
+[Log] Node number: 5, Text: {, Type: {
+[Log] Entering Scope: 5
+[Log] Node number: 6, Text: a
+        {
+            b
+        }(), Type: statements
+[Log] Node number: 7, Text: a
+        {
+            b
+        }(), Type: call_expression
+[Log] Node number: 8, Text: a
+        {
+            b
+        }, Type: call_expression
+[Log] Node number: 9, Text: a, Type: simple_identifier
+[Log] Node number: 10, Text: {
+            b
+        }, Type: call_suffix
+[Log] Node number: 11, Text: {
+            b
+        }, Type: annotated_lambda
+[Log] Node number: 12, Text: {
+            b
+        }, Type: lambda_literal
+[Log] Node number: 13, Text: {, Type: {
+[Log] Entering Scope: 13
+[Log] Node number: 14, Text: b, Type: statements
+[Log] Node number: 15, Text: b, Type: simple_identifier
+[Log] Node number: 16, Text: }, Type: }
+[Log] Exiting Scope: 16
+[Log] Node number: 17, Text: (), Type: call_suffix
+[Log] Node number: 18, Text: (), Type: value_arguments
+[Log] Node number: 19, Text: (, Type: (
+[Log] Node number: 20, Text: ), Type: )
+[Log] Node number: 21, Text: }, Type: }
+[Log] Exiting Scope: 21
+[Log] Node number: 22, Text: ()
+{
+    c
+        {
+            d  
+        }()
+}, Type: call_suffix
+[Log] Node number: 23, Text: (), Type: value_arguments
+[Log] Node number: 24, Text: (, Type: (
+[Log] Node number: 25, Text: ), Type: )
+[Log] Node number: 26, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: annotated_lambda
+[Log] Node number: 27, Text: {
+    c
+        {
+            d  
+        }()
+}, Type: lambda_literal
+[Log] Node number: 28, Text: {, Type: {
+[Log] Entering Scope: 28
+[Log] Node number: 29, Text: c
+        {
+            d  
+        }(), Type: statements
+[Log] Node number: 30, Text: c
+        {
+            d  
+        }(), Type: call_expression
+[Log] Node number: 31, Text: c
+        {
+            d  
+        }, Type: call_expression
+[Log] Node number: 32, Text: c, Type: simple_identifier
+[Log] Node number: 33, Text: {
+            d  
+        }, Type: call_suffix
+[Log] Node number: 34, Text: {
+            d  
+        }, Type: annotated_lambda
+[Log] Node number: 35, Text: {
+            d  
+        }, Type: lambda_literal
+[Log] Node number: 36, Text: {, Type: {
+[Log] Entering Scope: 36
+[Log] Node number: 37, Text: d, Type: statements
+[Log] Node number: 38, Text: d, Type: simple_identifier
+[Log] Node number: 39, Text: }, Type: }
+[Log] Exiting Scope: 39
+[Log] Node number: 40, Text: (), Type: call_suffix
+[Log] Node number: 41, Text: (), Type: value_arguments
+[Log] Node number: 42, Text: (, Type: (
+[Log] Node number: 43, Text: ), Type: )
+[Log] Node number: 44, Text: }, Type: }
+[Log] Exiting Scope: 44
+[Log] Node number: 45, Text: (), Type: call_suffix
+[Log] Node number: 46, Text: (), Type: value_arguments
+[Log] Node number: 47, Text: (, Type: (
+[Log] Node number: 48, Text: ), Type: )
+[Log] Scope ID: global:0
+[Log] StartPoint: : null
+[Log] EndPoint: : null
+[Log] Scope ID: 0:0:1
+[Log] Word at Range: "{
+    a
+        {
+            b
+        }()  
+}"
+[Log] StartPoint: : {"line":0,"character":0}
+[Log] EndPoint: : {"line":5,"character":1}
+[Log] Scope ID: 2:8:2
+[Log] Word at Range: "{
+            b
+        }"
+[Log] StartPoint: : {"line":2,"character":8}
+[Log] EndPoint: : {"line":4,"character":9}
+[Log] Scope ID: 6:0:1
+[Log] Word at Range: "{
+    c
+        {
+            d  
+        }()
+}"
+[Log] StartPoint: : {"line":6,"character":0}
+[Log] EndPoint: : {"line":11,"character":1}
+[Log] Scope ID: 8:8:2
+[Log] Word at Range: "{
+            d  
+        }"
+[Log] StartPoint: : {"line":8,"character":8}
+[Log] EndPoint: : {"line":10,"character":9}
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (0:0) - (5:1)
+    - Changed Range: (7:4) - (7:5)
+    - INTERSECTS: false
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (2:8) - (4:9)
+    - Changed Range: (7:4) - (7:5)
+    - INTERSECTS: false
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (6:0) - (11:1)
+    - Changed Range: (7:4) - (7:5)
+    - INTERSECTS: true
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (8:8) - (10:9)
+    - Changed Range: (7:4) - (7:5)
+    - INTERSECTS: false
+[Log] 
+[findClosestParentScopeRange] Starting search from innermost scope ID 6:0:1
+[Log]   - Checking Parent Scope ID 6:0:1: (6:0) - (11:1)
+[Log]     - Found a valid parent scope: ID 6:0:1
+[Log] [getScopeRange] Scope ID 6:0:1 has range (6:0) - (11:1)
+[Log] [findClosestParentScopeRange] Found closest valid parent scope ID 6:0:1 with range (6:0) - (11:1)
+[Log] Final modified range will be: (6:0) - (11:1)
+[Log] Updating SemanticTokens
+[Log] Node number: 1, Text: {
+    a
+        {
+            b
+        }()  
+}()
+{
+    c
+        {
+            d
+        }()
+}(), Type: source_file
+[Log] Node number: 2, Text: {
+    a
+        {
+            b
+        }()  
+}()
+{
+    c
+        {
+            d
+        }()
+}(), Type: call_expression
+[Log] Node number: 3, Text: {
+    a
+        {
+            b
+        }()  
+}()
+{
+    c
+        {
+            d
+        }()
+}, Type: call_expression
+[Log] Node number: 4, Text: {
+    a
+        {
+            b
+        }()  
+}, Type: lambda_literal
+[Log] Node number: 5, Text: {, Type: {
+[Log] Entering Scope: 5
+[Log] Node number: 6, Text: a
+        {
+            b
+        }(), Type: statements
+[Log] Node number: 7, Text: a
+        {
+            b
+        }(), Type: call_expression
+[Log] Node number: 8, Text: a
+        {
+            b
+        }, Type: call_expression
+[Log] Node number: 9, Text: a, Type: simple_identifier
+[Log] Node number: 10, Text: {
+            b
+        }, Type: call_suffix
+[Log] Node number: 11, Text: {
+            b
+        }, Type: annotated_lambda
+[Log] Node number: 12, Text: {
+            b
+        }, Type: lambda_literal
+[Log] Node number: 13, Text: {, Type: {
+[Log] Entering Scope: 13
+[Log] Node number: 14, Text: b, Type: statements
+[Log] Node number: 15, Text: b, Type: simple_identifier
+[Log] Node number: 16, Text: }, Type: }
+[Log] Exiting Scope: 16
+[Log] Node number: 17, Text: (), Type: call_suffix
+[Log] Node number: 18, Text: (), Type: value_arguments
+[Log] Node number: 19, Text: (, Type: (
+[Log] Node number: 20, Text: ), Type: )
+[Log] Node number: 21, Text: }, Type: }
+[Log] Exiting Scope: 21
+[Log] Node number: 22, Text: ()
+{
+    c
+        {
+            d
+        }()
+}, Type: call_suffix
+[Log] Node number: 23, Text: (), Type: value_arguments
+[Log] Node number: 24, Text: (, Type: (
+[Log] Node number: 25, Text: ), Type: )
+[Log] Node number: 26, Text: {
+    c
+        {
+            d
+        }()
+}, Type: annotated_lambda
+[Log] Node number: 27, Text: {
+    c
+        {
+            d
+        }()
+}, Type: lambda_literal
+[Log] Node number: 28, Text: {, Type: {
+[Log] Entering Scope: 28
+[Log] Node number: 29, Text: c
+        {
+            d
+        }(), Type: statements
+[Log] Node number: 30, Text: c
+        {
+            d
+        }(), Type: call_expression
+[Log] Node number: 31, Text: c
+        {
+            d
+        }, Type: call_expression
+[Log] Node number: 32, Text: c, Type: simple_identifier
+[Log] Node number: 33, Text: {
+            d
+        }, Type: call_suffix
+[Log] Node number: 34, Text: {
+            d
+        }, Type: annotated_lambda
+[Log] Node number: 35, Text: {
+            d
+        }, Type: lambda_literal
+[Log] Node number: 36, Text: {, Type: {
+[Log] Entering Scope: 36
+[Log] Node number: 37, Text: d, Type: statements
+[Log] Node number: 38, Text: d, Type: simple_identifier
+[Log] Node number: 39, Text: }, Type: }
+[Log] Exiting Scope: 39
+[Log] Node number: 40, Text: (), Type: call_suffix
+[Log] Node number: 41, Text: (), Type: value_arguments
+[Log] Node number: 42, Text: (, Type: (
+[Log] Node number: 43, Text: ), Type: )
+[Log] Node number: 44, Text: }, Type: }
+[Log] Exiting Scope: 44
+[Log] Node number: 45, Text: (), Type: call_suffix
+[Log] Node number: 46, Text: (), Type: value_arguments
+[Log] Node number: 47, Text: (, Type: (
+[Log] Node number: 48, Text: ), Type: )
+[Log] Scope ID: global:0
+[Log] StartPoint: : null
+[Log] EndPoint: : null
+[Log] Scope ID: 0:0:1
+[Log] Word at Range: "{
+    a
+        {
+            b
+        }()  
+}"
+[Log] StartPoint: : {"line":0,"character":0}
+[Log] EndPoint: : {"line":5,"character":1}
+[Log] Scope ID: 2:8:2
+[Log] Word at Range: "{
+            b
+        }"
+[Log] StartPoint: : {"line":2,"character":8}
+[Log] EndPoint: : {"line":4,"character":9}
+[Log] Scope ID: 6:0:1
+[Log] Word at Range: "{
+    c
+        {
+            d
+        }()
+}"
+[Log] StartPoint: : {"line":6,"character":0}
+[Log] EndPoint: : {"line":11,"character":1}
+[Log] Scope ID: 8:8:2
+[Log] Word at Range: "{
+            d
+        }"
+[Log] StartPoint: : {"line":8,"character":8}
+[Log] EndPoint: : {"line":10,"character":9}
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (0:0) - (5:1)
+    - Changed Range: (9:12) - (9:13)
+    - INTERSECTS: false
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (2:8) - (4:9)
+    - Changed Range: (9:12) - (9:13)
+    - INTERSECTS: false
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (6:0) - (11:1)
+    - Changed Range: (9:12) - (9:13)
+    - INTERSECTS: true
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (8:8) - (10:9)
+    - Changed Range: (9:12) - (9:13)
+    - INTERSECTS: true
+[Log] 
+[findClosestParentScopeRange] Starting search from innermost scope ID 8:8:2
+[Log]   - Checking Parent Scope ID 8:8:2: (8:8) - (10:9)
+[Log]     - Found a valid parent scope: ID 8:8:2
+[Log] [getScopeRange] Scope ID 8:8:2 has range (8:8) - (10:9)
+[Log] [findClosestParentScopeRange] Found closest valid parent scope ID 8:8:2 with range (8:8) - (10:9)
+[Log] Final modified range will be: (8:8) - (10:9)
+[Log] Updating SemanticTokens
+[Log] Node number: 1, Text: {
+    a
+        {
+            b 
+        }()  
+}()
+{
+    c
+        {
+            d
+        }()
+}(), Type: source_file
+[Log] Node number: 2, Text: {
+    a
+        {
+            b 
+        }()  
+}()
+{
+    c
+        {
+            d
+        }()
+}(), Type: call_expression
+[Log] Node number: 3, Text: {
+    a
+        {
+            b 
+        }()  
+}()
+{
+    c
+        {
+            d
+        }()
+}, Type: call_expression
+[Log] Node number: 4, Text: {
+    a
+        {
+            b 
+        }()  
+}, Type: lambda_literal
+[Log] Node number: 5, Text: {, Type: {
+[Log] Entering Scope: 5
+[Log] Node number: 6, Text: a
+        {
+            b 
+        }(), Type: statements
+[Log] Node number: 7, Text: a
+        {
+            b 
+        }(), Type: call_expression
+[Log] Node number: 8, Text: a
+        {
+            b 
+        }, Type: call_expression
+[Log] Node number: 9, Text: a, Type: simple_identifier
+[Log] Node number: 10, Text: {
+            b 
+        }, Type: call_suffix
+[Log] Node number: 11, Text: {
+            b 
+        }, Type: annotated_lambda
+[Log] Node number: 12, Text: {
+            b 
+        }, Type: lambda_literal
+[Log] Node number: 13, Text: {, Type: {
+[Log] Entering Scope: 13
+[Log] Node number: 14, Text: b, Type: statements
+[Log] Node number: 15, Text: b, Type: simple_identifier
+[Log] Node number: 16, Text: }, Type: }
+[Log] Exiting Scope: 16
+[Log] Node number: 17, Text: (), Type: call_suffix
+[Log] Node number: 18, Text: (), Type: value_arguments
+[Log] Node number: 19, Text: (, Type: (
+[Log] Node number: 20, Text: ), Type: )
+[Log] Node number: 21, Text: }, Type: }
+[Log] Exiting Scope: 21
+[Log] Node number: 22, Text: ()
+{
+    c
+        {
+            d
+        }()
+}, Type: call_suffix
+[Log] Node number: 23, Text: (), Type: value_arguments
+[Log] Node number: 24, Text: (, Type: (
+[Log] Node number: 25, Text: ), Type: )
+[Log] Node number: 26, Text: {
+    c
+        {
+            d
+        }()
+}, Type: annotated_lambda
+[Log] Node number: 27, Text: {
+    c
+        {
+            d
+        }()
+}, Type: lambda_literal
+[Log] Node number: 28, Text: {, Type: {
+[Log] Entering Scope: 28
+[Log] Node number: 29, Text: c
+        {
+            d
+        }(), Type: statements
+[Log] Node number: 30, Text: c
+        {
+            d
+        }(), Type: call_expression
+[Log] Node number: 31, Text: c
+        {
+            d
+        }, Type: call_expression
+[Log] Node number: 32, Text: c, Type: simple_identifier
+[Log] Node number: 33, Text: {
+            d
+        }, Type: call_suffix
+[Log] Node number: 34, Text: {
+            d
+        }, Type: annotated_lambda
+[Log] Node number: 35, Text: {
+            d
+        }, Type: lambda_literal
+[Log] Node number: 36, Text: {, Type: {
+[Log] Entering Scope: 36
+[Log] Node number: 37, Text: d, Type: statements
+[Log] Node number: 38, Text: d, Type: simple_identifier
+[Log] Node number: 39, Text: }, Type: }
+[Log] Exiting Scope: 39
+[Log] Node number: 40, Text: (), Type: call_suffix
+[Log] Node number: 41, Text: (), Type: value_arguments
+[Log] Node number: 42, Text: (, Type: (
+[Log] Node number: 43, Text: ), Type: )
+[Log] Node number: 44, Text: }, Type: }
+[Log] Exiting Scope: 44
+[Log] Node number: 45, Text: (), Type: call_suffix
+[Log] Node number: 46, Text: (), Type: value_arguments
+[Log] Node number: 47, Text: (, Type: (
+[Log] Node number: 48, Text: ), Type: )
+[Log] Scope ID: global:0
+[Log] StartPoint: : null
+[Log] EndPoint: : null
+[Log] Scope ID: 0:0:1
+[Log] Word at Range: "{
+    a
+        {
+            b 
+        }()  
+}"
+[Log] StartPoint: : {"line":0,"character":0}
+[Log] EndPoint: : {"line":5,"character":1}
+[Log] Scope ID: 2:8:2
+[Log] Word at Range: "{
+            b 
+        }"
+[Log] StartPoint: : {"line":2,"character":8}
+[Log] EndPoint: : {"line":4,"character":9}
+[Log] Scope ID: 6:0:1
+[Log] Word at Range: "{
+    c
+        {
+            d
+        }()
+}"
+[Log] StartPoint: : {"line":6,"character":0}
+[Log] EndPoint: : {"line":11,"character":1}
+[Log] Scope ID: 8:8:2
+[Log] Word at Range: "{
+            d
+        }"
+[Log] StartPoint: : {"line":8,"character":8}
+[Log] EndPoint: : {"line":10,"character":9}
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (0:0) - (5:1)
+    - Changed Range: (3:13) - (3:14)
+    - INTERSECTS: true
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (2:8) - (4:9)
+    - Changed Range: (3:13) - (3:14)
+    - INTERSECTS: true
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (6:0) - (11:1)
+    - Changed Range: (3:13) - (3:14)
+    - INTERSECTS: false
+[Log] [rangesIntersect] Checking intersection:
+    - Scope Range: (8:8) - (10:9)
+    - Changed Range: (3:13) - (3:14)
+    - INTERSECTS: false
+[Log] 
+[findClosestParentScopeRange] Starting search from innermost scope ID 2:8:2
+[Log]   - Checking Parent Scope ID 2:8:2: (2:8) - (4:9)
+[Log]     - Found a valid parent scope: ID 2:8:2
+[Log] [getScopeRange] Scope ID 2:8:2 has range (2:8) - (4:9)
+[Log] [findClosestParentScopeRange] Found closest valid parent scope ID 2:8:2 with range (2:8) - (4:9)
+[Log] Final modified range will be: (2:8) - (4:9)
