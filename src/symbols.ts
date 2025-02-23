@@ -79,7 +79,7 @@ export class Scope {
         this.symbols = new Map();
         this.variables = new Map();
         this.startPoint = startPoint;
-        this.id = parentScope ? `${startPoint?.line}:${startPoint?.character}:` + (parentScope.depth + 1) : `global:` + 0
+        this.id = parentScope ? `${startPoint?.line}:${startPoint?.character}:` + (parentScope.depth + 1) : `0:0:0`
     }
     public setStartPoint(range: vscode.Position) {
         this.startPoint = range;
