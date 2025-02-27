@@ -859,8 +859,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 	public throttleTimer: NodeJS.Timeout | null = null;
 	public finalUpdateTimer: NodeJS.Timeout | null = null;
-	public throttleDelay = 20000;
-	public finalUpdateDelay = 21000;
+	public throttleDelay = 1000;
+	public finalUpdateDelay = 1500;
 	public updating: boolean = false;
 	public init: boolean = false
 	private lastDocumentText: string = ""
@@ -868,24 +868,19 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		const tree = this.treeProvider.tree;
 		const builder = new vscode.SemanticTokensBuilder(LEGEND);
 		let editor = vscode.window.activeTextEditor;
-		this.init = true
 		if (!tree || !editor) return builder.build();
 
-		if (this.finalUpdateTimer) {
-			console.log("already on a timer")
-			return this.lastSemanticTokens ?? builder.build();
-		}
 		let globalScopeRange = new vscode.Range(
 			new vscode.Position(0, 0),
 			editor.document.lineAt(editor.document.lineCount - 1).range.end
 		);
-
-		if (this.lastSemanticTokens && this.treeProvider.document.getText() === this.lastDocumentText) {
+		let lastText = editor.document.getText()
+		if (this.lastSemanticTokens && lastText === this.lastDocumentText) {
 			console.log("document has not changed")
 			return this.lastSemanticTokens;
 		}
 
-		this.lastDocumentText = editor.document.getText()
+		this.lastDocumentText = lastText
 
 		const matches = this.highlightQuery.matches(tree.rootNode);
 		this.treeProvider.updateTokens();
@@ -896,9 +891,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 		this.treeProvider.validateDiagnostics(editor.document);
 
-		this.traverseTree(tree.rootNode, builder);
-
-
+		//this.traverseTree(tree.rootNode, builder);
 
 		const modifiedRange = this.lastChangedRange ? this.lastChangedRange : globalScopeRange;
 		let parentScopeRange = this.findClosestParentScopeRange(modifiedRange) ?? globalScopeRange;
@@ -912,7 +905,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			match.captures.forEach((capture, captureIndex) => {
 				const node = capture.node;
 				let range = this.treeProvider.supplyRange(node);
-				if (!this.init || (!filterRanges || this.rangesIntersect(parentScopeRange, range))) {
+				if (!this.init || (!filterRanges || this.rangesIntersect(modifiedRange, range))) {
 					this.processTokens(capture, builder, range);
 				} else {
 					const existingToken = existingTokens.find(t => t.range.isEqual(range));
@@ -933,29 +926,17 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		if (this.treeProvider.diagnostics.length > 0) {
 			this.treeProvider.addDiagnostics(this.treeProvider.diagnostics);
 		}
-
 		this.lastSemanticTokens = builder.build();
+		this.init = true
 
 		return this.lastSemanticTokens;
 	}
 
 	provideDocumentSemanticTokens(): vscode.ProviderResult<vscode.SemanticTokens> {
-		if (!this.init) {
+		/* if (!this.init) {
 			return this.updateTokens();
-		}
-		if (this.finalUpdateTimer) {
-			clearTimeout(this.finalUpdateTimer);
-			this.finalUpdateTimer = null;
-		}
-
-		if (this.updating) {
-			console.log("manual updating")
-			return this.lastSemanticTokens;
-		}
-		this.lastSemanticTokens = this.updateTokens();
-		this.lastSemanticTokensId = `${Date.now()}`;
-
-		return this.lastSemanticTokens;
+		} */
+		return this.updateTokens();
 	}
 
 	private processTokens(capture: QueryCapture, builder: vscode.SemanticTokensBuilder, range: vscode.Range, reProcessing: boolean = false) {
@@ -1072,41 +1053,41 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		console.log(`[computeTokenEdits] Tokens changed in range: (${commonPrefix}) to (${oldData.length - commonSuffix})`);
 		return edits;
 	}
-
-	provideDocumentSemanticTokensEdits(
-		document: vscode.TextDocument,
-		previousResultId: string,
-		token: vscode.CancellationToken
-	): vscode.ProviderResult<vscode.SemanticTokens | vscode.SemanticTokensEdits> {
-		console.log(`[provideDocumentSemanticTokensEdits] Called with previousResultId: ${previousResultId}`);
-
-		if (!this.lastSemanticTokens) {
-			console.log(`[provideDocumentSemanticTokensEdits] No previous tokens found, falling back to full tokens.`);
-			return this.provideDocumentSemanticTokens();
-		}
-
-		if (this.finalUpdateTimer) {
-			clearTimeout(this.finalUpdateTimer);
-			this.finalUpdateTimer = null;
-		}
-
-		console.log(`[provideDocumentSemanticTokensEdits] Running token update before computing edits.`);
-		const newTokens = this.updateTokens();
-
-		if (!newTokens) {
-			console.log(`[provideDocumentSemanticTokensEdits] UpdateTokens returned null, keeping last tokens.`);
-			return this.lastSemanticTokens;
-		}
-
-		console.log(`[provideDocumentSemanticTokensEdits] Computing edits between old and new tokens.`);
-		const edits: vscode.SemanticTokensEdit[] = this.computeTokenEdits(this.lastSemanticTokens, newTokens);
-
-		console.log(`[provideDocumentSemanticTokensEdits] Computed ${edits.length} token edits.`);
-		this.lastSemanticTokens = newTokens;
-		this.lastSemanticTokensId = `${Date.now()}`;
-
-		return new vscode.SemanticTokensEdits(edits, this.lastSemanticTokensId);
-	}
+	/* 
+		provideDocumentSemanticTokensEdits(
+			document: vscode.TextDocument,
+			previousResultId: string,
+			token: vscode.CancellationToken
+		): vscode.ProviderResult<vscode.SemanticTokens | vscode.SemanticTokensEdits> {
+			console.log(`[provideDocumentSemanticTokensEdits] Called with previousResultId: ${previousResultId}`);
+	
+			if (!this.lastSemanticTokens) {
+				console.log(`[provideDocumentSemanticTokensEdits] No previous tokens found, falling back to full tokens.`);
+				return this.provideDocumentSemanticTokens();
+			}
+	
+			if (this.finalUpdateTimer) {
+				clearTimeout(this.finalUpdateTimer);
+				this.finalUpdateTimer = null;
+			}
+	
+			console.log(`[provideDocumentSemanticTokensEdits] Running token update before computing edits.`);
+			const newTokens = this.updateTokens();
+	
+			if (!newTokens) {
+				console.log(`[provideDocumentSemanticTokensEdits] UpdateTokens returned null, keeping last tokens.`);
+				return this.lastSemanticTokens;
+			}
+	
+			console.log(`[provideDocumentSemanticTokensEdits] Computing edits between old and new tokens.`);
+			const edits: vscode.SemanticTokensEdit[] = this.computeTokenEdits(this.lastSemanticTokens, newTokens);
+	
+			console.log(`[provideDocumentSemanticTokensEdits] Computed ${edits.length} token edits.`);
+			this.lastSemanticTokens = newTokens;
+			this.lastSemanticTokensId = `${Date.now()}`;
+	
+			return new vscode.SemanticTokensEdits(edits, this.lastSemanticTokensId);
+		} */
 
 	private rangesIntersect(range1: vscode.Range, range2: vscode.Range): boolean {
 		const intersects =
@@ -2216,7 +2197,6 @@ export async function activate(context: vscode.ExtensionContext) {
 				applyTreeEdit(treeProvider, change, event.document);
 			}
 
-			// Calculate the affected range
 			const startPosition = new vscode.Position(change.range.start.line, change.range.start.character);
 			const endPosition = new vscode.Position(
 				change.range.start.line + (change.text.split("\n").length - 1),
@@ -2225,7 +2205,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 			const range = new vscode.Range(startPosition, endPosition);
 
-			// Store the most recently changed range
 			if (!lastChangedRange || range.start.isBefore(lastChangedRange.start)) {
 				lastChangedRange = range;
 			}
@@ -2239,32 +2218,19 @@ export async function activate(context: vscode.ExtensionContext) {
 			semanticTokensProvider.setLastChangedRange(lastChangedRange);
 		}
 
-		if (!semanticTokensProvider) return;
+		/* if (!semanticTokensProvider) return;
 
-		if (semanticTokensProvider.throttleTimer) {
-			clearTimeout(semanticTokensProvider.throttleTimer);
-		}
-
-		semanticTokensProvider.throttleTimer = setTimeout(() => {
-			//semanticTokensProvider.updateTokens();
-			semanticTokensProvider.throttleTimer = null;
-		}, semanticTokensProvider.throttleDelay);
-
+		// Always clear the previous timer before setting a new one
 		if (semanticTokensProvider.finalUpdateTimer) {
 			clearTimeout(semanticTokensProvider.finalUpdateTimer);
 		}
 
 		semanticTokensProvider.finalUpdateTimer = setTimeout(() => {
-
-			semanticTokensProvider.updating = true;
-			if (semanticTokensProvider.lastSemanticTokensId)
-				semanticTokensProvider.provideDocumentSemanticTokensEdits(event.document, semanticTokensProvider.lastSemanticTokensId,
-					new vscode.CancellationTokenSource().token);
-
-			semanticTokensProvider.updating = false;
-		}, semanticTokensProvider.finalUpdateDelay);
+			console.log("Final update triggered");
+			semanticTokensProvider.updateTokens();
+			semanticTokensProvider.finalUpdateTimer = null;
+		}, semanticTokensProvider.finalUpdateDelay); */
 	});
-
 
 
 	context.subscriptions.push(
