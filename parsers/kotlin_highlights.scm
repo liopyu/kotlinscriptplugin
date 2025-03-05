@@ -99,7 +99,7 @@
 		"MutableSet"
 		"MutableList"
 ))
-
+(ERROR) @error
 (package_header
 	. (identifier)) @namespace
 

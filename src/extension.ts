@@ -250,13 +250,28 @@ export class TreeProvider {
 		this.purpleType = []
 		this.importRanges = []
 		this.varId = 0
-		this.scopes.clear()
+		/* this.scopes.clear()
 		this.currentScope = new Scope(null, null);
-		this.scopes.set(this.currentScope.id, this.currentScope)
+		this.scopes.set(this.currentScope.id, this.currentScope) */
 		this.isUpdating = false;
 		/* if (editor) {
 			this.validateDiagnostics(editor?.document)
 		} */
+	}
+	public validateScopes(document: vscode.TextDocument): void {
+		const scopesToRemove: Scope[] = []
+		for (const [key, scope] of this.scopes.entries()) {
+			const start = scope.startPoint;
+			console.log(start)
+			if (start && scope.id != "0:0:0") {
+				const expectedRange = new vscode.Range(
+					new vscode.Position(Math.max(0, start?.line - 1), Math.max(0, start?.character)),
+					new vscode.Position(Math.max(0, start?.line), Math.max(0, start?.character + 1))
+				);
+				const currentText = document.getText(expectedRange)
+				console.log(currentText)
+			}
+		}
 	}
 	public validateDiagnostics(document: vscode.TextDocument): void {
 		const diagnosticsToRemove: string[] = [];
@@ -386,8 +401,10 @@ export class TreeProvider {
 			const actualRangeKey = this.getRangeKey(actualRange);
 			if (!this.rangesEqual(expectedRange, actualRange) || actualRangeKey !== rangeKey) {
 				variableSymbol.setRange(actualRange);
+				//console.log("Modifying variable range: " + variableKey)
 				variablesToRemove.push(variableKey); // Add old key for removal
 				const newVarKey = `${variableName}@${scopeId}@${actualRangeKey}`;
+				//console.log("New variable range: " + variableKey)
 				this.scopedVariables.set(newVarKey, variableSymbol); // Add updated key
 				continue;
 			}
@@ -419,15 +436,14 @@ export class TreeProvider {
 
 		for (const variableKey of variablesToRemove) {
 			const symbol = this.scopedVariables.get(variableKey);
-			/* log(
-				`Removed stale variable '${this.fromKey(variableKey)}' from scope: ${symbol?.scope.depth}`
-			); */
 
 			if (symbol) {
 				symbol.scope.undefine(symbol);
 			}
-
 			this.scopedVariables.delete(variableKey);
+			/* log(
+				`Removed stale variable '${this.fromKey(variableKey)}' from scope: ${symbol?.scope.id}`
+			); */
 		}
 	}
 
@@ -725,9 +741,13 @@ export class TreeProvider {
 		builder: vscode.SemanticTokensBuilder
 	): void {
 		const variableName = identifierNode.text;
-
+		const rangeMode = this.semanticTokensProvider?.rangeMode
+		if (!(rangeMode == RangeMode.FULL || rangeMode == RangeMode.MODIFIED)) return
+		var scope =/*  this.semanticTokensProvider ? this.semanticTokensProvider.currentScopeFromRange(range) :  */this.currentScope
+		//console.log("Parsing variable: " + variableName + " for scope: " + scope?.id)
+		if (!scope) return
 		// Generate varKey using the new range-based key format
-		const varKey = `${variableName}@${this.currentScope.id}@${this.getRangeKey(range)}`;
+		const varKey = `${variableName}@${scope.id}@${this.getRangeKey(range)}`;
 
 		// Check for reserved characters
 		if (reservedCharacters.includes(variableName)) {
@@ -743,7 +763,7 @@ export class TreeProvider {
 		//log("VariableName: " + variableName + ", Current Scope: " + this.currentScope.id)
 		// Check if a variable with the same name exists in the current scope
 		//let scope = this.semanticTokensProvider?.currentScopeFromRange(range)
-		if (this.currentScope?.countVariablesByName(variableName) > 0 && identifierNode.parent?.type != "lambda_parameters") {
+		if (scope?.countVariablesByName(variableName) > 0 && identifierNode.parent?.type != "lambda_parameters") {
 			const errorMessage = `Variable "${variableName}" is already defined in the current scope and may cause ambiguity.`;
 			TreeProvider.addError(range, errorMessage, variableName, vscode.DiagnosticSeverity.Warning);
 		}
@@ -754,12 +774,12 @@ export class TreeProvider {
 			range,
 			identifierNode,
 			variableNode ? variableNode.text : "",
-			this.currentScope,
+			scope,
 			varKey
 		);
 
 		// Add the variable to the scope and semantic tokens
-		this.currentScope.define(variableSymbol);
+		scope.define(variableSymbol);
 		builder.push(range, "enumMember");
 		this.scopedVariables.set(varKey, variableSymbol);
 	}
@@ -781,10 +801,27 @@ export class TreeProvider {
 		if (!parentScope) {
 			throw new Error("Parent scope is required to enter a new scope.");
 		}
-		const newScope = new Scope(parentScope, startRange);
-		this.scopes.set(newScope.id, newScope)
+
+		// Use parent's depth and logical structure to determine the scope
+		const depth = parentScope.depth + 1;
+		const id = parentScope.id + `.${depth}`; // Use hierarchical ID
+
+		console.log(`Generated Scope ID: ${id}`);
+		console.log(`Existing Scope? ${this.scopes.has(id) ? "Yes" : "No"}`);
+
+		let newScope = this.scopes.get(id);
+		if (!newScope) {
+			console.log(`Creating new scope for ID: ${id}`);
+			newScope = new Scope(parentScope, startRange);
+			this.scopes.set(id, newScope);
+		} else {
+			console.log(`Reusing existing scope: ${newScope.id}`);
+		}
+
 		this.currentScope = newScope;
 	}
+
+
 
 
 	exitScope(node: SyntaxNode, optionalScope: Scope | null = null): void {
@@ -797,8 +834,15 @@ export class TreeProvider {
 		} else if (optionalScope.parentScope) {
 			this.currentScope = optionalScope.parentScope
 		}
+		console.log("exiting scope, entering: " + this.currentScope.id)
 	}
 
+}
+enum RangeMode {
+	MODIFIED,
+	SCOPE,
+	FULL,
+	EDIT
 }
 export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
 	public readonly highlightQuery: TSParser.Query;
@@ -864,6 +908,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 	public updating: boolean = false;
 	public init: boolean = false
 	private lastDocumentText: string = ""
+	public rangeMode: RangeMode = RangeMode.FULL
 	updateTokens() {
 		const tree = this.treeProvider.tree;
 		const builder = new vscode.SemanticTokensBuilder(LEGEND);
@@ -890,11 +935,12 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 
 		this.treeProvider.validateDiagnostics(editor.document);
-
-		//this.traverseTree(tree.rootNode, builder);
+		this.treeProvider.validateScopes(editor.document);
+		//this is causing slowness
+		this.traverseTree(tree.rootNode, builder);
 
 		const modifiedRange = this.lastChangedRange ? this.lastChangedRange : globalScopeRange;
-		let parentScopeRange = this.findClosestParentScopeRange(modifiedRange) ?? globalScopeRange;
+		const parentScopeRange = this.findClosestParentScopeRange(modifiedRange) ?? globalScopeRange;
 
 		//editor.setDecorations(DelimiterDecorationType, [parentScopeRange])
 
@@ -905,9 +951,18 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			match.captures.forEach((capture, captureIndex) => {
 				const node = capture.node;
 				let range = this.treeProvider.supplyRange(node);
-				if (!this.init || (!filterRanges || this.rangesIntersect(modifiedRange, range))) {
+				if (!this.init || (this.init && !filterRanges)) {
+					this.rangeMode = RangeMode.FULL
+					this.processTokens(capture, builder, range);
+				} else if (filterRanges && this.rangesIntersect(parentScopeRange, range)) {
+					if (this.rangesIntersect(modifiedRange, range)) {
+						this.rangeMode = RangeMode.MODIFIED
+					} else if (this.rangesIntersect(parentScopeRange, range)) {
+						this.rangeMode = RangeMode.SCOPE
+					}
 					this.processTokens(capture, builder, range);
 				} else {
+					this.rangeMode = RangeMode.EDIT
 					const existingToken = existingTokens.find(t => t.range.isEqual(range));
 					if (existingToken) {
 						builder.push(existingToken.range, LEGEND.tokenTypes[existingToken.tokenType] || "variable");
@@ -917,7 +972,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 				}
 			});
 		});
-
 		if (this.treeProvider.tree) {
 			this.treeProvider.validateImports(this.treeProvider.tree);
 			this.treeProvider.validateVariables(this.treeProvider.tree);
@@ -941,6 +995,11 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
 	private processTokens(capture: QueryCapture, builder: vscode.SemanticTokensBuilder, range: vscode.Range, reProcessing: boolean = false) {
 		const node = capture.node;
+		if (this.rangeMode == RangeMode.FULL || this.rangeMode == RangeMode.MODIFIED) {
+			this.handleCallExpression(node, builder);
+			this.handleErrorNodes(node);
+			this.handleMissingNodes(node);
+		}
 		if (capture.name == "keyword.return" && node.firstChild) {
 			range = this.treeProvider.supplyRange(node.firstChild)
 		} else if (capture.name == 'namespace' && node.firstChild) {
@@ -948,15 +1007,16 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 		}
 		if (((node.text == "{" && node.type == "{") || node.text == "${")) {
 			let startPoint = this.treeProvider.supplyRange(node).start
+
 			let storedScopeId = this.treeProvider.currentScope ? `${startPoint?.line}:${startPoint?.character}:` + (this.treeProvider.currentScope.depth + 1) : `0:0:0`
 			let storedScope = this.treeProvider.scopes.get(storedScopeId)
 			if (storedScope) this.treeProvider.currentScope = storedScope
 			this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint);
 		} else if ((node.text == "}" && node.type == "}")) {
 			if (reProcessing) {
-				/* let currentScope = this.currentScopeFromRange(range)
+				let currentScope = this.currentScopeFromRange(range)
 				if (currentScope) this.treeProvider.currentScope = currentScope
-				this.treeProvider.exitScope(node, currentScope); */
+				this.treeProvider.exitScope(node, currentScope);
 			} else {
 				this.treeProvider.exitScope(node);
 			}
@@ -1348,6 +1408,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			case 'none':
 				tokenType = 'variable';
 				break;
+			case 'error':
+				break
 			default:
 				console.error(`Unrecognized token name: "${name}" in range=[${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}]..`);
 				tokenType = 'variable';
@@ -1445,10 +1507,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 			this.treeProvider.currentScope.setEndPoint(endPoint)
 			this.treeProvider.exitScope(node);
 		}
-		this.handleCallExpression(node, builder);
 
-		this.handleErrorNodes(node);
-		this.handleMissingNodes(node);
 		node.children.forEach(child => this.traverseTree(child, builder));
 	}
 
@@ -2034,7 +2093,7 @@ class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 				keyword,
 				vscode.CompletionItemKind.Keyword
 			);
-			item.detail = "Kotlin Keyword";
+			item.detail = keyword;
 			item.sortText = "0";
 			return item;
 		});

@@ -4,6 +4,3385 @@
 [Log] Loaded 1170 typing suggestions.
 [Log] Typing suggestions loaded: 1170
 [Log] Semantic Tokens Provider Initialized
+[Log] null
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
 [Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Semantic Tokens Provider Initialized
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
 [Log] document has not changed
+[Log] Semantic Tokens Provider Initialized
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] /*
+ 
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
 [Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7.8
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1.2.3.4.5.6.7.8
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6.7
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6.7
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5.6
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5.6
+[Log] exiting scope, entering: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] Generated Scope ID: 0.0.0.1.2.3.4
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4
+[Log] Generated Scope ID: 0.0.0.1.2.3.4.5
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3.4.5
+[Log] exiting scope, entering: 0.0.0.1.2.3.4
+[Log] exiting scope, entering: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] Generated Scope ID: 0.0.0.1.2.3
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2.3
+[Log] exiting scope, entering: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] document has not changed
+[Log] null
+[Log] {
+  "line": 139,
+  "character": 39
+}
+[Log] 
+    pokemon: Pokemon = Pokemon().apply {
+[Log] {
+  "line": 143,
+  "character": 21
+}
+[Log]  = initialValue
+    companion object {
+[Log] {
+  "line": 330,
+  "character": 30
+}
+[Log] 
+[Log] {
+  "line": 337,
+  "character": 25
+}
+[Log] 
+[Log] {
+  "line": 339,
+  "character": 70
+}
+[Log] 
+[Log] {
+  "line": 457,
+  "character": 39
+}
+[Log] 
+[Log] {
+  "line": 458,
+  "character": 44
+}
+[Log] 
+[Log] {
+  "line": 1168,
+  "character": 70
+}
+[Log] 
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] /*
+ 
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Semantic Tokens Provider Initialized
+[Log] null
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 6,
+  "character": 0
+}
+[Log]  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ 
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] /*
+ 
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 6,
+  "character": 0
+}
+[Log]  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ 
+[Log] {
+  "line": 143,
+  "character": 21
+}
+[Log]  = initialValue
+    companion object {
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] /*
+ 
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 6,
+  "character": 0
+}
+[Log]  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ 
+[Log] {
+  "line": 143,
+  "character": 21
+}
+[Log]  = initialValue
+    companion object {
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] /*
+ 
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 6,
+  "character": 0
+}
+[Log]  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ 
+[Log] {
+  "line": 143,
+  "character": 21
+}
+[Log]  = initialValue
+    companion object {
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] /*
+ 
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 6,
+  "character": 0
+}
+[Log]  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ 
+[Log] {
+  "line": 143,
+  "character": 21
+}
+[Log]  = initialValue
+    companion object {
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] /*
+ 
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 6,
+  "character": 0
+}
+[Log]  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ 
+[Log] {
+  "line": 143,
+  "character": 21
+}
+[Log]  = initialValue
+    companion object {
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] /*
+ 
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 6,
+  "character": 0
+}
+[Log]  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ 
+[Log] {
+  "line": 143,
+  "character": 21
+}
+[Log]  = initialValue
+    companion object {
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] /*
+ 
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Closed document: file:///d%3A/minecraft/instances/1.21%20fab/package.json
+[Log] Closed document: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
+[Log] Semantic Tokens Provider Initialized
+[Log] null
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] Generated Scope ID: 0.0.0.1.2
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1.2
+[Log] exiting scope, entering: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] /*
+ 
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] Closed document: file:///d%3A/minecraft/instances/1.21%20fab/config/scripts/myscript.kts
+[Log] Semantic Tokens Provider Initialized
+[Log] null
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? No
+[Log] Creating new scope for ID: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+{
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+{
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+{
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+{
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+{
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+{
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+{
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+{
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+{
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+{
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+{
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+{
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] null
+[Log] {
+  "line": 1,
+  "character": 0
+}
+[Log] 
+{
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0
+[Log] updating tokens
+[Log] Generated Scope ID: 0.0.0.1
+[Log] Existing Scope? Yes
+[Log] Reusing existing scope: 0.0.0.1
+[Log] exiting scope, entering: 0.0.0

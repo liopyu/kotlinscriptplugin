@@ -74,13 +74,16 @@ export class Scope {
     endPoint: vscode.Position | null = null;
 
     constructor(parentScope: Scope | null, startPoint: vscode.Position | null) {
-        this.depth = (parentScope ? parentScope.depth + 1 : 0);
+        this.depth = parentScope ? parentScope.depth + 1 : 0;
         this.parentScope = parentScope;
         this.symbols = new Map();
         this.variables = new Map();
         this.startPoint = startPoint;
-        this.id = parentScope ? `${startPoint?.line}:${startPoint?.character}:` + (parentScope.depth + 1) : `0:0:0`
+
+        this.id = parentScope ? parentScope.id + `.${this.depth}` : `0.0.0`; // Hierarchical ID
     }
+
+
     public setStartPoint(range: vscode.Position) {
         this.startPoint = range;
     }

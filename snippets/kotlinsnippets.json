@@ -2,7 +2,7 @@
     "fun name(): Unit": {
         "prefix": "fun",
         "body": [
-            "fun ${1:functionName}(): ${4:Unit} {",
+            "fun ${1:name}(): ${4:Unit} {",
             "\t${0}",
             "}"
         ],
@@ -11,14 +11,14 @@
     "fun name() = value": {
         "prefix": "fun",
         "body": [
-            "fun ${1:functionName}() = value"
+            "fun ${1:name}() = value"
         ],
         "description": "Basic value function"
     },
     "fun name(param: String): Unit": {
         "prefix": "fun",
         "body": [
-            "fun ${1:functionName}(${2:param}: ${3:String}): ${4:Unit} {",
+            "fun ${1:name}(${2:param}: ${3:String}): ${4:Unit} {",
             "\t${0}",
             "}"
         ],
@@ -27,7 +27,7 @@
     "fun name()": {
         "prefix": "fun",
         "body": [
-            "fun ${1:functionName}() {",
+            "fun ${1:name}() {",
             "\t${0}",
             "}"
         ],
@@ -36,7 +36,7 @@
     "fun Unit.name(param: String): Unit": {
         "prefix": "fun",
         "body": [
-            "fun ${1:Unit}.${2:functionName}(${3:param}: ${4:String}): ${5:Unit} {",
+            "fun ${1:Unit}.${2:name}(${3:param}: ${4:String}): ${5:Unit} {",
             "\t${0}",
             "}"
         ],
@@ -45,7 +45,7 @@
     "fun name(param: (String) -> Unit)": {
         "prefix": "fun",
         "body": [
-            "fun ${1:functionName}(${2:param}: (${3:String}) -> ${4:Unit}) {",
+            "fun ${1:name}(${2:param}: (${3:String}) -> ${4:Unit}) {",
             "\t${0}",
             "}"
         ],
@@ -89,7 +89,7 @@
         "prefix": "abstract",
         "body": [
             "abstract class ${1:ClassName} {",
-            "\tabstract fun ${2:functionName}()",
+            "\tabstract fun ${2:name}()",
             "\t${0}",
             "}"
         ],
@@ -192,7 +192,7 @@
     "Suspend Function": {
         "prefix": "suspend",
         "body": [
-            "suspend fun ${1:functionName}(${2:param}: ${3:String}): ${4:Unit} {",
+            "suspend fun ${1:name}(${2:param}: ${3:String}): ${4:Unit} {",
             "\t${0}",
             "}"
         ],
@@ -210,7 +210,7 @@
     "Inline Function": {
         "prefix": "inline",
         "body": [
-            "inline fun ${1:functionName}(${2:crossinline action}: () -> Unit) {",
+            "inline fun ${1:name}(${2:crossinline action}: () -> Unit) {",
             "\t${0}",
             "}"
         ],
@@ -291,7 +291,7 @@
         "prefix": "companion",
         "body": [
             "companion object {",
-            "\tfun ${1:functionName}(${2:param}: ${3:String}): ${4:Unit} {",
+            "\tfun ${1:name}(${2:param}: ${3:String}): ${4:Unit} {",
             "\t\t${0}",
             "\t}",
             "}"
@@ -310,7 +310,7 @@
     "Inline Reified": {
         "prefix": "inline",
         "body": [
-            "inline fun <reified ${1:T}> ${2:functionName}(): ${3:Unit} {",
+            "inline fun <reified ${1:T}> ${2:name}(): ${3:Unit} {",
             "\t${0}",
             "}"
         ],
