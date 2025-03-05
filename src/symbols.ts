@@ -79,8 +79,8 @@ export class Scope {
         this.symbols = new Map();
         this.variables = new Map();
         this.startPoint = startPoint;
-
-        this.id = parentScope ? parentScope.id + `.${this.depth}` : `0.0.0`; // Hierarchical ID
+        this.id = parentScope ? `${startPoint?.line}:${startPoint?.character}:` + (parentScope.depth + 1) : `0:0:0`
+        // this.id = parentScope ? parentScope.id + `.${this.depth}` : `0.0.0`; // Hierarchical ID
     }
 
 
