@@ -1,56 +1,8 @@
 import * as vscode from 'vscode';
 import Parser, { Tree } from 'web-tree-sitter';
-import { TreeProvider } from './extension';
-export enum VariableType {
-    SIMPLE,
-    VARIABLE,
-    IMPORT,
-    METHOD
-}
-export const SimpleDecorationType = vscode.window.createTextEditorDecorationType({
-    color: '#ADD8E6',
-});
-export const VariableDecorationType = vscode.window.createTextEditorDecorationType({
-    color: '#4bb4ec',
-    //textDecoration: 'underline'
-});
-export const SubVariableDecorationType = vscode.window.createTextEditorDecorationType({
-    color: '#4bb4ec',
-    //textDecoration: 'underline'
-});
-export const ImportDecorationType = vscode.window.createTextEditorDecorationType({
-    color: '#ff0000',
-    textDecoration: 'underline'
-});
-export const MethodDecorationType = vscode.window.createTextEditorDecorationType({
-    color: '#FFD700',
-});
-export const OtherDecorationType = vscode.window.createTextEditorDecorationType({
-    color: '#ca27ea',
-});
-export const DelimiterDecorationType = vscode.window.createTextEditorDecorationType({
-    color: '#a258ab',
-});
-export const DefaultBlueDecorationType = vscode.window.createTextEditorDecorationType({
-    color: '#569CD6',
-});
-export function applyDecorations(parser: TreeProvider, document: vscode.TextDocument): void {
-    const editor = vscode.window.activeTextEditor;
-    if (editor && editor.document === document) {
-        if (parser.ranges.has(VariableType.IMPORT)) {
-            editor.setDecorations(ImportDecorationType, parser.ranges.get(VariableType.IMPORT)!);
-        }
-        if (parser.ranges.has(VariableType.SIMPLE)) {
-            editor.setDecorations(SimpleDecorationType, parser.ranges.get(VariableType.SIMPLE)!);
-        }
-        if (parser.ranges.has(VariableType.VARIABLE)) {
-            editor.setDecorations(VariableDecorationType, parser.ranges.get(VariableType.VARIABLE)!);
-        }
-        if (parser.ranges.has(VariableType.METHOD)) {
-            editor.setDecorations(MethodDecorationType, parser.ranges.get(VariableType.METHOD)!);
-        }
-    }
-}
+import { TreeProvider } from './treeprovider';
+import { log, error, warn } from './extension';
+import { console } from './extension'
 class Symbol {
     name: string;
     type: string | null;
@@ -72,15 +24,15 @@ export class Scope {
     id: string
     startPoint: vscode.Position | null = null;
     endPoint: vscode.Position | null = null;
-
-    constructor(parentScope: Scope | null, startPoint: vscode.Position | null) {
+    paramScope: boolean
+    constructor(parentScope: Scope | null, startPoint: vscode.Position | null, paramScope: boolean = false) {
         this.depth = parentScope ? parentScope.depth + 1 : 0;
         this.parentScope = parentScope;
         this.symbols = new Map();
         this.variables = new Map();
         this.startPoint = startPoint;
+        this.paramScope = paramScope
         this.id = parentScope ? `${startPoint?.line}:${startPoint?.character}:` + (parentScope.depth + 1) : `0:0:0`
-        // this.id = parentScope ? parentScope.id + `.${this.depth}` : `0.0.0`; // Hierarchical ID
     }
 
 
@@ -156,8 +108,8 @@ export class VariableSymbol extends Symbol {
     value: string
     scope: Scope
     varKey: string
-
-    constructor(name: string, range: vscode.Range, node: Parser.SyntaxNode, value: string, scope: Scope, varKey: string) {
+    isParamVar: boolean
+    constructor(name: string, range: vscode.Range, node: Parser.SyntaxNode, value: string, scope: Scope, varKey: string, isParamVar: boolean = false) {
         super(name);
         this.name = name;
         this.range = range;
@@ -166,8 +118,8 @@ export class VariableSymbol extends Symbol {
         this.varKey = varKey;
         this.value = value;
         this.scope = scope;
+        this.isParamVar = isParamVar
     }
-
 }
 
 

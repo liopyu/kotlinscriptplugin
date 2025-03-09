@@ -1,8 +1,26 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import { TypingSuggestion } from './symbols';
+import { TreeProvider } from './treeprovider';
+import { log, error, warn } from './extension';
+import {
+    t,
+    TOKEN_TYPES,
+    TOKEN_MODIFIERS,
+    LEGEND,
+    expressionTypes,
+    variableDeclarationTypes,
+    blockParents,
+    blocks,
+    standinReserved,
+    reservedCharacters,
+    documentData,
+    semanticTokensEnabled
+} from './constants'
+let cachedTypingSuggestions: TypingSuggestion[] | null = null;
 export class Utils {
-    private static instance: Utils | null = null;  // Singleton instance
+    private static instance: Utils | null = null;
     public logFile: string;
     public logBuffer: string[] = [];
     public flushInterval: NodeJS.Timeout | null = null;
@@ -10,11 +28,10 @@ export class Utils {
     private lastMessage: string | null = null;
     private lastMessageCount: number = 1;
 
-    private constructor(context: vscode.ExtensionContext) { // Private constructor
+    private constructor(context: vscode.ExtensionContext) {
         this.outputChannel = vscode.window.createOutputChannel("KotlinScript Logs");
         const basePath = context.extensionPath;
         this.logFile = path.join(basePath, 'debug.log');
-
         if (!fs.existsSync(basePath)) {
             fs.mkdirSync(basePath, { recursive: true });
         }
@@ -90,4 +107,135 @@ export class Utils {
         console.error(...args);
         this.logToFile('error', args);
     }
+}
+export async function loadTypingSuggestions(ktsDirectory: string): Promise<TypingSuggestion[]> {
+    if (cachedTypingSuggestions) {
+        return cachedTypingSuggestions;
+    }
+
+    const suggestions: TypingSuggestion[] = [];
+    const jsonFilePath = path.join(ktsDirectory, 'typings', 'kotlin_suggestions.json');
+
+    try {
+        if (fs.existsSync(jsonFilePath)) {
+            log('Loading typing suggestions from JSON file...');
+            const fileContent = fs.readFileSync(jsonFilePath, 'utf-8');
+            const parsedData = JSON.parse(fileContent);
+
+            if (Array.isArray(parsedData)) {
+                parsedData.forEach(item => {
+                    suggestions.push(
+                        new TypingSuggestion(
+                            item.fullyQualifiedName,
+                            item.simpleName || '',
+                            item.source || null,
+                            item.type || null,
+                            item.path || null,
+                            item.parentType || null,
+                            item.requiresImport || false
+                        )
+                    );
+                });
+                log(`Loaded ${suggestions.length} typing suggestions.`);
+                cachedTypingSuggestions = suggestions;
+            }
+        }
+    } catch (error) {
+        console.error(`Error loading typing suggestions: ${error}`);
+    }
+
+    return suggestions;
+}
+
+export async function loadAvailableClasses(ktsDirectory: string): Promise<Set<string>> {
+    const availableClasses = new Set<string>();
+
+    const typingsPath = path.join(ktsDirectory, 'typings');
+    const jsonFilePath = path.join(typingsPath, 'available_classes.json');
+    const binaryFilePath = path.join(typingsPath, 'available_classes.bin');
+
+    try {
+        if (fs.existsSync(binaryFilePath)) {
+            log('Loading classes from binary file...');
+            const buffer = fs.readFileSync(binaryFilePath);
+            buffer
+                .toString('utf-8')
+                .split('\n')
+                .forEach(cls => availableClasses.add(cls));
+            log(`Loaded ${availableClasses.size} classes from binary file.`);
+            return availableClasses;
+        }
+
+        // Fallback to JSON file
+        if (fs.existsSync(jsonFilePath)) {
+            log('Loading classes from JSON file...');
+            const fileContent = fs.readFileSync(jsonFilePath, 'utf-8');
+            const classes = JSON.parse(fileContent);
+
+            if (Array.isArray(classes)) {
+                classes.forEach(cls => availableClasses.add(cls));
+                const buffer = Buffer.from(classes.join('\n'), 'utf-8');
+                fs.writeFileSync(binaryFilePath, buffer);
+            } else {
+                throw new Error('Invalid JSON format: expected an array of classes');
+            }
+
+            log(`Loaded ${availableClasses.size} classes from JSON file.`);
+            return availableClasses;
+        }
+        warn('No available_classes.json or binary file found.');
+        return availableClasses;
+    } catch (error) {
+        console.error(`Error loading available classes: ${error}`);
+        return availableClasses;
+    }
+}
+
+export function updateTokensForDocument(
+    document: vscode.TextDocument
+) {
+    //if (t) return
+    const documentUri = document.uri.toString();
+    const data = documentData.get(documentUri);
+    if (!data) return;
+    const editor = vscode.window.visibleTextEditors.find(e => e.document.uri.toString() === documentUri);
+    if (editor) {
+        const { treeProvider } = data;
+        const changes = document.getText();
+        if (treeProvider.tree) {
+            const newTree = treeProvider.parser.parse(changes, treeProvider.tree);
+            treeProvider.tree = newTree;
+        }
+        if (!treeProvider.isUpdating) {
+            treeProvider.updateTokens();
+        }
+        /* const variableDefinitionProvider = new KotlinScriptDefinitionProvider(treeProvider.getscopedVariables());
+        context.subscriptions.push(
+            vscode.languages.registerDefinitionProvider(selector, variableDefinitionProvider)
+        ); */
+    }
+}
+
+export function applyTreeEdit(treeProvider: TreeProvider, change: vscode.TextDocumentContentChangeEvent, document: vscode.TextDocument): void {
+    const startPosition = new vscode.Position(change.range.start.line, change.range.start.character);
+    const oldEndPosition = new vscode.Position(change.range.end.line, change.range.end.character);
+    const newTextLines = change.text.split('\n');
+    const newEndPosition = new vscode.Position(
+        startPosition.line + newTextLines.length - 1,
+        newTextLines.pop()?.length || 0
+    );
+
+    const startIndex = change.rangeOffset;
+    const oldEndIndex = startIndex + (change.rangeLength || 0);
+    const newEndIndex = startIndex + change.text.length;
+
+    if (!treeProvider.tree) return;
+    treeProvider.tree.edit({
+        startIndex,
+        oldEndIndex,
+        newEndIndex,
+        startPosition: { row: startPosition.line, column: startPosition.character },
+        oldEndPosition: { row: oldEndPosition.line, column: oldEndPosition.character },
+        newEndPosition: { row: newEndPosition.line, column: newEndPosition.character },
+    });
 }

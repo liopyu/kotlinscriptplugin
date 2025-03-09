@@ -296,7 +296,7 @@
 
 
 ("fun") @keyword.function
-("return") @return
+;("return") @return
 (jump_expression) @keyword.return
 
 [
