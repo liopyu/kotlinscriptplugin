@@ -41,74 +41,28 @@ import {
 import { TreeProvider } from './treeprovider'
 import { TypingSuggestionProvider } from './suggestionprovider';
 import { typingSuggestions } from './extension';
-import { log, warn, error } from 'console';
+import { log, warn, error } from './extension';
+import { console } from './extension'
 
 export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
     public readonly highlightQuery: TSParser.Query;
     public readonly treeProvider: TreeProvider;
     private globalScope: Scope | undefined
+    private tempInterpolatedRanges: vscode.Range[] = [];
+    public errorType: vscode.Range[] = []
+    private lastChangedRange: vscode.Range | null = null;
+    private lastSemanticTokens: vscode.SemanticTokens | null = null;
+    public lastSemanticTokensId: string | null = null;
+    public init: boolean = false
+    private lastDocumentText: string = ""
+    public rangeMode: RangeMode = RangeMode.FULL
+    private previousLineCount: number = 0
     constructor(treeProvider: TreeProvider, highlightQuery: TSParser.Query) {
         this.treeProvider = treeProvider;
         this.highlightQuery = highlightQuery;
         this.globalScope = this.treeProvider.scopes.get("0:0:0")
         console.log("Semantic Tokens Provider Initialized")
     }
-    private tempInterpolatedRanges: vscode.Range[] = [];
-    public errorType: vscode.Range[] = []
-    private lastChangedRange: vscode.Range | null = null;
-    private lastSemanticTokens: vscode.SemanticTokens | null = null;
-    public lastSemanticTokensId: string | null = null;
-    public setLastChangedRange(range: vscode.Range): void {
-        this.lastChangedRange = range
-    }
-
-    public isNodeAffected(node: SyntaxNode): boolean {
-        if (!this.lastChangedRange) return false;
-
-        const nodeRange = this.treeProvider.supplyRange(node);
-
-        return (
-            nodeRange.start.isBeforeOrEqual(this.lastChangedRange.end) &&
-            nodeRange.end.isAfterOrEqual(this.lastChangedRange.start)
-        );
-    }
-    private decodeSemanticTokens(tokens: vscode.SemanticTokens | null): { range: vscode.Range, tokenType: number }[] {
-        const result: { range: vscode.Range, tokenType: number }[] = [];
-        if (!tokens || !tokens.data) return result;
-
-        let currentLine = 0;
-        let currentCharacter = 0;
-
-        for (let i = 0; i < tokens.data.length; i += 5) {
-            const deltaLine = tokens.data[i];
-            const deltaCharacter = tokens.data[i + 1];
-            const length = tokens.data[i + 2];
-            const tokenType = tokens.data[i + 3];
-
-            currentLine += deltaLine;
-            if (deltaLine === 0) {
-                currentCharacter += deltaCharacter;
-            } else {
-                currentCharacter = deltaCharacter;
-            }
-
-            const start = new vscode.Position(currentLine, currentCharacter);
-            const end = new vscode.Position(currentLine, currentCharacter + length);
-            result.push({ range: new vscode.Range(start, end), tokenType });
-        }
-
-        return result;
-    }
-
-    public throttleTimer: NodeJS.Timeout | null = null;
-    public finalUpdateTimer: NodeJS.Timeout | null = null;
-    public throttleDelay = 1000;
-    public finalUpdateDelay = 1500;
-    public updating: boolean = false;
-    public init: boolean = false
-    private lastDocumentText: string = ""
-    public rangeMode: RangeMode = RangeMode.FULL
-    private previousLineCount: number = 0
     updateTokens() {
         const tree = this.treeProvider.tree;
         const builder = new vscode.SemanticTokensBuilder(LEGEND);
@@ -156,7 +110,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             match.captures.forEach((capture, captureIndex) => {
                 const node = capture.node;
                 let range = this.treeProvider.supplyRange(node);
-                //console.log(`[Processing Token] Type: ${capture.name}, Range: ${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}`);
+
                 if (!this.init || (this.init && !filterRanges)) {
                     this.rangeMode = RangeMode.FULL;
                     this.processTokens(capture, builder, range);
@@ -169,11 +123,10 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 } else {
                     this.rangeMode = RangeMode.EDIT;
                     const newLineShift = editor.document.lineCount - this.previousLineCount;
-                    this.previousLineCount = editor.document.lineCount;  // Store for next update
+                    this.previousLineCount = editor.document.lineCount;
 
                     if (newLineShift !== 0) {
                         //console.log(`Detected ${newLineShift > 0 ? "added" : "removed"} lines: ${Math.abs(newLineShift)}`);
-
                         existingTokens.forEach(token => {
                             if (token.range.start.line >= modifiedRange.start.line) {
                                 token.range = new vscode.Range(
@@ -222,24 +175,14 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
     }
 
     provideDocumentSemanticTokens(): vscode.ProviderResult<vscode.SemanticTokens> {
-        /* if (!this.init) {
-            return this.updateTokens();
-        } */
         return this.updateTokens();
     }
 
     private processTokens(capture: QueryCapture, builder: vscode.SemanticTokensBuilder, range: vscode.Range, reProcessing: boolean = false) {
         const node = capture.node;
-        /* this.handleCallExpression(node, builder);
-        this.handleErrorNodes(node);
-        this.handleMissingNodes(node); */
 
-        /* if (capture.name == "keyword.return" && node.firstChild) {
-            //range = this.treeProvider.supplyRange(node.firstChild)
-            builder.push(range, "keyword")
-        } else if (capture.name == 'namespace' && node.firstChild) {
-            //range = this.treeProvider.supplyRange(node.firstChild)
-        } */
+
+
         if (((node.text == "{" && node.type == "{") || node.text == "${")) {
             let startPoint = this.treeProvider.supplyRange(node).start
 
@@ -258,8 +201,32 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             } else {
                 this.treeProvider.exitScope(node);
             }
+        } else if (node.type == "->") {
+            /* console.log("Node Type: " + node.type + ", Node Text: " + node.text)
+            log('Parent Node text: ' + node.parent?.text + ", Parent node type: " + node.parent?.type) */
+            let lambdaLiteral = node.parent
+            const paramNames: string[] = []
+            if (lambdaLiteral) {
+                let params = this.treeProvider.findChild(lambdaLiteral, "lambda_parameters")
+                if (params) {
+                    let lambdaScopeRange = this.treeProvider.supplyRange(params)
+                    //console.log("Params: " + params.text)
+                    const variables = this.treeProvider.extractVariables(params);
+                    this.treeProvider.enterScope(this.treeProvider.currentScope, lambdaScopeRange.start)
+                    variables.forEach((range, variableNode) => {
+                        if (paramNames.includes(variableNode.text)) {
+                            TreeProvider.addError(range, `Duplicate parameter name: '${variableNode.text}'`, variableNode.text);
+                        } else {
+                            this.treeProvider.processVariableDeclaration(variableNode, null, range, builder, true);
+                            paramNames.push(variableNode.text);
+                        }
+
+                    })
+                    this.treeProvider.exitScope(params, null, true)
+                }
+            }
         } else if (capture.node.type == "import") {
-            const parent = this.treeProvider.findParent(capture.node, "import_header")
+            const parent = this.treeProvider.findParent(capture.node, "import_header", range)
             if (parent) {
                 this.treeProvider.processImportDeclarations(parent);
                 const importNode = this.treeProvider.findChild(parent, "identifier")
@@ -306,16 +273,16 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 });
                 this.tempInterpolatedRanges.push(range);
             });
-        } else if (node.parent?.parent?.type == "lambda_parameters") {
+        }/*  else if (node.parent?.parent?.type == "lambda_parameters") {
             var grand = node.parent?.parent
             if (grand) {
                 const variables = this.treeProvider.extractVariables(grand);
                 variables.forEach((range, variableNode) => {
-                    this.treeProvider.processVariableDeclaration(variableNode, null, range, builder, true);
+                    this.treeProvider.processVariableDeclaration(variableNode, null, range, builder);
                 })
             }
-        } else if (capture.name == "repeat") {
-            var n = this.treeProvider.findParent(node, "for_statement")
+        } */ else if (capture.name == "repeat") {
+            var n = this.treeProvider.findParent(node, "for_statement", range)
             if (n) {
                 const variables = this.treeProvider.extractVariables(n);
                 variables.forEach((range, variableNode) => {
@@ -325,71 +292,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         }
         this.processTokenType(capture, range, builder);
     }
-    private computeTokenEdits(
-        oldTokens: vscode.SemanticTokens,
-        newTokens: vscode.SemanticTokens
-    ): vscode.SemanticTokensEdit[] {
-        const oldData = oldTokens.data;
-        const newData = newTokens.data;
-        const edits: vscode.SemanticTokensEdit[] = [];
 
-        let commonPrefix = 0;
-        while (commonPrefix < oldData.length && commonPrefix < newData.length && oldData[commonPrefix] === newData[commonPrefix]) {
-            commonPrefix++;
-        }
-
-        let commonSuffix = 0;
-        while (commonSuffix < oldData.length - commonPrefix &&
-            commonSuffix < newData.length - commonPrefix &&
-            oldData[oldData.length - 1 - commonSuffix] === newData[newData.length - 1 - commonSuffix]) {
-            commonSuffix++;
-        }
-
-        const deleteCount = oldData.length - commonPrefix - commonSuffix;
-        const newTokensSlice = newData.slice(commonPrefix, newData.length - commonSuffix);
-
-        edits.push(new vscode.SemanticTokensEdit(commonPrefix, deleteCount, newTokensSlice));
-
-        console.log(`[computeTokenEdits] Tokens changed in range: (${commonPrefix}) to (${oldData.length - commonSuffix})`);
-        return edits;
-    }
-    /* 
-        provideDocumentSemanticTokensEdits(
-            document: vscode.TextDocument,
-            previousResultId: string,
-            token: vscode.CancellationToken
-        ): vscode.ProviderResult<vscode.SemanticTokens | vscode.SemanticTokensEdits> {
-            console.log(`[provideDocumentSemanticTokensEdits] Called with previousResultId: ${previousResultId}`);
-	
-            if (!this.lastSemanticTokens) {
-                console.log(`[provideDocumentSemanticTokensEdits] No previous tokens found, falling back to full tokens.`);
-                return this.provideDocumentSemanticTokens();
-            }
-	
-            if (this.finalUpdateTimer) {
-                clearTimeout(this.finalUpdateTimer);
-                this.finalUpdateTimer = null;
-            }
-	
-            console.log(`[provideDocumentSemanticTokensEdits] Running token update before computing edits.`);
-            const newTokens = this.updateTokens();
-	
-            if (!newTokens) {
-                console.log(`[provideDocumentSemanticTokensEdits] UpdateTokens returned null, keeping last tokens.`);
-                return this.lastSemanticTokens;
-            }
-	
-            console.log(`[provideDocumentSemanticTokensEdits] Computing edits between old and new tokens.`);
-            const edits: vscode.SemanticTokensEdit[] = this.computeTokenEdits(this.lastSemanticTokens, newTokens);
-	
-            console.log(`[provideDocumentSemanticTokensEdits] Computed ${edits.length} token edits.`);
-            this.lastSemanticTokens = newTokens;
-            this.lastSemanticTokensId = `${Date.now()}`;
-	
-            return new vscode.SemanticTokensEdits(edits, this.lastSemanticTokensId);
-        } */
-
-    private rangesIntersect(range1: vscode.Range, range2: vscode.Range): boolean {
+    public rangesIntersect(range1: vscode.Range, range2: vscode.Range): boolean {
         const intersects =
             range1.start.isBeforeOrEqual(range2.end) &&
             range1.end.isAfterOrEqual(range2.start);
@@ -476,10 +380,11 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         let tokenType: string = '';
         let name = capture.name
         const node = capture.node
-		/* log('Node text: ' + node.text + ", node type: " + node.type)
-		log('Parent Node text: ' + node.parent?.text + ", Parent node type: " + node.parent?.type)
-		log('Parent Node text: ' + node.parent?.child(1)?.text + ", Parent node type: " + node.parent?.child(1)?.type)
-	 */	switch (name) {
+        //log("Capture: " + name + ', Node text: ' + node.text + ", node type: " + node.type)
+        /*  log('Node text: ' + node.text + ", node type: " + node.type)
+         log('Parent Node text: ' + node.parent?.text + ", Parent node type: " + node.parent?.type)
+         log('Tokenized Node text: ' + node.parent?.child(0)?.text + ", Tokenized Node type: " + node.parent?.child(0)?.type) */
+        switch (name) {
             case 'keyword.return':
             case 'namespace':
                 if (node.firstChild) {
@@ -489,6 +394,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 }
             case 'variableIdentifier':
             case 'variable':
+
                 if (node.parent?.type === "call_expression") {
                     const name = node.text;
                     const importEntry = [...this.treeProvider.imports.values()].find(
@@ -538,9 +444,10 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 break;
             case 'variable.builtin':
             case 'keyword':
+
                 if ((node.type === "var" || node.type === "val") &&
-                    this.treeProvider.findParent(node, "property_declaration")) {
-                    const pD = this.treeProvider.findParent(node, "property_declaration");
+                    this.treeProvider.findParent(node, "property_declaration", range)) {
+                    const pD = this.treeProvider.findParent(node, "property_declaration", range);
                     if (pD) {
                         const valNode = this.treeProvider.findChild(pD, "val");
                         if (!valNode || valNode.text === "val") {
@@ -584,9 +491,12 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 break;
 
             case 'parameter':
+                if (this.treeProvider.findParent(node, "lambda_parameters", range)) {
+                    tokenType = 'enumMember';
+                    break
+                }
                 tokenType = 'parameter';
                 break;
-
             case 'comment':
             case 'comment.multiline':
                 tokenType = 'comment';
@@ -766,7 +676,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
     public nodeTracking: number = 0
     private traverseTree(node: TSParser.SyntaxNode, builder: vscode.SemanticTokensBuilder) {
         let range = this.treeProvider.supplyRange(node);
-        log('Node text: ' + node.text + ", node type: " + node.type)
+        //log('Node text: ' + node.text + ", node type: " + node.type)
         if (((node.text == "{" && node.type == "{") || node.text == "${")) {
             let startPoint = range.start;
             let scopeId = `${startPoint.line}:${startPoint.character}:${this.treeProvider.currentScope?.depth + 1}`;
@@ -1103,11 +1013,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
     }
 
     public isMultipleDefinedVariable(node: SyntaxNode, scope: Scope = this.treeProvider.currentScope): boolean {
-        const variableName = node.text
-        const varKey = `${variableName}@${scope.id}@${this.treeProvider.getRangeKey(this.treeProvider.supplyRange(node))}`;
-        const varSymbol = this.treeProvider.scopedVariables.get(varKey)
-        const canBeShadowed = varSymbol ? varSymbol.isParamVar : false
-        return this.treeProvider.duplicateVars.get(variableName) == scope.id
+        return this.treeProvider.duplicateVars.get(node.text) == scope.id
     }
 
     public handleSimpleIdentifier(node: SyntaxNode, builder: vscode.SemanticTokensBuilder, byPassSI: boolean = false): void {
@@ -1164,5 +1070,45 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         }
         return document.lineAt(line).text.length;
     }
+    public setLastChangedRange(range: vscode.Range): void {
+        this.lastChangedRange = range
+    }
 
+    public isNodeAffected(node: SyntaxNode): boolean {
+        if (!this.lastChangedRange) return false;
+
+        const nodeRange = this.treeProvider.supplyRange(node);
+
+        return (
+            nodeRange.start.isBeforeOrEqual(this.lastChangedRange.end) &&
+            nodeRange.end.isAfterOrEqual(this.lastChangedRange.start)
+        );
+    }
+    private decodeSemanticTokens(tokens: vscode.SemanticTokens | null): { range: vscode.Range, tokenType: number }[] {
+        const result: { range: vscode.Range, tokenType: number }[] = [];
+        if (!tokens || !tokens.data) return result;
+
+        let currentLine = 0;
+        let currentCharacter = 0;
+
+        for (let i = 0; i < tokens.data.length; i += 5) {
+            const deltaLine = tokens.data[i];
+            const deltaCharacter = tokens.data[i + 1];
+            const length = tokens.data[i + 2];
+            const tokenType = tokens.data[i + 3];
+
+            currentLine += deltaLine;
+            if (deltaLine === 0) {
+                currentCharacter += deltaCharacter;
+            } else {
+                currentCharacter = deltaCharacter;
+            }
+
+            const start = new vscode.Position(currentLine, currentCharacter);
+            const end = new vscode.Position(currentLine, currentCharacter + length);
+            result.push({ range: new vscode.Range(start, end), tokenType });
+        }
+
+        return result;
+    }
 }

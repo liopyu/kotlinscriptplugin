@@ -3,6 +3,7 @@ import Parser, { Tree } from 'web-tree-sitter';
 import { TreeProvider } from './treeprovider';
 import { log, error, warn } from './extension';
 import { console } from './extension'
+import { documentData } from './constants';
 class Symbol {
     name: string;
     type: string | null;
@@ -25,13 +26,15 @@ export class Scope {
     startPoint: vscode.Position | null = null;
     endPoint: vscode.Position | null = null;
     paramScope: boolean
-    constructor(parentScope: Scope | null, startPoint: vscode.Position | null, paramScope: boolean = false) {
+    childScopeId: string | null
+    constructor(parentScope: Scope | null, startPoint: vscode.Position | null, paramScope: boolean = false, childScopeId: string | null = null) {
         this.depth = parentScope ? parentScope.depth + 1 : 0;
         this.parentScope = parentScope;
         this.symbols = new Map();
         this.variables = new Map();
         this.startPoint = startPoint;
         this.paramScope = paramScope
+        this.childScopeId = childScopeId
         this.id = parentScope ? `${startPoint?.line}:${startPoint?.character}:` + (parentScope.depth + 1) : `0:0:0`
     }
 
@@ -88,7 +91,31 @@ export class Scope {
 
             currentScope = currentScope.parentScope;
         }
+        const childId = this.childScopeId
+        if (childId) {
+            let editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const documentUri = editor.document.uri.toString();
+                const data = documentData.get(documentUri);
+                if (data) {
+                    let childScope: Scope | null | undefined = data.treeProvider.scopes.get(childId)
 
+                    while (childScope) {
+                        const found = Array.from(childScope.variables.keys()).some(key => {
+                            const [keyName, keyScopeId] = key.split("@");
+                            return keyName === name && (scopeId === undefined || parseInt(keyScopeId) === scopeId);
+                        });
+
+                        if (found) {
+                            return true;
+                        }
+
+                        childScope = childScope.parentScope;
+                    }
+                }
+            }
+
+        }
         return false;
     }
 

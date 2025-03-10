@@ -222,7 +222,7 @@ export class TreeProvider {
                 this.findParent(tree.rootNode.descendantForPosition({
                     row: expectedRange.start.line,
                     column: expectedRange.start.character,
-                }), "identifier")
+                }), "identifier", expectedRange)
             if (!identifierNode) {
                 importsToRemove.push(importKey);
                 continue;
@@ -529,14 +529,17 @@ export class TreeProvider {
         }
         return null;
     }
-    public findParent(node: TSParser.SyntaxNode | null, type: string): TSParser.SyntaxNode | null {
+    public findParent(node: TSParser.SyntaxNode | null, type: string, range: vscode.Range): TSParser.SyntaxNode | null {
         let currentNode = node;
         while (currentNode) {
             if (currentNode.type === type) {
-                return currentNode;
+                if (this.semanticTokensProvider)
+                    if (this.semanticTokensProvider.rangesIntersect(range, this.supplyRange(currentNode)))
+                        return currentNode;
             }
             currentNode = currentNode.parent;
         }
+
         return null;
     }
 
@@ -617,7 +620,7 @@ export class TreeProvider {
         if (!scope) return;
         let varKey = `${variableName}@${scope.id}@${this.getRangeKey(range)}`;
         if (reservedCharacters.includes(variableName)) {
-            if (standinReserved.includes(variableName) && identifierNode.parent?.type == "lambda_parameters") {
+            if (variableName == "_" && ["lambda_parameters", "multi_variable_declaration"].includes(identifierNode.parent?.type ?? "")) {
                 builder.push(range, "enumMember");
                 return;
             } else {
@@ -626,17 +629,17 @@ export class TreeProvider {
                 return;
             }
         }
-        if (!isParamVar) {
-            const existingVars = Array.from(scope.variables.values()).filter(v => v.name === variableName);
-            const isExactDuplicate = existingVars.some(v => v.varKey === varKey);
-            if (existingVars.length > 0 && !isExactDuplicate && identifierNode.parent?.type != "lambda_parameters") {
-                const errorMessage = `Variable "${variableName}" is already defined in the current scope and may cause ambiguity.`;
-                TreeProvider.addError(range, errorMessage, variableName, vscode.DiagnosticSeverity.Warning);
-                builder.push(range, "enumMember");
-                this.duplicateVars.set(variableName, scope.id)
-                return;
-            }
+        /*  if (!isParamVar) { */
+        const existingVars = Array.from(scope.variables.values()).filter(v => v.name === variableName);
+        const isExactDuplicate = existingVars.some(v => v.varKey === varKey);
+        if (existingVars.length > 0 && !isExactDuplicate && identifierNode.parent?.type != "lambda_parameters") {
+            const errorMessage = `Variable "${variableName}" is already defined in the current scope and may cause ambiguity.`;
+            TreeProvider.addError(range, errorMessage, variableName, vscode.DiagnosticSeverity.Warning);
+            builder.push(range, "enumMember");
+            this.duplicateVars.set(variableName, scope.id)
+            return;
         }
+        /*  } */
         const variableSymbol = new VariableSymbol(
             variableName,
             range,
@@ -647,11 +650,11 @@ export class TreeProvider {
             isParamVar
         );
         scope.define(variableSymbol);
-        if (!isParamVar) {
-            this.scopedVariables.set(varKey, variableSymbol);
-        } else {
-            this.paramVariables.set(varKey, variableSymbol);
-        }
+        /* if (!isParamVar) { */
+        this.scopedVariables.set(varKey, variableSymbol);
+        /*  } else {
+             this.paramVariables.set(varKey, variableSymbol);
+         } */
         builder.push(range, "enumMember");
     }
 
@@ -669,7 +672,7 @@ export class TreeProvider {
     getimports(): Map<string, ImportSymbol> {
         return this.imports;
     }
-    enterScope(parentScope: Scope, startRange: vscode.Position | null): void {
+    enterScope(parentScope: Scope, startRange: vscode.Position | null, paramScope: boolean = false): void {
         if (!parentScope) {
             throw new Error("Parent scope is required to enter a new scope.");
         }
@@ -689,10 +692,13 @@ export class TreeProvider {
         this.currentScope = newScope;
     }
 
-    exitScope(node: SyntaxNode, optionalScope: Scope | null = null): void {
+    exitScope(node: SyntaxNode, optionalScope: Scope | null = null, hasChildScope: boolean = false): void {
         if (!this.currentScope.parentScope) {
             TreeProvider.addError(this.supplyRange(node), "Cannot exit global scope", node.text)
             return;
+        }
+        if (hasChildScope) {
+            this.currentScope.parentScope.childScopeId = this.currentScope.id
         }
         if (!optionalScope) {
             this.currentScope = this.currentScope.parentScope
