@@ -147,7 +147,16 @@ export async function activate(context: vscode.ExtensionContext) {
 		if (lastChangedRange && semanticTokensProvider) {
 			semanticTokensProvider.setLastChangedRange(lastChangedRange);
 		}
-
+		/* if (semanticTokensProvider) {
+			console.log("OnDidChangeTextDocument")
+			semanticTokensProvider.isUpdating = true
+			semanticTokensProvider.provideDocumentSemanticTokens()
+			semanticTokensProvider.isUpdating = false
+		}
+		let editor = vscode.window.activeTextEditor;
+		if (editor) {
+			treeProvider.validateScopes(editor.document);
+		} */
 		/* if (!semanticTokensProvider) return;
 
 		// Always clear the previous timer before setting a new one

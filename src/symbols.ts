@@ -59,6 +59,41 @@ export class Scope {
             this.symbols.delete(symbol.name);
         }
     }
+    getAllVariablesFromCurrentScope(): string[] {
+        const allVariables: string[] = [];
+        let currentScope: Scope | null = this;
+
+        while (currentScope) {
+            const variableNames = Array.from(currentScope.variables.keys()).map(key => key.split("@")[0]);
+
+            variableNames.forEach(variableName => {
+                if (!allVariables.includes(variableName)) {
+                    allVariables.push(variableName);
+                }
+            });
+
+            currentScope = currentScope.parentScope;
+        }
+
+        return allVariables;
+    }
+
+    getAllVariablesFromScope(scope: Scope): string[] {
+        const allVariables: string[] = [];
+        let currentScope: Scope | null = scope;
+        while (currentScope) {
+            const variableNames = Array.from(currentScope.variables.keys()).map(key => key.split("@")[0]);
+            variableNames.forEach(variableName => {
+                if (!allVariables.includes(variableName)) {
+                    allVariables.push(variableName);
+                }
+            });
+            currentScope = currentScope.parentScope;
+        }
+        return allVariables;
+    }
+
+
     resolveVariable(name: string): VariableSymbol | undefined {
         let currentScope: Scope | null = this;
         while (currentScope) {

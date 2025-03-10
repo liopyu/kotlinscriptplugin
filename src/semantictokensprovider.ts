@@ -63,24 +63,42 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         this.globalScope = this.treeProvider.scopes.get("0:0:0")
         console.log("Semantic Tokens Provider Initialized")
     }
-    updateTokens() {
+
+
+    async updateTokens() {
         const tree = this.treeProvider.tree;
         const builder = new vscode.SemanticTokensBuilder(LEGEND);
         let editor = vscode.window.activeTextEditor;
         if (!tree || !editor) return builder.build();
 
-        let globalScopeRange = new vscode.Range(
-            new vscode.Position(0, 0),
-            editor.document.lineAt(editor.document.lineCount - 1).range.end
-        );
+
         let lastText = editor.document.getText()
         if (this.lastSemanticTokens && lastText === this.lastDocumentText) {
             console.log("document has not changed")
             return this.lastSemanticTokens;
         }
+        /*  if (!this.isUpdating && this.init) {
+             const existingTokens = this.decodeSemanticTokens(this.lastSemanticTokens);
+             console.log("Already Updating");
+             const matches = this.highlightQuery.matches(tree.rootNode);
+ 
+             matches.forEach((match, matchIndex) => {
+                 match.captures.forEach((capture, captureIndex) => {
+                     const node = capture.node;
+                     let range = this.treeProvider.supplyRange(node);
+                     this.updateExistingTokens(existingTokens, modifiedRange, editor, range, builder);
+                 });
+             });
+ 
+             this.lastSemanticTokens = builder.build();
+             return this.lastSemanticTokens;
+         } */
 
         this.lastDocumentText = lastText
-
+        let globalScopeRange = new vscode.Range(
+            new vscode.Position(0, 0),
+            editor.document.lineAt(editor.document.lineCount - 1).range.end
+        );
         const matches = this.highlightQuery.matches(tree.rootNode);
         this.treeProvider.updateTokens();
 
@@ -122,39 +140,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                     this.processTokens(capture, builder, range);
                 } else {
                     this.rangeMode = RangeMode.EDIT;
-                    const newLineShift = editor.document.lineCount - this.previousLineCount;
-                    this.previousLineCount = editor.document.lineCount;
-
-                    if (newLineShift !== 0) {
-                        //console.log(`Detected ${newLineShift > 0 ? "added" : "removed"} lines: ${Math.abs(newLineShift)}`);
-                        existingTokens.forEach(token => {
-                            if (token.range.start.line >= modifiedRange.start.line) {
-                                token.range = new vscode.Range(
-                                    new vscode.Position(
-                                        Math.max(0, token.range.start.line + newLineShift),
-                                        token.range.start.character
-                                    ),
-                                    new vscode.Position(
-                                        Math.max(0, token.range.end.line + newLineShift),
-                                        token.range.end.character
-                                    )
-                                );
-                            }
-                        });
-                    }
-                    const existingToken = existingTokens.find(t =>
-                        (t.range.start.line === range.start.line && t.range.start.character === range.start.character) ||
-                        (t.range.start.line - newLineShift === range.start.line && t.range.start.character === range.start.character) ||
-                        (t.range.start.line + newLineShift === range.start.line && t.range.start.character === range.start.character) ||
-                        t.range.isEqual(range)
-                    );
-                    if (existingToken) {
-                        //l.push(range)
-                        //console.log(`-> Existing Token Found: ${existingToken.range.start.line}:${existingToken.range.start.character}`);
-                        builder.push(existingToken.range, LEGEND.tokenTypes[existingToken.tokenType] || "variable");
-                    } else {
-                        //m.push(range)
-                        //console.log(`-> New Token Detected: ${range.start.line}:${range.start.character}`);
+                    const existingToken = this.updateExistingTokens(existingTokens, modifiedRange, editor, range, builder);
+                    if (!existingToken) {
                         this.processTokens(capture, builder, range, true);
                     }
                 }
@@ -173,7 +160,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         this.treeProvider.validateScopes(editor.document);
         return this.lastSemanticTokens;
     }
-
+    public isUpdating: boolean = false
     provideDocumentSemanticTokens(): vscode.ProviderResult<vscode.SemanticTokens> {
         return this.updateTokens();
     }
@@ -1110,5 +1097,68 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         }
 
         return result;
+    }
+    updateExistingTokens(
+        existingTokens: { range: vscode.Range; tokenType: number }[],
+        modifiedRange: vscode.Range,
+        editor: vscode.TextEditor,
+        range: vscode.Range,
+        builder: vscode.SemanticTokensBuilder
+    ): boolean {
+        const newLineShift = editor.document.lineCount - this.previousLineCount;
+        const modifiedText = editor.document.getText(modifiedRange);
+        const columnShift = modifiedText.split('\n').reduce((maxShift, line) => {
+            const leadingWhitespace = line.match(/^\s+/)?.[0]?.length || 0;
+            return Math.max(maxShift, leadingWhitespace);
+        }, 0);
+
+        this.previousLineCount = editor.document.lineCount;
+
+        if (newLineShift !== 0) {
+            existingTokens.forEach(token => {
+                if (token.range.start.line >= modifiedRange.start.line) {
+                    token.range = new vscode.Range(
+                        new vscode.Position(
+                            Math.max(0, token.range.start.line + newLineShift),
+                            token.range.start.character + columnShift
+                        ),
+                        new vscode.Position(
+                            Math.max(0, token.range.end.line + newLineShift),
+                            token.range.end.character + columnShift
+                        )
+                    );
+                }
+            });
+        }
+
+        /*   existingTokens.forEach(token => {
+              if (
+                  token.range.start.line === range.start.line &&
+                  token.range.start.character >= modifiedRange.start.character
+              ) {
+                  token.range = new vscode.Range(
+                      new vscode.Position(
+                          token.range.start.line,
+                          token.range.start.character + columnShift
+                      ),
+                      new vscode.Position(
+                          token.range.end.line,
+                          token.range.end.character + columnShift
+                      )
+                  );
+              }
+          });
+   */
+        const existingToken = existingTokens.find(t =>
+            (t.range.start.line === range.start.line && t.range.start.character === range.start.character) ||
+            (t.range.start.line - newLineShift === range.start.line && t.range.start.character === range.start.character) ||
+            (t.range.start.line + newLineShift === range.start.line && t.range.start.character === range.start.character) ||
+            t.range.isEqual(range)
+        );
+
+        if (existingToken) {
+            builder.push(existingToken.range, LEGEND.tokenTypes[existingToken.tokenType] || "variable");
+        }
+        return existingToken != undefined
     }
 }

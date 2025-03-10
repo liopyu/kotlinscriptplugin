@@ -134,9 +134,18 @@ export class TreeProvider {
 
             const currentStartText = document.getText(expectedStartRange);
             const currentEndText = document.getText(expectedEndRange);
+            const endLineText = document.lineAt(end.line).text;
+            const endBracketIndex = endLineText.lastIndexOf("}");
+            const validStart = currentStartText.trim() === "{" || currentStartText.trim() === "${";
+            const validEnd = endBracketIndex !== -1;
 
-            if (!(currentStartText.trim() === "{" || currentStartText.trim() === "${") || currentEndText.trim() !== "}") {
+            if (!validStart || !validEnd) {
+                //console.log("removing scope")
                 scopesToRemove.push(key);
+            } else if (validEnd && currentEndText.trim() !== "}") {
+                // console.log("updating end scope")
+                const newEndPosition = new vscode.Position(end.line, endBracketIndex);
+                scope.setEndPoint(newEndPosition);
             }
         }
 
