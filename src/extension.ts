@@ -117,68 +117,34 @@ export async function activate(context: vscode.ExtensionContext) {
 		const documentUri = event.document.uri.toString();
 		const data = documentData.get(documentUri);
 		if (!data) return;
-
 		const { treeProvider, treeProvider: { semanticTokensProvider } } = data;
-
 		let lastChangedRange: vscode.Range | null = null;
 		event.contentChanges.forEach(change => {
+			//console.log(treeProvider.rangeToString(change.range))
 			if (treeProvider.tree) {
-				//editor?.setDecorations(DelimiterDecorationType, [change.range])
-				/* let r = change.range
-				console.log("Changed Text: " + change.text + " at Range - Start: " + r.start.line + ":" + r.start.character + ", End: " + r.end.line + ":" + r.end.character)
-				 */utils.applyTreeEdit(treeProvider, change, event.document);
+				utils.applyTreeEdit(treeProvider, change, event.document);
 			}
-
+			const insertedTextLines = change.text.split("\n");
+			//console.log("Insertedtextlines" + insertedTextLines.length)
 			const startPosition = new vscode.Position(change.range.start.line, change.range.start.character);
 			const endPosition = new vscode.Position(
-				change.range.start.line + (change.text.split("\n").length - 1),
-				change.text.length > 0 ? change.range.start.character + change.text.length : change.range.end.character
+				change.range.start.line + insertedTextLines.length - 1,
+				insertedTextLines.length === 1
+					? change.range.start.character + insertedTextLines[0].length
+					: insertedTextLines[insertedTextLines.length - 1].length
 			);
-
 			const range = new vscode.Range(startPosition, endPosition);
-
+			//console.log("Range: " + treeProvider.rangeToString(range))
 			if (!lastChangedRange || range.start.isBefore(lastChangedRange.start)) {
 				lastChangedRange = range;
 			}
-			/* const singlePointRange = new vscode.Range(
-				change.range.start,   // Start at the beginning of the change
-				change.range.start.translate(0, 1) // One character forward
-			);
-
-			if (!lastChangedRange || singlePointRange.start.isBefore(lastChangedRange.start)) {
-				lastChangedRange = singlePointRange;
-			} */
 		});
-
 		if (event.contentChanges.length > 0 && treeProvider.tree) {
 			treeProvider.tree = treeProvider.parser.parse(event.document.getText(), treeProvider.tree);
 		}
-
 		if (lastChangedRange && semanticTokensProvider) {
 			semanticTokensProvider.setLastChangedRange(lastChangedRange);
 		}
-		/* if (semanticTokensProvider) {
-			console.log("OnDidChangeTextDocument")
-			semanticTokensProvider.isUpdating = true
-			semanticTokensProvider.provideDocumentSemanticTokens()
-			semanticTokensProvider.isUpdating = false
-		}
-		let editor = vscode.window.activeTextEditor;
-		if (editor) {
-			treeProvider.validateScopes(editor.document);
-		} */
-		/* if (!semanticTokensProvider) return;
-
-		// Always clear the previous timer before setting a new one
-		if (semanticTokensProvider.finalUpdateTimer) {
-			clearTimeout(semanticTokensProvider.finalUpdateTimer);
-		}
-
-		semanticTokensProvider.finalUpdateTimer = setTimeout(() => {
-			console.log("Final update triggered");
-			semanticTokensProvider.updateTokens();
-			semanticTokensProvider.finalUpdateTimer = null;
-		}, semanticTokensProvider.finalUpdateDelay); */
 	});
 
 
