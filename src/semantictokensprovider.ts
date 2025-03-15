@@ -57,6 +57,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
     private lastDocumentText: string = ""
     public rangeMode: RangeMode = RangeMode.FULL
     public previousLineCount: number = 0
+    public reEvaluationRange: vscode.Range | null = null
     constructor(treeProvider: TreeProvider, highlightQuery: TSParser.Query) {
         this.treeProvider = treeProvider;
         this.highlightQuery = highlightQuery;
@@ -90,44 +91,57 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         this.tempInterpolatedRanges = [];
         this.errorType = [];
 
-        //this.treeProvider.scopes.clear()
-
         const modifiedRange = this.lastChangedRange ?? globalScopeRange;
-        // console.log("Last changed range is null: " + (this.lastChangedRange == null))
-        // this.treeProvider.validateScopes(editor.document, modifiedRange)
+        let modifiedNode = tree.rootNode.descendantForPosition({
+            row: modifiedRange.start.line,
+            column: modifiedRange.start.character,
+        });
+        while (
+            modifiedNode.parent &&
+            modifiedNode.parent.type !== "source_file"
+        ) {
+            const nodeRange = this.treeProvider.supplyRange(modifiedNode.parent);
+            const minLine = modifiedRange.start.line - 20;
+            const maxLine = modifiedRange.start.line + 20;
+            if (
+                nodeRange.start.line <= modifiedRange.start.line &&
+                nodeRange.end.line >= modifiedRange.end.line &&
+                nodeRange.start.line >= minLine &&
+                nodeRange.end.line <= maxLine
+            ) {
+                modifiedNode = modifiedNode.parent;
+                break;
+            }
+            modifiedNode = modifiedNode.parent;
+        }
+
+        /* if (modifiedNode.parent && modifiedNode.parent.type != "source_file") {
+            modifiedNode = modifiedNode.parent
+        } */
+
+        let modifiedNodeRange = this.treeProvider.supplyRange(modifiedNode)
+        if (modifiedNode.type === "source_file") {
+            modifiedNodeRange = modifiedRange
+        }
+        console.log("Modifying node: " + modifiedNode.type + ", Range: " + this.treeProvider.rangeToString(modifiedNodeRange))
         let verifiedScopes: string[] = []
         this.traverseTree(tree.rootNode, builder, verifiedScopes);
 
         this.treeProvider.scopes = new Map(
             [...this.treeProvider.scopes].filter(([key]) => verifiedScopes.includes(key))
         );
-
-
-        //this.treeProvider.traverseBrackets(tree.rootNode)
         const parentScopeRange = this.findClosestParentScopeRange(modifiedRange) ?? globalScopeRange;
-
-        //editor.setDecorations(DelimiterDecorationType, [parentScopeRange])
         if (this.treeProvider.tree) {
             this.treeProvider.validateImports(this.treeProvider.tree);
             this.treeProvider.validateVariables(this.treeProvider.tree, modifiedRange);
         }
         let filterRanges = true;
-        const existingTokens = this.decodeSemanticTokens(this.lastSemanticTokens);
         console.log("updating tokens")
-
         const l: vscode.Range[] = []
-        // l.push(parentScopeRange)
         const m: vscode.Range[] = []
-        /*  this.treeProvider.scopes.forEach(key => {
-             if (key.startPoint) {
-                 let r = new vscode.Range(key.startPoint, key.startPoint.translate(0, 1))
-                 l.push(r)
-             }
-             if (key.endPoint && key.endPoint) {
-                 let r = new vscode.Range(key.endPoint.translate(0, -1), key.endPoint)
-                 m.push(r)
-             }
-         }) */
+        // l.push(parentScopeRange)
+        //l.push(modifiedNodeRange)
+        //if (this.reEvaluationRange) m.push(this.reEvaluationRange)
         matches.forEach((match, matchIndex) => {
             match.captures.forEach((capture, captureIndex) => {
                 const node = capture.node;
@@ -138,16 +152,38 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 if (!this.init || (this.init && !filterRanges)) {
                     this.rangeMode = RangeMode.FULL;
                     this.processTokens(capture, builder, range);
-                } else if (filterRanges && this.rangesIntersect(parentScopeRange, range)) {
+                } else if (filterRanges && (this.rangesIntersect(modifiedNodeRange, range) || (this.reEvaluationRange && this.rangesIntersect(this.reEvaluationRange, range)))) {
+                    // l.push(range)
                     this.handleCallExpression(node, builder);
                     this.rangeMode = RangeMode.SCOPE;
                     this.processTokens(capture, builder, range);
-                } else {
-                    this.rangeMode = RangeMode.EDIT
-                    this.updateExistingTokens(existingTokens, modifiedRange, editor, range, builder, capture);
                 }
             });
         });
+
+        const existingTokens = this.decodeSemanticTokens(this.lastSemanticTokens);
+        const currentTokens = this.decodeSemanticTokens(builder.build());
+        const newLineShift = editor.document.lineCount - this.previousLineCount;
+        console.log(newLineShift)
+        existingTokens.forEach(token => {
+            let range = token.range;
+            if (range.start.line >= modifiedRange.end.line) {
+                token.range = new vscode.Range(
+                    new vscode.Position(
+                        Math.max(0, range.start.line + newLineShift),
+                        range.start.character
+                    ),
+                    new vscode.Position(
+                        Math.max(0, range.end.line + newLineShift),
+                        range.end.character
+                    )
+                );
+            }
+            if (this.reEvaluationRange && !this.rangesIntersect(this.reEvaluationRange, range))
+                builder.push(token.range, LEGEND.tokenTypes[token.tokenType] || "variable");
+        });
+
+
         editor.setDecorations(DelimiterDecorationType, l)
         editor.setDecorations(OtherDecorationType, m)
 
@@ -156,7 +192,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         this.lastSemanticTokens = builder.build();
         this.init = true
         this.previousLineCount = editor.document.lineCount;
-        // console.log("Scope count: " + this.treeProvider.scopes.size)
+        console.log("Scope count: " + this.treeProvider.scopes.size)
+        this.reEvaluationRange = modifiedNodeRange
         return this.lastSemanticTokens;
     }
 
@@ -174,8 +211,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 // console.log("Setting current scope to: " + this.treeProvider.currentScope.id)
             }
         } else if ((node.text == "}" && node.type == "}")) {
-            if (this.rangeMode == RangeMode.REPROCESSING) {
-            } else {
+            if (this.rangeMode != RangeMode.REPROCESSING) {
                 this.treeProvider.exitScope(node);
             }
         }
@@ -720,14 +756,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
     }
     private traverseTree(node: TSParser.SyntaxNode, builder: vscode.SemanticTokensBuilder, verifiedScopes: string[]) {
         let range = this.treeProvider.supplyRange(node);
-        /* if (node.isError) {
-            for (const [key, scope] of this.treeProvider.scopes) {
-                if (scope?.startPoint)
-                    if (this.rangesIntersect(range, new vscode.Range(scope?.startPoint, scope.startPoint.translate(0, 1)))) {
-                        this.treeProvider.scopes.delete(key)
-                    }
-            }
-        } */
         // log('Node text: ' + node.text + ", node type: " + node.type)
         let originalStartCheck = (newNode: TSParser.SyntaxNode, s: string) => ((newNode.text == s && newNode.type == s))
         if (this.treeProvider.isBlockNode(node)) {
@@ -745,14 +773,11 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 if (modifiedRange && editor) {
                     r = this.treeProvider.adjustRangeForShiftsNoColumnNegative(range, modifiedRange, editor)
                 } else r = newNodeRange
-                /*  if (r) startPoint = r.start */
                 let endPoint = newEndNodeRange.end;
                 let scopeId = `${r?.start.line}:${r?.start.character}:${this.treeProvider.currentScope?.depth + 1}`;
                 let storedScope = this.treeProvider.scopes.get(scopeId);
                 //console.log("Checking if scope exists: " + scopeId + " for range: " + this.treeProvider.rangeToString(new vscode.Range(startPoint, endPoint)) + ", Is scope defined: " + (storedScope != undefined))
                 if (storedScope) {
-                    /* storedScope.endPoint = endPoint
-                    this.treeProvider.currentScope = storedScope */
                     //console.log("Entered Existing Scope: " + storedScope.id)
                     let copy = storedScope
                     let newScopeId = `${startPoint.line}:${startPoint.character}:${this.treeProvider.currentScope?.depth + 1}`;
@@ -773,11 +798,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 // console.log("Did not find { or } for block node: " + node.type + " at range: " + this.treeProvider.rangeToString(range) + ". {: " + (newNode == null) + ", }: " + (newEndNode == null))
             }
         } else if ((node.text == "}" && node.type == "}")) {
-            // log('Node text: ' + node.text + ", node type: " + node.type)
-            /* if (this.treeProvider.currentScope) {
-                let endPoint = range.end;
-                this.treeProvider.currentScope.setEndPoint(endPoint);
-            } */
             this.treeProvider.exitScope(node);
         }
 
@@ -1202,7 +1222,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         editor: vscode.TextEditor,
         range: vscode.Range,
         builder: vscode.SemanticTokensBuilder,
-        capture: QueryCapture
+        capture: QueryCapture,
+        l: vscode.Range[] = []
     ): void {
         const newLineShift = editor.document.lineCount - this.previousLineCount;
 
@@ -1232,13 +1253,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             t.range.isEqual(range)
         );
         if (existingToken) {
-            //l.push(range)
-            //console.log(`-> Existing Token Found: ${existingToken.range.start.line}:${existingToken.range.start.character}`);
             builder.push(existingToken.range, LEGEND.tokenTypes[existingToken.tokenType] || "variable");
         } else {
             this.rangeMode = RangeMode.REPROCESSING;
-            //m.push(range)
-            //console.log(`-> New Token Detected: ${range.start.line}:${range.start.character}`);
             this.processTokens(capture, builder, range, true);
         }
     }

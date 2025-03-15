@@ -123,167 +123,7 @@ export class TreeProvider {
         this.diagnosticsValues.clear();
         this.diagnostics = [];
     }
-    public validateScopes(document: vscode.TextDocument, modifiedRange: vscode.Range): void {
-        const scopesToRemove: string[] = [];
-        //console.log("validating scopes")
-        const editor = vscode.window.activeTextEditor;
-        let newMap: Map<string, Scope> = new Map()
-        let blockList = [...blocks/* , ...blockParents */]
-        if (!editor) return
-        for (const [key, scope] of this.scopes.entries()) {
-            if (scope.id == "0:0:0") {
-                // console.log("Skipping global scope")
-                continue
-            }
-            const start = scope.startPoint;
-            const end = scope.endPoint;
-            // console.log("Verifying scope: " + scope.id + ", Start: " + start?.line + ":" + start?.character + ", End: " + end?.line + ":" + end?.character)
-            if (!end) {
-                // console.log("Removing scope with no end: " + scope.id);
-                // scopesToRemove.push(key);
-                continue;
-            }
-            if (!start) {
-                // console.log("Removing scope with no start: " + scope.id);
-                // scopesToRemove.push(key);
-                continue;
-            }
-            const expectedRange = new vscode.Range(
-                new vscode.Position(start.line, start.character),
-                new vscode.Position(end.line, end.character)
-            );
-            const expectedStartRange = new vscode.Range(
-                new vscode.Position(start.line, start.character),
-                new vscode.Position(start.line, start.character + 1)
-            );
 
-            const expectedEndRange = new vscode.Range(
-                new vscode.Position(end.line, Math.max(0, end.character - 1)),
-                new vscode.Position(end.line, Math.max(0, end.character))
-            );
-            const adjustedExpectedRange = this.adjustRangeForShiftsNoColumn(expectedRange, modifiedRange, vscode.window.activeTextEditor!);
-
-            /*   console.log(`Checking scoped variable '${variableName}'`);
-              console.log(`→ Original Range: ${expectedRange.start.line}:${expectedRange.start.character} - ${expectedRange.end.line}:${expectedRange.end.character}`);
-              console.log(`→ Adjusted Range: ${adjustedExpectedRange.start.line}:${adjustedExpectedRange.start.character} - ${adjustedExpectedRange.end.line}:${adjustedExpectedRange.end.character}`);
-    */
-            const desc = this.tree?.rootNode.descendantForPosition({
-                row: adjustedExpectedRange.start.line,
-                column: adjustedExpectedRange.start.character,
-            });
-            let foundLambda: SyntaxNode | null = null
-            console.log(desc?.type)
-            if (desc) {
-                const descRange = this.supplyRange(desc)
-                let supposedText = editor.document.getText(descRange);
-                //console.log("Descendent Text: " + desc.text + ", Descendent Type: " + desc.type)
-                //console.log("Supposed Text: " + supposedText)
-                const potentialLambda = this.isBlockNode(desc) ? desc : this.findParentFromList(desc, blockList, adjustedExpectedRange)
-                if (potentialLambda) {
-                    const potentialLambdaRange = this.supplyRange(potentialLambda)
-                    /* console.log("Comparing Lambda Range starts - Potential Lambda: " + potentialLambdaRange.start.line + ":" + potentialLambdaRange.start.character +
-                        ", ParentScope Start: " + scope.parentScope?.startPoint?.line + ":" + scope.parentScope?.startPoint?.character)
-                    */
-                    let grabbedParentScope = (potentialLambdaRange.start.line + ":" + potentialLambdaRange.start.character) == (scope.parentScope?.startPoint?.line + ":" + scope.parentScope?.startPoint?.character)
-                    if (grabbedParentScope) {
-                        console.log("Verifying Parent Child Lambda")
-                        const verifiedLambda = this.findChildInRangeFromList(potentialLambda, blockList, null, adjustedExpectedRange)
-                        if (verifiedLambda) {
-                            foundLambda = verifiedLambda
-                            // console.log("Potential Lambda Text: " + verifiedLambda.text + ", Potential Lambda Type: " + verifiedLambda.type)
-                        } //else console.log("Did not find lambda for descendent")
-                    } else {
-                        const verifiedLambda = this.findChildInRangeFromList(potentialLambda, blockList, null, adjustedExpectedRange)
-                        console.log("Looking for child scope crossing range 1: " + this.rangeToString(adjustedExpectedRange))
-                        if (verifiedLambda)
-                            console.log("Comparing VerifiedLambda with AdjustedExpectedRange: " + this.rangeToString(this.supplyRange(verifiedLambda)) + ", " + this.rangeToString(adjustedExpectedRange))
-                        if (verifiedLambda && this.positionsEqual(this.supplyRange(verifiedLambda).start, adjustedExpectedRange.start)) {
-                            console.log("VerifiedLambda Range: " + this.rangeToString(this.supplyRange(verifiedLambda)))
-                            foundLambda = verifiedLambda
-                        } else {
-                            foundLambda = potentialLambda
-                        }
-                    }
-                } else {
-                    console.log("Potential lambda is null, checking child nodes")
-                    const potentialLambda = this.findChildInRangeFromList(desc, blockList, null, descRange)
-                    if (potentialLambda) {
-                        //console.log("Found child of lambda_literal: " + potentialLambda?.text)
-                        const potentialLambdaRange = this.supplyRange(potentialLambda)
-                        /* console.log("Comparing Lambda Range starts - Potential Lambda: " + potentialLambdaRange.start.line + ":" + potentialLambdaRange.start.character +
-                            ", ParentScope Start: " + scope.parentScope?.startPoint?.line + ":" + scope.parentScope?.startPoint?.character)
-                        */
-                        let grabbedParentScope = (potentialLambdaRange.start.line + ":" + potentialLambdaRange.start.character) == (scope.parentScope?.startPoint?.line + ":" + scope.parentScope?.startPoint?.character)
-                        if (grabbedParentScope) {
-                            console.log("Verifying Parent Child Lambda")
-                            const verifiedLambda = this.findChildInRangeFromList(potentialLambda, blockList, null, adjustedExpectedRange)
-                            if (verifiedLambda) {
-                                foundLambda = verifiedLambda
-                                //console.log("Potential Lambda Text: " + verifiedLambda.text + ", Potential Lambda Type: " + verifiedLambda.type)
-                            }// else console.log("Did not find lambda for descendent")
-                        } else {
-                            console.log("Looking for child scope crossing range 2: " + this.rangeToString(adjustedExpectedRange))
-                            //console.log("Potential Lambda: \n" + potentialLambda.text)
-                            const verifiedLambda = this.findChildInRangeFromList(potentialLambda, blockList, null, adjustedExpectedRange)
-                            if (verifiedLambda && this.positionsEqual(this.supplyRange(verifiedLambda).start, adjustedExpectedRange.start)) {
-                                foundLambda = verifiedLambda
-                            } else {
-                                foundLambda = potentialLambda
-                            }
-                            // console.log("Potential Lambda Text: " + potentialLambda.text + ", Potential Lambda Type: " + potentialLambda.type)
-                        }
-                    }
-                }
-            }
-            if (foundLambda) {
-                let verifiedLambda = this.findChildInRange(foundLambda, "{", null, adjustedExpectedRange) ?? foundLambda
-                let foundLambdaRange = this.supplyRange(foundLambda)
-                let verifiedLambdaRange = this.supplyRange(verifiedLambda)
-                console.log("FoundLambdaRange: " + this.rangeToString(verifiedLambdaRange) + ", ExpectedRange: " + this.rangeToString(adjustedExpectedRange))
-                if (this.rangesEqual(foundLambdaRange, adjustedExpectedRange) || this.positionsEqual(verifiedLambdaRange.start, adjustedExpectedRange.start)) {
-                    console.log("Found same range for scope")
-                    let copy = scope
-                    let startPoint = adjustedExpectedRange.start
-                    if (scope.parentScope) {
-                        let newScopeId = `${verifiedLambdaRange.start.line}:${verifiedLambdaRange.start.character}:${scope.parentScope?.depth + 1}`;
-                        copy.startPoint = startPoint
-                        copy.setEndPoint(foundLambdaRange.end)
-                        this.scopes.delete(key)
-                        newMap.set(newScopeId, copy)
-                    }
-                    continue
-                } else {
-                    console.log("removing scope: " + scope.id)
-                    scopesToRemove.push(key);
-                }
-            } else {
-                console.log("Did not find range for scope: " + scope.id)
-            }
-            /*    const currentStartText = document.getText(expectedStartRange);
-               const currentEndText = document.getText(expectedEndRange);
-               const endLineText = document.lineAt(end.line).text;
-               const endBracketIndex = endLineText.lastIndexOf("}");
-               const validStart = currentStartText.trim() === "{" || currentStartText.trim() === "${";
-               const validEnd = endBracketIndex !== -1;
-   
-               if (!validStart || !validEnd) {
-                   console.log("removing scope")
-                   scopesToRemove.push(key);
-               } else if (validEnd && currentEndText.trim() !== "}") {
-                   console.log("updating end scope")
-                   const newEndPosition = new vscode.Position(end.line, endBracketIndex);
-                   scope.setEndPoint(newEndPosition);
-               } */
-        }
-        // console.log("ran through scopes to verify")
-        for (const scopeId of scopesToRemove) {
-            // console.log("Removing scope: " + scopeId)
-            this.scopes.delete(scopeId);
-        }
-        for (const [key, scope] of newMap) {
-            this.scopes.set(key, scope)
-        }
-    }
 
     public validateImports(tree: TSParser.Tree): void {
         const importsToRemove: string[] = [];
@@ -1045,6 +885,7 @@ export class TreeProvider {
         if (existingScope) {
             if (endRange)
                 existingScope.setEndPoint(endRange)
+            this.currentScope.childScopeId = existingScope.id
             this.currentScope = existingScope;
             return;
         }
@@ -1053,6 +894,7 @@ export class TreeProvider {
         if (endRange)
             newScope.setEndPoint(endRange)
         this.scopes.set(id, newScope);
+        this.currentScope.childScopeId = newScope.id
         this.currentScope = newScope;
     }
 

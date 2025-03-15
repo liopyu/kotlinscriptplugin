@@ -237,9 +237,9 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                     const baseIndentation = lines[0].match(/^\s*/)?.[0] ?? "";
                     const indentedBlock = lines.map(line => baseIndentation + '\t' + line).join('\n');
 
-                    item.insertText = getStr("var varName: Unit = initialValue", this) /* new vscode.SnippetString(
+                    item.insertText = new vscode.SnippetString(
                         `${baseIndentation}try {\n${indentedBlock}\n${baseIndentation}} catch (e: Exception) {\n${baseIndentation}\tTODO("Not yet implemented")$0\n${baseIndentation}}`
-                    ); */
+                    );
                     const mergedRange = new vscode.Range(
                         iRange.start,
                         range.end
