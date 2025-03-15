@@ -2,7 +2,8 @@ export enum RangeMode {
     MODIFIED,
     SCOPE,
     FULL,
-    EDIT
+    EDIT,
+    REPROCESSING
 }
 export enum VariableType {
     SIMPLE,

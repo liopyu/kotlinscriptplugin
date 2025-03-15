@@ -62,8 +62,9 @@ export class TreeProvider {
     public diagnosticsMap: Map<string, vscode.Diagnostic[]> = new Map();
     public diagnosticCollection: vscode.DiagnosticCollection = vscode.languages.createDiagnosticCollection("kotlinscript");
     public document: vscode.TextDocument
-    public duplicateVars: Map<string, string> = new Map()
+    public duplicateVars: Map<string, VariableSymbol> = new Map()
     constructor(parser: TSParser, document: vscode.TextDocument) {
+
         this.parser = parser;
         this.document = document
         this.scopes.set(this.currentScope.id, this.currentScope)
@@ -101,27 +102,56 @@ export class TreeProvider {
         this.variableBlue = []
         this.purpleType = []
         this.importRanges = []
-        this.duplicateVars.clear()
+        const uri = vscode.window.activeTextEditor?.document.uri;
+        if (uri) {
+            this.diagnosticsMap.set(uri.toString(), []);
+            this.diagnosticCollection.set(uri, []);
+        }
         //this.varId = 0
         /* this.scopes.clear()
         this.currentScope = new Scope(null, null);
         this.scopes.set(this.currentScope.id, this.currentScope) */
         this.isUpdating = false;
-        /* if (editor) {
-            this.validateDiagnostics(editor?.document)
-        } */
     }
-    public validateScopes(document: vscode.TextDocument): void {
-        const scopesToRemove: string[] = [];
+    public validateDiagnostics(): void {
 
+
+        if (this.diagnostics.length > 0) {
+            this.addDiagnostics(this.diagnostics);
+        }
+
+        this.diagnosticsValues.clear();
+        this.diagnostics = [];
+    }
+    public validateScopes(document: vscode.TextDocument, modifiedRange: vscode.Range): void {
+        const scopesToRemove: string[] = [];
+        //console.log("validating scopes")
+        const editor = vscode.window.activeTextEditor;
+        let newMap: Map<string, Scope> = new Map()
+        let blockList = [...blocks/* , ...blockParents */]
+        if (!editor) return
         for (const [key, scope] of this.scopes.entries()) {
+            if (scope.id == "0:0:0") {
+                // console.log("Skipping global scope")
+                continue
+            }
             const start = scope.startPoint;
             const end = scope.endPoint;
-
-            if (!start || !end) {
+            // console.log("Verifying scope: " + scope.id + ", Start: " + start?.line + ":" + start?.character + ", End: " + end?.line + ":" + end?.character)
+            if (!end) {
+                // console.log("Removing scope with no end: " + scope.id);
+                // scopesToRemove.push(key);
                 continue;
             }
-
+            if (!start) {
+                // console.log("Removing scope with no start: " + scope.id);
+                // scopesToRemove.push(key);
+                continue;
+            }
+            const expectedRange = new vscode.Range(
+                new vscode.Position(start.line, start.character),
+                new vscode.Position(end.line, end.character)
+            );
             const expectedStartRange = new vscode.Range(
                 new vscode.Position(start.line, start.character),
                 new vscode.Position(start.line, start.character + 1)
@@ -131,96 +161,128 @@ export class TreeProvider {
                 new vscode.Position(end.line, Math.max(0, end.character - 1)),
                 new vscode.Position(end.line, Math.max(0, end.character))
             );
+            const adjustedExpectedRange = this.adjustRangeForShiftsNoColumn(expectedRange, modifiedRange, vscode.window.activeTextEditor!);
 
-            const currentStartText = document.getText(expectedStartRange);
-            const currentEndText = document.getText(expectedEndRange);
-            const endLineText = document.lineAt(end.line).text;
-            const endBracketIndex = endLineText.lastIndexOf("}");
-            const validStart = currentStartText.trim() === "{" || currentStartText.trim() === "${";
-            const validEnd = endBracketIndex !== -1;
-
-            if (!validStart || !validEnd) {
-                //console.log("removing scope")
-                scopesToRemove.push(key);
-            } else if (validEnd && currentEndText.trim() !== "}") {
-                // console.log("updating end scope")
-                const newEndPosition = new vscode.Position(end.line, endBracketIndex);
-                scope.setEndPoint(newEndPosition);
-            }
-        }
-
-        for (const scopeId of scopesToRemove) {
-            this.scopes.delete(scopeId);
-        }
-    }
-
-
-    public validateDiagnostics(document: vscode.TextDocument): void {
-        const diagnosticsToRemove: string[] = [];
-        for (const [errorKey, variableName] of this.diagnosticsValues.entries()) {
-            const startLine = parseInt(this.fromKey(errorKey, 0));
-            const startCharacter = parseInt(this.fromKey(errorKey, 1));
-            const endLine = parseInt(this.fromKey(errorKey, 2));
-            const endCharacter = parseInt(this.fromKey(errorKey, 3));
-            const expectedRange = new vscode.Range(
-                new vscode.Position(Math.max(0, startLine - 1), Math.max(0, startCharacter)),
-                new vscode.Position(Math.max(0, endLine - 1), Math.max(0, endCharacter))
-            );
-            if (startLine > document.lineCount || endLine > document.lineCount) {
-                diagnosticsToRemove.push(errorKey);
-                continue;
-            }
-            const currentText = document.getText(expectedRange);
-            const expectedErrorMessage = this.fromKey(errorKey, 4);
-            if (currentText !== variableName || !this.isErrorStillRelevant(expectedRange, expectedErrorMessage)) {
-                diagnosticsToRemove.push(errorKey);
-            }
-        }
-        diagnosticsToRemove.forEach(errorKey => {
-            const uri = vscode.window.activeTextEditor?.document.uri;
-            if (!uri) return;
-            const currentDiagnostics = this.diagnosticsMap.get(uri.toString()) || [];
-            const updatedDiagnostics = currentDiagnostics.filter(
-                diagnostic =>
-                    this.provideErrorKey(
-                        diagnostic.range.start,
-                        diagnostic.range.end,
-                        this.fromKey(errorKey, 4)
-                    ) !== errorKey
-            );
-            this.diagnosticsValues.delete(errorKey);
-            this.diagnostics = updatedDiagnostics;
-            this.diagnosticsMap.set(uri.toString(), updatedDiagnostics);
-            this.diagnosticCollection.set(uri, updatedDiagnostics);
-        });
-    }
-    public isErrorStillRelevant(range: vscode.Range, errorMessage: string): boolean {
-        const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return false;
-        }
-        const currentText = editor.document.getText(range);
-        if (currentText?.trim() === errorMessage.trim()) {
-            return true;
-        }
-        const documentUri = editor.document.uri.toString();
-        const data = documentData.get(documentUri);
-        if (data) {
-            const tree = data.treeProvider.tree;
-            if (tree) {
-                const node = tree.rootNode.descendantForPosition(
-                    { row: range.start.line, column: range.start.character },
-                    { row: range.end.line, column: range.end.character }
-                );
-
-                if (node) {
-                    if (node.type === "valid_node_type") {
-                        return false;
+            /*   console.log(`Checking scoped variable '${variableName}'`);
+              console.log(`→ Original Range: ${expectedRange.start.line}:${expectedRange.start.character} - ${expectedRange.end.line}:${expectedRange.end.character}`);
+              console.log(`→ Adjusted Range: ${adjustedExpectedRange.start.line}:${adjustedExpectedRange.start.character} - ${adjustedExpectedRange.end.line}:${adjustedExpectedRange.end.character}`);
+    */
+            const desc = this.tree?.rootNode.descendantForPosition({
+                row: adjustedExpectedRange.start.line,
+                column: adjustedExpectedRange.start.character,
+            });
+            let foundLambda: SyntaxNode | null = null
+            console.log(desc?.type)
+            if (desc) {
+                const descRange = this.supplyRange(desc)
+                let supposedText = editor.document.getText(descRange);
+                //console.log("Descendent Text: " + desc.text + ", Descendent Type: " + desc.type)
+                //console.log("Supposed Text: " + supposedText)
+                const potentialLambda = this.isBlockNode(desc) ? desc : this.findParentFromList(desc, blockList, adjustedExpectedRange)
+                if (potentialLambda) {
+                    const potentialLambdaRange = this.supplyRange(potentialLambda)
+                    /* console.log("Comparing Lambda Range starts - Potential Lambda: " + potentialLambdaRange.start.line + ":" + potentialLambdaRange.start.character +
+                        ", ParentScope Start: " + scope.parentScope?.startPoint?.line + ":" + scope.parentScope?.startPoint?.character)
+                    */
+                    let grabbedParentScope = (potentialLambdaRange.start.line + ":" + potentialLambdaRange.start.character) == (scope.parentScope?.startPoint?.line + ":" + scope.parentScope?.startPoint?.character)
+                    if (grabbedParentScope) {
+                        console.log("Verifying Parent Child Lambda")
+                        const verifiedLambda = this.findChildInRangeFromList(potentialLambda, blockList, null, adjustedExpectedRange)
+                        if (verifiedLambda) {
+                            foundLambda = verifiedLambda
+                            // console.log("Potential Lambda Text: " + verifiedLambda.text + ", Potential Lambda Type: " + verifiedLambda.type)
+                        } //else console.log("Did not find lambda for descendent")
+                    } else {
+                        const verifiedLambda = this.findChildInRangeFromList(potentialLambda, blockList, null, adjustedExpectedRange)
+                        console.log("Looking for child scope crossing range 1: " + this.rangeToString(adjustedExpectedRange))
+                        if (verifiedLambda)
+                            console.log("Comparing VerifiedLambda with AdjustedExpectedRange: " + this.rangeToString(this.supplyRange(verifiedLambda)) + ", " + this.rangeToString(adjustedExpectedRange))
+                        if (verifiedLambda && this.positionsEqual(this.supplyRange(verifiedLambda).start, adjustedExpectedRange.start)) {
+                            console.log("VerifiedLambda Range: " + this.rangeToString(this.supplyRange(verifiedLambda)))
+                            foundLambda = verifiedLambda
+                        } else {
+                            foundLambda = potentialLambda
+                        }
+                    }
+                } else {
+                    console.log("Potential lambda is null, checking child nodes")
+                    const potentialLambda = this.findChildInRangeFromList(desc, blockList, null, descRange)
+                    if (potentialLambda) {
+                        //console.log("Found child of lambda_literal: " + potentialLambda?.text)
+                        const potentialLambdaRange = this.supplyRange(potentialLambda)
+                        /* console.log("Comparing Lambda Range starts - Potential Lambda: " + potentialLambdaRange.start.line + ":" + potentialLambdaRange.start.character +
+                            ", ParentScope Start: " + scope.parentScope?.startPoint?.line + ":" + scope.parentScope?.startPoint?.character)
+                        */
+                        let grabbedParentScope = (potentialLambdaRange.start.line + ":" + potentialLambdaRange.start.character) == (scope.parentScope?.startPoint?.line + ":" + scope.parentScope?.startPoint?.character)
+                        if (grabbedParentScope) {
+                            console.log("Verifying Parent Child Lambda")
+                            const verifiedLambda = this.findChildInRangeFromList(potentialLambda, blockList, null, adjustedExpectedRange)
+                            if (verifiedLambda) {
+                                foundLambda = verifiedLambda
+                                //console.log("Potential Lambda Text: " + verifiedLambda.text + ", Potential Lambda Type: " + verifiedLambda.type)
+                            }// else console.log("Did not find lambda for descendent")
+                        } else {
+                            console.log("Looking for child scope crossing range 2: " + this.rangeToString(adjustedExpectedRange))
+                            //console.log("Potential Lambda: \n" + potentialLambda.text)
+                            const verifiedLambda = this.findChildInRangeFromList(potentialLambda, blockList, null, adjustedExpectedRange)
+                            if (verifiedLambda && this.positionsEqual(this.supplyRange(verifiedLambda).start, adjustedExpectedRange.start)) {
+                                foundLambda = verifiedLambda
+                            } else {
+                                foundLambda = potentialLambda
+                            }
+                            // console.log("Potential Lambda Text: " + potentialLambda.text + ", Potential Lambda Type: " + potentialLambda.type)
+                        }
                     }
                 }
             }
+            if (foundLambda) {
+                let verifiedLambda = this.findChildInRange(foundLambda, "{", null, adjustedExpectedRange) ?? foundLambda
+                let foundLambdaRange = this.supplyRange(foundLambda)
+                let verifiedLambdaRange = this.supplyRange(verifiedLambda)
+                console.log("FoundLambdaRange: " + this.rangeToString(verifiedLambdaRange) + ", ExpectedRange: " + this.rangeToString(adjustedExpectedRange))
+                if (this.rangesEqual(foundLambdaRange, adjustedExpectedRange) || this.positionsEqual(verifiedLambdaRange.start, adjustedExpectedRange.start)) {
+                    console.log("Found same range for scope")
+                    let copy = scope
+                    let startPoint = adjustedExpectedRange.start
+                    if (scope.parentScope) {
+                        let newScopeId = `${verifiedLambdaRange.start.line}:${verifiedLambdaRange.start.character}:${scope.parentScope?.depth + 1}`;
+                        copy.startPoint = startPoint
+                        copy.setEndPoint(foundLambdaRange.end)
+                        this.scopes.delete(key)
+                        newMap.set(newScopeId, copy)
+                    }
+                    continue
+                } else {
+                    console.log("removing scope: " + scope.id)
+                    scopesToRemove.push(key);
+                }
+            } else {
+                console.log("Did not find range for scope: " + scope.id)
+            }
+            /*    const currentStartText = document.getText(expectedStartRange);
+               const currentEndText = document.getText(expectedEndRange);
+               const endLineText = document.lineAt(end.line).text;
+               const endBracketIndex = endLineText.lastIndexOf("}");
+               const validStart = currentStartText.trim() === "{" || currentStartText.trim() === "${";
+               const validEnd = endBracketIndex !== -1;
+   
+               if (!validStart || !validEnd) {
+                   console.log("removing scope")
+                   scopesToRemove.push(key);
+               } else if (validEnd && currentEndText.trim() !== "}") {
+                   console.log("updating end scope")
+                   const newEndPosition = new vscode.Position(end.line, endBracketIndex);
+                   scope.setEndPoint(newEndPosition);
+               } */
         }
-        return false;
+        // console.log("ran through scopes to verify")
+        for (const scopeId of scopesToRemove) {
+            // console.log("Removing scope: " + scopeId)
+            this.scopes.delete(scopeId);
+        }
+        for (const [key, scope] of newMap) {
+            this.scopes.set(key, scope)
+        }
     }
 
     public validateImports(tree: TSParser.Tree): void {
@@ -252,80 +314,245 @@ export class TreeProvider {
             this.imports.delete(importKey);
         }
     }
-
-    public validateVariables(tree: TSParser.Tree): void {
+    public validateVariables(tree: TSParser.Tree, modifiedRange: vscode.Range): void {
         const variablesToRemove: string[] = [];
+        const modifiedVariables: Map<string, VariableSymbol> = new Map()
+        //console.log("Starting variable validation...");
 
-        for (const [variableKey, variableSymbol] of this.scopedVariables.entries()) {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            console.log("No active editor detected. Skipping variable validation.");
+            return;
+        }
+
+        /*  for (const [variableName, variableSymbol] of this.duplicateVars) {
+             const originalRange = this.supplyRange(variableSymbol.node);
+             const isStillDuplicate = variableSymbol.scope.countVariablesByName(variableName)
+             console.log(isStillDuplicate)
+             let supposedText = editor.document.getText(originalRange);
+             if (variableName !== supposedText) {
+                 console.log(`→ Removing stale duplicate variable: ${variableName}`);
+                 this.duplicateVars.delete(variableName);
+             }
+         } */
+
+        for (let [variableKey, variableSymbol] of this.scopedVariables.entries()) {
             const [variableName, scopeId, rangeKey] = variableKey.split("@");
             const expectedRange = variableSymbol.range;
 
-            // Find the node in the syntax tree based on the expected range
-            const node = tree.rootNode.descendantForPosition({
-                row: expectedRange.start.line,
-                column: expectedRange.start.character,
+            const adjustedExpectedRange = this.adjustRangeForShifts(expectedRange, modifiedRange, vscode.window.activeTextEditor!, true);
+
+            /*   console.log(`Checking scoped variable '${variableName}'`);
+              console.log(`→ Original Range: ${expectedRange.start.line}:${expectedRange.start.character} - ${expectedRange.end.line}:${expectedRange.end.character}`);
+              console.log(`→ Adjusted Range: ${adjustedExpectedRange.start.line}:${adjustedExpectedRange.start.character} - ${adjustedExpectedRange.end.line}:${adjustedExpectedRange.end.character}`);
+   */
+            const desc = tree.rootNode.descendantForPosition({
+                row: adjustedExpectedRange.start.line,
+                column: adjustedExpectedRange.start.character,
             });
-
+            const node = this.findParent(desc, "variable_declaration", adjustedExpectedRange)
             if (!node) {
+                // console.log(`→ Removing stale scoped variable (no matching node): ${variableKey}`);
+                variablesToRemove.push(variableKey);
+                continue;
+            }
+            let supposedText = editor.document.getText(this.supplyRange(desc));
+            /* console.log(`→ Found text: "${supposedText.trim()}"`);
+            console.log(`→ Expected text: "${variableName.trim()}"`); */
+
+            if (supposedText !== variableName) {
+                // console.log(`→ Removing stale scoped variable (text mismatch): ${variableKey}`);
                 variablesToRemove.push(variableKey);
                 continue;
             }
 
-            // Ensure the node text matches the variable name
-            if (node.text !== variableName) {
-                variablesToRemove.push(variableKey);
-                continue;
-            }
-
-            // Validate the range
-            const actualRange = this.supplyRange(node);
+            const actualRange = this.supplyRange(desc);
+            actualRange.start.translate(-1, -1)
+            actualRange.end.translate(-1, -1)
+            // console.log(actualRange)
             const actualRangeKey = this.getRangeKey(actualRange);
-            if (!this.rangesEqual(expectedRange, actualRange) || actualRangeKey !== rangeKey) {
+            if (!this.rangesEqual(adjustedExpectedRange, actualRange) || actualRangeKey !== rangeKey) {
                 variableSymbol.setRange(actualRange);
-                //console.log("Modifying variable range: " + variableKey)
-                variablesToRemove.push(variableKey); // Add old key for removal
                 const newVarKey = `${variableName}@${scopeId}@${actualRangeKey}`;
-                //console.log("New variable range: " + variableKey)
-                this.scopedVariables.set(newVarKey, variableSymbol); // Add updated key
-                continue;
-            }
-
-            let currentNode: TSParser.SyntaxNode | null = node;
-            let isValid = false;
-
-            while (currentNode) {
-                if (
-                    currentNode.type === "property_declaration" ||
-                    currentNode.type === "variable_declaration"
-                ) {
-                    isValid = true;
-                    break;
-                }
-                currentNode = currentNode.parent;
-            }
-
-            if (!isValid) {
                 variablesToRemove.push(variableKey);
+                /* this.scopedVariables.delete(variableKey);
+                this.scopedVariables.set(newVarKey, variableSymbol); */
+                variableSymbol.scope.undefine(variableSymbol);
+                variableSymbol.varKey = newVarKey;
+                variableSymbol.scope.define(variableSymbol);
+                //console.log(`→ Updating range for variable: ${variableKey} to ${newVarKey}`);
+                //variableKey = newVarKey;
+                modifiedVariables.set(newVarKey, variableSymbol)
                 continue;
-            }
-
-            if (!variableSymbol.scope.variables.has(variableKey)) {
-                variablesToRemove.push(variableKey);
             }
         }
 
         for (const variableKey of variablesToRemove) {
             const symbol = this.scopedVariables.get(variableKey);
-
             if (symbol) {
                 symbol.scope.undefine(symbol);
+                //console.log(`→ Final removal of variable: ${variableKey}`);
+                this.scopedVariables.delete(variableKey);
+
+                // Collect variables to add
+                for (const [key, variable] of symbol.scope.variables) {
+                    if (!this.scopedVariables.has(key)) {
+                        modifiedVariables.set(key, variable);
+                    }
+                }
             }
-            this.scopedVariables.delete(variableKey);
-            /* log(
-                `Removed stale variable '${this.fromKey(variableKey)}' from scope: ${symbol?.scope.id}`
-            ); */
         }
+
+
     }
+    private calculateColumnShift(modifiedText: string): number {
+        const lines = modifiedText.split('\n');
+
+        // Find the longest shift based on content displacement
+        let maxShift = 0;
+
+        for (const line of lines) {
+            // Use content's actual start point, not just leading whitespace
+            const contentStartIndex = line.search(/\S/); // First non-whitespace character
+            if (contentStartIndex !== -1) {
+                maxShift = Math.max(maxShift, contentStartIndex);
+            }
+        }
+
+        return maxShift;
+    }
+    public adjustRangeForShiftsWithColumn(
+        range: vscode.Range,
+        modifiedRange: vscode.Range,
+        editor: vscode.TextEditor
+    ): vscode.Range {
+        const semanticTokensProvider = this.semanticTokensProvider;
+        if (!semanticTokensProvider) return range;
+
+        const newLineShift = editor.document.lineCount - semanticTokensProvider.previousLineCount;
+        const modifiedText = editor.document.getText(modifiedRange);
+
+        const columnShift = this.calculateColumnShift(modifiedText);
+
+        const shouldShift = modifiedRange.start.line < range.start.line ||
+            (modifiedRange.start.line === range.start.line && modifiedRange.start.character <= range.start.character);
+
+        const shiftAmount = shouldShift ? newLineShift : 0;
+
+        return new vscode.Range(
+            new vscode.Position(
+                Math.max(0, range.start.line + shiftAmount),
+                shouldShift
+                    ? Math.max(0, range.start.character + columnShift)
+                    : range.start.character
+            ),
+            new vscode.Position(
+                Math.max(0, range.end.line + shiftAmount),
+                shouldShift
+                    ? Math.max(0, range.end.character + columnShift)
+                    : range.end.character
+            )
+        );
+    }
+
+    public adjustRangeForShiftsNoColumnNegative(
+        range: vscode.Range,
+        modifiedRange: vscode.Range,
+        editor: vscode.TextEditor
+    ): vscode.Range {
+        const semanticTokensProvider = this.semanticTokensProvider;
+        if (!semanticTokensProvider) return range;
+
+        const newLineShift = editor.document.lineCount - semanticTokensProvider.previousLineCount;
+
+        const shouldShift = modifiedRange.start.line < range.start.line ||
+            (modifiedRange.start.line === range.start.line && modifiedRange.start.character <= range.start.character);
+
+        const shiftAmount = shouldShift ? newLineShift : 0;
+
+        return new vscode.Range(
+            new vscode.Position(
+                Math.max(0, range.start.line - shiftAmount),
+                range.start.character
+            ),
+            new vscode.Position(
+                Math.max(0, range.end.line - shiftAmount),
+                range.end.character
+            )
+        );
+    }
+    public adjustRangeForShiftsNoColumn(
+        range: vscode.Range,
+        modifiedRange: vscode.Range,
+        editor: vscode.TextEditor
+    ): vscode.Range {
+        const semanticTokensProvider = this.semanticTokensProvider;
+        if (!semanticTokensProvider) return range;
+
+        const newLineShift = editor.document.lineCount - semanticTokensProvider.previousLineCount;
+
+        const shouldShift = modifiedRange.start.line < range.start.line ||
+            (modifiedRange.start.line === range.start.line && modifiedRange.start.character <= range.start.character);
+
+        const shiftAmount = shouldShift ? newLineShift : 0;
+
+        return new vscode.Range(
+            new vscode.Position(
+                Math.max(0, range.start.line + shiftAmount),
+                range.start.character
+            ),
+            new vscode.Position(
+                Math.max(0, range.end.line + shiftAmount),
+                range.end.character
+            )
+        );
+    }
+
+    public adjustRangeForShifts(
+        range: vscode.Range,
+        modifiedRange: vscode.Range,
+        editor: vscode.TextEditor,
+        useOffset: boolean // New parameter to control offset logic
+    ): vscode.Range {
+        const semanticTokensProvider = this.semanticTokensProvider;
+        if (!semanticTokensProvider) return range;
+
+        const newLineShift = editor.document.lineCount - semanticTokensProvider.previousLineCount;
+        const modifiedText = editor.document.getText(modifiedRange);
+
+        const columnShift = modifiedText.split('\n').reduce((maxShift, line) => {
+            const leadingWhitespace = line.match(/^\s+/)?.[0]?.length || 0;
+            return Math.max(maxShift, leadingWhitespace);
+        }, 0);
+
+        // semanticTokensProvider.previousLineCount = editor.document.lineCount;
+
+        // Detect changes occurring after or overlapping the range
+        const shouldShift =
+            modifiedRange.start.line < range.start.line || // New line added after
+            (modifiedRange.start.line === range.start.line && modifiedRange.start.character <= range.start.character);
+        //console.log("Shifting lines? - " + shouldShift)
+        /* console.log("Modified Range: " + modifiedRange.start.line)
+        console.log("Original Range: " + range.start.line) */
+        const lineOffset = useOffset ? 0 : -1;
+
+        return new vscode.Range(
+            new vscode.Position(
+                Math.max(0, range.start.line + (shouldShift ? newLineShift : 0) + lineOffset),
+                shouldShift
+                    ? Math.max(0, range.start.character + columnShift)
+                    : range.start.character
+            ),
+            new vscode.Position(
+                Math.max(0, range.end.line + (shouldShift ? newLineShift : 0) + lineOffset),
+                shouldShift
+                    ? Math.max(0, range.end.character + columnShift)
+                    : range.end.character
+            )
+        );
+    }
+
+
 
 
     public getAffectedRange(node: TSParser.SyntaxNode): TSParser.SyntaxNode {
@@ -521,6 +748,81 @@ export class TreeProvider {
         traverse(node);
         return result;
     }
+    public findLastChildInRange(
+        node: SyntaxNode,
+        type: string,
+        expectedParent: string | null = null,
+        range: vscode.Range
+    ): SyntaxNode | null {
+        let lastFound: SyntaxNode | null = null;
+
+        for (const child of node.children) {
+            if (child.type === type) {
+                if (!expectedParent || (child.parent && child.parent.type === expectedParent)) {
+                    if (this.semanticTokensProvider?.rangesIntersect(range, this.supplyRange(child))) {
+                        lastFound = child; // Update to the latest found child
+                    }
+                }
+            }
+
+            const found = this.findLastChildInRange(child, type, expectedParent, range);
+            if (found) {
+                lastFound = found; // Continue updating to the latest found child
+            }
+        }
+
+        return lastFound;
+    }
+
+    public findChildInRange(
+        node: SyntaxNode,
+        type: string,
+        expectedParent: string | null = null,
+        range: vscode.Range
+    ): SyntaxNode | null {
+        for (const child of node.children) {
+            if (child.type === type) {
+                if (!expectedParent || (child.parent && child.parent.type === expectedParent)) {
+                    if (this.semanticTokensProvider?.rangesIntersect(range, this.supplyRange(child))) {
+                        return child;
+                    }
+                }
+            }
+            const found = this.findChildInRange(child, type, expectedParent, range);
+            if (found) {
+                return found;
+            }
+        }
+        return null;
+    }
+    public findChildInRangeFromList(
+        node: SyntaxNode,
+        types: string[],
+        expectedParents: string[] | null = null,
+        range: vscode.Range,
+        startPositionCheck: boolean = false
+    ): SyntaxNode | null {
+        for (const child of node.children) {
+            if (types.includes(child.type)) {
+                if (
+                    !expectedParents ||
+                    (child.parent && expectedParents.includes(child.parent.type))
+                ) {
+                    const currentRange = this.supplyRange(child);
+                    const hasMatchingStart = startPositionCheck && this.positionsEqual(range.start, currentRange.start);
+                    const hasIntersection = this.semanticTokensProvider?.rangesIntersect(range, currentRange);
+                    if (hasMatchingStart || hasIntersection) {
+                        return child;
+                    }
+                }
+            }
+            const found = this.findChildInRangeFromList(child, types, expectedParents, range, startPositionCheck);
+            if (found) {
+                return found;
+            }
+        }
+        return null;
+    }
 
 
     public findChild(node: SyntaxNode, type: string, expectedParent: string | null = null): SyntaxNode | null {
@@ -538,6 +840,41 @@ export class TreeProvider {
         }
         return null;
     }
+    public findParentNoRange(node: TSParser.SyntaxNode | null, type: string): TSParser.SyntaxNode | null {
+        let currentNode = node;
+        while (currentNode) {
+            if (currentNode.type === type) {
+                if (this.semanticTokensProvider)
+                    return currentNode;
+            }
+            currentNode = currentNode.parent;
+        }
+
+        return null;
+    }
+    public findParentFromList(
+        node: TSParser.SyntaxNode | null,
+        types: string[],
+        range: vscode.Range,
+        startPositionCheck: boolean = false
+    ): TSParser.SyntaxNode | null {
+        let currentNode = node;
+        while (currentNode) {
+            if (types.includes(currentNode.type)) {
+                if (this.semanticTokensProvider) {
+                    let currentRange = this.supplyRange(currentNode)
+                    const hasMatchingStart = startPositionCheck && this.positionsEqual(range.start, currentRange.start);
+                    const hasIntersection = this.semanticTokensProvider.rangesIntersect(range, currentRange);
+                    if (hasMatchingStart || hasIntersection) {
+                        return currentNode;
+                    }
+                }
+            }
+            currentNode = currentNode.parent;
+        }
+        return null;
+    }
+
     public findParent(node: TSParser.SyntaxNode | null, type: string, range: vscode.Range): TSParser.SyntaxNode | null {
         let currentNode = node;
         while (currentNode) {
@@ -642,13 +979,27 @@ export class TreeProvider {
         const existingVars = Array.from(scope.variables.values()).filter(v => v.name === variableName);
         const isExactDuplicate = existingVars.some(v => v.varKey === varKey);
         if (existingVars.length > 0 && !isExactDuplicate && identifierNode.parent?.type != "lambda_parameters") {
-            const errorMessage = `Variable "${variableName}" is already defined in the current scope and may cause ambiguity.`;
-            TreeProvider.addError(range, errorMessage, variableName, vscode.DiagnosticSeverity.Warning);
+            const errorMessage = `Variable "${variableName}" is already defined in the current scope.`;
+            TreeProvider.addError(range, errorMessage, variableName, vscode.DiagnosticSeverity.Error);
             builder.push(range, "enumMember");
-            this.duplicateVars.set(variableName, scope.id)
+            /* const duplicateVariableSymbol = new VariableSymbol(
+                variableName,
+                range,
+                identifierNode,
+                variableNode ? variableNode.text : "",
+                scope,
+                varKey,
+                isParamVar
+            );
+            scope.define(duplicateVariableSymbol);
+            this.duplicateVars.set(variableName, duplicateVariableSymbol) */
             return;
         }
         /*  } */
+        /* this.duplicateVars.forEach((symbol, key) => console.log(key))
+        if (this.duplicateVars.has(variableName)) {
+            this.duplicateVars.delete(variableName)
+        } */
         const variableSymbol = new VariableSymbol(
             variableName,
             range,
@@ -681,7 +1032,7 @@ export class TreeProvider {
     getimports(): Map<string, ImportSymbol> {
         return this.imports;
     }
-    enterScope(parentScope: Scope, startRange: vscode.Position | null, paramScope: boolean = false): void {
+    enterScope(parentScope: Scope, startRange: vscode.Position | null, endRange: vscode.Position | null = null, paramScope: boolean = false): void {
         if (!parentScope) {
             throw new Error("Parent scope is required to enter a new scope.");
         }
@@ -692,11 +1043,15 @@ export class TreeProvider {
 
         let existingScope = this.scopes.get(id);
         if (existingScope) {
+            if (endRange)
+                existingScope.setEndPoint(endRange)
             this.currentScope = existingScope;
             return;
         }
 
         const newScope = new Scope(parentScope, startRange);
+        if (endRange)
+            newScope.setEndPoint(endRange)
         this.scopes.set(id, newScope);
         this.currentScope = newScope;
     }
@@ -714,6 +1069,59 @@ export class TreeProvider {
         } else if (optionalScope.parentScope) {
             this.currentScope = optionalScope.parentScope
         }
+    }
+    public rangeToString(range: vscode.Range | undefined): string {
+        if (!range) return "undefined"
+        return `${range.start.line}:${range.start.character} - ${range.end.line}:${range.end.character}`;
+    }
+    public positionsEqual(pos1: vscode.Position, pos2: vscode.Position): boolean {
+        return pos1.line === pos2.line && pos1.character === pos2.character;
+    }
+    public traverseBrackets(node: TSParser.SyntaxNode) {
+        let editor = vscode.window.activeTextEditor;
+        if (!editor) return;
+
+        let green: vscode.Range[] = [];
+        let blue: vscode.Range[] = [];
+        let purple: vscode.Range[] = [];
+
+        let stack: { range: vscode.Range, depth: number }[] = [];
+        let depth = 0;
+
+        const traverse = (node: TSParser.SyntaxNode) => {
+            let range = this.supplyRange(node);
+            let openingBracket = node.type === "{" && node.text === "{";
+            let closingBracket = node.type === "}" && node.text === "}";
+
+            if (openingBracket) {
+
+                stack.push({ range, depth });
+                depth++;
+            } else if (closingBracket) {
+                if (stack.length > 0) {
+                    let matchedBracket = stack.pop();
+                    depth--;
+                    let colorIndex = matchedBracket!.depth % 3; // Ensures color cycling
+
+                    if (colorIndex === 0) green.push(matchedBracket!.range);
+                    else if (colorIndex === 1) blue.push(matchedBracket!.range);
+                    else purple.push(matchedBracket!.range);
+
+                    // Match closing bracket with same color
+                    if (colorIndex === 0) green.push(range);
+                    else if (colorIndex === 1) blue.push(range);
+                    else purple.push(range);
+                }
+            }
+
+            node.children.forEach(child => traverse(child));
+        };
+
+        traverse(node);
+
+        editor.setDecorations(DelimiterDecorationType, green);
+        editor.setDecorations(DefaultBlueDecorationType, blue);
+        editor.setDecorations(OtherDecorationType, purple);
     }
 
 }

@@ -91,6 +91,12 @@
     },
     "onEnterRules": [
         {
+            "beforeText": "^\\s*/\\*\\*.*\\*/\\s*$",
+            "action": {
+                "indent": "none"
+            }
+        },
+        {
             "beforeText": "^\\s*/\\*\\*.*$",
             "afterText": "^.*\\*/\\s*$",
             "action": {

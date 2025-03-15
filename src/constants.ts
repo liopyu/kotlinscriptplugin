@@ -88,7 +88,8 @@ export const blockParents = [
     "try_expression",
     "catch_block",
     "finally_block",
-    "when_expression"
+    "when_expression",
+    "lambda_literal"
 ];
 export const blocks = [
     "annotated_lambda",
@@ -96,6 +97,7 @@ export const blocks = [
     "function_body",
     "control_structure_body",
     "class_body",
+    "enum_class_body"
 ]
 export const standinReserved = [
     "_", "__", "...", "___",

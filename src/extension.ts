@@ -39,7 +39,7 @@ import {
 } from './constants'
 
 import { TreeProvider } from './treeprovider'
-import { TypingSuggestionProvider } from './suggestionprovider';
+import { PeriodTypingSuggestionProvider, TypingSuggestionProvider } from './suggestionprovider';
 import { SemanticTokensProvider } from './semantictokensprovider';
 
 
@@ -121,10 +121,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		const { treeProvider, treeProvider: { semanticTokensProvider } } = data;
 
 		let lastChangedRange: vscode.Range | null = null;
-
 		event.contentChanges.forEach(change => {
 			if (treeProvider.tree) {
-				utils.applyTreeEdit(treeProvider, change, event.document);
+				//editor?.setDecorations(DelimiterDecorationType, [change.range])
+				/* let r = change.range
+				console.log("Changed Text: " + change.text + " at Range - Start: " + r.start.line + ":" + r.start.character + ", End: " + r.end.line + ":" + r.end.character)
+				 */utils.applyTreeEdit(treeProvider, change, event.document);
 			}
 
 			const startPosition = new vscode.Position(change.range.start.line, change.range.start.character);
@@ -138,6 +140,14 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (!lastChangedRange || range.start.isBefore(lastChangedRange.start)) {
 				lastChangedRange = range;
 			}
+			/* const singlePointRange = new vscode.Range(
+				change.range.start,   // Start at the beginning of the change
+				change.range.start.translate(0, 1) // One character forward
+			);
+
+			if (!lastChangedRange || singlePointRange.start.isBefore(lastChangedRange.start)) {
+				lastChangedRange = singlePointRange;
+			} */
 		});
 
 		if (event.contentChanges.length > 0 && treeProvider.tree) {
@@ -179,7 +189,13 @@ export async function activate(context: vscode.ExtensionContext) {
 			''
 		)
 	);
-
+	context.subscriptions.push(
+		vscode.languages.registerCompletionItemProvider(
+			selector,
+			new PeriodTypingSuggestionProvider(typingSuggestions),
+			'.'
+		)
+	);
 	vscode.window.onDidChangeTextEditorVisibleRanges(event => {
 		utils.updateTokensForDocument(event.textEditor.document);
 	});
