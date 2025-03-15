@@ -272,11 +272,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": false,
+      "multiple": true,
+      "required": true,
       "types": [
         {
-          "type": "statements",
+          "type": "lambda_literal",
           "named": true
         }
       ]
@@ -896,6 +896,10 @@
           "named": true
         },
         {
+          "type": "lambda_literal",
+          "named": true
+        },
+        {
           "type": "not_nullable_type",
           "named": true
         },
@@ -909,10 +913,6 @@
         },
         {
           "type": "simple_identifier",
-          "named": true
-        },
-        {
-          "type": "statements",
           "named": true
         },
         {
@@ -2214,10 +2214,6 @@
           "named": true
         },
         {
-          "type": "statements",
-          "named": true
-        },
-        {
           "type": "string_literal",
           "named": true
         },
@@ -3367,11 +3363,11 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": false,
+      "multiple": true,
+      "required": true,
       "types": [
         {
-          "type": "statements",
+          "type": "lambda_literal",
           "named": true
         }
       ]
@@ -3569,7 +3565,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
         {
@@ -3706,10 +3702,6 @@
         },
         {
           "type": "spread_expression",
-          "named": true
-        },
-        {
-          "type": "statements",
           "named": true
         },
         {
@@ -5272,11 +5264,223 @@
       "required": false,
       "types": [
         {
+          "type": "additive_expression",
+          "named": true
+        },
+        {
+          "type": "annotation",
+          "named": true
+        },
+        {
+          "type": "anonymous_function",
+          "named": true
+        },
+        {
+          "type": "as_expression",
+          "named": true
+        },
+        {
+          "type": "assignment",
+          "named": true
+        },
+        {
+          "type": "bin_literal",
+          "named": true
+        },
+        {
+          "type": "boolean_literal",
+          "named": true
+        },
+        {
+          "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "callable_reference",
+          "named": true
+        },
+        {
+          "type": "character_literal",
+          "named": true
+        },
+        {
+          "type": "check_expression",
+          "named": true
+        },
+        {
+          "type": "class_declaration",
+          "named": true
+        },
+        {
+          "type": "collection_literal",
+          "named": true
+        },
+        {
+          "type": "comparison_expression",
+          "named": true
+        },
+        {
+          "type": "conjunction_expression",
+          "named": true
+        },
+        {
+          "type": "disjunction_expression",
+          "named": true
+        },
+        {
+          "type": "do_while_statement",
+          "named": true
+        },
+        {
+          "type": "elvis_expression",
+          "named": true
+        },
+        {
+          "type": "equality_expression",
+          "named": true
+        },
+        {
+          "type": "for_statement",
+          "named": true
+        },
+        {
+          "type": "function_declaration",
+          "named": true
+        },
+        {
+          "type": "getter",
+          "named": true
+        },
+        {
+          "type": "hex_literal",
+          "named": true
+        },
+        {
+          "type": "if_expression",
+          "named": true
+        },
+        {
+          "type": "indexing_expression",
+          "named": true
+        },
+        {
+          "type": "infix_expression",
+          "named": true
+        },
+        {
+          "type": "integer_literal",
+          "named": true
+        },
+        {
+          "type": "jump_expression",
+          "named": true
+        },
+        {
+          "type": "label",
+          "named": true
+        },
+        {
+          "type": "lambda_literal",
+          "named": true
+        },
+        {
           "type": "lambda_parameters",
           "named": true
         },
         {
+          "type": "long_literal",
+          "named": true
+        },
+        {
+          "type": "multiplicative_expression",
+          "named": true
+        },
+        {
+          "type": "navigation_expression",
+          "named": true
+        },
+        {
+          "type": "null_literal",
+          "named": true
+        },
+        {
+          "type": "object_declaration",
+          "named": true
+        },
+        {
+          "type": "object_literal",
+          "named": true
+        },
+        {
+          "type": "parenthesized_expression",
+          "named": true
+        },
+        {
+          "type": "postfix_expression",
+          "named": true
+        },
+        {
+          "type": "prefix_expression",
+          "named": true
+        },
+        {
+          "type": "property_declaration",
+          "named": true
+        },
+        {
+          "type": "range_expression",
+          "named": true
+        },
+        {
+          "type": "real_literal",
+          "named": true
+        },
+        {
+          "type": "setter",
+          "named": true
+        },
+        {
+          "type": "simple_identifier",
+          "named": true
+        },
+        {
+          "type": "spread_expression",
+          "named": true
+        },
+        {
           "type": "statements",
+          "named": true
+        },
+        {
+          "type": "string_literal",
+          "named": true
+        },
+        {
+          "type": "super_expression",
+          "named": true
+        },
+        {
+          "type": "this_expression",
+          "named": true
+        },
+        {
+          "type": "try_expression",
+          "named": true
+        },
+        {
+          "type": "type_alias",
+          "named": true
+        },
+        {
+          "type": "unsigned_literal",
+          "named": true
+        },
+        {
+          "type": "when_expression",
+          "named": true
+        },
+        {
+          "type": "while_statement",
           "named": true
         }
       ]
@@ -7351,11 +7555,11 @@
           "named": true
         },
         {
-          "type": "modifiers",
+          "type": "lambda_literal",
           "named": true
         },
         {
-          "type": "statements",
+          "type": "modifiers",
           "named": true
         }
       ]
@@ -8146,7 +8350,7 @@
           "named": true
         },
         {
-          "type": "statements",
+          "type": "lambda_literal",
           "named": true
         }
       ]

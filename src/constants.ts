@@ -97,7 +97,7 @@ export const blocks = [
     "function_body",
     "control_structure_body",
     "class_body",
-    "enum_class_body"
+    "enum_class_body",
 ]
 export const standinReserved = [
     "_", "__", "...", "___",

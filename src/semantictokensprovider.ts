@@ -155,20 +155,23 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             match.captures.forEach((capture, captureIndex) => {
                 const node = capture.node;
                 let range = this.treeProvider.supplyRange(node);
+                console.log("Node Type: " + node.type + ", text: " + node.text)
                 this.handleErrorNodes(node);
                 this.handleMissingNodes(node);
-                this.setCurrentScope(node, range)
                 if (!this.init || (this.init && !filterRanges)) {
                     this.rangeMode = RangeMode.FULL;
+                    this.setCurrentScope(node, range)
                     this.processTokens(capture, builder, range);
                 } else if (filterRanges && ((this.rangesIntersect(modifiedNodeRange, range) || this.rangesIntersect(modifiedRange, range)))) {
                     // l.push(range)
                     this.handleCallExpression(node, builder);
                     this.rangeMode = RangeMode.EDIT;
+                    this.setCurrentScope(node, range)
                     this.processTokens(capture, builder, range);
                 } else if ((this.reEvaluationRange && this.rangesIntersect(this.reEvaluationRange, range))) {
                     this.rangeMode = RangeMode.REPROCESSING
                     this.handleCallExpression(node, builder);
+                    this.setCurrentScope(node, range)
                     this.processTokens(capture, builder, range);
                 }
             });
@@ -213,15 +216,18 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
     }
 
     public setCurrentScope(node: TSParser.SyntaxNode, range: vscode.Range) {
+        console.log(this.rangeMode)
         if (node.type == "{" && node.text == "{") {
             let startPoint = range.start
             let storedScopeId = this.treeProvider.currentScope ? `${startPoint?.line}:${startPoint?.character}:` + (this.treeProvider.currentScope.depth + 1) : `0:0:0`
             let storedScope = this.treeProvider.scopes.get(storedScopeId)
             if (storedScope) {
-                // console.log("found stored scope: " + storedScopeId)
+                console.log("found stored scope: " + storedScopeId)
                 this.treeProvider.currentScope = storedScope
             } else {
-                //console.log("Did not find existing scope: " + storedScopeId)
+                console.log([...this.treeProvider.scopes.values()].map(scope => scope.id).join(', '));
+                console.log("Did not find existing scope: " + storedScopeId + " for range: " + this.treeProvider.rangeToString(range) + ", defaulting to scope: " + this.currentScopeFromRange(range)?.id)
+                //if (this.init)
                 this.treeProvider.currentScope = this.currentScopeFromRange(range) ?? this.treeProvider.currentScope
                 // console.log("Setting current scope to: " + this.treeProvider.currentScope.id)
             }
@@ -364,26 +370,26 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         const range = new vscode.Range(scope.startPoint, scope.endPoint);
         return range;
     }
-    private findClosestParentScopeRange(modifiedRange: vscode.Range): vscode.Range | undefined {
-        let currentScope: vscode.Range | undefined;
-        this.treeProvider.scopes.forEach((scope) => {
-            if (scope?.startPoint && scope?.endPoint) {
-                let scopeRange = new vscode.Range(scope.startPoint, scope.endPoint);
-                if (
-                    scopeRange.start.isBeforeOrEqual(modifiedRange.start) &&
-                    scopeRange.end.isAfterOrEqual(modifiedRange.end)
-                ) {
-                    if (!currentScope || scopeRange.start.isAfter(currentScope.start)) {
-                        currentScope = scopeRange;
-                    }
-                }
-            }
-        });
-        return currentScope;
-    }
+    /*  private findClosestParentScopeRange(modifiedRange: vscode.Range): vscode.Range | undefined {
+         let currentScope: vscode.Range | undefined;
+         this.treeProvider.scopes.forEach((scope) => {
+             if (scope?.startPoint && scope?.endPoint) {
+                 let scopeRange = new vscode.Range(scope.startPoint, scope.endPoint);
+                 if (
+                     scopeRange.start.isBeforeOrEqual(modifiedRange.start) &&
+                     scopeRange.end.isAfterOrEqual(modifiedRange.end)
+                 ) {
+                     if (!currentScope || scopeRange.start.isAfter(currentScope.start)) {
+                         currentScope = scopeRange;
+                     }
+                 }
+             }
+         });
+         return currentScope;
+     } */
 
 
-    /* public findClosestParentScopeRange(range: vscode.Range): vscode.Range | null {
+    public findClosestParentScopeRange(range: vscode.Range): vscode.Range | null {
         let innermostScope: Scope | null = this.findInnermostScope(range);
         if (!innermostScope) {
             return null;
@@ -410,41 +416,41 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         }
 
         return null;
-    } */
-    public currentScopeFromRange(modifiedRange: vscode.Range): Scope | undefined {
-        let currentScope: Scope | undefined;
-
-        this.treeProvider.scopes.forEach((scope) => {
-            if (scope?.startPoint && scope?.endPoint) {
-                let scopeRange = new vscode.Range(scope.startPoint, scope.endPoint);
-
-                if (
-                    scopeRange.start.isBeforeOrEqual(modifiedRange.start) &&
-                    scopeRange.end.isAfterOrEqual(modifiedRange.end)
-                ) {
-                    if (!currentScope || (currentScope.startPoint && scopeRange.start.isAfter(currentScope.startPoint))) {
-                        currentScope = scope;
-                    }
-                }
-            }
-        });
-
-        return currentScope;
     }
-
-    /*  public currentScopeFromRange(range: vscode.Range): Scope | null | undefined {
-         let scope: Scope | null | undefined = this.findInnermostScope(range) || this.globalScope;
+    /*  public currentScopeFromRange(modifiedRange: vscode.Range): Scope | undefined {
+         let currentScope: Scope | undefined;
  
-         while (scope && scope.parentScope) {
-             const scopeRange = this.getScopeRange(scope);
-             if (scopeRange?.start.isBefore(range.start) && scopeRange.end.isAfter(range.end)) {
-                 return scope;
+         this.treeProvider.scopes.forEach((scope) => {
+             if (scope?.startPoint && scope?.endPoint) {
+                 let scopeRange = new vscode.Range(scope.startPoint, scope.endPoint);
+ 
+                 if (
+                     scopeRange.start.isBeforeOrEqual(modifiedRange.start) &&
+                     scopeRange.end.isAfterOrEqual(modifiedRange.end)
+                 ) {
+                     if (!currentScope || (currentScope.startPoint && scopeRange.start.isAfter(currentScope.startPoint))) {
+                         currentScope = scope;
+                     }
+                 }
              }
-             scope = scope.parentScope;
-         }
+         });
  
-         return this.globalScope;
+         return currentScope;
      } */
+
+    public currentScopeFromRange(range: vscode.Range): Scope | null | undefined {
+        let scope: Scope | null | undefined = this.findInnermostScope(range) || this.globalScope;
+
+        while (scope && scope.parentScope) {
+            const scopeRange = this.getScopeRange(scope);
+            if (scopeRange?.start.isBefore(range.start) && scopeRange.end.isAfter(range.end)) {
+                return scope;
+            }
+            scope = scope.parentScope;
+        }
+
+        return this.globalScope;
+    }
 
     public findInnermostScope(range: vscode.Range): Scope | null {
         let innermostScope: Scope | null = null;

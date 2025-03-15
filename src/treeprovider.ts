@@ -898,19 +898,19 @@ export class TreeProvider {
         this.currentScope = newScope;
     }
 
-    exitScope(node: SyntaxNode, optionalScope: Scope | null = null, hasChildScope: boolean = false): void {
-        if (!this.currentScope.parentScope) {
+    exitScope(node: SyntaxNode): void {
+        let parentScope = this.currentScope.parentScope
+        if (!parentScope) {
             TreeProvider.addError(this.supplyRange(node), "Cannot exit global scope", node.text)
             return;
         }
-        if (hasChildScope) {
-            this.currentScope.parentScope.childScopeId = this.currentScope.id
+        if (this.currentScope.childScopeId != null) {
+            let childScope = this.scopes.get(this.currentScope.childScopeId)
+            if (childScope) {
+                this.currentScope = childScope
+            }
         }
-        if (!optionalScope) {
-            this.currentScope = this.currentScope.parentScope
-        } else if (optionalScope.parentScope) {
-            this.currentScope = optionalScope.parentScope
-        }
+        this.currentScope = parentScope
     }
     public rangeToString(range: vscode.Range | undefined): string {
         if (!range) return "undefined"
