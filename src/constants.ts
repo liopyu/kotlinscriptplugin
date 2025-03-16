@@ -83,13 +83,13 @@ export const variableDeclarationTypes = [
 ]
 export const blockParents = [
     "anonymous_initializer",
-    "secondary_export constructor",
+    "secondary_constructor",
     "control_structure_body",
     "try_expression",
     "catch_block",
     "finally_block",
     "when_expression",
-    "lambda_literal"
+    "lambda_literal",
 ];
 export const blocks = [
     "annotated_lambda",
@@ -98,6 +98,9 @@ export const blocks = [
     "control_structure_body",
     "class_body",
     "enum_class_body",
+    "block",
+    /* "catch_block",
+    "finally_block", */
 ]
 export const standinReserved = [
     "_", "__", "...", "___",

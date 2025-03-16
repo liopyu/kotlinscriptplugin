@@ -120,12 +120,10 @@ export async function activate(context: vscode.ExtensionContext) {
 		const { treeProvider, treeProvider: { semanticTokensProvider } } = data;
 		let lastChangedRange: vscode.Range | null = null;
 		event.contentChanges.forEach(change => {
-			//console.log(treeProvider.rangeToString(change.range))
 			if (treeProvider.tree) {
 				utils.applyTreeEdit(treeProvider, change, event.document);
 			}
 			const insertedTextLines = change.text.split("\n");
-			//console.log("Insertedtextlines" + insertedTextLines.length)
 			const startPosition = new vscode.Position(change.range.start.line, change.range.start.character);
 			const endPosition = new vscode.Position(
 				change.range.start.line + insertedTextLines.length - 1,
@@ -134,7 +132,6 @@ export async function activate(context: vscode.ExtensionContext) {
 					: insertedTextLines[insertedTextLines.length - 1].length
 			);
 			const range = new vscode.Range(startPosition, endPosition);
-			//console.log("Range: " + treeProvider.rangeToString(range))
 			if (!lastChangedRange || range.start.isBefore(lastChangedRange.start)) {
 				lastChangedRange = range;
 			}

@@ -1091,8 +1091,13 @@
           "value": "init"
         },
         {
-          "type": "SYMBOL",
-          "name": "_block"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_block"
+          },
+          "named": false,
+          "value": "block"
         }
       ]
     },
@@ -1432,8 +1437,13 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "_block"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_block"
+          },
+          "named": false,
+          "value": "block"
         },
         {
           "type": "SEQ",
@@ -2029,8 +2039,13 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "_block"
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_block"
+              },
+              "named": false,
+              "value": "block"
             },
             {
               "type": "BLANK"
@@ -2708,8 +2723,13 @@
       "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "_block"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_block"
+          },
+          "named": false,
+          "value": "block"
         },
         {
           "type": "SYMBOL",
@@ -2718,38 +2738,33 @@
       ]
     },
     "_block": {
-      "type": "ALIAS",
+      "type": "PREC",
+      "value": 1,
       "content": {
-        "type": "PREC",
-        "value": 1,
-        "content": {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "{"
-            },
-            {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "statements"
-                },
-                {
-                  "type": "BLANK"
-                }
-              ]
-            },
-            {
-              "type": "STRING",
-              "value": "}"
-            }
-          ]
-        }
-      },
-      "named": true,
-      "value": "lambda_literal"
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "{"
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "statements"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
+            "type": "STRING",
+            "value": "}"
+          }
+        ]
+      }
     },
     "_loop_statement": {
       "type": "CHOICE",
@@ -4550,6 +4565,20 @@
           ]
         },
         {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_when_block"
+          },
+          "named": true,
+          "value": "block"
+        }
+      ]
+    },
+    "_when_block": {
+      "type": "SEQ",
+      "members": [
+        {
           "type": "STRING",
           "value": "{"
         },
@@ -4676,8 +4705,13 @@
           "value": "try"
         },
         {
-          "type": "SYMBOL",
-          "name": "_block"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_block"
+          },
+          "named": false,
+          "value": "block"
         },
         {
           "type": "CHOICE",
@@ -4749,8 +4783,13 @@
           "value": ")"
         },
         {
-          "type": "SYMBOL",
-          "name": "_block"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_block"
+          },
+          "named": false,
+          "value": "block"
         }
       ]
     },
@@ -4762,8 +4801,13 @@
           "value": "finally"
         },
         {
-          "type": "SYMBOL",
-          "name": "_block"
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_block"
+          },
+          "named": false,
+          "value": "block"
         }
       ]
     },

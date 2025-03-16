@@ -215,14 +215,17 @@ export function updateTokensForDocument(
         ); */
     }
 }
-
 export function applyTreeEdit(treeProvider: TreeProvider, change: vscode.TextDocumentContentChangeEvent, document: vscode.TextDocument): void {
     const startPosition = new vscode.Position(change.range.start.line, change.range.start.character);
     const oldEndPosition = new vscode.Position(change.range.end.line, change.range.end.character);
+
     const newTextLines = change.text.split('\n');
+
     const newEndPosition = new vscode.Position(
         startPosition.line + newTextLines.length - 1,
-        newTextLines.pop()?.length || 0
+        newTextLines.length === 1
+            ? startPosition.character + newTextLines[0].length
+            : newTextLines[newTextLines.length - 1].length
     );
 
     const startIndex = change.rangeOffset;
@@ -230,6 +233,7 @@ export function applyTreeEdit(treeProvider: TreeProvider, change: vscode.TextDoc
     const newEndIndex = startIndex + change.text.length;
 
     if (!treeProvider.tree) return;
+
     treeProvider.tree.edit({
         startIndex,
         oldEndIndex,
@@ -239,3 +243,4 @@ export function applyTreeEdit(treeProvider: TreeProvider, change: vscode.TextDoc
         newEndPosition: { row: newEndPosition.line, column: newEndPosition.character },
     });
 }
+

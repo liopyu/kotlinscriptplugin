@@ -4,23 +4,180 @@
 [Log] Loaded 1170 typing suggestions.
 [Log] Typing suggestions loaded: 1170
 [Log] Semantic Tokens Provider Initialized
-[Log] Modifying node: try_expression, Range: 0:0 - 2:1
+[Log] Modifying node: when_expression, Range: 0:0 - 4:1
 [Log] updating tokens
-[Log] Node Type: try, text: try
+[Log] Node Type: when, Text: when
 [Log] 2
-[Log] Node Type: catch, text: catch
+[Log] Node Type: (, Text: (
 [Log] 2
-[Log] Node Type: (, text: (
+[Log] Node Type: simple_identifier, Text: value
 [Log] 2
-[Log] Node Type: simple_identifier, text: e
+[Log] Node Type: simple_identifier, Text: value
 [Log] 2
-[Log] Node Type: simple_identifier, text: e
+[Log] Node Type: ), Text: )
 [Log] 2
-[Log] Node Type: :, text: :
+[Log] Node Type: {, Text: {
 [Log] 2
-[Log] Node Type: type_identifier, text: Exception
+[Log] found stored scope: 0:13:1
+[Log] Node Type: simple_identifier, Text: case1
 [Log] 2
-[Log] Node Type: ), text: )
+[Log] Node Type: simple_identifier, Text: case1
 [Log] 2
-[Log] Scope count: 0
+[Log] Node Type: ->, Text: ->
+[Log] 2
+[Log] Node Type: integer_literal, Text: 1
+[Log] 2
+[Log] Node Type: simple_identifier, Text: case2
+[Log] 2
+[Log] Node Type: simple_identifier, Text: case2
+[Log] 2
+[Log] Node Type: ->, Text: ->
+[Log] 2
+[Log] Node Type: integer_literal, Text: 3
+[Log] 2
+[Log] Node Type: else, Text: else
+[Log] 2
+[Log] Node Type: ->, Text: ->
+[Log] 2
+[Log] Node Type: integer_literal, Text: 4
+[Log] 2
+[Log] Node Type: }, Text: }
+[Log] 2
+[Log] 0:13:1
+[Log] Scope count: 1
+[Log] Modifying node: source_file, Range: 0:0 - 5:0
+[Log] updating tokens
+[Log] Node Type: when, Text: when
+[Log] 3
+[Log] Node Type: (, Text: (
+[Log] 3
+[Log] Node Type: simple_identifier, Text: value
+[Log] 3
+[Log] Node Type: simple_identifier, Text: value
+[Log] 3
+[Log] Node Type: ), Text: )
+[Log] 3
+[Log] Node Type: {, Text: {
+[Log] 3
+[Log] found stored scope: 0:13:1
+[Log] Node Type: simple_identifier, Text: case1
+[Log] 3
+[Log] Node Type: simple_identifier, Text: case1
+[Log] 3
+[Log] Node Type: ->, Text: ->
+[Log] 3
+[Log] Node Type: integer_literal, Text: 1
+[Log] 3
+[Log] Node Type: simple_identifier, Text: case2
+[Log] 3
+[Log] Node Type: simple_identifier, Text: case2
+[Log] 3
+[Log] Node Type: ->, Text: ->
+[Log] 3
+[Log] Node Type: integer_literal, Text: 3
+[Log] 3
+[Log] Node Type: else, Text: else
+[Log] 3
+[Log] Node Type: ->, Text: ->
+[Log] 3
+[Log] Node Type: integer_literal, Text: 4
+[Log] 3
+[Log] Node Type: }, Text: }
+[Log] 3
+[Log] 0:13:1
+[Log] Scope count: 1
 [Log] document has not changed
+[Log] Modifying node: simple_identifier, Range: 5:0 - 5:1
+[Log] updating tokens
+[Log] Node Type: when, Text: when
+[Log] 4
+[Log] Node Type: (, Text: (
+[Log] 4
+[Log] Node Type: simple_identifier, Text: value
+[Log] 4
+[Log] Node Type: simple_identifier, Text: value
+[Log] 4
+[Log] Node Type: ), Text: )
+[Log] 4
+[Log] Node Type: {, Text: {
+[Log] 4
+[Log] found stored scope: 0:13:1
+[Log] Node Type: simple_identifier, Text: case1
+[Log] 4
+[Log] Node Type: simple_identifier, Text: case1
+[Log] 4
+[Log] Node Type: ->, Text: ->
+[Log] 4
+[Log] Node Type: integer_literal, Text: 1
+[Log] 4
+[Log] Node Type: simple_identifier, Text: case2
+[Log] 4
+[Log] Node Type: simple_identifier, Text: case2
+[Log] 4
+[Log] Node Type: ->, Text: ->
+[Log] 4
+[Log] Node Type: integer_literal, Text: 3
+[Log] 4
+[Log] Node Type: else, Text: else
+[Log] 4
+[Log] Node Type: ->, Text: ->
+[Log] 4
+[Log] Node Type: integer_literal, Text: 4
+[Log] 4
+[Log] Node Type: }, Text: }
+[Log] 4
+[Log] 0:13:1
+[Log] Node Type: simple_identifier, Text: t
+[Log] 3
+[Log] Node Type: simple_identifier, Text: t
+[Log] 3
+[Log] Scope count: 1
+[Log] Modifying node: try_expression, Range: 5:0 - 9:1
+[Log] updating tokens
+[Log] Node Type: try, Text: try
+[Log] 3
+[Log] Node Type: {, Text: {
+[Log] 3
+[Log] found stored scope: 5:4:2
+[Log] Node Type: }, Text: }
+[Log] 3
+[Log] 5:4:2
+[Log] Node Type: catch, Text: catch
+[Log] 3
+[Log] Node Type: (, Text: (
+[Log] 3
+[Log] Node Type: simple_identifier, Text: e
+[Log] 3
+[Log] Node Type: simple_identifier, Text: e
+[Log] 3
+[Log] Node Type: :, Text: :
+[Log] 3
+[Log] Node Type: type_identifier, Text: Exception
+[Log] 3
+[Log] Node Type: ), Text: )
+[Log] 3
+[Log] Node Type: {, Text: {
+[Log] 3
+[Log] found stored scope: 7:23:2
+[Log] Node Type: simple_identifier, Text: e
+[Log] 3
+[Log] Node Type: simple_identifier, Text: e
+[Log] 3
+[Log] Node Type: ., Text: .
+[Log] 3
+[Log] Node Type: simple_identifier, Text: printStackTrace
+[Log] 3
+[Log] Node Type: simple_identifier, Text: printStackTrace
+[Log] 3
+[Log] Node Type: simple_identifier, Text: printStackTrace
+[Log] 3
+[Log] Node Type: simple_identifier, Text: printStackTrace
+[Log] 3
+[Log] Node Type: (, Text: (
+[Log] 3
+[Log] Node Type: ), Text: )
+[Log] 3
+[Log] Node Type: }, Text: }
+[Log] 3
+[Log] 7:23:2
+[Log] Scope count: 3

@@ -538,9 +538,13 @@ export class TreeProvider {
         if (blocks.includes(node.type)) {
             return true;
         }
+        /* if (node.type == "try_expression" && node.firstChild && node.firstChild.type == "{") {
+            return true
+        } */
         if (node.type === "{" && node.parent && blockParents.includes(node.parent.type)) {
             return true;
         }
+
         return false;
     }
     public isBlockExitNode(node: SyntaxNode): boolean {
