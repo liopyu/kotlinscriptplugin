@@ -135,6 +135,8 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (!lastChangedRange || range.start.isBefore(lastChangedRange.start)) {
 				lastChangedRange = range;
 			}
+			/* console.log("Changed range: " + treeProvider.rangeToString(range))
+			editor?.setDecorations(VariableDecorationType, [range]) */
 		});
 		if (event.contentChanges.length > 0 && treeProvider.tree) {
 			treeProvider.tree = treeProvider.parser.parse(event.document.getText(), treeProvider.tree);
