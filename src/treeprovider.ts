@@ -154,7 +154,7 @@ export class TreeProvider {
             this.imports.delete(importKey);
         }
     }
-    public validateVariables(tree: TSParser.Tree, modifiedRange: vscode.Range): void {
+    public validateVariables(tree: TSParser.Tree, modifiedRange: vscode.Range, builder: vscode.SemanticTokensBuilder): void {
         const variablesToRemove: string[] = [];
         const modifiedVariables: Map<string, VariableSymbol> = new Map()
         //console.log("Starting variable validation...");
@@ -181,7 +181,8 @@ export class TreeProvider {
             const expectedRange = variableSymbol.range;
 
             const adjustedExpectedRange = this.adjustRangeForShifts(expectedRange, modifiedRange, vscode.window.activeTextEditor!, true);
-
+            // this.processVariableDeclaration(variableSymbol.node, null, variableSymbol.range, builder)
+            // if (t) return
             /*   console.log(`Checking scoped variable '${variableName}'`);
               console.log(`→ Original Range: ${expectedRange.start.line}:${expectedRange.start.character} - ${expectedRange.end.line}:${expectedRange.end.character}`);
               console.log(`→ Adjusted Range: ${adjustedExpectedRange.start.line}:${adjustedExpectedRange.start.character} - ${adjustedExpectedRange.end.line}:${adjustedExpectedRange.end.character}`);
@@ -806,7 +807,7 @@ export class TreeProvider {
     ): void {
         const variableName = identifierNode.text;
         const rangeMode = this.semanticTokensProvider?.rangeMode;
-        var scope = this.currentScope;
+        var scope = this.semanticTokensProvider?.currentScopeFromRange(range) ?? this.currentScope;
         if (!scope) return;
         let varKey = `${variableName}@${scope.id}@${this.getRangeKey(range)}`;
         if (reservedCharacters.includes(variableName)) {
