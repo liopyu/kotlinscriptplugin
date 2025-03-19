@@ -232,6 +232,7 @@ export class TypingSuggestion {
         public type: string | null,
         public path: string | null,
         public parentType: string | null,
-        public requiresImport: boolean
+        public requiresImport: boolean,
+        public isClass: boolean
     ) { }
 }

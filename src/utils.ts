@@ -132,7 +132,8 @@ export async function loadTypingSuggestions(ktsDirectory: string): Promise<Typin
                             item.type || null,
                             item.path || null,
                             item.parentType || null,
-                            item.requiresImport || false
+                            item.requiresImport || false,
+                            item.isClass || false
                         )
                     );
                 });

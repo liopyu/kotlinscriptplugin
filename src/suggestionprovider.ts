@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { ImportSymbol, TypingSuggestion } from './symbols';
 import { TreeProvider } from './treeprovider';
 import { SyntaxNode } from 'web-tree-sitter';
-import { log, error, warn } from './extension';
+import { log, error, warn, availableClasses, typingSuggestions } from './extension';
 import { console } from './extension'
 import {
     t,
@@ -144,19 +144,20 @@ export class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 
 
         completionItems = this.suggestions
-            .filter(suggestion => suggestion.parentType == null ||
-                (suggestion.parentType != null && ["lambda", "infix_lambda"].includes(suggestion.type ? suggestion.type : ""))
+            .filter(suggestion => (suggestion.parentType == null ||
+                (suggestion.parentType != null && ["lambda", "infix_lambda"].includes(suggestion.type ? suggestion.type : ""))) &&
+                !suggestion.isClass || (suggestion.isClass && !imports.has(suggestion.fullyQualifiedName))
             )
             .map(suggestion => {
                 const item = new vscode.CompletionItem(
                     suggestion.simpleName,
-                    vscode.CompletionItemKind.Function
+                    suggestion.isClass ? vscode.CompletionItemKind.Class : vscode.CompletionItemKind.Function
                 );
                 item.detail = suggestion.fullyQualifiedName;
                 item.documentation = suggestion.source
                     ? `Source: ${suggestion.source}\nType: ${suggestion.type}`
                     : `Type: ${suggestion.type}`;
-                item.insertText = completeSuggestion(suggestion, treeProvider, node);
+                item.insertText = (suggestion.isClass && !imports.has(suggestion.fullyQualifiedName)) ? (!suggestion.requiresImport ? suggestion.simpleName : suggestion.fullyQualifiedName) : completeSuggestion(suggestion, treeProvider, node);
                 return item;
             });
 
@@ -204,23 +205,20 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             row: line,
             column: character,
         });
-
+        // log('Node text: ' + node?.text + ", node type: " + node?.type)
         const range = new vscode.Range(startPosition, endPosition);
 
         let snippetCompletions: vscode.CompletionItem[] = []
+
         let iNode = node.parent
-        /* log('Node text: ' + iNode?.text + ", node type: " + iNode?.type)
-        log('Parent Node text: ' + iNode?.parent?.text + ", Parent node type: " + iNode?.parent?.type)
-        iNode?.parent?.children.forEach(child => {
-            log('Child text: ' + child?.text + ", Child type: " + child?.type) // We finally find the "if_expression"
-        }) */
+        // log('Parent Node text: ' + iNode?.text + ", parent node type: " + iNode?.type)
         const kotlinKeywords = [
             "val", "var", "fun", "class", "object", "interface", "return",
             "if", "else", "when", "for", "while", "do", "try", "catch", "finally", "import", "package"
         ];
         if (iNode) {
             let i = iNode?.parent?.firstChild;
-            /* log('iNode text: ' + iNode?.text + ", inode type: " + iNode?.type);
+            /* 
             if (!expressionTypes.includes(iNode.type)) return
             log("Providing suggestion for expression: " + iNode.type) */
             // log('iNode text: ' + i?.text + ", inode type: " + i?.type);
@@ -261,134 +259,120 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             }
         }
 
-
-
-
-        /* 
-        
-        
-                
-        
-                const imports = treeProvider.imports
-                const variables: string[] = treeProvider.semanticTokensProvider
-                    ?.currentScopeFromRange(range)
-                    ?.getAllVariablesFromCurrentScope() || [];
-        
-                const variableCompletionItems = variables.map(variableName => {
-                    const item = new vscode.CompletionItem(
-                        variableName,
-                        vscode.CompletionItemKind.Variable
-                    );
-                    item.detail = `Variable: ${variableName}`;
-                    item.sortText = "1";
-                    return item;
-                });
-        
-                const importCompletionItems = Array.from(imports).map(([key, symbol]) => {
-                    let keyword = symbol.getClassName()
-                    const item = new vscode.CompletionItem(
-                        keyword,
-                        vscode.CompletionItemKind.Class
-                    );
-                    item.detail = keyword;
-                    item.sortText = "0";
-                    return item;
-                });
-        
-                const keywordCompletionItems = kotlinKeywords.map(keyword => {
-                    const item = new vscode.CompletionItem(
-                        keyword,
-                        vscode.CompletionItemKind.Keyword
-                    );
-                    if (keyword == "try") {
-                        item.insertText = "one"
-                    }
-                    item.detail = keyword;
-                    item.sortText = "0";
-                    return item;
-                });
-                // log("Type: " + node.type + ", ParentType: " + node.parent?.type, ", Text: " + node.text)
-                if (node.parent?.type == "infix_expression") {
-                    completionItems = this.suggestions
-                        .filter(suggestion => (suggestion.type == "infix_lambda" || suggestion.type == "infix") && !suggestion.simpleName.includes("."))
-                        .map(suggestion => {
-                            const item = new vscode.CompletionItem(
-                                suggestion.simpleName,
-                                vscode.CompletionItemKind.Function
-                            );
-                            item.detail = suggestion.simpleName;
-                            item.documentation = suggestion.source
-                                ? `Source: ${suggestion.source}\nType: ${suggestion.type}`
-                                : `Type: ${suggestion.type}`;
-                            item.insertText = suggestion.simpleName
-                            return item;
-                        });
-                    return completionItems;
-                }
-                if (
-                    (node.type !== "simple_identifier" ||
-                        (!expressionTypes.includes(node.parent?.type ?? "")
-                            && ![
-                                "assignment",
-                                "jump_expression",
-                                "statements",
-                                "property_declaration",
-                                "for_statement",
-                                "if_expression",
-                                "value_argument",
-                                "source_file",
-                                "when_subject",
-                                "infix_expression",
-                                "indexing_suffix",
-                                "control_structure_body",
-                                "function_body",
-                                "function_value_parameters",
-                                "explicit_delegation",
-                                "property_delegate"
-                            ].includes(node.parent?.type ?? "")))
-                ) {
-                    //log("Skipping suggestions: Invalid context.");
-                    return undefined;
-                }
-        
-        
-                completionItems = this.suggestions
-                    .filter(suggestion => suggestion.parentType == null ||
-                        (suggestion.parentType != null && ["lambda", "infix_lambda"].includes(suggestion.type ? suggestion.type : ""))
-                    )
-                    .map(suggestion => {
-                        const item = new vscode.CompletionItem(
-                            suggestion.simpleName,
-                            vscode.CompletionItemKind.Function
-                        );
-                        item.detail = suggestion.fullyQualifiedName;
-                        item.documentation = suggestion.source
-                            ? `Source: ${suggestion.source}\nType: ${suggestion.type}`
-                            : `Type: ${suggestion.type}`;
-                        item.insertText = completeSuggestion(suggestion, treeProvider, node);
-                        return item;
-                    }); */
-
         return [...snippetCompletions];
     }
 }
-class ImportDefinitionProvider implements vscode.DefinitionProvider {
-    public readonly imports: Map<string, ImportSymbol>;
-    constructor(imports: Map<string, ImportSymbol>) {
-        this.imports = imports;
+export class ImportDefinitionProvider implements vscode.CompletionItemProvider {
+    constructor() {
     }
-    provideDefinition(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Definition> {
-        const wordRange = document.getWordRangeAtPosition(position);
-        const word = document.getText(wordRange);
-        const importSymbol = this.imports.get(word);
-        if (!importSymbol) {
-            return null;
+    async provideCompletionItems(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken,
+        context: vscode.CompletionContext
+    ): Promise<vscode.CompletionItem[] | undefined> {
+        const linePrefix = document.lineAt(position).text.substring(0, position.character);
+        const documentUri = document.uri.toString();
+        const data = documentData.get(documentUri);
+        if (!data) {
+            console.log("No tree provider data found for this document.");
+            return;
         }
-        return new vscode.Location(
-            document.uri,
-            importSymbol.range
-        );
+        const treeProvider = data.treeProvider;
+        const tree = treeProvider.tree;
+        if (!tree) {
+            console.log("No syntax tree available for this document.");
+            return;
+        }
+        const line = position.line;
+        const character = position.character - 1;
+        const startPosition = new vscode.Position(line, character);
+        const endPosition = new vscode.Position(line, character + 1);
+
+        const node = tree.rootNode.descendantForPosition({
+            row: line,
+            column: character,
+        });
+        const range = new vscode.Range(startPosition, endPosition);
+        let snippetCompletions: vscode.CompletionItem[] = [];
+        const importPrefix = linePrefix.trim().split(/\s+/).pop() || "";
+        let onlySuggestImmediateNextPackageName = (treeProvider.findParent(node, "import_header", treeProvider.supplyRange(node)) == null)
+        let isTypeNode = (node.type == "type_identifier"/*  || treeProvider.findParent(node, "type_identifier", treeProvider.supplyRange(node)) == null */)
+        //log("Node type: " + node.type + ", Node Text: " + node.text + ", testNode: " + (isTypeNode))
+
+
+        const importCompletionItems = !isTypeNode ? [] : Array.from(treeProvider.imports).map(([key, symbol]) => {
+            let keyword = symbol.getClassName()
+            const item = new vscode.CompletionItem(
+                keyword,
+                vscode.CompletionItemKind.Class
+            );
+            item.detail = keyword;
+            item.sortText = "0";
+            return item;
+        });
+        /* treeProvider.imports.forEach((k, i) => {
+            console.log(i)
+        }) */
+        const tSuggestions = !isTypeNode ? [] : typingSuggestions
+            .filter(suggestion => {
+                return !suggestion.requiresImport &&
+                    suggestion.isClass &&
+                    !treeProvider.imports.has(suggestion.fullyQualifiedName)
+            })
+            .map(suggestion => {
+                const item = new vscode.CompletionItem(
+                    suggestion.simpleName,
+                    vscode.CompletionItemKind.Class
+                );
+                item.detail = suggestion.fullyQualifiedName;
+                item.documentation = suggestion.source
+                    ? `Source: ${suggestion.source}\nType: ${suggestion.type}`
+                    : `Type: ${suggestion.type}`;
+                item.insertText = suggestion.simpleName
+                return item;
+            });
+        if (importPrefix.length > 0 && node.parent && !isTypeNode) {
+            const prefixParts = importPrefix.split('.');
+            const lastPrefixPart = prefixParts.pop() ?? '';
+            const basePrefix = prefixParts.join('.') + (prefixParts.length ? '.' : '');
+            const matchingClasses = Array.from(availableClasses)
+                .map(cls => cls.replace(/\$/g, '.'))
+                .filter(cls => cls.startsWith(basePrefix));
+            if (onlySuggestImmediateNextPackageName) {
+                const nextSegments = new Set(
+                    matchingClasses
+                        .map(cls => cls.slice(basePrefix.length).split('.')[0])
+                        .filter(segment => segment && segment !== lastPrefixPart)
+                );
+
+                nextSegments.forEach(segment => {
+                    const completionItem = new vscode.CompletionItem(segment, vscode.CompletionItemKind.Module);
+                    const lineText = document.lineAt(position).text;
+                    const textAfterCursor = lineText.substring(position.character).trim();
+                    let trimmedSegment = segment;
+                    if (textAfterCursor.startsWith(segment)) {
+                        trimmedSegment = segment.slice(textAfterCursor.length);
+                    }
+                    completionItem.insertText = trimmedSegment;
+                    completionItem.detail = "Kotlin Class Path Segment";
+                    snippetCompletions.push(completionItem);
+                });
+            } else {
+                matchingClasses.forEach(cls => {
+                    const completionItem = new vscode.CompletionItem(cls, vscode.CompletionItemKind.Class);
+                    completionItem.insertText = cls.slice(basePrefix.length);
+                    completionItem.detail = "Kotlin Class";
+                    snippetCompletions.push(completionItem);
+                });
+            }
+        }
+        return [...snippetCompletions, ...importCompletionItems, ...tSuggestions];
     }
+
+
+
+
 }
 export function completeSuggestion(suggestion: TypingSuggestion, treeProvider: TreeProvider, currentNode: SyntaxNode): string {
     if (suggestion.requiresImport && !treeProvider.imports.has(suggestion.path + "." + suggestion.simpleName)) {

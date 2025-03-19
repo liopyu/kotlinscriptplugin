@@ -39,11 +39,11 @@ import {
 } from './constants'
 
 import { TreeProvider } from './treeprovider'
-import { PeriodTypingSuggestionProvider, TypingSuggestionProvider } from './suggestionprovider';
+import { ImportDefinitionProvider, PeriodTypingSuggestionProvider, TypingSuggestionProvider } from './suggestionprovider';
 import { SemanticTokensProvider } from './semantictokensprovider';
 
 
-let availableClasses: Set<string>;
+export let availableClasses: Set<string>;
 export let typingSuggestions: TypingSuggestion[] = []
 let util: utils.Utils
 export let console = {
@@ -161,9 +161,16 @@ export async function activate(context: vscode.ExtensionContext) {
 			'.'
 		)
 	);
-	vscode.window.onDidChangeTextEditorVisibleRanges(event => {
+	context.subscriptions.push(
+		vscode.languages.registerCompletionItemProvider(
+			selector,
+			new ImportDefinitionProvider(),
+			'.'
+		)
+	);
+	/* vscode.window.onDidChangeTextEditorVisibleRanges(event => {
 		utils.updateTokensForDocument(event.textEditor.document);
-	});
+	}); */
 
 	// Runs on start
 	let editor = vscode.window.activeTextEditor;
