@@ -1,31 +1,39 @@
 import * as vscode from 'vscode';
-import { availableClasses } from './extension';
+import { absoluteKtsDirectory, availableClasses, typingSuggestions } from './extension';
 import { documentData } from './constants';
 import { ImportSymbol } from './symbols';
-
-const classMap: Map<string, string[]> = new Map();
+import { log, warn, error } from './extension';
+import { console } from './extension'
+const indexedClassMap: Map<string, Map<string, string[]>> = new Map();
 
 export function buildClassMap(availableClasses: Set<string>): void {
     for (const fullClassPath of availableClasses) {
-        const simpleName = fullClassPath.replace(/\$/g, '.').split('.').pop();
-        if (!simpleName) continue;
-
-        classMap.set(simpleName, [...(classMap.get(simpleName) || []), fullClassPath]);
+        const simpleName = fullClassPath.replace(/\$/g, '.').split('.').pop()?.trim();
+        if (!simpleName) {
+            continue;
+        }
+        const firstLetter = simpleName.charAt(0).toUpperCase();
+        if (!indexedClassMap.has(firstLetter)) {
+            indexedClassMap.set(firstLetter, new Map());
+        }
+        const letterBucket = indexedClassMap.get(firstLetter)!;
+        if (!letterBucket.has(simpleName)) {
+            letterBucket.set(simpleName, []);
+        }
+        letterBucket.get(simpleName)?.push(fullClassPath);
     }
 }
-
 
 export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.CodeLens> {
     public imports: Map<string, ImportSymbol> = new Map();
     private onDidChangeCodeLensesEmitter = new vscode.EventEmitter<void>();
     readonly onDidChangeCodeLenses = this.onDidChangeCodeLensesEmitter.event;
-    // ✅ Initialized properly to avoid null errors
     private decorationType = vscode.window.createTextEditorDecorationType({
-        color: 'rgb(232, 105, 105)'  // Light red text
+        color: 'hsl(0, 62.00%, 64.90%)'
     });
 
     private cursorDecorationType = vscode.window.createTextEditorDecorationType({
-        textDecoration: 'underline solid rgba(255, 255, 255, 0.4)'  // Thin white underline
+        textDecoration: 'underline solid rgba(242, 243, 210, 0.61)'
     });
     public refresh(): void {
         this.onDidChangeCodeLensesEmitter.fire();
@@ -34,28 +42,28 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
         document: vscode.TextDocument,
         token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.CodeLens[]> {
+        if (!document.fileName.endsWith('.kts') && !document.uri.fsPath.startsWith(absoluteKtsDirectory)) {
+            return [];
+        }
         const documentUri = document.uri.toString();
         const data = documentData.get(documentUri);
         if (!data) {
-            console.log("No tree provider data found for this document.");
             return;
         }
         const treeProvider = data.treeProvider;
         const tree = treeProvider.tree;
         if (!tree) {
-            console.log("No syntax tree available for this document.");
             return;
         }
 
         this.imports = treeProvider.imports;
-        this.applyDecorations(document); // Ensure decorations update on activation
+        this.applyDecorations(document);
 
         const codeLenses: vscode.CodeLens[] = [];
         const cursorPosition = vscode.window.activeTextEditor?.selection.active;
         if (!cursorPosition) return [];
 
-        const regex = /\b\w+\b/g; // Match all words
-
+        const regex = /(?<!\.\s*?)\b\w+\b/g;
         for (let i = 0; i < document.lineCount; i++) {
             const line = document.lineAt(i);
             let match;
@@ -63,15 +71,16 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
             while ((match = regex.exec(line.text)) !== null) {
                 const className = match[0];
 
-                // ✅ Skip if no matching class in `classMap`
-                if (!this.findMatchingClasses(className).length) continue;
+                if (!this.findMatchingClasses(className).length) {
+                    continue;
+                }
 
                 const range = new vscode.Range(i, match.index, i, match.index + className.length);
 
-                // ✅ Skip if class is already imported
-                if (this.isClassImported(className)) continue;
+                if (this.isClassImported(className)) {
+                    continue;
+                }
 
-                // ✅ Only apply CodeLens if cursor is inside the word
                 if (range.contains(cursorPosition)) {
                     codeLenses.push(new vscode.CodeLens(range));
                 }
@@ -80,6 +89,7 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
 
         return codeLenses;
     }
+
 
     async resolveCodeLens(
         codeLens: vscode.CodeLens,
@@ -100,9 +110,24 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
 
         return codeLens;
     }
-
     private findMatchingClasses(symbol: string): string[] {
-        return classMap.get(symbol) || [];
+
+        const firstLetter = symbol.charAt(0).toUpperCase();
+        const letterBucket = indexedClassMap.get(firstLetter);
+
+        if (!letterBucket) {
+            return [];
+        }
+
+        const matches = Array.from(letterBucket.values())
+            .flat()
+            .filter(cls => {
+                const processedName = cls.replace(/\$/g, '.').split('.').pop()?.trim();
+                const isMatch = processedName === symbol.trim();
+                return isMatch;
+            });
+
+        return matches;
     }
 
     private isClassImported(className: string): boolean {
@@ -111,8 +136,14 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
                 return true;
             }
         }
-        return false;
+
+        return typingSuggestions.some(suggestion =>
+            suggestion.simpleName === className.replace(/\$/g, '.') &&
+            (!suggestion.requiresImport || this.imports.has(suggestion.fullyQualifiedName))
+        );
     }
+
+
 
     public clearDecorations(): void {
         vscode.window.activeTextEditor?.setDecorations(this.decorationType, []);
@@ -121,36 +152,24 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
     public applyDecorations(document: vscode.TextDocument): void {
         const editor = vscode.window.activeTextEditor;
         if (!editor) return;
-
         const cursorPosition = editor.selection.active;
-        const regex = /\b\w+\b/g; // Match all words
-
+        const regex = /(?<!\.\s*?)\b\w+\b/g;
         const redDecorations: vscode.DecorationOptions[] = [];
         const whiteLineDecorations: vscode.DecorationOptions[] = [];
-
         for (let i = 0; i < document.lineCount; i++) {
             const line = document.lineAt(i);
             let match;
-
             while ((match = regex.exec(line.text)) !== null) {
                 const className = match[0];
-
-                // ✅ Skip decoration if class is imported or not found in classMap
                 if (this.isClassImported(className) || !this.findMatchingClasses(className).length) continue;
-
                 const range = new vscode.Range(i, match.index, i, match.index + className.length);
-
-                // Always apply red text for unresolved imports
                 redDecorations.push({ range });
-
-                // ✅ Apply white underline only if cursor is inside AND class is valid
                 if (range.contains(cursorPosition)) {
                     whiteLineDecorations.push({ range });
                 }
             }
         }
-
-        // editor.setDecorations(this.decorationType, redDecorations);
+        editor.setDecorations(this.decorationType, redDecorations);
         editor.setDecorations(this.cursorDecorationType, whiteLineDecorations);
     }
 

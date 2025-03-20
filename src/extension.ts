@@ -61,12 +61,12 @@ export function error(...args: any[]) {
 export function warn(...args: any[]) {
 	util.warn(...args)
 }
-
+const config = vscode.workspace.getConfiguration('kotlinscript');
+const ktsDirectory = config.get<string>('ktsDirectory', 'config/scripts');
+export const absoluteKtsDirectory = path.isAbsolute(ktsDirectory) ? ktsDirectory : path.join(vscode.workspace.rootPath || '', ktsDirectory);
 export async function activate(context: vscode.ExtensionContext) {
 	util = utils.Utils.getInstance(context);
-	const config = vscode.workspace.getConfiguration('kotlinscript');
-	const ktsDirectory = config.get<string>('ktsDirectory', 'config/scripts');
-	const absoluteKtsDirectory = path.isAbsolute(ktsDirectory) ? ktsDirectory : path.join(vscode.workspace.rootPath || '', ktsDirectory);
+
 	await TSParser.init();
 	availableClasses = await utils.loadAvailableClasses(absoluteKtsDirectory);
 	typingSuggestions = await utils.loadTypingSuggestions(absoluteKtsDirectory);
@@ -157,41 +157,37 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	vscode.window.onDidChangeTextEditorSelection((event) => {
 		const document = event.textEditor.document;
-
-		// ✅ Force CodeLens refresh without duplication
-		importCodeLensProvider.refresh();
-
-		importCodeLensProvider.applyDecorations(document);
+		if (document.languageId === 'kotlin' && (document.fileName.endsWith('.kts') || document.uri.fsPath.startsWith(absoluteKtsDirectory))) {
+			importCodeLensProvider.refresh();
+			importCodeLensProvider.applyDecorations(document);
+		}
 	});
-
-
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('extension.insertImport', async (document: vscode.TextDocument, className: string) => {
-			const matchingClasses = Array.from(availableClasses).filter(cls =>
-				cls.replace(/\$/g, '.').endsWith(`.${className}`)
-			);
-
-
+			const matchingClasses = Array.from(availableClasses).filter(cls => {
+				const processedName = cls.replace(/\$/g, '.').split('.').pop()?.trim();
+				const isMatch = processedName === className.trim();
+				return isMatch;
+			});
 			if (matchingClasses.length === 0) {
 				vscode.window.showErrorMessage(`No matching classes found for '${className}'.`);
 				return;
 			}
-
 			const selectedClass = await vscode.window.showQuickPick(
 				matchingClasses.map(cls => cls.replace(/\$/g, '.')),
 				{ placeHolder: `Select the correct import for '${className}'` }
 			);
 			if (!selectedClass) return;
 			const edit = new vscode.WorkspaceEdit();
-			if (!new RegExp(`^import\\s+${selectedClass};`, 'gm').test(document.getText())) {
-				edit.insert(document.uri, new vscode.Position(0, 0), `import ${selectedClass};\n`);
+			const importStatement = `import ${selectedClass}`;
+			if (!new RegExp(`^${importStatement}`, 'gm').test(document.getText())) {
+				edit.insert(document.uri, new vscode.Position(0, 0), `${importStatement}\n`);
 				await vscode.workspace.applyEdit(edit);
 				importCodeLensProvider.clearDecorations();
 			}
 		})
 	);
-
 
 	context.subscriptions.push(
 		vscode.languages.registerCompletionItemProvider(
@@ -237,6 +233,11 @@ export async function activate(context: vscode.ExtensionContext) {
 	let semanticTokensProvider: vscode.Disposable | null = null;
 
 	vscode.window.onDidChangeActiveTextEditor(async (editor) => {
+		const document = editor?.document;
+		if (document && document.languageId === 'kotlin' && (document.fileName.endsWith('.kts') || document.uri.fsPath.startsWith(absoluteKtsDirectory))) {
+			importCodeLensProvider.refresh();
+			importCodeLensProvider.applyDecorations(document);
+		}
 		if (editor && editor.document.fileName.endsWith(".kts")) {
 			addDocumentIfNotExists(editor.document);
 
