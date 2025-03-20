@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import { absoluteKtsDirectory, availableClasses, typingSuggestions } from './extension';
-import { documentData } from './constants';
+import { documentData, expressionTypes } from './constants';
 import { ImportSymbol } from './symbols';
 import { log, warn, error } from './extension';
 import { console } from './extension'
 const indexedClassMap: Map<string, Map<string, string[]>> = new Map();
-
+const regex = /(?<!\.\s*?)\b\w+\b/g;
 export function buildClassMap(availableClasses: Set<string>): void {
     for (const fullClassPath of availableClasses) {
         const simpleName = fullClassPath.replace(/\$/g, '.').split('.').pop()?.trim();
@@ -45,6 +45,8 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
         if (!document.fileName.endsWith('.kts') && !document.uri.fsPath.startsWith(absoluteKtsDirectory)) {
             return [];
         }
+        // Array.from(indexedClassMap.keys()).forEach(k => console.log(`${k}, ${indexedClassMap.get(k)?.size || 0}`));
+
         const documentUri = document.uri.toString();
         const data = documentData.get(documentUri);
         if (!data) {
@@ -63,7 +65,7 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
         const cursorPosition = vscode.window.activeTextEditor?.selection.active;
         if (!cursorPosition) return [];
 
-        const regex = /(?<!\.\s*?)\b\w+\b/g;
+
         for (let i = 0; i < document.lineCount; i++) {
             const line = document.lineAt(i);
             let match;
@@ -80,7 +82,9 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
                 if (this.isClassImported(className)) {
                     continue;
                 }
-
+                if (!this.isInCorrectNode(range)) {
+                    continue
+                }
                 if (range.contains(cursorPosition)) {
                     codeLenses.push(new vscode.CodeLens(range));
                 }
@@ -143,7 +147,43 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
         );
     }
 
-
+    private isInCorrectNode(range: vscode.Range): boolean {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) return false;
+        const character = range.start.character - 1;
+        const treeProvider = documentData.get(editor.document.uri.toString())?.treeProvider
+        const rootNode = treeProvider?.tree?.rootNode;
+        if (!rootNode) return false;
+        const nodeAtPosition = rootNode.descendantForPosition({
+            row: range.start.line,
+            column: character,
+        });
+        const childNode = treeProvider.findChildInRange(nodeAtPosition, "simple_identifier", null, range) || treeProvider.findChildInRange(nodeAtPosition, "type_identifier", null, range)
+        /*  log("Node type: " + nodeAtPosition?.type + ", Node Text: " + nodeAtPosition?.text + "")
+         log("Child Node type: " + childNode?.type + ", Child Node Text: " + childNode?.text + "") */
+        if (!childNode ||
+            (childNode.type != "type_identifier" && !expressionTypes.includes(childNode.parent?.type ?? "")
+                && ![
+                    "assignment",
+                    "jump_expression",
+                    "statements",
+                    "property_declaration",
+                    "for_statement",
+                    "if_expression",
+                    "value_argument",
+                    "source_file",
+                    "when_subject",
+                    "infix_expression",
+                    "indexing_suffix",
+                    "control_structure_body",
+                    "function_body",
+                    "function_value_parameters",
+                    "explicit_delegation",
+                    "property_delegate"
+                ].includes(childNode.parent?.type ?? ""))
+        ) return false;
+        return true
+    }
 
     public clearDecorations(): void {
         vscode.window.activeTextEditor?.setDecorations(this.decorationType, []);
@@ -153,7 +193,6 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
         const editor = vscode.window.activeTextEditor;
         if (!editor) return;
         const cursorPosition = editor.selection.active;
-        const regex = /(?<!\.\s*?)\b\w+\b/g;
         const redDecorations: vscode.DecorationOptions[] = [];
         const whiteLineDecorations: vscode.DecorationOptions[] = [];
         for (let i = 0; i < document.lineCount; i++) {
@@ -161,8 +200,8 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
             let match;
             while ((match = regex.exec(line.text)) !== null) {
                 const className = match[0];
-                if (this.isClassImported(className) || !this.findMatchingClasses(className).length) continue;
                 const range = new vscode.Range(i, match.index, i, match.index + className.length);
+                if (!this.isInCorrectNode(range) || (this.isClassImported(className) || !this.findMatchingClasses(className).length)) continue;
                 redDecorations.push({ range });
                 if (range.contains(cursorPosition)) {
                     whiteLineDecorations.push({ range });

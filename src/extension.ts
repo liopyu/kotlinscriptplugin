@@ -167,20 +167,26 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand('extension.insertImport', async (document: vscode.TextDocument, className: string) => {
 			const matchingClasses = Array.from(availableClasses).filter(cls => {
 				const processedName = cls.replace(/\$/g, '.').split('.').pop()?.trim();
-				const isMatch = processedName === className.trim();
-				return isMatch;
+				return processedName === className.trim();
 			});
+
 			if (matchingClasses.length === 0) {
 				vscode.window.showErrorMessage(`No matching classes found for '${className}'.`);
 				return;
 			}
-			const selectedClass = await vscode.window.showQuickPick(
-				matchingClasses.map(cls => cls.replace(/\$/g, '.')),
-				{ placeHolder: `Select the correct import for '${className}'` }
-			);
+
+			const selectedClass = matchingClasses.length === 1
+				? matchingClasses[0]  // Auto-import if only one match
+				: await vscode.window.showQuickPick(
+					matchingClasses.map(cls => cls.replace(/\$/g, '.')),
+					{ placeHolder: `Select the correct import for '${className}'` }
+				);
+
 			if (!selectedClass) return;
+
 			const edit = new vscode.WorkspaceEdit();
-			const importStatement = `import ${selectedClass}`;
+			const importStatement = `import ${selectedClass.replace(/\$/g, '.')}`;
+
 			if (!new RegExp(`^${importStatement}`, 'gm').test(document.getText())) {
 				edit.insert(document.uri, new vscode.Position(0, 0), `${importStatement}\n`);
 				await vscode.workspace.applyEdit(edit);
@@ -188,6 +194,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 		})
 	);
+
 
 	context.subscriptions.push(
 		vscode.languages.registerCompletionItemProvider(

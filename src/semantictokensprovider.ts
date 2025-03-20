@@ -190,14 +190,14 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                     // l.push(range)
                     this.setCurrentScope(node, range)
                     this.processTokens(capture, builder, range);
-                } else if (filterRanges && (this.rangesIntersect(modifiedNodeRange, range) || this.rangesIntersect(modifiedRange, range))
+                } else if (filterRanges && (this.rangesIntersect(range, modifiedNodeRange) || this.rangesIntersect(range, modifiedRange))
                 ) {
                     // l.push(range)
                     this.handleCallExpression(node, builder);
                     this.rangeMode = RangeMode.EDIT;
                     this.setCurrentScope(node, range)
                     this.processTokens(capture, builder, range);
-                } else if (this.reEvaluationRange && this.rangesIntersect(this.reEvaluationRange, range)) {
+                } else if (this.reEvaluationRange && this.startRangeIntersect(range, this.reEvaluationRange)) {
                     // m.push(range)
                     this.rangeMode = RangeMode.REPROCESSING
                     this.handleCallExpression(node, builder);
@@ -233,7 +233,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                  );
              } */
             if ((!normalizedRange || (normalizedRange && !this.startRangeIntersect(normalizedRange, range))
-            )) {
+            ) && !this.startRangeIntersect(range, modifiedRange)) {
                 builder.push(token.range, LEGEND.tokenTypes[token.tokenType] || "variable");
             }
         });
