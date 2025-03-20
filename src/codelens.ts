@@ -158,10 +158,15 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
             row: range.start.line,
             column: character,
         });
-        const childNode = treeProvider.findChildInRange(nodeAtPosition, "simple_identifier", null, range) || treeProvider.findChildInRange(nodeAtPosition, "type_identifier", null, range)
+        const childNode = treeProvider.findChildInRange(nodeAtPosition, "simple_identifier", null, range) ||
+            treeProvider.findChildInRange(nodeAtPosition, "type_identifier", null, range)
+        const delegation_specifiers = treeProvider.findParent(childNode, "delegation_specifier", range)
+        const delegation_specifiers2 = treeProvider.findChildInRange(nodeAtPosition, "delegation_specifier", null, range)
         /*  log("Node type: " + nodeAtPosition?.type + ", Node Text: " + nodeAtPosition?.text + "")
-         log("Child Node type: " + childNode?.type + ", Child Node Text: " + childNode?.text + "") */
-        if (!childNode ||
+         log("Child Node type: " + childNode?.type + ", Child Node Text: " + childNode?.text + "")
+         log("Delegations: " + delegation_specifiers?.type + ", Delegations text: " + delegation_specifiers?.text + "")
+         log("Delegations2: " + delegation_specifiers2?.type + ", Delegations2 text: " + delegation_specifiers2?.text + "") */
+        if (!childNode || (["class_declaration"].includes(nodeAtPosition.type) && childNode.type == "type_identifier" && !delegation_specifiers) ||
             (childNode.type != "type_identifier" && !expressionTypes.includes(childNode.parent?.type ?? "")
                 && ![
                     "assignment",

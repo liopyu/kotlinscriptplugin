@@ -182,7 +182,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             match.captures.forEach((capture, captureIndex) => {
                 const node = capture.node;
                 let range = this.treeProvider.supplyRange(node);
-                // console.log("Node Type: " + node.type + ", text: " + node.text)
+                //console.log("Node Type: " + node.type + ", text: " + node.text)
                 this.handleErrorNodes(node);
                 this.handleMissingNodes(node);
                 if (!this.init || (this.init && !filterRanges)) {
@@ -190,14 +190,14 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                     // l.push(range)
                     this.setCurrentScope(node, range)
                     this.processTokens(capture, builder, range);
-                } else if (filterRanges && (this.rangesIntersect(range, modifiedNodeRange) || this.rangesIntersect(range, modifiedRange))
+                } else if (filterRanges && (this.rangesIntersect(modifiedNodeRange, range) || this.rangesIntersect(modifiedRange, range))
                 ) {
                     // l.push(range)
                     this.handleCallExpression(node, builder);
                     this.rangeMode = RangeMode.EDIT;
                     this.setCurrentScope(node, range)
                     this.processTokens(capture, builder, range);
-                } else if (this.reEvaluationRange && this.startRangeIntersect(range, this.reEvaluationRange)) {
+                } else if (this.reEvaluationRange && this.rangesIntersect(range, this.reEvaluationRange)) {
                     // m.push(range)
                     this.rangeMode = RangeMode.REPROCESSING
                     this.handleCallExpression(node, builder);
@@ -233,7 +233,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                  );
              } */
             if ((!normalizedRange || (normalizedRange && !this.startRangeIntersect(normalizedRange, range))
-            ) && !this.startRangeIntersect(range, modifiedRange)) {
+            ) && !this.rangesIntersect(range, modifiedRange)) {
                 builder.push(token.range, LEGEND.tokenTypes[token.tokenType] || "variable");
             }
         });
@@ -485,6 +485,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                             break
                         }
                     }
+                    break
                 } else if (node.parent?.type === "call_expression") {
                     const name = node.text;
                     const importEntry = [...this.treeProvider.imports.values()].find(
@@ -765,7 +766,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
     private traverseTree(node: TSParser.SyntaxNode, builder: vscode.SemanticTokensBuilder, verifiedScopes: string[]) {
         let range = this.treeProvider.supplyRange(node);
 
-        //log('Node text: ' + node.text + ", node type: " + node.type + ", Range: " + this.treeProvider.rangeToString(range))
+        // log('Node text: ' + node.text + ", node type: " + node.type + ", Range: " + this.treeProvider.rangeToString(range))
         /* if (node.type == "block") {
             console.log("Block child: " + node.firstChild?.type)
         } */

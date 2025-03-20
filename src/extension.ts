@@ -176,7 +176,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 
 			const selectedClass = matchingClasses.length === 1
-				? matchingClasses[0]  // Auto-import if only one match
+				? matchingClasses[0]
 				: await vscode.window.showQuickPick(
 					matchingClasses.map(cls => cls.replace(/\$/g, '.')),
 					{ placeHolder: `Select the correct import for '${className}'` }
@@ -185,10 +185,18 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (!selectedClass) return;
 
 			const edit = new vscode.WorkspaceEdit();
-			const importStatement = `import ${selectedClass.replace(/\$/g, '.')}`;
+			const importStatement = `import ${selectedClass.replace(/\$/g, '.')}\n`;
+
+			const packageLineIndex = document.getText()
+				.split('\n')
+				.findIndex(line => line.trim().startsWith('package '));
+
+			const insertPosition = packageLineIndex !== -1
+				? new vscode.Position(packageLineIndex + 1, 0)
+				: new vscode.Position(0, 0);
 
 			if (!new RegExp(`^${importStatement}`, 'gm').test(document.getText())) {
-				edit.insert(document.uri, new vscode.Position(0, 0), `${importStatement}\n`);
+				edit.insert(document.uri, insertPosition, importStatement);
 				await vscode.workspace.applyEdit(edit);
 				importCodeLensProvider.clearDecorations();
 			}
