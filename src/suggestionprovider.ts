@@ -19,6 +19,7 @@ import {
     documentData,
     semanticTokensEnabled
 } from './constants'
+
 export class TypingSuggestionProvider implements vscode.CompletionItemProvider {
     public suggestions: TypingSuggestion[];
 

@@ -36,6 +36,17 @@
     }
   ],
   "contributes": {
+    "commands": [
+      {
+        "command": "extension.insertImport",
+        "title": "Insert Import"
+      }
+    ],
+    "codeLens": [
+      {
+        "language": "kotlin"
+      }
+    ],
     "snippets": [
       {
         "language": "kotlin",
@@ -141,7 +152,7 @@
   "devDependencies": {
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
-    "@types/vscode": "^1.87.0",
+    "@types/vscode": "^1.98.0",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
     "eslint": "^8.56.0",
@@ -153,7 +164,7 @@
   },
   "dependencies": {
     "@vscode/vsce": "^2.24.0",
-    "vscode": "^1.1.37",
+    "@types/vscode": "^1.85.0",
     "web-tree-sitter": "^0.24.4"
   }
 }

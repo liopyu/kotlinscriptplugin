@@ -1,7 +1,4 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import * as vscode from 'vscode';
-import * as utils from './utils'
 import TSParser, { QueryCapture, SyntaxNode, Tree } from 'web-tree-sitter';
 import {
     VariableSymbol,
@@ -193,7 +190,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                     // l.push(range)
                     this.setCurrentScope(node, range)
                     this.processTokens(capture, builder, range);
-                } else if (filterRanges && (this.startAndEndRangeIntersect(modifiedNodeRange, range) || this.exclusiveRangeIntersect(modifiedRange, range))
+                } else if (filterRanges && (this.rangesIntersect(modifiedNodeRange, range) || this.rangesIntersect(modifiedRange, range))
                 ) {
                     // l.push(range)
                     this.handleCallExpression(node, builder);
@@ -235,7 +232,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                      new vscode.Position(expandedEndLine, document.lineAt(expandedEndLine).range.end.character)
                  );
              } */
-            if ((!normalizedRange || (normalizedRange && !this.rangesIntersect(normalizedRange, range))
+            if ((!normalizedRange || (normalizedRange && !this.startRangeIntersect(normalizedRange, range))
             )) {
                 builder.push(token.range, LEGEND.tokenTypes[token.tokenType] || "variable");
             }
@@ -463,7 +460,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         let tokenType: string = '';
         let name = capture.name
         const node = capture.node
-        //log("Capture: " + name + ', Node text: ' + node.text + ", node type: " + node.type)
+        // log("Capture: " + name + ', Node text: ' + node.text + ", node type: " + node.type)
         /*  log('Node text: ' + node.text + ", node type: " + node.type)
          log('Parent Node text: ' + node.parent?.text + ", Parent node type: " + node.parent?.type)
          log('Tokenized Node text: ' + node.parent?.child(0)?.text + ", Tokenized Node type: " + node.parent?.child(0)?.type) */
@@ -477,22 +474,24 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 }
             case 'variableIdentifier':
             case 'variable':
-
-                if (node.parent?.type === "call_expression") {
+            case 'navigation':
+                if (node.type == "navigation_expression") {
+                    const normalizedText = node.text.replace(/\s+/g, '').trim();
+                    if (availableClasses.has(normalizedText)) {
+                        let cNodes = this.treeProvider.findChildren(node, ["simple_identifier"], null);
+                        let cNode = cNodes.pop();
+                        if (cNode) {
+                            builder.push(this.treeProvider.supplyRange(cNode), 'type');
+                            break
+                        }
+                    }
+                } else if (node.parent?.type === "call_expression") {
                     const name = node.text;
                     const importEntry = [...this.treeProvider.imports.values()].find(
                         i => name === i.simpleName && !this.treeProvider.currentScope.hasVariableInScopeChain(name)
                     );
                     if (importEntry) {
                         builder.push(this.treeProvider.supplyRange(node), 'type');
-                    } else {
-                        for (const className of availableClasses) {
-                            if (name === className.split(".").pop()) {
-                                console.log(`[MATCH] Found Class in Available Classes: ${className}`);
-                                builder.push(this.treeProvider.supplyRange(node), 'type');
-                                break;
-                            }
-                        }
                     }
                     builder.push(this.treeProvider.supplyRange(node), "function");
                     break;

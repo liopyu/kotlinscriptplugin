@@ -41,6 +41,7 @@ import {
 import { TreeProvider } from './treeprovider'
 import { ImportDefinitionProvider, PeriodTypingSuggestionProvider, TypingSuggestionProvider } from './suggestionprovider';
 import { SemanticTokensProvider } from './semantictokensprovider';
+import { buildClassMap, ImportCodeLensProvider } from './codelens';
 
 
 export let availableClasses: Set<string>;
@@ -145,6 +146,51 @@ export async function activate(context: vscode.ExtensionContext) {
 			semanticTokensProvider.setLastChangedRange(lastChangedRange);
 		}
 	});
+	const importCodeLensProvider = new ImportCodeLensProvider();
+	buildClassMap(availableClasses);
+	context.subscriptions.push(
+		vscode.languages.registerCodeLensProvider(
+			{ language: 'kotlin' },
+			importCodeLensProvider
+		)
+	);
+
+	vscode.window.onDidChangeTextEditorSelection((event) => {
+		const document = event.textEditor.document;
+
+		// ✅ Force CodeLens refresh without duplication
+		importCodeLensProvider.refresh();
+
+		importCodeLensProvider.applyDecorations(document);
+	});
+
+
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand('extension.insertImport', async (document: vscode.TextDocument, className: string) => {
+			const matchingClasses = Array.from(availableClasses).filter(cls =>
+				cls.replace(/\$/g, '.').endsWith(`.${className}`)
+			);
+
+
+			if (matchingClasses.length === 0) {
+				vscode.window.showErrorMessage(`No matching classes found for '${className}'.`);
+				return;
+			}
+
+			const selectedClass = await vscode.window.showQuickPick(
+				matchingClasses.map(cls => cls.replace(/\$/g, '.')),
+				{ placeHolder: `Select the correct import for '${className}'` }
+			);
+			if (!selectedClass) return;
+			const edit = new vscode.WorkspaceEdit();
+			if (!new RegExp(`^import\\s+${selectedClass};`, 'gm').test(document.getText())) {
+				edit.insert(document.uri, new vscode.Position(0, 0), `import ${selectedClass};\n`);
+				await vscode.workspace.applyEdit(edit);
+				importCodeLensProvider.clearDecorations();
+			}
+		})
+	);
 
 
 	context.subscriptions.push(

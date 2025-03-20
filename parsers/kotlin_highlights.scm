@@ -157,6 +157,8 @@
 		(navigation_suffix
 			(simple_identifier) @function) . ))
 
+(navigation_expression) @navigation
+
 (call_expression
 	. (simple_identifier) @function.builtin
     (#any-of? @function.builtin
