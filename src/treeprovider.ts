@@ -124,36 +124,80 @@ export class TreeProvider {
         this.diagnostics = [];
     }
 
+    public validateImports(tree: TSParser.Tree, i: SyntaxNode[], modifiedRange: vscode.Range): void {
+        let importNodes = tree.rootNode.descendantsOfType("import_list");
+        const nodes: SyntaxNode[] = []
+        if (importNodes.length === 0) {
+            this.imports.clear();
+            return;
+        }
 
-    public validateImports(tree: TSParser.Tree): void {
+        const validIdentifiers = new Set<string>();
+
+        for (const node of importNodes) {
+            const identifierNodes = this.findChildren(node, ["identifier"]);
+            identifierNodes.forEach(node => {
+                const normalizedText = node.text.replace(/\s+/g, '').trim();
+                // console.log("Normalized Text: " + normalizedText)
+                validIdentifiers.add(normalizedText);
+            });
+        }
+
         const importsToRemove: string[] = [];
+
         for (const [importKey, importSymbol] of this.imports.entries()) {
-            const expectedRange = importSymbol.range;
-            const identifierNode =
-                this.findParent(tree.rootNode.descendantForPosition({
-                    row: expectedRange.start.line,
-                    column: expectedRange.start.character,
-                }), "identifier", expectedRange)
-            if (!identifierNode) {
+            if (!validIdentifiers.has(importSymbol.path)) {
                 importsToRemove.push(importKey);
-                continue;
             }
-            const actualRange = this.supplyRange(identifierNode);
-            const normalizedText = identifierNode.text.replace(/\s+/g, '').trim();
-            if (!this.rangesEqual(expectedRange, actualRange)) {
-                if (normalizedText == importSymbol.path) {
-                    importSymbol.setRange(actualRange)
+        }
+
+        importsToRemove.forEach(importKey => this.imports.delete(importKey));
+        if (t) return
+        for (const node of nodes) {
+            console.log(`[DEBUG] Processing node...`);
+            for (const [importKey, importSymbol] of this.imports.entries()) {
+                console.log(`[DEBUG] Checking import: ${importKey}`);
+                const expectedRange = importSymbol.range;
+                console.log(`[DEBUG] Expected Range: ${expectedRange.start.line}:${expectedRange.start.character} - ${expectedRange.end.line}:${expectedRange.end.character}`);
+                const adjustedExpectedRange = this.adjustRangeForShifts(
+                    expectedRange,
+                    modifiedRange,
+                    vscode.window.activeTextEditor!,
+                    true
+                );
+                console.log(`[DEBUG] Adjusted Range for '${importKey}': ${adjustedExpectedRange.start.line}:${adjustedExpectedRange.start.character} - ${adjustedExpectedRange.end.line}:${adjustedExpectedRange.end.character}`);
+                const identifierNode = node
+                if (!identifierNode) {
+                    console.warn(`[WARN] Identifier node NOT found for import '${importKey}'. Marking for removal.`);
+                    importsToRemove.push(importKey);
                     continue;
                 }
+                const actualRange = this.supplyRange(identifierNode);
+                console.log(`[DEBUG] Actual Range for '${importKey}': ${actualRange.start.line}:${actualRange.start.character} - ${actualRange.end.line}:${actualRange.end.character}`);
+                const normalizedText = identifierNode.text.replace(/\s+/g, '').trim();
+                console.log(`[DEBUG] Normalized Text for '${importKey}': ${normalizedText}`);
+                if (!this.rangesEqual(expectedRange, actualRange)) {
+                    console.log(`[INFO] Range mismatch detected for '${importKey}'`);
+                    if (normalizedText === importSymbol.path) {
+                        console.log(`[INFO] Text matches despite range mismatch. Updating range for '${importKey}'`);
+                        importSymbol.setRange(actualRange);
+                        continue;
+                    }
+                }
+                if (normalizedText !== importSymbol.path) {
+                    console.warn(`[WARN] Text mismatch for '${importKey}'. Marking for removal.`);
+                    importsToRemove.push(importKey);
+                }
             }
-            if (normalizedText !== importSymbol.path) {
-                importsToRemove.push(importKey);
+            for (const importKey of importsToRemove) {
+                console.log(`[INFO] Removing import: ${importKey}`);
+                this.imports.delete(importKey);
             }
-        }
-        for (const importKey of importsToRemove) {
-            this.imports.delete(importKey);
+
+            console.log(`[DEBUG] Import validation complete.`);
         }
     }
+
     public validateVariables(tree: TSParser.Tree, modifiedRange: vscode.Range, builder: vscode.SemanticTokensBuilder): void {
         const variablesToRemove: string[] = [];
         const modifiedVariables: Map<string, VariableSymbol> = new Map()
@@ -353,7 +397,7 @@ export class TreeProvider {
         range: vscode.Range,
         modifiedRange: vscode.Range,
         editor: vscode.TextEditor,
-        useOffset: boolean // New parameter to control offset logic
+        useOffset: boolean
     ): vscode.Range {
         const semanticTokensProvider = this.semanticTokensProvider;
         if (!semanticTokensProvider) return range;

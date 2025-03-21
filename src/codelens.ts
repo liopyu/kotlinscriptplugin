@@ -64,7 +64,7 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
         const codeLenses: vscode.CodeLens[] = [];
         const cursorPosition = vscode.window.activeTextEditor?.selection.active;
         if (!cursorPosition) return [];
-
+        const visibleRanges = vscode.window.activeTextEditor?.visibleRanges ?? [];
 
         for (let i = 0; i < document.lineCount; i++) {
             const line = document.lineAt(i);
@@ -72,17 +72,22 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
 
             while ((match = regex.exec(line.text)) !== null) {
                 const className = match[0];
-
+                const range = new vscode.Range(i, match.index, i, match.index + className.length);
+                if (!visibleRanges.some(vr => vr.intersection(range))) {
+                    continue;
+                }
                 if (!this.findMatchingClasses(className).length) {
+                    /*   console.log("No matching classes found: " + className) */
                     continue;
                 }
 
-                const range = new vscode.Range(i, match.index, i, match.index + className.length);
 
                 if (this.isClassImported(className)) {
+                    /*  console.log("Class already imported: " + className) */
                     continue;
                 }
                 if (!this.isInCorrectNode(range)) {
+                    /*  console.log("Not in correct node: " + className) */
                     continue
                 }
                 if (range.contains(cursorPosition)) {
@@ -133,19 +138,34 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
 
         return matches;
     }
-
     private isClassImported(className: string): boolean {
+        let foundInImports = false;
         for (const [fullPath, importSymbol] of this.imports.entries()) {
             if (importSymbol.simpleName === className.replace(/\$/g, '.')) {
-                return true;
+                foundInImports = true;
+                break;
             }
         }
-
-        return typingSuggestions.some(suggestion =>
-            suggestion.simpleName === className.replace(/\$/g, '.') &&
-            (!suggestion.requiresImport || this.imports.has(suggestion.fullyQualifiedName))
-        );
+        if (foundInImports) {
+            return true;
+        }
+        let foundInTypingSuggestions = false;
+        const isInTypingSuggestions = typingSuggestions.some(suggestion => {
+            const processedName = className.replace(/\$/g, '.');
+            const suggestionMatch = suggestion.simpleName === processedName;
+            const requiresImportCondition = !suggestion.requiresImport || this.imports.has(suggestion.fullyQualifiedName);
+            if (suggestionMatch && requiresImportCondition) {
+                foundInTypingSuggestions = true;
+                return true;
+            }
+            return false;
+        });
+        if (foundInTypingSuggestions) {
+        }
+        return isInTypingSuggestions;
     }
+
+
 
     private isInCorrectNode(range: vscode.Range): boolean {
         const editor = vscode.window.activeTextEditor;
@@ -162,8 +182,8 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
             treeProvider.findChildInRange(nodeAtPosition, "type_identifier", null, range)
         const delegation_specifiers = treeProvider.findParent(childNode, "delegation_specifier", range)
         const delegation_specifiers2 = treeProvider.findChildInRange(nodeAtPosition, "delegation_specifier", null, range)
-        /*   log("Node type: " + nodeAtPosition?.type + ", Node Text: " + nodeAtPosition?.text + "")
-          log("Child Node type: " + childNode?.type + ", Child Node Text: " + childNode?.text + "") */
+        /* log("Node type: " + nodeAtPosition?.type + ", Node Text: " + nodeAtPosition?.text + "")
+        log("Child Node type: " + childNode?.type + ", Child Node Text: " + childNode?.text + "") */
         if (!childNode || ((["class_declaration"].includes(nodeAtPosition.type) && childNode.type == "type_identifier" && !delegation_specifiers)) ||
             (childNode.type != "type_identifier" && !expressionTypes.includes(childNode.parent?.type ?? "")
                 && ![
@@ -185,7 +205,9 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
                     "property_delegate"
                 ].includes(childNode.parent?.type ?? ""))
 
-        ) return false;
+        ) {
+            return false;
+        }
         return true
     }
 
@@ -196,25 +218,40 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
     public applyDecorations(document: vscode.TextDocument): void {
         const editor = vscode.window.activeTextEditor;
         if (!editor) return;
+
         const cursorPosition = editor.selection.active;
         const redDecorations: vscode.DecorationOptions[] = [];
         const whiteLineDecorations: vscode.DecorationOptions[] = [];
+
+        const visibleRanges = editor.visibleRanges; // ✅ Only process visible text
+
         for (let i = 0; i < document.lineCount; i++) {
             const line = document.lineAt(i);
             let match;
+
             while ((match = regex.exec(line.text)) !== null) {
                 const className = match[0];
                 const range = new vscode.Range(i, match.index, i, match.index + className.length);
-                if (!this.isInCorrectNode(range) || (this.isClassImported(className) || !this.findMatchingClasses(className).length)) continue;
+
+                // ✅ Skip early if range is outside visible ranges
+                if (!visibleRanges.some(vr => vr.intersection(range))) {
+                    continue;
+                }
+
+                if (!this.isInCorrectNode(range) || this.isClassImported(className) || !this.findMatchingClasses(className).length) {
+                    continue;
+                }
+
                 redDecorations.push({ range });
+
                 if (range.contains(cursorPosition)) {
                     whiteLineDecorations.push({ range });
                 }
             }
         }
+
         editor.setDecorations(this.decorationType, redDecorations);
         editor.setDecorations(this.cursorDecorationType, whiteLineDecorations);
     }
-
 
 }

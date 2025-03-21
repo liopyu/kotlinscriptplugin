@@ -192,30 +192,31 @@ export async function loadAvailableClasses(ktsDirectory: string): Promise<Set<st
     }
 }
 
-export function updateTokensForDocument(
-    document: vscode.TextDocument
-) {
-    //if (t) return
+export function updateTokensForDocument(document: vscode.TextDocument) {
     const documentUri = document.uri.toString();
     const data = documentData.get(documentUri);
     if (!data) return;
-    const editor = vscode.window.visibleTextEditors.find(e => e.document.uri.toString() === documentUri);
-    if (editor) {
-        const { treeProvider } = data;
-        const changes = document.getText();
-        if (treeProvider.tree) {
-            const newTree = treeProvider.parser.parse(changes, treeProvider.tree);
-            treeProvider.tree = newTree;
-        }
-        if (!treeProvider.isUpdating) {
-            treeProvider.updateTokens();
-        }
-        /* const variableDefinitionProvider = new KotlinScriptDefinitionProvider(treeProvider.getscopedVariables());
-        context.subscriptions.push(
-            vscode.languages.registerDefinitionProvider(selector, variableDefinitionProvider)
-        ); */
-    }
+
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const { treeProvider } = data;
+    if (!treeProvider.semanticTokensProvider) return;
+
+    const visibleRange = editor.visibleRanges[0];
+    const expansion = 0
+    // ✅ Expanded range calculation with boundary protection
+    const expandedStartLine = Math.max(0, visibleRange.start.line - expansion);
+    const expandedEndLine = Math.min(document.lineCount - 1, visibleRange.end.line + expansion);
+
+    const expandedRange = new vscode.Range(
+        new vscode.Position(expandedStartLine, 0),
+        new vscode.Position(expandedEndLine, document.lineAt(expandedEndLine).text.length)
+    );
+    treeProvider.semanticTokensProvider.setLastChangedRange(expandedRange);
+    treeProvider.semanticTokensProvider.updateTokens(expandedRange);
 }
+
 export function applyTreeEdit(treeProvider: TreeProvider, change: vscode.TextDocumentContentChangeEvent, document: vscode.TextDocument): void {
     const startPosition = new vscode.Position(change.range.start.line, change.range.start.character);
     const oldEndPosition = new vscode.Position(change.range.end.line, change.range.end.character);
@@ -245,3 +246,11 @@ export function applyTreeEdit(treeProvider: TreeProvider, change: vscode.TextDoc
     });
 }
 
+
+export function debounce<T extends (...args: any[]) => void>(func: T, delay: number): T {
+    let timeoutId: NodeJS.Timeout;
+    return function (...args: Parameters<T>) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func(...args), delay);
+    } as T;
+}

@@ -164,24 +164,29 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('extension.insertImport', async (document: vscode.TextDocument, className: string, wordRange: vscode.Range) => {
+		vscode.commands.registerCommand('extension.insertImport', async (document: vscode.TextDocument, className: string) => {
 			const matchingClasses = Array.from(availableClasses).filter(cls => {
 				const processedName = cls.replace(/\$/g, '.').split('.').pop()?.trim();
 				return processedName === className.trim();
 			});
+
 			if (matchingClasses.length === 0) {
 				vscode.window.showErrorMessage(`No matching classes found for '${className}'.`);
 				return;
 			}
+
 			const selectedClass = matchingClasses.length === 1
 				? matchingClasses[0]
 				: await vscode.window.showQuickPick(
 					matchingClasses.map(cls => cls.replace(/\$/g, '.')),
 					{ placeHolder: `Select the correct import for '${className}'` }
 				);
+
 			if (!selectedClass) return;
+
 			const edit = new vscode.WorkspaceEdit();
 			const importStatement = `import ${selectedClass.replace(/\$/g, '.')}\n`;
+
 			const lines = document.getText().split('\n');
 			let packageLineIndex = -1;
 			for (let i = 0; i < lines.length; i++) {
@@ -199,9 +204,11 @@ export async function activate(context: vscode.ExtensionContext) {
 					break;
 				}
 			}
+
 			const insertPosition = packageLineIndex !== -1
 				? new vscode.Position(packageLineIndex + 1, 0)
 				: new vscode.Position(0, 0);
+
 			if (!new RegExp(`^${importStatement}`, 'gm').test(document.getText())) {
 				edit.insert(document.uri, insertPosition, importStatement);
 				await vscode.workspace.applyEdit(edit);
@@ -210,7 +217,37 @@ export async function activate(context: vscode.ExtensionContext) {
 				if (!data) return;
 				const { treeProvider, treeProvider: { semanticTokensProvider } } = data;
 				if (!treeProvider) return
-				treeProvider.semanticTokensProvider?.updateTokens()
+
+
+				let classPath = selectedClass.replace(/\$/g, '.')
+				const newP = insertPosition.translate(0, 8)
+				const nodeAtPosition = treeProvider.tree?.rootNode.descendantForPosition({
+					row: newP.line,
+					column: newP.character,
+				});
+				if (nodeAtPosition/*  && !t */) {
+					let importList = treeProvider.tree?.rootNode.descendantsOfType("import_list");
+					let importRange = treeProvider.supplyRange(nodeAtPosition);
+					let packageHeader = treeProvider.tree?.rootNode.descendantsOfType("package_header")[0];
+					if (importList && importList.length !== 0) {
+						let importListFirst = importList[0];
+						let importListLast = importList[importList.length - 1];
+						const safeStart = packageHeader
+							? treeProvider.supplyRange(packageHeader).start
+							: treeProvider.supplyRange(importListFirst).start;
+						const safeEnd = treeProvider.supplyRange(importListLast).end;
+						importRange = new vscode.Range(
+							new vscode.Position(Math.max(0, safeStart.line), Math.max(0, safeStart.character)),
+							new vscode.Position(
+								Math.min(document.lineCount - 1, safeEnd.line),
+								Math.min(document.lineAt(safeEnd.line).text.length, safeEnd.character)
+							)
+						);
+					}
+					treeProvider.semanticTokensProvider?.setLastChangedRange(importRange);
+					treeProvider.semanticTokensProvider?.updateTokens()
+				}
+
 				importCodeLensProvider.clearDecorations();
 			}
 		})
@@ -238,9 +275,23 @@ export async function activate(context: vscode.ExtensionContext) {
 			'.'
 		)
 	);
+	function debounce<T extends (...args: any[]) => void>(func: T, delay: number): T {
+		let timeoutId: NodeJS.Timeout;
+		return function (...args: Parameters<T>) {
+			clearTimeout(timeoutId);
+			timeoutId = setTimeout(() => func(...args), delay);
+		} as T;
+	}
+	const debouncedUpdateTokens = debounce((document: vscode.TextDocument) => {
+		//console.log("Acted on visible ranges changed")
+		utils.updateTokensForDocument(document);
+	}, 20);
+
 	/* vscode.window.onDidChangeTextEditorVisibleRanges(event => {
-		utils.updateTokensForDocument(event.textEditor.document);
+		//console.log("Visible ranges changed")
+		debouncedUpdateTokens(event.textEditor.document);
 	}); */
+
 
 	// Runs on start
 	let editor = vscode.window.activeTextEditor;
