@@ -155,8 +155,12 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 new vscode.Position(expandedEndLine, document.lineAt(expandedEndLine).range.end.character)
             );
         }
+        let packageHeader = tree.rootNode.descendantsOfType("package_header")[0]
         let importList = tree.rootNode.descendantsOfType("import_list")[0]
+        let packageRange = modifiedNodeRange
         let importRange = modifiedNodeRange
+        if (packageHeader)
+            packageRange = this.treeProvider.supplyRange(packageHeader)
         if (importList)
             importRange = this.treeProvider.supplyRange(importList)
         // console.log("Import Range: " + this.treeProvider.rangeToString(importRange) + ", Import List: " + importList?.text)
@@ -194,7 +198,13 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                     // l.push(range)
                     this.setCurrentScope(node, range)
                     this.processTokens(capture, builder, range);
-                } else if (filterRanges && (this.rangesIntersect(modifiedNodeRange, range) || this.rangesIntersect(modifiedRange, range) || this.rangesIntersect(importRange, range))
+                } else if (filterRanges &&
+                    (
+                        this.rangesIntersect(modifiedNodeRange, range) ||
+                        this.rangesIntersect(modifiedRange, range) ||
+                        this.rangesIntersect(importRange, range) ||
+                        this.rangesIntersect(packageRange, range)
+                    )
                 ) {
                     // l.push(range)
                     this.handleCallExpression(node, builder);
@@ -237,7 +247,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                  );
              } */
             if ((!normalizedRange || (normalizedRange && !this.startRangeIntersect(normalizedRange, range))
-            ) && !this.rangesIntersect(range, modifiedRange)) {
+            ) && (!this.rangesIntersect(range, modifiedRange) &&
+                !this.rangesIntersect(importRange, range) &&
+                !this.rangesIntersect(packageRange, range))) {
                 builder.push(token.range, LEGEND.tokenTypes[token.tokenType] || "variable");
             }
         });
@@ -770,7 +782,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
     private traverseTree(node: TSParser.SyntaxNode, builder: vscode.SemanticTokensBuilder, verifiedScopes: string[]) {
         let range = this.treeProvider.supplyRange(node);
 
-        //log('Node text: ' + node.text + ", node type: " + node.type + ", Range: " + this.treeProvider.rangeToString(range))
+        log('Node text: ' + node.text + ", node type: " + node.type + ", Range: " + this.treeProvider.rangeToString(range))
         /* if (node.type == "block") {
             console.log("Block child: " + node.firstChild?.type)
         } */

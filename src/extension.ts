@@ -210,16 +210,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				if (!data) return;
 				const { treeProvider, treeProvider: { semanticTokensProvider } } = data;
 				if (!treeProvider) return
-				const newP = insertPosition.translate(0, 8)
-				const nodeAtPosition = treeProvider.tree?.rootNode.descendantForPosition({
-					row: newP.line,
-					column: newP.character,
-				});
-				if (nodeAtPosition) {
-					let newWordRange = new vscode.Range(wordRange.start.translate(1, 0), wordRange.end.translate(1, 0))
-					treeProvider.semanticTokensProvider?.setLastChangedRange(newWordRange);
-					treeProvider.semanticTokensProvider?.updateTokens()
-				}
+				treeProvider.semanticTokensProvider?.updateTokens()
 				importCodeLensProvider.clearDecorations();
 			}
 		})

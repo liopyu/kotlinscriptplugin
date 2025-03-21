@@ -516,7 +516,9 @@ export class TreeProvider {
     }
 
     public isSpecialHandleWord(node: SyntaxNode): boolean {
-        return (node.type == "->" ||
+        return (
+            node.type == "init" ||
+            node.type == "->" ||
             node.type == "!!" ||
             node.type == "is" ||
             node.type == "?:" ||

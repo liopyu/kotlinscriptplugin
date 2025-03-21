@@ -4,7 +4,33 @@
 [Log] Loaded 1146 typing suggestions.
 [Log] Typing suggestions loaded: 1146
 [Log] Semantic Tokens Provider Initialized
-(x2) [Log] updating tokens
-(x2) [Log] document has not changed
+[Log] Node text: class ClassName {
+    init {
+        
+    }
+}, node type: source_file, Range: 0:0 - 4:1
+[Log] Node text: class ClassName {
+    init {
+        
+    }
+}, node type: class_declaration, Range: 0:0 - 4:1
+[Log] Node text: class, node type: class, Range: 0:0 - 0:5
+[Log] Node text: ClassName, node type: type_identifier, Range: 0:6 - 0:15
+[Log] Node text: {
+    init {
+        
+    }
+}, node type: class_body, Range: 0:16 - 4:1
+[Log] Node text: {, node type: {, Range: 0:16 - 0:17
+[Log] Node text: init {
+        
+    }, node type: anonymous_initializer, Range: 1:4 - 3:5
+[Log] Node text: init, node type: init, Range: 1:4 - 1:8
+[Log] Node text: {
+        
+    }, node type: block, Range: 1:9 - 3:5
+[Log] Node text: {, node type: {, Range: 1:9 - 1:10
+[Log] Node text: }, node type: }, Range: 3:4 - 3:5
+[Log] Node text: }, node type: }, Range: 4:0 - 4:1
 [Log] updating tokens
 [Log] document has not changed
