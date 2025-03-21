@@ -109,7 +109,7 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
         codeLens.command = {
             title: `💠 Import Class ↪ ${className}`,
             command: 'extension.insertImport',
-            arguments: [document, className]
+            arguments: [document, className, codeLens.range]
         };
 
         return codeLens;
@@ -162,11 +162,9 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
             treeProvider.findChildInRange(nodeAtPosition, "type_identifier", null, range)
         const delegation_specifiers = treeProvider.findParent(childNode, "delegation_specifier", range)
         const delegation_specifiers2 = treeProvider.findChildInRange(nodeAtPosition, "delegation_specifier", null, range)
-        /*  log("Node type: " + nodeAtPosition?.type + ", Node Text: " + nodeAtPosition?.text + "")
-         log("Child Node type: " + childNode?.type + ", Child Node Text: " + childNode?.text + "")
-         log("Delegations: " + delegation_specifiers?.type + ", Delegations text: " + delegation_specifiers?.text + "")
-         log("Delegations2: " + delegation_specifiers2?.type + ", Delegations2 text: " + delegation_specifiers2?.text + "") */
-        if (!childNode || (["class_declaration"].includes(nodeAtPosition.type) && childNode.type == "type_identifier" && !delegation_specifiers) ||
+        /*   log("Node type: " + nodeAtPosition?.type + ", Node Text: " + nodeAtPosition?.text + "")
+          log("Child Node type: " + childNode?.type + ", Child Node Text: " + childNode?.text + "") */
+        if (!childNode || ((["class_declaration"].includes(nodeAtPosition.type) && childNode.type == "type_identifier" && !delegation_specifiers)) ||
             (childNode.type != "type_identifier" && !expressionTypes.includes(childNode.parent?.type ?? "")
                 && ![
                     "assignment",
@@ -186,6 +184,7 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
                     "explicit_delegation",
                     "property_delegate"
                 ].includes(childNode.parent?.type ?? ""))
+
         ) return false;
         return true
     }

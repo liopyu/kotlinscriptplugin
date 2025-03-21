@@ -155,7 +155,11 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 new vscode.Position(expandedEndLine, document.lineAt(expandedEndLine).range.end.character)
             );
         }
-
+        let importList = tree.rootNode.descendantsOfType("import_list")[0]
+        let importRange = modifiedNodeRange
+        if (importList)
+            importRange = this.treeProvider.supplyRange(importList)
+        // console.log("Import Range: " + this.treeProvider.rangeToString(importRange) + ", Import List: " + importList?.text)
         // m.push(modifiedNodeRange)
 
         //console.log("Modifying node: " + modifiedNode.type + ", Range: " + this.treeProvider.rangeToString(modifiedNodeRange))
@@ -190,7 +194,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                     // l.push(range)
                     this.setCurrentScope(node, range)
                     this.processTokens(capture, builder, range);
-                } else if (filterRanges && (this.rangesIntersect(modifiedNodeRange, range) || this.rangesIntersect(modifiedRange, range))
+                } else if (filterRanges && (this.rangesIntersect(modifiedNodeRange, range) || this.rangesIntersect(modifiedRange, range) || this.rangesIntersect(importRange, range))
                 ) {
                     // l.push(range)
                     this.handleCallExpression(node, builder);
@@ -766,7 +770,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
     private traverseTree(node: TSParser.SyntaxNode, builder: vscode.SemanticTokensBuilder, verifiedScopes: string[]) {
         let range = this.treeProvider.supplyRange(node);
 
-        // log('Node text: ' + node.text + ", node type: " + node.type + ", Range: " + this.treeProvider.rangeToString(range))
+        //log('Node text: ' + node.text + ", node type: " + node.type + ", Range: " + this.treeProvider.rangeToString(range))
         /* if (node.type == "block") {
             console.log("Block child: " + node.firstChild?.type)
         } */

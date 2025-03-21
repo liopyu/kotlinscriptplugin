@@ -164,40 +164,62 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('extension.insertImport', async (document: vscode.TextDocument, className: string) => {
+		vscode.commands.registerCommand('extension.insertImport', async (document: vscode.TextDocument, className: string, wordRange: vscode.Range) => {
 			const matchingClasses = Array.from(availableClasses).filter(cls => {
 				const processedName = cls.replace(/\$/g, '.').split('.').pop()?.trim();
 				return processedName === className.trim();
 			});
-
 			if (matchingClasses.length === 0) {
 				vscode.window.showErrorMessage(`No matching classes found for '${className}'.`);
 				return;
 			}
-
 			const selectedClass = matchingClasses.length === 1
 				? matchingClasses[0]
 				: await vscode.window.showQuickPick(
 					matchingClasses.map(cls => cls.replace(/\$/g, '.')),
 					{ placeHolder: `Select the correct import for '${className}'` }
 				);
-
 			if (!selectedClass) return;
-
 			const edit = new vscode.WorkspaceEdit();
 			const importStatement = `import ${selectedClass.replace(/\$/g, '.')}\n`;
-
-			const packageLineIndex = document.getText()
-				.split('\n')
-				.findIndex(line => line.trim().startsWith('package '));
-
+			const lines = document.getText().split('\n');
+			let packageLineIndex = -1;
+			for (let i = 0; i < lines.length; i++) {
+				const line = lines[i].trim();
+				if (line.startsWith('package ')) {
+					packageLineIndex = i;
+					for (let j = i + 1; j < lines.length; j++) {
+						const nextLine = lines[j].trim();
+						if (nextLine.startsWith('.')) {
+							packageLineIndex = j;
+						} else if (nextLine !== '') {
+							break;
+						}
+					}
+					break;
+				}
+			}
 			const insertPosition = packageLineIndex !== -1
 				? new vscode.Position(packageLineIndex + 1, 0)
 				: new vscode.Position(0, 0);
-
 			if (!new RegExp(`^${importStatement}`, 'gm').test(document.getText())) {
 				edit.insert(document.uri, insertPosition, importStatement);
 				await vscode.workspace.applyEdit(edit);
+				const documentUri = document.uri.toString();
+				const data = documentData.get(documentUri);
+				if (!data) return;
+				const { treeProvider, treeProvider: { semanticTokensProvider } } = data;
+				if (!treeProvider) return
+				const newP = insertPosition.translate(0, 8)
+				const nodeAtPosition = treeProvider.tree?.rootNode.descendantForPosition({
+					row: newP.line,
+					column: newP.character,
+				});
+				if (nodeAtPosition) {
+					let newWordRange = new vscode.Range(wordRange.start.translate(1, 0), wordRange.end.translate(1, 0))
+					treeProvider.semanticTokensProvider?.setLastChangedRange(newWordRange);
+					treeProvider.semanticTokensProvider?.updateTokens()
+				}
 				importCodeLensProvider.clearDecorations();
 			}
 		})
