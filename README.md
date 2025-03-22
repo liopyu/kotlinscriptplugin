@@ -26,7 +26,7 @@ val list: ArrayList<Int> = arrayOf()
 val number = Random.nextInt(0, 100) 
 ```
 
-![Import Highlighting](https://i.ibb.co/JWhF8zt7/image.png)
+<img src="https://i.ibb.co/JWhF8zt7/image.png" alt="image" border="0" />
 
 In this example:  
 - `import` keywords are highlighted as **keywords**.  
@@ -48,7 +48,7 @@ fun calculateSum(numbers: List<Int>): Int {
 }
 ```
 
-![Variable Highlighting](https://i.ibb.co/Lsqxn23/image.png)
+<img src="https://i.ibb.co/Lsqxn23/image.png" alt="image" border="0" />
 
 In this example:  
 - Scoped variables like `sum` and `number` are highlighted for clarity within their respective scopes.  
@@ -70,7 +70,7 @@ val date = kotlin.math.cos()
 val list = listOf(1, 2, 3) 
 ```
 
-![Base Class Suggestion](https://i.ibb.co/WN3RTVqG/image.png)
+<img src="https://i.ibb.co/WN3RTVqG/image.png" alt="image" border="0" />
 
 ---
 
