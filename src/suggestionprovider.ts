@@ -43,7 +43,8 @@ export class TypingSuggestionProvider implements vscode.CompletionItemProvider {
             return;
         }
 
-        const treeProvider = data.treeProvider;
+        const treeProvider = data.semanticTokensProvider?.treeProvider;
+        if (!treeProvider) return
         const tree = treeProvider.tree
         if (!tree) {
             console.log("No syntax tree available for this document.");
@@ -192,7 +193,8 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             return;
         }
 
-        const treeProvider = data.treeProvider;
+        const treeProvider = data.semanticTokensProvider?.treeProvider;
+        if (!treeProvider) return
         const tree = treeProvider.tree
         if (!tree) {
             console.log("No syntax tree available for this document.");
@@ -279,7 +281,8 @@ export class ImportDefinitionProvider implements vscode.CompletionItemProvider {
             console.log("No tree provider data found for this document.");
             return;
         }
-        const treeProvider = data.treeProvider;
+        const treeProvider = data.semanticTokensProvider?.treeProvider;
+        if (!treeProvider) return
         const tree = treeProvider.tree;
         if (!tree) {
             console.log("No syntax tree available for this document.");

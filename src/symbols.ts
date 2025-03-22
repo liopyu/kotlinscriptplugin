@@ -4,6 +4,7 @@ import { TreeProvider } from './treeprovider';
 import { log, error, warn } from './extension';
 import { console } from './extension'
 import { documentData } from './constants';
+import { currentEditor } from './semantictokensprovider';
 class Symbol {
     name: string;
     type: string | null;
@@ -27,6 +28,7 @@ export class Scope {
     endPoint: vscode.Position | null = null;
     paramScope: boolean
     childScopeId: string | null
+    document: vscode.TextDocument | undefined
     constructor(parentScope: Scope | null, startPoint: vscode.Position | null, paramScope: boolean = false, childScopeId: string | null = null) {
         this.depth = parentScope ? parentScope.depth + 1 : 0;
         this.parentScope = parentScope;
@@ -36,6 +38,7 @@ export class Scope {
         this.paramScope = paramScope
         this.childScopeId = childScopeId
         this.id = parentScope ? `${startPoint?.line}:${startPoint?.character}:` + (parentScope.depth + 1) : `0:0:0`
+
     }
 
 
@@ -128,12 +131,13 @@ export class Scope {
         }
         const childId = this.childScopeId
         if (childId) {
-            let editor = vscode.window.activeTextEditor;
+            if (!this.document) return false
+            let editor = currentEditor(this.document);
             if (editor) {
                 const documentUri = editor.document.uri.toString();
                 const data = documentData.get(documentUri);
                 if (data) {
-                    let childScope: Scope | null | undefined = data.treeProvider.scopes.get(childId)
+                    let childScope: Scope | null | undefined = data.semanticTokensProvider?.treeProvider.scopes.get(childId)
 
                     while (childScope) {
                         const found = Array.from(childScope.variables.keys()).some(key => {

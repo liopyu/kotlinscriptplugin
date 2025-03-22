@@ -66,7 +66,6 @@ const ktsDirectory = config.get<string>('ktsDirectory', 'config/scripts');
 export const absoluteKtsDirectory = path.isAbsolute(ktsDirectory) ? ktsDirectory : path.join(vscode.workspace.rootPath || '', ktsDirectory);
 export async function activate(context: vscode.ExtensionContext) {
 	util = utils.Utils.getInstance(context);
-
 	await TSParser.init();
 	availableClasses = await utils.loadAvailableClasses(absoluteKtsDirectory);
 	typingSuggestions = await utils.loadTypingSuggestions(absoluteKtsDirectory);
@@ -87,28 +86,43 @@ export async function activate(context: vscode.ExtensionContext) {
 		{ language: 'kotlin', scheme: 'file', pattern: path.join(absoluteKtsDirectory, '**/*.kts') }
 	];
 
-	function addDocumentIfNotExists(document: vscode.TextDocument) {
+	function addDocumentIfNotExists(document: vscode.TextDocument, editor: vscode.TextEditor) {
 		const documentUri = document.uri.toString();
 		if (!document.fileName.endsWith(".kts")) return;
-
 		if (!documentData.has(documentUri)) {
 			const treeProvider = new TreeProvider(parser, document);
+			const importCodeLensProvider = new ImportCodeLensProvider(editor.document);
+			let newProvider = new SemanticTokensProvider(treeProvider, highlightQuery, importCodeLensProvider)
+			treeProvider.semanticTokensProvider = newProvider
+			const documentSpecificSelector: vscode.DocumentSelector = [
+				{ language: 'kotlin', scheme: 'file', pattern: document.uri.fsPath }
+			];
 			documentData.set(documentUri, {
-				treeProvider: treeProvider,
-				document: document
+				semanticTokensProvider: newProvider
 			});
+			console.log("Registering new provider: " + document.uri.toString())
+			context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider(
+				documentSpecificSelector,
+				newProvider,
+				LEGEND
+			));
+			context.subscriptions.push(
+				vscode.languages.registerCodeLensProvider(
+					documentSpecificSelector,
+					importCodeLensProvider
+				)
+			);
 		}
 	}
-
 	vscode.workspace.onDidCloseTextDocument(document => {
 		const documentUri = document.uri.toString();
 		console.log("Closed document: " + documentUri);
 		if (documentData.has(documentUri)) {
 			const data = documentData.get(documentUri);
 			console.log("Data found: " + data);
-			if (data?.treeProvider?.diagnosticCollection) {
+			if (data?.semanticTokensProvider?.treeProvider?.diagnosticCollection) {
 				console.log("Clearing diagnostics for closed document: " + documentUri);
-				data.treeProvider.diagnosticCollection.clear();
+				data.semanticTokensProvider?.treeProvider.diagnosticCollection.clear();
 			}
 
 			documentData.delete(documentUri);
@@ -118,7 +132,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		const documentUri = event.document.uri.toString();
 		const data = documentData.get(documentUri);
 		if (!data) return;
-		const { treeProvider, treeProvider: { semanticTokensProvider } } = data;
+		let treeProvider = data.semanticTokensProvider?.treeProvider
+		if (!treeProvider) return
 		let lastChangedRange: vscode.Range | null = null;
 		event.contentChanges.forEach(change => {
 			if (treeProvider.tree) {
@@ -136,30 +151,28 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (!lastChangedRange || range.start.isBefore(lastChangedRange.start)) {
 				lastChangedRange = range;
 			}
-			/* console.log("Changed range: " + treeProvider.rangeToString(range))
-			editor?.setDecorations(VariableDecorationType, [range]) */
 		});
 		if (event.contentChanges.length > 0 && treeProvider.tree) {
 			treeProvider.tree = treeProvider.parser.parse(event.document.getText(), treeProvider.tree);
 		}
-		if (lastChangedRange && semanticTokensProvider) {
-			semanticTokensProvider.setLastChangedRange(lastChangedRange);
+		if (lastChangedRange && data.semanticTokensProvider) {
+			data.semanticTokensProvider.setLastChangedRange(lastChangedRange);
 		}
 	});
-	const importCodeLensProvider = new ImportCodeLensProvider();
+
 	buildClassMap(availableClasses);
-	context.subscriptions.push(
-		vscode.languages.registerCodeLensProvider(
-			{ language: 'kotlin' },
-			importCodeLensProvider
-		)
-	);
+
 
 	vscode.window.onDidChangeTextEditorSelection((event) => {
 		const document = event.textEditor.document;
-		if (document.languageId === 'kotlin' && (document.fileName.endsWith('.kts') || document.uri.fsPath.startsWith(absoluteKtsDirectory))) {
-			importCodeLensProvider.refresh();
-			importCodeLensProvider.applyDecorations(document);
+		const documentUri = document?.uri.toString();
+		if (documentUri) {
+			let data = documentData.get(documentUri)
+			if (data)
+				if (document && document.languageId === 'kotlin' && (document.fileName.endsWith('.kts') || document.uri.fsPath.startsWith(absoluteKtsDirectory))) {
+					data.semanticTokensProvider?.codeLens?.refresh();
+					data.semanticTokensProvider?.codeLens?.applyDecorations(document);
+				}
 		}
 	});
 
@@ -215,7 +228,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				const documentUri = document.uri.toString();
 				const data = documentData.get(documentUri);
 				if (!data) return;
-				const { treeProvider, treeProvider: { semanticTokensProvider } } = data;
+				let treeProvider = data.semanticTokensProvider?.treeProvider
 				if (!treeProvider) return
 
 
@@ -245,10 +258,10 @@ export async function activate(context: vscode.ExtensionContext) {
 						);
 					}
 					treeProvider.semanticTokensProvider?.setLastChangedRange(importRange);
-					treeProvider.semanticTokensProvider?.updateTokens()
+					treeProvider.semanticTokensProvider?.updateTokens(document)
 				}
 
-				importCodeLensProvider.clearDecorations();
+				data.semanticTokensProvider?.codeLens?.clearDecorations();
 			}
 		})
 	);
@@ -283,83 +296,62 @@ export async function activate(context: vscode.ExtensionContext) {
 		} as T;
 	}
 	const debouncedUpdateTokens = debounce((document: vscode.TextDocument) => {
-		//console.log("Acted on visible ranges changed")
-		utils.updateTokensForDocument(document);
-	}, 20);
+		const documentUri = document?.uri.toString();
+		if (documentUri) {
+			let data = documentData.get(documentUri)
+			if (data)
+				if (document && document.languageId === 'kotlin' && (document.fileName.endsWith('.kts') || document.uri.fsPath.startsWith(absoluteKtsDirectory))) {
+					data.semanticTokensProvider?.codeLens?.refresh();
+					data.semanticTokensProvider?.codeLens?.applyDecorations(document);
+				}
+		}
+	}, 200);
 
-	/* vscode.window.onDidChangeTextEditorVisibleRanges(event => {
+	vscode.window.onDidChangeTextEditorVisibleRanges(event => {
 		//console.log("Visible ranges changed")
 		debouncedUpdateTokens(event.textEditor.document);
-	}); */
+	});
 
 
 	// Runs on start
 	let editor = vscode.window.activeTextEditor;
 	if (editor) {
-		addDocumentIfNotExists(editor.document);
-		var doc = documentData.get(editor.document.uri.toString())
-		if (doc) {
-			if (semanticTokensEnabled) {
-				doc.treeProvider.semanticTokensProvider = new SemanticTokensProvider(doc.treeProvider, highlightQuery);
-				context.subscriptions.push(
-					vscode.languages.registerDocumentSemanticTokensProvider(selector, doc.treeProvider.semanticTokensProvider, LEGEND)
-				);
-			}
-		}
+		addDocumentIfNotExists(editor.document, editor);
 	}
 
 
-	let semanticTokensProvider: vscode.Disposable | null = null;
-
 	vscode.window.onDidChangeActiveTextEditor(async (editor) => {
+		console.log("Changed active text editors")
 		const document = editor?.document;
-		if (document && document.languageId === 'kotlin' && (document.fileName.endsWith('.kts') || document.uri.fsPath.startsWith(absoluteKtsDirectory))) {
-			importCodeLensProvider.refresh();
-			importCodeLensProvider.applyDecorations(document);
+		const documentUri = document?.uri.toString();
+		if (editor) {
+			addDocumentIfNotExists(editor.document, editor);
 		}
-		if (editor && editor.document.fileName.endsWith(".kts")) {
-			addDocumentIfNotExists(editor.document);
-
-			const doc = documentData.get(editor.document.uri.toString());
-			if (doc) {
-				if (semanticTokensProvider) {
-					semanticTokensProvider.dispose();
+		if (documentUri) {
+			let data = documentData.get(documentUri)
+			if (data)
+				if (document && document.languageId === 'kotlin' && (document.fileName.endsWith('.kts') || document.uri.fsPath.startsWith(absoluteKtsDirectory))) {
+					console.log("Changed active document: " + documentUri)
+					//data.document = document
+					//data.semanticTokensProvider?.treeProvider?.document = document
+					data.semanticTokensProvider?.codeLens?.refresh();
+					data.semanticTokensProvider?.codeLens?.applyDecorations(document);
 				}
-
-				doc.treeProvider.semanticTokensProvider = new SemanticTokensProvider(doc.treeProvider, highlightQuery);
-				semanticTokensProvider = vscode.languages.registerDocumentSemanticTokensProvider(
-					selector,
-					doc.treeProvider.semanticTokensProvider,
-					LEGEND
-				);
-
-				context.subscriptions.push(semanticTokensProvider);
-
-			}
 		}
 	});
 
 
 
 	vscode.window.onDidChangeVisibleTextEditors(editors => {
+		console.log("Changed visible text editors")
 		const openUris = new Set(editors.map(editor => editor.document.uri.toString()));
-
 		for (const editor of editors) {
-			if (editor.document.fileName.endsWith(".kts")) {
-				addDocumentIfNotExists(editor.document);
-			}
-		}
-
-		for (const documentUri of documentData.keys()) {
-			if (!openUris.has(documentUri)) {
-				documentData.delete(documentUri);
+			console.log("Open Document: " + editor.document.uri.toString())
+			if (editor) {
+				addDocumentIfNotExists(editor.document, editor);
 			}
 		}
 	});
-
-	/* context.subscriptions.push(
-		vscode.languages.registerOnTypeFormattingEditProvider(selector, new KotlinOnTypeFormattingProvider(), "\n")
-	); */
 }
 export function deactivate() {
 	if (util.flushInterval) clearInterval(util.flushInterval);

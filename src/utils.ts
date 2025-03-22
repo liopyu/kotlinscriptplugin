@@ -18,6 +18,7 @@ import {
     documentData,
     semanticTokensEnabled
 } from './constants'
+import { currentEditor } from './semantictokensprovider';
 let cachedTypingSuggestions: TypingSuggestion[] | null = null;
 export class Utils {
     private static instance: Utils | null = null;
@@ -197,11 +198,12 @@ export function updateTokensForDocument(document: vscode.TextDocument) {
     const data = documentData.get(documentUri);
     if (!data) return;
 
-    const editor = vscode.window.activeTextEditor;
+    let editor = currentEditor(document);
     if (!editor) return;
 
-    const { treeProvider } = data;
-    if (!treeProvider.semanticTokensProvider) return;
+    let treeProvider = data.semanticTokensProvider?.treeProvider
+    if (!treeProvider) return;
+    if (!data.semanticTokensProvider) return;
 
     const visibleRange = editor.visibleRanges[0];
     const expansion = 0
@@ -213,8 +215,8 @@ export function updateTokensForDocument(document: vscode.TextDocument) {
         new vscode.Position(expandedStartLine, 0),
         new vscode.Position(expandedEndLine, document.lineAt(expandedEndLine).text.length)
     );
-    treeProvider.semanticTokensProvider.setLastChangedRange(expandedRange);
-    treeProvider.semanticTokensProvider.updateTokens(expandedRange);
+    data.semanticTokensProvider.setLastChangedRange(expandedRange);
+    data.semanticTokensProvider.updateTokens(document, expandedRange);
 }
 
 export function applyTreeEdit(treeProvider: TreeProvider, change: vscode.TextDocumentContentChangeEvent, document: vscode.TextDocument): void {

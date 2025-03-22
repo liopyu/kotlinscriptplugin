@@ -4,6 +4,7 @@ import { documentData, expressionTypes } from './constants';
 import { ImportSymbol } from './symbols';
 import { log, warn, error } from './extension';
 import { console } from './extension'
+import { currentEditor } from './semantictokensprovider';
 const indexedClassMap: Map<string, Map<string, string[]>> = new Map();
 const regex = /(?<!\.\s*?)\b\w+\b/g;
 export function buildClassMap(availableClasses: Set<string>): void {
@@ -35,6 +36,10 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
     private cursorDecorationType = vscode.window.createTextEditorDecorationType({
         textDecoration: 'underline solid rgba(242, 243, 210, 0.61)'
     });
+    public document: vscode.TextDocument;
+    constructor(document: vscode.TextDocument) {
+        this.document = document;
+    }
     public refresh(): void {
         this.onDidChangeCodeLensesEmitter.fire();
     }
@@ -52,7 +57,8 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
         if (!data) {
             return;
         }
-        const treeProvider = data.treeProvider;
+        const treeProvider = data.semanticTokensProvider?.treeProvider;
+        if (!treeProvider) return
         const tree = treeProvider.tree;
         if (!tree) {
             return;
@@ -62,9 +68,10 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
         this.applyDecorations(document);
 
         const codeLenses: vscode.CodeLens[] = [];
-        const cursorPosition = vscode.window.activeTextEditor?.selection.active;
+        let editor = currentEditor(treeProvider.document);
+        const cursorPosition = editor?.selection.active;
         if (!cursorPosition) return [];
-        const visibleRanges = vscode.window.activeTextEditor?.visibleRanges ?? [];
+        const visibleRanges = editor?.visibleRanges ?? [];
 
         for (let i = 0; i < document.lineCount; i++) {
             const line = document.lineAt(i);
@@ -104,8 +111,8 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
         codeLens: vscode.CodeLens,
         token: vscode.CancellationToken
     ): Promise<vscode.CodeLens> {
-
-        const document = vscode.window.activeTextEditor?.document;
+        let editor = currentEditor(this.document);
+        const document = editor?.document;
         if (!document) return codeLens;
 
         const wordRange = document.getWordRangeAtPosition(codeLens.range.start);
@@ -168,10 +175,10 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
 
 
     private isInCorrectNode(range: vscode.Range): boolean {
-        const editor = vscode.window.activeTextEditor;
+        let editor = currentEditor(this.document);
         if (!editor) return false;
         const character = range.start.character - 1;
-        const treeProvider = documentData.get(editor.document.uri.toString())?.treeProvider
+        const treeProvider = documentData.get(editor.document.uri.toString())?.semanticTokensProvider?.treeProvider
         const rootNode = treeProvider?.tree?.rootNode;
         if (!rootNode) return false;
         const nodeAtPosition = rootNode.descendantForPosition({
@@ -212,11 +219,12 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
     }
 
     public clearDecorations(): void {
-        vscode.window.activeTextEditor?.setDecorations(this.decorationType, []);
-        vscode.window.activeTextEditor?.setDecorations(this.cursorDecorationType, []);
+        let editor = currentEditor(this.document);
+        editor?.setDecorations(this.decorationType, []);
+        editor?.setDecorations(this.cursorDecorationType, []);
     }
     public applyDecorations(document: vscode.TextDocument): void {
-        const editor = vscode.window.activeTextEditor;
+        let editor = currentEditor(this.document);
         if (!editor) return;
 
         const cursorPosition = editor.selection.active;

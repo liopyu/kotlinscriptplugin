@@ -36,7 +36,7 @@ import {
 } from './constants'
 import { log, error, warn } from './extension';
 import { console } from './extension'
-import { SemanticTokensProvider } from './semantictokensprovider';
+import { currentEditor, SemanticTokensProvider } from './semantictokensprovider';
 export class TreeProvider {
     public semanticTokensProvider: SemanticTokensProvider | undefined = undefined
     public varId: number
@@ -64,10 +64,11 @@ export class TreeProvider {
     public document: vscode.TextDocument
     public duplicateVars: Map<string, VariableSymbol> = new Map()
     constructor(parser: TSParser, document: vscode.TextDocument) {
-
         this.parser = parser;
         this.document = document
         this.scopes.set(this.currentScope.id, this.currentScope)
+        this.currentScope.document = document
+        this.semanticTokensProvider = documentData.get(this.document.uri.toString())?.semanticTokensProvider
         this.varId = 0
         const fullText = document.getText();
         this.tree = this.parser.parse(fullText);
@@ -102,7 +103,8 @@ export class TreeProvider {
         this.variableBlue = []
         this.purpleType = []
         this.importRanges = []
-        const uri = vscode.window.activeTextEditor?.document.uri;
+        let editor = currentEditor(this.document);
+        const uri = editor?.document.uri;
         if (uri) {
             this.diagnosticsMap.set(uri.toString(), []);
             this.diagnosticCollection.set(uri, []);
@@ -152,50 +154,6 @@ export class TreeProvider {
         }
 
         importsToRemove.forEach(importKey => this.imports.delete(importKey));
-        if (t) return
-        for (const node of nodes) {
-            console.log(`[DEBUG] Processing node...`);
-            for (const [importKey, importSymbol] of this.imports.entries()) {
-                console.log(`[DEBUG] Checking import: ${importKey}`);
-                const expectedRange = importSymbol.range;
-                console.log(`[DEBUG] Expected Range: ${expectedRange.start.line}:${expectedRange.start.character} - ${expectedRange.end.line}:${expectedRange.end.character}`);
-                const adjustedExpectedRange = this.adjustRangeForShifts(
-                    expectedRange,
-                    modifiedRange,
-                    vscode.window.activeTextEditor!,
-                    true
-                );
-                console.log(`[DEBUG] Adjusted Range for '${importKey}': ${adjustedExpectedRange.start.line}:${adjustedExpectedRange.start.character} - ${adjustedExpectedRange.end.line}:${adjustedExpectedRange.end.character}`);
-                const identifierNode = node
-                if (!identifierNode) {
-                    console.warn(`[WARN] Identifier node NOT found for import '${importKey}'. Marking for removal.`);
-                    importsToRemove.push(importKey);
-                    continue;
-                }
-                const actualRange = this.supplyRange(identifierNode);
-                console.log(`[DEBUG] Actual Range for '${importKey}': ${actualRange.start.line}:${actualRange.start.character} - ${actualRange.end.line}:${actualRange.end.character}`);
-                const normalizedText = identifierNode.text.replace(/\s+/g, '').trim();
-                console.log(`[DEBUG] Normalized Text for '${importKey}': ${normalizedText}`);
-                if (!this.rangesEqual(expectedRange, actualRange)) {
-                    console.log(`[INFO] Range mismatch detected for '${importKey}'`);
-                    if (normalizedText === importSymbol.path) {
-                        console.log(`[INFO] Text matches despite range mismatch. Updating range for '${importKey}'`);
-                        importSymbol.setRange(actualRange);
-                        continue;
-                    }
-                }
-                if (normalizedText !== importSymbol.path) {
-                    console.warn(`[WARN] Text mismatch for '${importKey}'. Marking for removal.`);
-                    importsToRemove.push(importKey);
-                }
-            }
-            for (const importKey of importsToRemove) {
-                console.log(`[INFO] Removing import: ${importKey}`);
-                this.imports.delete(importKey);
-            }
-
-            console.log(`[DEBUG] Import validation complete.`);
-        }
     }
 
     public validateVariables(tree: TSParser.Tree, modifiedRange: vscode.Range, builder: vscode.SemanticTokensBuilder): void {
@@ -203,7 +161,7 @@ export class TreeProvider {
         const modifiedVariables: Map<string, VariableSymbol> = new Map()
         //console.log("Starting variable validation...");
 
-        const editor = vscode.window.activeTextEditor;
+        let editor = currentEditor(this.document);
         if (!editor) {
             console.log("No active editor detected. Skipping variable validation.");
             return;
@@ -224,7 +182,7 @@ export class TreeProvider {
             const [variableName, scopeId, rangeKey] = variableKey.split("@");
             const expectedRange = variableSymbol.range;
 
-            const adjustedExpectedRange = this.adjustRangeForShifts(expectedRange, modifiedRange, vscode.window.activeTextEditor!, true);
+            const adjustedExpectedRange = this.adjustRangeForShifts(expectedRange, modifiedRange, editor, true);
             // this.processVariableDeclaration(variableSymbol.node, null, variableSymbol.range, builder)
             // if (t) return
             /*   console.log(`Checking scoped variable '${variableName}'`);
@@ -804,7 +762,8 @@ export class TreeProvider {
         return new vscode.Diagnostic(range, message, severity);
     }
     public addDiagnostics(diagnostics: vscode.Diagnostic[]): void {
-        const uri = vscode.window.activeTextEditor?.document.uri;
+        let editor = currentEditor(this.document);
+        const uri = editor?.document.uri;
         if (!uri) return;
         const currentDiagnostics = this.diagnosticsMap.get(uri.toString()) || [];
         const newDiagnostics = diagnostics.filter(newDiagnostic =>
@@ -824,13 +783,14 @@ export class TreeProvider {
     public provideErrorKey(start: vscode.Position, end: vscode.Position, errorMessage: string): string {
         return `${start.line}@${start.character}@${end.line}@${end.character}@${errorMessage}`;
     }
-    public static addError(range: vscode.Range, message: string, errorText: string, severity: vscode.DiagnosticSeverity = vscode.DiagnosticSeverity.Error) {
-        let editor = vscode.window.activeTextEditor;
+    public static addError(document: vscode.TextDocument, range: vscode.Range, message: string, errorText: string, severity: vscode.DiagnosticSeverity = vscode.DiagnosticSeverity.Error) {
+        let editor = currentEditor(document);
         if (editor) {
             const documentUri = editor.document.uri.toString();
             const data = documentData.get(documentUri);
             if (data) {
-                const treeProvider = data.treeProvider
+                const treeProvider = data.semanticTokensProvider?.treeProvider
+                if (!treeProvider) return
                 const errorKey = treeProvider.provideErrorKey(range.start, range.end, message);
                 if (!treeProvider.diagnosticsValues.has(errorKey)) {
                     treeProvider.diagnostics.push(treeProvider.createDiagnostic(range, message, severity));
@@ -862,7 +822,7 @@ export class TreeProvider {
                 return;
             } else {
                 const errorMessage = `Cannot define reserved identifier: '${variableName}'`;
-                TreeProvider.addError(range, errorMessage, variableName);
+                TreeProvider.addError(this.document, range, errorMessage, variableName);
                 return;
             }
         }
@@ -871,7 +831,7 @@ export class TreeProvider {
         const isExactDuplicate = existingVars.some(v => v.varKey === varKey);
         if (existingVars.length > 0 && !isExactDuplicate && identifierNode.parent?.type != "lambda_parameters") {
             const errorMessage = `Variable "${variableName}" is already defined in the current scope.`;
-            TreeProvider.addError(range, errorMessage, variableName, vscode.DiagnosticSeverity.Error);
+            TreeProvider.addError(this.document, range, errorMessage, variableName, vscode.DiagnosticSeverity.Error);
             builder.push(range, "enumMember");
             /* const duplicateVariableSymbol = new VariableSymbol(
                 variableName,
@@ -952,7 +912,7 @@ export class TreeProvider {
     exitScope(node: SyntaxNode): void {
         let parentScope = this.currentScope.parentScope
         if (!parentScope) {
-            TreeProvider.addError(this.supplyRange(node), "Cannot exit global scope", node.text)
+            TreeProvider.addError(this.document, this.supplyRange(node), "Cannot exit global scope", node.text)
             return;
         }
         if (this.currentScope.childScopeId != null) {
@@ -971,7 +931,7 @@ export class TreeProvider {
         return pos1.line === pos2.line && pos1.character === pos2.character;
     }
     public traverseBrackets(node: TSParser.SyntaxNode) {
-        let editor = vscode.window.activeTextEditor;
+        let editor = currentEditor(this.document);
         if (!editor) return;
 
         let green: vscode.Range[] = [];
