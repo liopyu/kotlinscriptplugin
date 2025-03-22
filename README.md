@@ -32,7 +32,7 @@ In this example:
 - `import` keywords are highlighted as **keywords**.  
 - Imported namespaces like `java.util` and `kotlin.random` are highlighted as **types**.  
 - The `nextInt` function is highlighted as a **function**.  
-- CodeLens will suggest imports if undefined variables match known available classes.  
+- CodeLens will suggest imports if undefined variables match known available classes and will add them at the top of the imports list.  
 
 ---
 
@@ -64,8 +64,10 @@ KotlinScript provides **built-in suggestions** for common Kotlin classes and met
 For example:  
 
 ```kotlin
-val date = kotlin.math.cos() // 'kotlin.math.cos()' is suggested from typing "c" and detects if the method requires an import & is not already imported via imports
-val list = listOf(1, 2, 3) // 'listOf()' is suggested as a built-in Kotlin utility
+// 'kotlin.math.cos()' is suggested from typing "c" and detects if the method requires an import & is not already imported via imports
+val date = kotlin.math.cos() 
+// 'listOf()' is suggested as a built-in Kotlin utility
+val list = listOf(1, 2, 3) 
 ```
 
 ![Base Class Suggestion](https://i.ibb.co/WN3RTVqG/image.png)
