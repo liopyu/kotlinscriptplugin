@@ -2,35 +2,46 @@
 
 **KotlinScript** is an in-progress VS Code extension providing advanced syntax highlighting, semantic tokens, and intelligent suggestions for Kotlin script (`.kts`) files. Built using [tree-sitter](https://tree-sitter.github.io/), it ensures fast and context-aware parsing for Kotlin grammar.
 
+
+
+
 ## Features
 
-| Feature                          | Description                                                                                           |
-|----------------------------------|-------------------------------------------------------------------------------------------------------|
-| **Context-Based Syntax Highlighting** | Highlights scoped variables, functions, imports, and Kotlin-specific constructs.                      |
-| **Semantic Tokens**              | Provides real-time recognition of variables, functions, types, and interpolated strings.              |
-| **Tree-Sitter Parsing**          | Efficiently parses files for incremental updates and ensures high performance.                        |
-| **Kotlin-Specific Grammar**      | Supports scoped variables, lambda parameters, multiline strings, imports, and more.                  |
+| Feature                                     | Description                                                                                           |
+|---------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| **Context-Based Syntax Highlighting**        | Highlights scoped variables, functions, imports, and Kotlin-specific constructs.                      |
+| **Semantic Tokens**                         | Provides real-time recognition of variables, functions, types, and interpolated strings.              |
+| **General Kotlin Class/Method Suggestions** | Offers built-in Kotlin class and method suggestions for enhanced productivity.                        |
+| **Scope-Specific Variable Declarations**     | Highlights and tracks variables declared within specific scopes for better clarity.                    |
+| **Import Declaration Detection**             | Detects and highlights import declarations relevant to the current context.                            |
+| **General Grammar Error Linting**            | Provides linting for common syntax issues and invalid code structures.                                |
+| **Scope-Specific Variable Redeclaration Linting** | Detects and flags variable redeclarations within the same scope.                                         |
+| **Full Node Colorization**                   | Applies semantic tokens for comprehensive colorization across all syntax nodes.                        |
+| **Class Import CodeLens**                    | Provides inline CodeLens support to easily import undefined variables if detected in available classes. |
+| **Tree-Sitter Parsing**                      | Efficiently parses files for incremental updates and ensures high performance.                        |
+| **Kotlin-Specific Grammar**                  | Supports scoped variables, lambda parameters, multiline strings, imports, and more.                  |
 
 ---
 
-### Example 1: Import Highlighting
+### Import Highlighting with CodeLens Support
 
 ```kotlin
-import java.util.ArrayList // Highlighted as 'namespace'
-import kotlin.random.Random // Highlighted as 'namespace'
+import java.util.ArrayList 
 
-val list: ArrayList<Int> = arrayListOf() // Highlighted as 'type'
-val number = Random.nextInt(0, 100) // Highlighted as 'function'
+val list: ArrayList<Int> = arrayOf() 
+val number = Random.nextInt(0, 100) 
 ```
+<img src="https://i.ibb.co/JWhF8zt7/image.png" alt="image" border="0" />
 
 In this example:
 - `import` keywords are highlighted as **keywords**.
 - Imported namespaces like `java.util` and `kotlin.random` are highlighted as **types**.
 - The `nextInt` function is highlighted as a **function**.
+- CodeLens will suggest imports if undefined variables match known available classes.
 
 ---
 
-### Example 2: Variable Highlighting
+### Variable Highlighting and Scope-Specific Errors
 
 ```kotlin
 fun calculateSum(numbers: List<Int>): Int {
@@ -41,11 +52,30 @@ fun calculateSum(numbers: List<Int>): Int {
     return sum // `return` is highlighted as a keyword
 }
 ```
+<img src="https://i.ibb.co/Lsqxn23/image.png" alt="image" border="0" />
 
 In this example:
 - Scoped variables like `sum` and `number` are highlighted for clarity within their respective scopes.
 - The `return` keyword is emphasized to make it easily distinguishable.
+- Redeclaring `sum` within the loop would be flagged as an error for scope-specific redeclaration.
 
+---
+
+Here's a copy-paste snippet that highlights the Kotlin base class/method suggestion feature:
+
+---
+
+### **Kotlin Base Class/Method Suggestions**
+
+KotlinScript provides **built-in suggestions** for common Kotlin classes and methods to improve productivity. When typing class names, function calls, or common Kotlin utilities, relevant suggestions will automatically appear. Most methods/classes from `kotlin-stdlib-2.0.0` are available.
+
+For example:
+
+```kotlin
+val date = kotlin.math.cos() // 'kotlin.math.cos()' is suggested from typing "c" and detects if the method requires an import & is not already imported via imports
+val list = listOf(1, 2, 3) // 'listOf()' is suggested as a built-in Kotlin utility
+```
+<a href="https://imgbb.com/"><img src="https://i.ibb.co/WN3RTVqG/image.png" alt="image" border="0" /></a>
 ---
 
 ## Configuration
@@ -89,4 +119,3 @@ Report bugs or suggest features through [GitHub Issues](https://github.com/liopy
 
 Developed by [Liopyu](https://github.com/Liopyu).
 
----
