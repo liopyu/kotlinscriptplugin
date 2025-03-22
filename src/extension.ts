@@ -7,7 +7,8 @@ import {
 	VariableSymbol,
 	ImportSymbol,
 	Scope,
-	TypingSuggestion
+	TypingSuggestion,
+	TypingsMember
 } from './symbols';
 import {
 	MethodDecorationType,
@@ -46,6 +47,7 @@ import { buildClassMap, ImportCodeLensProvider } from './codelens';
 
 export let availableClasses: Set<string>;
 export let typingSuggestions: TypingSuggestion[] = []
+export let available_members: TypingsMember[] = []
 let util: utils.Utils
 export let console = {
 	log,
@@ -69,6 +71,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	await TSParser.init();
 	availableClasses = await utils.loadAvailableClasses(absoluteKtsDirectory);
 	typingSuggestions = await utils.loadTypingSuggestions(absoluteKtsDirectory);
+	available_members = await utils.loadTypingMembers(absoluteKtsDirectory);
 	console.log(`Typing suggestions loaded: ${typingSuggestions.length}`);
 	/* typingSuggestions.forEach(suggestion => {
 		console.log(`- ${suggestion.fullyQualifiedName}`);
@@ -100,7 +103,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			documentData.set(documentUri, {
 				semanticTokensProvider: newProvider
 			});
-			console.log("Registering new provider: " + document.uri.toString())
+			//console.log("Registering new provider: " + document.uri.toString())
 			context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider(
 				documentSpecificSelector,
 				newProvider,

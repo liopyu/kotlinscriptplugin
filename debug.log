@@ -2,9 +2,209 @@
 [Log] Loaded 54000 classes from binary file.
 [Log] Loading typing suggestions from JSON file...
 [Log] Loaded 1146 typing suggestions.
+[Log] Loaded 54003 member suggestions.
 [Log] Typing suggestions loaded: 1146
 [Log] Semantic Tokens Provider Initialized
-[Log] Registering new provider: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] updating tokens
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] I node type: simple_identifier, i node text: Entity
+[Log] updating tokens
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] I node type: simple_identifier, i node text: Entity
+[Log] updating tokens
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] I node type: simple_identifier, i node text: Entity
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] I node type: simple_identifier, i node text: Entity
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] I node type: simple_identifier, i node text: Entity
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] I node type: simple_identifier, i node text: Entity
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] I node type: simple_identifier, i node text: Entity
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] I node type: simple_identifier, i node text: Entity
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] I node type: simple_identifier, i node text: Entity
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] I node type: simple_identifier, i node text: Entity
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] I node type: simple_identifier, i node text: Entity
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: i, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .i, parent node type: navigation_suffix
+[Log] grandparent node text: Entity().i, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Entity()
+[Log] I node type: simple_identifier, i node text: Entity
+[Log] document has not changed
+[Log] updating tokens
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (simple_identifier))
+[Log] Node text: M, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: import net.minecraft.world.entity.Entity
+M, parent node type: source_file
+[Log] grandparent node text: undefined, parent node type: undefined
+[Log] updating tokens
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (simple_identifier))
+[Log] Node text: Minecr, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: import net.minecraft.world.entity.Entity
+Minecr, parent node type: source_file
+[Log] grandparent node text: undefined, parent node type: undefined
+[Log] updating tokens
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (simple_identifier))
+[Log] Node text: Minecrf, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: import net.minecraft.world.entity.Entity
+Minecrf, parent node type: source_file
+[Log] grandparent node text: undefined, parent node type: undefined
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (simple_identifier))
+[Log] Node text: Minecrfa, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: import net.minecraft.world.entity.Entity
+Minecrfa, parent node type: source_file
+[Log] grandparent node text: undefined, parent node type: undefined
+[Log] updating tokens
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (simple_identifier))
+[Log] Node text: Minecra, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: import net.minecraft.world.entity.Entity
+Minecra, parent node type: source_file
+[Log] grandparent node text: undefined, parent node type: undefined
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (simple_identifier))
+[Log] Node text: Minecraf, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: import net.minecraft.world.entity.Entity
+Minecraf, parent node type: source_file
+[Log] grandparent node text: undefined, parent node type: undefined
+[Log] updating tokens
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (simple_identifier))
+[Log] Node text: Minecraft, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: import net.minecraft.world.entity.Entity
+Minecraft, parent node type: source_file
+[Log] grandparent node text: undefined, parent node type: undefined
 [Log] updating tokens
 [Log] document has not changed
-[Log] Closed document: file:///d%3A/minecraft/instances/1.21%20fab/package.json
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (ERROR (simple_identifier)))
+[Log] Node text: ., node type: .
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: Minecraft., parent node type: ERROR
+[Log] grandparent node text: import net.minecraft.client.Minecraft
+import net.minecraft.world.entity.Entity
+Minecraft., parent node type: source_file
+[Log] updating tokens
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier))))
+[Log] Node text: e, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .e, parent node type: navigation_suffix
+[Log] grandparent node text: Minecraft.e, parent node type: navigation_expression
+[Log] Ident node: simple_identifier, ident node text: Minecraft
+[Log] I node type: simple_identifier, i node text: Minecraft
+[Log] updating tokens
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier))))
+[Log] Node text: a, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .a, parent node type: navigation_suffix
+[Log] grandparent node text: Minecraft.a, parent node type: navigation_expression
+[Log] Ident node: simple_identifier, ident node text: Minecraft
+[Log] I node type: simple_identifier, i node text: Minecraft
+[Log] updating tokens
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier))))
+[Log] Node text: g, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .g, parent node type: navigation_suffix
+[Log] grandparent node text: Minecraft.g, parent node type: navigation_expression
+[Log] Ident node: simple_identifier, ident node text: Minecraft
+[Log] I node type: simple_identifier, i node text: Minecraft
+(x2) [Log] updating tokens
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (ERROR (call_expression (simple_identifier) (call_suffix (value_arguments)))))
+[Log] Node text: ., node type: .
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: Minecraft()., parent node type: ERROR
+[Log] grandparent node text: import net.minecraft.client.Minecraft
+import net.minecraft.world.entity.Entity
+Minecraft()., parent node type: source_file
+[Log] updating tokens
+[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier))))
+[Log] Node text: g, node type: simple_identifier
+[Log] Child text: undefined, node type: undefined
+[Log] Parent Node text: .g, parent node type: navigation_suffix
+[Log] grandparent node text: Minecraft().g, parent node type: navigation_expression
+[Log] Ident node: call_expression, ident node text: Minecraft()
+[Log] I node type: simple_identifier, i node text: Minecraft
+[Log] updating tokens

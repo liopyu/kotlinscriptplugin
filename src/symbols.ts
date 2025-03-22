@@ -240,3 +240,26 @@ export class TypingSuggestion {
         public isClass: boolean
     ) { }
 }
+export class TypingsMember {
+    constructor(
+        public classPath: string,
+        public methods: Method[],
+        public fields: Field[],
+    ) { }
+}
+
+export class Method {
+    constructor(
+        public name: string,
+        public args: string[],
+        public returns: string,
+        public isStatic: boolean
+    ) { }
+}
+export class Field {
+    constructor(
+        public name: string,
+        public returns: string,
+        public isStatic: boolean,
+    ) { }
+}

@@ -5,8 +5,8 @@ import { ImportSymbol } from './symbols';
 import { log, warn, error } from './extension';
 import { console } from './extension'
 import { currentEditor } from './semantictokensprovider';
-const indexedClassMap: Map<string, Map<string, string[]>> = new Map();
 const regex = /(?<!\.\s*?)\b\w+\b/g;
+const indexedClassMap: Map<string, Map<string, string[]>> = new Map();
 export function buildClassMap(availableClasses: Set<string>): void {
     for (const fullClassPath of availableClasses) {
         const simpleName = fullClassPath.replace(/\$/g, '.').split('.').pop()?.trim();

@@ -1,9 +1,9 @@
 
 import * as vscode from 'vscode';
-import { ImportSymbol, TypingSuggestion } from './symbols';
+import { ImportSymbol, TypingsMember, TypingSuggestion } from './symbols';
 import { TreeProvider } from './treeprovider';
 import { SyntaxNode } from 'web-tree-sitter';
-import { log, error, warn, availableClasses, typingSuggestions } from './extension';
+import { log, error, warn, availableClasses, typingSuggestions, available_members } from './extension';
 import { console } from './extension'
 import {
     t,
@@ -173,10 +173,61 @@ function getStr(params: string, provider: PeriodTypingSuggestionProvider): strin
 export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProvider {
     public suggestions: TypingSuggestion[];
     public suggestionProviderChange: boolean = false
+    public indexedClassMap: Map<string, Map<string, TypingsMember>> = new Map();
     constructor(suggestions: TypingSuggestion[]) {
         this.suggestions = suggestions;
+        this.buildClassMap(available_members)
     }
+    private buildClassMap(availableMembers: TypingsMember[]): void {
+        for (const member of availableMembers) {
+            const simpleName = member.classPath.replace(/\$/g, '.').split('.').pop()?.trim();
+            if (!simpleName) {
+                continue;
+            }
 
+            const firstLetter = simpleName.charAt(0).toUpperCase();
+            if (!this.indexedClassMap.has(firstLetter)) {
+                this.indexedClassMap.set(firstLetter, new Map());
+            }
+
+            const letterBucket = this.indexedClassMap.get(firstLetter)!;
+            letterBucket.set(member.classPath, member);
+        }
+    }
+    private isClassImported(className: string, document: vscode.TextDocument): boolean {
+        const documentUri = document.uri.toString();
+        const data = documentData.get(documentUri);
+        //if (t) return
+
+        if (!data) {
+            return false;
+        }
+
+        const treeProvider = data.semanticTokensProvider?.treeProvider;
+        if (!treeProvider) return false
+        let foundInImports = false;
+        for (const [fullPath, importSymbol] of treeProvider?.imports.entries()) {
+            if (importSymbol.simpleName === className.replace(/\$/g, '.')) {
+                foundInImports = true;
+                break;
+            }
+        }
+        if (foundInImports) {
+            return true;
+        }
+        let foundInTypingSuggestions = false;
+        const isInTypingSuggestions = typingSuggestions.some(suggestion => {
+            const processedName = className.replace(/\$/g, '.');
+            const suggestionMatch = suggestion.simpleName === processedName;
+            const requiresImportCondition = !suggestion.requiresImport || treeProvider.imports.has(suggestion.fullyQualifiedName);
+            if (suggestionMatch && requiresImportCondition) {
+                foundInTypingSuggestions = true;
+                return true;
+            }
+            return false;
+        });
+        return isInTypingSuggestions;
+    }
     async provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,
@@ -192,7 +243,6 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             console.log("No tree provider data found for this document.");
             return;
         }
-
         const treeProvider = data.semanticTokensProvider?.treeProvider;
         if (!treeProvider) return
         const tree = treeProvider.tree
@@ -208,36 +258,75 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             row: line,
             column: character,
         });
-        // log('Node text: ' + node?.text + ", node type: " + node?.type)
+        log("Root node: " + tree.rootNode)
+        log('Node text: ' + node?.text + ", node type: " + node?.type)
+        log('Child text: ' + node?.firstChild?.text + ", node type: " + node?.firstChild?.type)
         const range = new vscode.Range(startPosition, endPosition);
-
         let snippetCompletions: vscode.CompletionItem[] = []
-
         let iNode = node.parent
-        // log('Parent Node text: ' + iNode?.text + ", parent node type: " + iNode?.type)
-        const kotlinKeywords = [
-            "val", "var", "fun", "class", "object", "interface", "return",
-            "if", "else", "when", "for", "while", "do", "try", "catch", "finally", "import", "package"
-        ];
-        if (iNode) {
+
+        log('Parent Node text: ' + iNode?.text + ", parent node type: " + iNode?.type)
+        log("grandparent node text: " + iNode?.parent?.text + ", parent node type: " + iNode?.parent?.type)
+        /* this.indexedClassMap
+            .get("E")
+            ?.get(className) */
+        let i = iNode?.parent?.firstChild;
+        if ((iNode?.type == "navigation_suffix" /* || iNode?.type == "call_expression" */) && i) {
+            let identNode = i
+            let isStaticCall = true
+            console.log("Ident node: " + identNode.type + ", ident node text: " + (identNode.text))
+
+            if (identNode.type == "call_expression" && identNode?.firstChild) {
+                identNode = identNode?.firstChild
+                isStaticCall = false
+            }
+            if ((identNode && this.isClassImported(identNode.text, document)) || treeProvider.imports.get(identNode?.text)) {
+                let className = identNode.text.split(".")[identNode.text.split(".").length - 1];
+                console.log("I node type: " + identNode.type + ", i node text: " + identNode.text)
+                let classPath = className
+                for (const [k, importSymbol] of treeProvider.imports.entries()) {
+                    if (importSymbol.path == identNode?.text || importSymbol.simpleName == identNode?.text) {
+                        classPath = importSymbol.path
+                    }
+                }
+                const matchedTyping = this.indexedClassMap
+                    .get(className.charAt(0).toUpperCase())
+                    ?.get(classPath);
+                if (matchedTyping) {
+                    for (const method of matchedTyping.methods) {
+                        if (isStaticCall && !method.isStatic) continue
+                        const methodCompletion = new vscode.CompletionItem(
+                            `${method.name.replace("()", "") + (method.args.length ? `(${method.args?.join(', ') || ''})` : "()")}`,
+                            vscode.CompletionItemKind.Method
+                        );
+                        methodCompletion.kind = vscode.CompletionItemKind.Method
+                        methodCompletion.detail = `Returns: ${method.returns}`;
+                        methodCompletion.insertText = method.name
+                        snippetCompletions.push(methodCompletion);
+                    }
+                    for (const field of matchedTyping.fields) {
+                        if (isStaticCall && !field.isStatic) continue
+                        const fieldCompletion = new vscode.CompletionItem(
+                            field.name,
+                            vscode.CompletionItemKind.Field
+                        );
+                        fieldCompletion.kind = vscode.CompletionItemKind.Field
+                        fieldCompletion.detail = `Returns: ${field.returns}`;
+                        snippetCompletions.push(fieldCompletion);
+                    }
+                }
+            }
+        } else if (iNode) {
             let i = iNode?.parent?.firstChild;
-            /* 
-            if (!expressionTypes.includes(iNode.type)) return
-            log("Providing suggestion for expression: " + iNode.type) */
-            // log('iNode text: ' + i?.text + ", inode type: " + i?.type);
             if (!i) return
             if (!expressionTypes.includes(i.type)) return
-            //log("Providing suggestion for expression: " + i.type)
             if (i) {
                 let iRange = treeProvider.supplyRange(i);
-
                 if (linePrefix.trim().endsWith("t")) {
                     const item = new vscode.CompletionItem("try-catch block", vscode.CompletionItemKind.Snippet);
-
                     const lines = i.text.split('\n');
                     const baseIndentation = lines[0].match(/^\s*/)?.[0] ?? "";
                     const indentedBlock = lines.map(line => baseIndentation + '\t' + line).join('\n');
-
                     item.insertText = new vscode.SnippetString(
                         `${baseIndentation}try {\n${indentedBlock}\n${baseIndentation}} catch (e: Exception) {\n${baseIndentation}\tTODO("Not yet implemented")$0\n${baseIndentation}}`
                     );
@@ -245,7 +334,6 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                         iRange.start,
                         range.end
                     );
-
                     item.additionalTextEdits = [
                         vscode.TextEdit.replace(mergedRange, "")
                     ];
@@ -254,7 +342,6 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
 
                         vscode.TextEdit.replace(range, "")
                     ];
-
                     item.detail = "Wraps the current block in a try-catch";
                     item.sortText = "0";
                     snippetCompletions.push(item);

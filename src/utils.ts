@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { TypingSuggestion } from './symbols';
+import { Field, Method, TypingsMember, TypingSuggestion } from './symbols';
 import { TreeProvider } from './treeprovider';
 import { log, error, warn } from './extension';
 import {
@@ -19,7 +19,9 @@ import {
     semanticTokensEnabled
 } from './constants'
 import { currentEditor } from './semantictokensprovider';
+
 let cachedTypingSuggestions: TypingSuggestion[] | null = null;
+let cachedTypingMembers: TypingsMember[] | null = null;
 export class Utils {
     private static instance: Utils | null = null;
     public logFile: string;
@@ -109,6 +111,59 @@ export class Utils {
         this.logToFile('error', args);
     }
 }
+
+
+
+export async function loadTypingMembers(ktsDirectory: string): Promise<TypingsMember[]> {
+    if (cachedTypingMembers) {
+        return cachedTypingMembers;
+    }
+
+    const suggestions: TypingsMember[] = [];
+    const jsonFilePath = path.join(ktsDirectory, 'typings', 'available_members.json');
+
+    try {
+        if (fs.existsSync(jsonFilePath)) {
+            console.log('Loading typing suggestions from JSON file...');
+            const fileContent = fs.readFileSync(jsonFilePath, 'utf-8');
+            const parsedData = JSON.parse(fileContent);
+
+            Object.entries(parsedData).forEach(([classPath, members]) => {
+                const methods: Method[] = [];
+                const fields: Field[] = [];
+                Object.entries(members as Record<string, any>).forEach(([name, details]) => {
+                    if (name.endsWith('()')) {
+                        methods.push(new Method(
+                            name,
+                            (details as { args?: string[] }).args || [],
+                            (details as { returns?: string }).returns || 'Unit',
+                            (details as { isStatic?: boolean }).isStatic || false
+                        ));
+                    } else {
+                        fields.push(new Field(
+                            name,
+                            (details as { type?: string }).type || 'Unknown',
+                            (details as { isStatic?: boolean }).isStatic || false
+                        ));
+                    }
+                });
+
+
+
+
+                suggestions.push(new TypingsMember(classPath, methods, fields));
+            });
+
+            log(`Loaded ${suggestions.length} member suggestions.`);
+            cachedTypingMembers = suggestions;
+        }
+    } catch (error) {
+        warn(`Error loading member suggestions: ${error}`);
+    }
+
+    return suggestions;
+}
+
 export async function loadTypingSuggestions(ktsDirectory: string): Promise<TypingSuggestion[]> {
     if (cachedTypingSuggestions) {
         return cachedTypingSuggestions;
