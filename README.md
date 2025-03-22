@@ -1,13 +1,13 @@
 # KotlinScript
 
-**KotlinScript** is an in-progress VS Code extension providing advanced syntax highlighting, semantic tokens, and intelligent suggestions for Kotlin script (`.kts`) files. Built using [tree-sitter](https://tree-sitter.github.io/), it ensures fast and context-aware parsing for Kotlin grammar.
+**KotlinScript** is an in-progress VS Code extension designed to provide an alternative to traditional Gradle setup, offering a plug-and-play experience with all the same functionalities. It delivers advanced syntax highlighting, semantic tokens, and intelligent suggestions for Kotlin script (`.kts`) files. Built using [tree-sitter](https://tree-sitter.github.io/), it ensures fast and context-aware parsing for Kotlin grammar.
 
 ## Features
 
 | Feature                                     | Description                                                                                           |
 |---------------------------------------------|-------------------------------------------------------------------------------------------------------|
 | **Context-Based Syntax Highlighting**        | Highlights scoped variables, functions, imports, and Kotlin-specific constructs.                      |
-| **General Kotlin Class/Method Suggestions** | Offers built-in Kotlin class and method suggestions for enhanced productivity.                        |
+| **Kotlin Class/Method Suggestions**          | Offers built-in Kotlin class and method suggestions for enhanced productivity.                        |
 | **Scope-Specific Variable Redeclaration Linting** | Detects and flags variable redeclarations within the same scope.                                         |
 | **Import Declaration Detection**             | Detects and highlights import declarations relevant to the current context.                            |
 | **General Grammar Error Linting**            | Provides linting for common syntax issues and invalid code structures.                                |
