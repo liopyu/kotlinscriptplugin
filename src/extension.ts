@@ -308,20 +308,15 @@ export async function activate(context: vscode.ExtensionContext) {
 	}, 200);
 
 	vscode.window.onDidChangeTextEditorVisibleRanges(event => {
-		//console.log("Visible ranges changed")
 		debouncedUpdateTokens(event.textEditor.document);
 	});
 
-
-	// Runs on start
-	let editor = vscode.window.activeTextEditor;
-	if (editor) {
+	//Runs on start
+	vscode.window.visibleTextEditors.forEach(editor => {
 		addDocumentIfNotExists(editor.document, editor);
-	}
-
+	})
 
 	vscode.window.onDidChangeActiveTextEditor(async (editor) => {
-		console.log("Changed active text editors")
 		const document = editor?.document;
 		const documentUri = document?.uri.toString();
 		if (editor) {
@@ -331,9 +326,6 @@ export async function activate(context: vscode.ExtensionContext) {
 			let data = documentData.get(documentUri)
 			if (data)
 				if (document && document.languageId === 'kotlin' && (document.fileName.endsWith('.kts') || document.uri.fsPath.startsWith(absoluteKtsDirectory))) {
-					console.log("Changed active document: " + documentUri)
-					//data.document = document
-					//data.semanticTokensProvider?.treeProvider?.document = document
 					data.semanticTokensProvider?.codeLens?.refresh();
 					data.semanticTokensProvider?.codeLens?.applyDecorations(document);
 				}
@@ -343,10 +335,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 	vscode.window.onDidChangeVisibleTextEditors(editors => {
-		console.log("Changed visible text editors")
 		const openUris = new Set(editors.map(editor => editor.document.uri.toString()));
 		for (const editor of editors) {
-			console.log("Open Document: " + editor.document.uri.toString())
 			if (editor) {
 				addDocumentIfNotExists(editor.document, editor);
 			}

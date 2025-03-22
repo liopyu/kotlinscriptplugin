@@ -72,12 +72,12 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         const builder = new vscode.SemanticTokensBuilder(LEGEND);
         let editor = currentEditor(document);
         if (!tree || !editor) {
-            console.log("Either No tree or no editor: " + this.treeProvider.document.uri.toString())
+            console.log("Either No tree or no editor")
             return this.lastSemanticTokens;
         }
         let lastText = editor.document.getText()
         if ((this.lastSemanticTokens && lastText === this.lastDocumentText)) {
-            console.log("document has not changed: " + this.treeProvider.document.uri.toString())
+            console.log("document has not changed")
             return this.lastSemanticTokens;
         }
 
@@ -174,7 +174,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             return noRangeFilterRegex.test(text);
         }
         if (shouldFilterRanges(document)) filterRanges = false
-        console.log("updating tokens: " + this.treeProvider.document.uri.toString())
+        console.log("updating tokens")
         const existingTokens = this.decodeSemanticTokens(this.lastSemanticTokens);
         const visibleRange = editor.visibleRanges[0];
         matches.forEach((match, matchIndex) => {

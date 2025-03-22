@@ -4,33 +4,11 @@
 [Log] Loaded 1146 typing suggestions.
 [Log] Typing suggestions loaded: 1146
 [Log] Semantic Tokens Provider Initialized
-[Log] Registering new provider: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
-[Log] updating tokens: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
-[Log] Changed active text editors
-[Log] Semantic Tokens Provider Initialized
 [Log] Registering new provider: file:///d%3A/minecraft/instances/1.21%20fab/config/scripts/rename.kts
-[Log] Changed active document: file:///d%3A/minecraft/instances/1.21%20fab/config/scripts/rename.kts
-[Log] updating tokens: file:///d%3A/minecraft/instances/1.21%20fab/config/scripts/rename.kts
-[Log] document has not changed: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
-[Log] document has not changed: file:///d%3A/minecraft/instances/1.21%20fab/config/scripts/rename.kts
-[Log] document has not changed: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
-[Log] Changed active text editors
-[Log] Changed active document: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
-[Log] Changed active text editors
-[Log] Changed active document: file:///d%3A/minecraft/instances/1.21%20fab/config/scripts/rename.kts
-[Log] updating tokens: file:///d%3A/minecraft/instances/1.21%20fab/config/scripts/rename.kts
-[Log] Changed active text editors
-[Log] Changed active document: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
-[Log] updating tokens: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
-[Log] document has not changed: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
-[Log] Changed active text editors
-[Log] Changed active document: file:///d%3A/minecraft/instances/1.21%20fab/config/scripts/rename.kts
-[Log] updating tokens: file:///d%3A/minecraft/instances/1.21%20fab/config/scripts/rename.kts
-[Log] Changed active text editors
-[Log] Changed active document: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
-[Log] updating tokens: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
-[Log] document has not changed: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
-[Log] Changed active text editors
-[Log] Changed active document: file:///d%3A/minecraft/instances/1.21%20fab/config/scripts/rename.kts
-[Log] updating tokens: file:///d%3A/minecraft/instances/1.21%20fab/config/scripts/rename.kts
-[Log] document has not changed: file:///d%3A/minecraft/instances/1.21%20fab/config/scripts/rename.kts
+[Log] Semantic Tokens Provider Initialized
+[Log] Registering new provider: file:///d%3A/minecraft/instances/1.21%20fab/config/myscript.kts
+(x2) [Log] updating tokens
+(x2) [Log] document has not changed
+[Log] Closed document: file:///d%3A/minecraft/instances/1.21%20fab/config/scripts/something.kt
+[Log] document has not changed
+[Log] Closed document: file:///d%3A/minecraft/instances/1.21%20fab/package.json
