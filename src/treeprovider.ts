@@ -5,7 +5,8 @@ import {
     VariableSymbol,
     ImportSymbol,
     Scope,
-    TypingSuggestion
+    TypingSuggestion,
+    VariableNode
 } from './symbols';
 import {
     MethodDecorationType,
@@ -41,7 +42,7 @@ export class TreeProvider {
     public semanticTokensProvider: SemanticTokensProvider | undefined = undefined
     public varId: number
     public hasPackageHeader: boolean = false;
-    public currentScope: Scope = new Scope(null, null);
+    public currentScope: Scope
     public scopes: Map<string, Scope> = new Map()
     public ranges: Map<VariableType, vscode.Range[]> = new Map();
     public simpleRanges: vscode.Range[] = []
@@ -66,6 +67,7 @@ export class TreeProvider {
     constructor(parser: TSParser, document: vscode.TextDocument) {
         this.parser = parser;
         this.document = document
+        this.currentScope = new Scope(null, null);
         this.scopes.set(this.currentScope.id, this.currentScope)
         this.currentScope.document = document
         this.semanticTokensProvider = documentData.get(this.document.uri.toString())?.semanticTokensProvider
@@ -418,26 +420,31 @@ export class TreeProvider {
     }
     public processPropertyDeclaration(node: SyntaxNode,
         builder: vscode.SemanticTokensBuilder): void {
+        //console.log("PropertyDeclaration: " + node.type + ", " + node.text)
         const valueNodes = this.findChildren(node, expressionTypes, "property_declaration");
-        const variables = this.extractVariables(node);
 
+        const variables = this.extractVariables(node);
+        /*  variables.forEach((range, node) => {
+             console.log("variable Nodes: " + node.variable?.type + ", " + node.variable?.text + ", Type: " + node.type?.text)
+         }) */
         if (valueNodes.length > 0) {
             valueNodes.forEach(valueNode => {
                 if (!this.isValueInDeclaration(valueNode)) return;
                 variables.forEach((range, variableNode) => {
-                    if (variableNode.parent?.type != "lambda_parameters")
-                        this.processVariableDeclaration(variableNode, valueNode, range, builder)
+                    if (variableNode.variable?.parent?.type != "lambda_parameters")
+                        this.processVariableDeclaration(variableNode.variable, variableNode.type, valueNode, range, builder)
                 });
             });
         } else {
             variables.forEach((range, variableNode) => {
-                this.processVariableDeclaration(variableNode, null, range, builder);
+                this.processVariableDeclaration(variableNode.variable, variableNode.type, null, range, builder);
             })
         }
 
     }
-    public extractVariables(node: SyntaxNode): Map<SyntaxNode, vscode.Range> {
-        const variables: Map<SyntaxNode, vscode.Range> = new Map();
+    public extractVariables(node: SyntaxNode): Map<VariableNode, vscode.Range> {
+        const variables: Map<VariableNode, vscode.Range> = new Map();
+
         const declarationNodes = this.findChildren(node, variableDeclarationTypes);
 
         declarationNodes.forEach(declaration => {
@@ -447,17 +454,19 @@ export class TreeProvider {
 
             variableNodes.forEach(variable => {
                 const variableNode = this.extractVariableNode(variable);
-                if (variableNode) {
-                    variables.set(variableNode, this.supplyRange(variableNode));
+                if (variableNode && variableNode.variable) {
+                    variables.set(variableNode, this.supplyRange(variableNode.variable));
                 }
             });
         });
 
         return variables;
     }
-    public extractVariableNode(declaration: SyntaxNode): SyntaxNode | null {
+    public extractVariableNode(declaration: SyntaxNode): VariableNode {
         const userTypeNode = this.findChild(declaration, "user_type");
-        return userTypeNode ? declaration.firstChild : declaration;
+        let dec = userTypeNode && declaration.firstChild ? declaration.firstChild : declaration;
+        let newnode = new VariableNode(dec, userTypeNode)
+        return newnode
     }
     public processImportDeclarations(node: SyntaxNode) {
         const importNode = this.findChild(node, "identifier");
@@ -806,6 +815,7 @@ export class TreeProvider {
     }
     public processVariableDeclaration(
         identifierNode: TSParser.SyntaxNode,
+        typeNode: TSParser.SyntaxNode | null,
         variableNode: TSParser.SyntaxNode | null,
         range: vscode.Range,
         builder: vscode.SemanticTokensBuilder,
@@ -853,6 +863,7 @@ export class TreeProvider {
         } */
         const variableSymbol = new VariableSymbol(
             variableName,
+            typeNode ? typeNode.text : null,
             range,
             identifierNode,
             variableNode ? variableNode.text : "",

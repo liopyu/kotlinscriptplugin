@@ -94,6 +94,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		if (!document.fileName.endsWith(".kts")) return;
 		if (!documentData.has(documentUri)) {
 			const treeProvider = new TreeProvider(parser, document);
+			treeProvider.updateTokens()
 			const importCodeLensProvider = new ImportCodeLensProvider(editor.document);
 			let newProvider = new SemanticTokensProvider(treeProvider, highlightQuery, importCodeLensProvider)
 			treeProvider.semanticTokensProvider = newProvider

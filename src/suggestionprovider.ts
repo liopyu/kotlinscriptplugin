@@ -271,6 +271,12 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             .get("E")
             ?.get(className) */
         let i = iNode?.parent?.firstChild;
+        let scope = data.semanticTokensProvider?.currentScopeFromRange(range)
+        treeProvider.scopes.forEach((scope, key) =>
+            console.log("Scope: " + key)
+        )
+        console.log(scope == undefined)
+        console.log(data.semanticTokensProvider == undefined)
         if ((iNode?.type == "navigation_suffix" /* || iNode?.type == "call_expression" */) && i) {
             let identNode = i
             let isStaticCall = true
@@ -280,15 +286,27 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                 identNode = identNode?.firstChild
                 isStaticCall = false
             }
-            if ((identNode && this.isClassImported(identNode.text, document)) || treeProvider.imports.get(identNode?.text)) {
+            let scopedVariable = scope?.resolveVariable(identNode.text)
+            console.log(scopedVariable == undefined)
+            if ((identNode && this.isClassImported(identNode.text, document)) || treeProvider.imports.get(identNode?.text) ||
+                scopedVariable
+            ) {
                 let className = identNode.text.split(".")[identNode.text.split(".").length - 1];
+
                 console.log("I node type: " + identNode.type + ", i node text: " + identNode.text)
+                if (scopedVariable) {
+                    console.log("found scoped variable: " + scopedVariable.type)
+                    className = scopedVariable.type
+                }
                 let classPath = className
+
                 for (const [k, importSymbol] of treeProvider.imports.entries()) {
-                    if (importSymbol.path == identNode?.text || importSymbol.simpleName == identNode?.text) {
+                    console.log("Checking for import: " + classPath + ", importsymbold path: " + importSymbol.path)
+                    if (importSymbol.path == identNode?.text || importSymbol.simpleName == identNode?.text || importSymbol.simpleName == className) {
                         classPath = importSymbol.path
                     }
                 }
+
                 const matchedTyping = this.indexedClassMap
                     .get(className.charAt(0).toUpperCase())
                     ?.get(classPath);

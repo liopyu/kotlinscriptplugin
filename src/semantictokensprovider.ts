@@ -100,6 +100,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         if (modifiedNode.parent && modifiedNode.parent.type != "source_file") {
             modifiedNode = modifiedNode.parent
         }
+        console.log("Root node: " + tree.rootNode)
         let l: vscode.Range[] = []
         const m: vscode.Range[] = []
         let modifiedNodeRange = this.treeProvider.supplyRange(modifiedNode)
@@ -409,7 +410,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             if (n) {
                 const variables = this.treeProvider.extractVariables(n);
                 variables.forEach((range, variableNode) => {
-                    this.treeProvider.processVariableDeclaration(variableNode, null, range, builder);
+                    this.treeProvider.processVariableDeclaration(variableNode.variable, variableNode.type, null, range, builder);
                 })
             }
         }

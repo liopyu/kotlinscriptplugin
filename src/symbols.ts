@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import Parser, { Tree } from 'web-tree-sitter';
+import Parser, { SyntaxNode, Tree } from 'web-tree-sitter';
 import { TreeProvider } from './treeprovider';
 import { log, error, warn } from './extension';
 import { console } from './extension'
@@ -174,8 +174,9 @@ export class VariableSymbol extends Symbol {
     value: string
     scope: Scope
     varKey: string
+    type: string
     isParamVar: boolean
-    constructor(name: string, range: vscode.Range, node: Parser.SyntaxNode, value: string, scope: Scope, varKey: string, isParamVar: boolean = false) {
+    constructor(name: string, type: string | null, range: vscode.Range, node: Parser.SyntaxNode, value: string, scope: Scope, varKey: string, isParamVar: boolean = false) {
         super(name);
         this.name = name;
         this.range = range;
@@ -185,14 +186,15 @@ export class VariableSymbol extends Symbol {
         this.value = value;
         this.scope = scope;
         this.isParamVar = isParamVar
+        this.type = type ?? "Any"
     }
 }
 
 
 export class FunctionSymbol extends Symbol {
     public args: Symbol[];
-    public returnType: string | null;
-    constructor(name: string, args: Symbol[], returnType: string | null) {
+    public returnType: string = "Unit";
+    constructor(name: string, args: Symbol[], returnType: string) {
         super(name, returnType);
         this.args = args;
         this.returnType = returnType;
@@ -261,5 +263,12 @@ export class Field {
         public name: string,
         public returns: string,
         public isStatic: boolean,
+    ) { }
+}
+
+export class VariableNode {
+    constructor(
+        public variable: SyntaxNode,
+        public type: SyntaxNode | null
     ) { }
 }
