@@ -1,8 +1,8 @@
 
 import * as vscode from 'vscode';
-import { ImportSymbol, TypingsMember, TypingSuggestion } from './symbols';
+import { Field, ImportSymbol, Method, TypingsMember, TypingSuggestion } from './symbols';
 import { TreeProvider } from './treeprovider';
-import { SyntaxNode } from 'web-tree-sitter';
+import { SyntaxNode, Tree } from 'web-tree-sitter';
 import { log, error, warn, availableClasses, typingSuggestions, available_members } from './extension';
 import { console } from './extension'
 import {
@@ -19,6 +19,7 @@ import {
     documentData,
     semanticTokensEnabled
 } from './constants'
+import { logNode } from './utils';
 
 export class TypingSuggestionProvider implements vscode.CompletionItemProvider {
     public suggestions: TypingSuggestion[];
@@ -207,10 +208,18 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         if (!treeProvider) return false
         let foundInImports = false;
         for (const [fullPath, importSymbol] of treeProvider?.imports.entries()) {
-            if (importSymbol.simpleName === className.replace(/\$/g, '.')) {
+            if (className.includes(".")) {
+                if (importSymbol.path == className) {
+                    foundInImports = true
+                    break
+                }
+            }
+
+            if (importSymbol.simpleName === className) {
                 foundInImports = true;
                 break;
             }
+
         }
         if (foundInImports) {
             return true;
@@ -227,6 +236,24 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             return false;
         });
         return isInTypingSuggestions;
+    }
+    private getImportFromClassOrPath(classOrPath: string, treeProvider: TreeProvider): string {
+        let classPath = classOrPath;
+        for (const [k, importSymbol] of treeProvider.imports.entries()) {
+            if (importSymbol.path === classOrPath ||
+                importSymbol.simpleName === classOrPath) {
+                classPath = importSymbol.path;
+                console.log(`Matched import symbol path: ${classPath}`);
+            }
+        }
+        return classPath
+    }
+    private getTypingsMember(classPath: string): TypingsMember | undefined {
+        let className = classPath.includes(".") ? classPath.split(".").pop() ?? "" : classPath
+        const matchedTyping: TypingsMember | undefined = this.indexedClassMap
+            .get(className.charAt(0).toUpperCase())
+            ?.get(classPath);
+        return matchedTyping
     }
     async provideCompletionItems(
         document: vscode.TextDocument,
@@ -254,118 +281,192 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         const character = position.character - 1;
         const startPosition = new vscode.Position(line, character);
         const endPosition = new vscode.Position(line, character + 1);
+        const range = new vscode.Range(startPosition, endPosition);
+        let scope = data.semanticTokensProvider?.currentScopeFromRange(range)
         const node = tree.rootNode.descendantForPosition({
             row: line,
             column: character,
         });
-        log("Root node: " + tree.rootNode)
-        log('Node text: ' + node?.text + ", node type: " + node?.type)
-        log('Child text: ' + node?.firstChild?.text + ", node type: " + node?.firstChild?.type)
-        const range = new vscode.Range(startPosition, endPosition);
         let snippetCompletions: vscode.CompletionItem[] = []
-        let iNode = node.parent
+        let iNode = treeProvider.findParent(node, "navigation_expression", range)
+        if (!iNode) return
+        let iChildren = treeProvider.findChildren(iNode, ["navigation_suffix"], null)
+        for (const child of iChildren) {
+            //let methodOrField: Method | Field =  child.text.replace(".", "") + "()"
+            console.log("Child nextsibling: " + child.nextSibling?.type + ", child nextsibling text: " + child.nextSibling?.text)
+        }
+        let className
+        let potentialVariableName
+        let lastChild = treeProvider.findLastChildInRange(iNode, "navigation_expression", null, treeProvider.supplyRange(iNode))
+        let firstChild = treeProvider.findChild(iNode, "navigation_expression")
+        if (!lastChild) {
+            potentialVariableName = treeProvider.findChild(iNode, "simple_identifier", null)
+        } else if (firstChild) {
+            potentialVariableName = treeProvider.findChild(firstChild, "simple_identifier", null)
+        }
 
-        log('Parent Node text: ' + iNode?.text + ", parent node type: " + iNode?.type)
-        log("grandparent node text: " + iNode?.parent?.text + ", parent node type: " + iNode?.parent?.type)
-        /* this.indexedClassMap
-            .get("E")
-            ?.get(className) */
-        let i = iNode?.parent?.firstChild;
-        let scope = data.semanticTokensProvider?.currentScopeFromRange(range)
-        treeProvider.scopes.forEach((scope, key) =>
-            console.log("Scope: " + key)
-        )
-        console.log(scope == undefined)
-        console.log(data.semanticTokensProvider == undefined)
-        if ((iNode?.type == "navigation_suffix" /* || iNode?.type == "call_expression" */) && i) {
-            let identNode = i
-            let isStaticCall = true
-            console.log("Ident node: " + identNode.type + ", ident node text: " + (identNode.text))
-
-            if (identNode.type == "call_expression" && identNode?.firstChild) {
-                identNode = identNode?.firstChild
-                isStaticCall = false
-            }
-            let scopedVariable = scope?.resolveVariable(identNode.text)
-            console.log(scopedVariable == undefined)
-            if ((identNode && this.isClassImported(identNode.text, document)) || treeProvider.imports.get(identNode?.text) ||
-                scopedVariable
-            ) {
-                let className = identNode.text.split(".")[identNode.text.split(".").length - 1];
-
-                console.log("I node type: " + identNode.type + ", i node text: " + identNode.text)
-                if (scopedVariable) {
-                    console.log("found scoped variable: " + scopedVariable.type)
-                    className = scopedVariable.type
-                }
-                let classPath = className
-
-                for (const [k, importSymbol] of treeProvider.imports.entries()) {
-                    console.log("Checking for import: " + classPath + ", importsymbold path: " + importSymbol.path)
-                    if (importSymbol.path == identNode?.text || importSymbol.simpleName == identNode?.text || importSymbol.simpleName == className) {
-                        classPath = importSymbol.path
+        console.log("testing potential variable: " + potentialVariableName?.text)
+        let scopedVariable = scope?.resolveVariable(potentialVariableName?.text ?? "");
+        let baseType
+        if (scopedVariable) {
+            let classPath = this.getImportFromClassOrPath(scopedVariable.type, treeProvider)
+            baseType = classPath
+        } else {
+            if (this.isClassImported(iNode.text, document)) {
+                console.log("Imported class found")
+                className = iNode.text
+            } else {
+                console.log("checking if navigation expression is import")
+                let potentialImports = treeProvider.findChildren(iNode, ["navigation_expression"], null)
+                for (const syntaxNode of potentialImports) {
+                    console.log("testing node for import: " + syntaxNode.text)
+                    let childClassName = treeProvider.findChild(syntaxNode, "simple_identifier", null)
+                    if (syntaxNode && this.isClassImported(syntaxNode.text, document)) {
+                        console.log("1found imported class: " + syntaxNode.text)
+                        className = childClassName
+                        baseType = syntaxNode.text
+                        break
+                    } else if (childClassName && this.isClassImported(childClassName?.text, document)) {
+                        let classPath = this.getImportFromClassOrPath(childClassName?.text, treeProvider)
+                        console.log("2found imported class: " + classPath)
+                        className = childClassName
+                        baseType = classPath
+                        break
                     }
-                }
-
-                const matchedTyping = this.indexedClassMap
-                    .get(className.charAt(0).toUpperCase())
-                    ?.get(classPath);
-                if (matchedTyping) {
-                    for (const method of matchedTyping.methods) {
-                        if (isStaticCall && !method.isStatic) continue
-                        const methodCompletion = new vscode.CompletionItem(
-                            `${method.name.replace("()", "") + (method.args.length ? `(${method.args?.join(', ') || ''})` : "()")}`,
-                            vscode.CompletionItemKind.Method
-                        );
-                        methodCompletion.kind = vscode.CompletionItemKind.Method
-                        methodCompletion.detail = `Returns: ${method.returns}`;
-                        methodCompletion.insertText = method.name
-                        snippetCompletions.push(methodCompletion);
-                    }
-                    for (const field of matchedTyping.fields) {
-                        if (isStaticCall && !field.isStatic) continue
-                        const fieldCompletion = new vscode.CompletionItem(
-                            field.name,
-                            vscode.CompletionItemKind.Field
-                        );
-                        fieldCompletion.kind = vscode.CompletionItemKind.Field
-                        fieldCompletion.detail = `Returns: ${field.returns}`;
-                        snippetCompletions.push(fieldCompletion);
-                    }
-                }
-            }
-        } else if (iNode) {
-            let i = iNode?.parent?.firstChild;
-            if (!i) return
-            if (!expressionTypes.includes(i.type)) return
-            if (i) {
-                let iRange = treeProvider.supplyRange(i);
-                if (linePrefix.trim().endsWith("t")) {
-                    const item = new vscode.CompletionItem("try-catch block", vscode.CompletionItemKind.Snippet);
-                    const lines = i.text.split('\n');
-                    const baseIndentation = lines[0].match(/^\s*/)?.[0] ?? "";
-                    const indentedBlock = lines.map(line => baseIndentation + '\t' + line).join('\n');
-                    item.insertText = new vscode.SnippetString(
-                        `${baseIndentation}try {\n${indentedBlock}\n${baseIndentation}} catch (e: Exception) {\n${baseIndentation}\tTODO("Not yet implemented")$0\n${baseIndentation}}`
-                    );
-                    const mergedRange = new vscode.Range(
-                        iRange.start,
-                        range.end
-                    );
-                    item.additionalTextEdits = [
-                        vscode.TextEdit.replace(mergedRange, "")
-                    ];
-                    item.additionalTextEdits = [
-                        vscode.TextEdit.replace(iRange, ""),
-
-                        vscode.TextEdit.replace(range, "")
-                    ];
-                    item.detail = "Wraps the current block in a try-catch";
-                    item.sortText = "0";
-                    snippetCompletions.push(item);
                 }
             }
         }
+        let suffixes = treeProvider.findChildren(iNode, ["navigation_suffix"], null)
+        let refinedSuffixes = []
+
+        suffixes.forEach(suff => {
+            // refinedSuffixes.push(suff.text.replace(".", "") + "")
+            logNode(suff.parent, "Suffix parent")
+        })
+        if (!t)
+            if (iNode.type == "navigation_expression") {
+                if (this.isClassImported(iNode.text, document)) {
+                    console.log("Imported class found")
+                    className = iNode.text
+                } else {
+                    console.log("checking if navigation expression is import")
+                    let potentialImports = treeProvider.findChildren(iNode, ["navigation_expression"], null)
+                    for (const syntaxNode of potentialImports) {
+                        console.log("testing node for import: " + syntaxNode.text)
+                        let childClassName = treeProvider.findChild(syntaxNode, "simple_identifier", null)
+                        if (syntaxNode && this.isClassImported(syntaxNode.text, document)) {
+                            console.log("found imported class: " + syntaxNode.text)
+                            className = childClassName
+                            break
+                        } else if (childClassName && this.isClassImported(childClassName?.text, document)) {
+                            console.log("found imported class: " + childClassName.text)
+                            className = childClassName
+                            break
+                        }
+                    }
+                }
+                let isStaticCall = true;
+                let resolvedType: string | undefined = undefined;
+                let chainNode = iNode.parent;
+
+                if (!chainNode) {
+                    console.log("No chain node found")
+                    return
+                }
+
+                console.log(`Scoped Variable Found: ${scopedVariable !== undefined}`);
+                resolvedType = scopedVariable?.type
+                console.log("Resolved type; " + resolvedType)
+                let classPath = this.getImportFromClassOrPath(resolvedType ?? "", treeProvider)
+                console.log("Typings member class: " + this.getTypingsMember(classPath)?.classPath)
+                if ((chainNode && this.isClassImported(chainNode.text, document)) ||
+                    treeProvider.imports.get(chainNode?.text) ||
+                    scopedVariable) {
+
+                    let className = chainNode.text.split(".").pop() ?? "";
+                    console.log(`Resolved Class Name: ${className}`);
+
+                    if (scopedVariable) {
+                        console.log("Found scoped variable: " + scopedVariable.type);
+                        className = scopedVariable.type;
+                    }
+
+                    let classPath = className;
+                    for (const [k, importSymbol] of treeProvider.imports.entries()) {
+                        if (importSymbol.path === chainNode.text ||
+                            importSymbol.simpleName === chainNode.text ||
+                            importSymbol.simpleName === className) {
+                            classPath = importSymbol.path;
+                            console.log(`Matched import symbol path: ${classPath}`);
+                        }
+                    }
+
+                    const matchedTyping: TypingsMember | undefined = this.indexedClassMap
+                        .get(className.charAt(0).toUpperCase())
+                        ?.get(classPath);
+
+                    if (matchedTyping) {
+                        console.log(`Matched TypingsMember for: ${className}`);
+                        for (const method of matchedTyping.methods) {
+                            if (isStaticCall && !method.isStatic) continue;
+                            const methodCompletion = new vscode.CompletionItem(
+                                `${method.name.replace("()", "") + (method.args.length ? `(${method.args?.join(', ') || ''})` : "()")}`,
+                                vscode.CompletionItemKind.Method
+                            );
+                            methodCompletion.kind = vscode.CompletionItemKind.Method;
+                            methodCompletion.detail = `Returns: ${method.returns}`;
+                            methodCompletion.insertText = method.name;
+                            snippetCompletions.push(methodCompletion);
+                        }
+
+                        for (const field of matchedTyping.fields) {
+                            if (isStaticCall && !field.isStatic) continue;
+                            const fieldCompletion = new vscode.CompletionItem(
+                                field.name,
+                                vscode.CompletionItemKind.Field
+                            );
+                            fieldCompletion.kind = vscode.CompletionItemKind.Field;
+                            fieldCompletion.detail = `Returns: ${field.returns}`;
+                            snippetCompletions.push(fieldCompletion);
+                        }
+                    } else {
+                        console.log(`No TypingsMember found for classPath: ${classPath}`);
+                    }
+                }
+            }
+
+            else if (iNode) {
+                let i = iNode?.parent?.firstChild;
+                if (!i) return
+                if (!expressionTypes.includes(i.type)) return
+                if (i) {
+                    let iRange = treeProvider.supplyRange(i);
+                    if (linePrefix.trim().endsWith("t")) {
+                        const item = new vscode.CompletionItem("try-catch block", vscode.CompletionItemKind.Snippet);
+                        const lines = i.text.split('\n');
+                        const baseIndentation = lines[0].match(/^\s*/)?.[0] ?? "";
+                        const indentedBlock = lines.map(line => baseIndentation + '\t' + line).join('\n');
+                        item.insertText = new vscode.SnippetString(
+                            `${baseIndentation}try {\n${indentedBlock}\n${baseIndentation}} catch (e: Exception) {\n${baseIndentation}\tTODO("Not yet implemented")$0\n${baseIndentation}}`
+                        );
+                        const mergedRange = new vscode.Range(
+                            iRange.start,
+                            range.end
+                        );
+                        item.additionalTextEdits = [
+                            vscode.TextEdit.replace(mergedRange, "")
+                        ];
+                        item.additionalTextEdits = [
+                            vscode.TextEdit.replace(iRange, ""),
+
+                            vscode.TextEdit.replace(range, "")
+                        ];
+                        item.detail = "Wraps the current block in a try-catch";
+                        item.sortText = "0";
+                        snippetCompletions.push(item);
+                    }
+                }
+            }
 
         return [...snippetCompletions];
     }

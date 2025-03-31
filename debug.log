@@ -5,482 +5,121 @@
 [Log] Loaded 54003 member suggestions.
 [Log] Typing suggestions loaded: 1146
 [Log] Semantic Tokens Provider Initialized
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
+[Log] source_file:import net.minecraft.client.Minecraft
+Minecraft.g.gd().s
+[Log]   import_list:import net.minecraft.client.Minecraft
+[Log]     import_header:import net.minecraft.client.Minecraft
+[Log]       import:import
+[Log]       identifier:net.minecraft.client.Minecraft
+[Log]         simple_identifier:net
+[Log]         .:.
+[Log]         simple_identifier:minecraft
+[Log]         .:.
+[Log]         simple_identifier:client
+[Log]         .:.
+[Log]         simple_identifier:Minecraft
+[Log]   navigation_expression:Minecraft.g.gd().s
+[Log]     call_expression:Minecraft.g.gd()
+[Log]       navigation_expression:Minecraft.g.gd
+[Log]         navigation_expression:Minecraft.g
+[Log]           simple_identifier:Minecraft
+[Log]           navigation_suffix:.g
+[Log]             .:.
+[Log]             simple_identifier:g
+[Log]         navigation_suffix:.gd
+[Log]           .:.
+[Log]           simple_identifier:gd
+[Log]       call_suffix:()
+[Log]         value_arguments:()
+[Log]           (:(
+[Log]           ):)
+[Log]     navigation_suffix:.s
+[Log]       .:.
+[Log]       simple_identifier:s
 [Log] updating tokens
 [Log] document has not changed
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] Node text: g, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: .g, parent node type: navigation_suffix
-[Log] grandparent node text: varName.g, parent node type: navigation_expression
-[Log] Scope: 1:1:1
-[Log] Scope: 1:1:2
-(x2) [Log] false
-[Log] Ident node: simple_identifier, ident node text: varName
-[Log] false
-[Log] I node type: simple_identifier, i node text: varName
-[Log] found scoped variable: Minecraft
-[Log] Checking for import: Minecraft, importsymbold path: net.minecraft.client.Minecraft
-[Log] document has not changed
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier)))))))
+[Log] source_file:import net.minecraft.client.Minecraft
+Minecraft.g.gd().s.
+[Log]   import_list:import net.minecraft.client.Minecraft
+[Log]     import_header:import net.minecraft.client.Minecraft
+[Log]       import:import
+[Log]       identifier:net.minecraft.client.Minecraft
+[Log]         simple_identifier:net
+[Log]         .:.
+[Log]         simple_identifier:minecraft
+[Log]         .:.
+[Log]         simple_identifier:client
+[Log]         .:.
+[Log]         simple_identifier:Minecraft
+[Log]   ERROR:Minecraft.g.gd().s.
+[Log]     call_expression:Minecraft.g.gd()
+[Log]       navigation_expression:Minecraft.g.gd
+[Log]         navigation_expression:Minecraft.g
+[Log]           simple_identifier:Minecraft
+[Log]           navigation_suffix:.g
+[Log]             .:.
+[Log]             simple_identifier:g
+[Log]         navigation_suffix:.gd
+[Log]           .:.
+[Log]           simple_identifier:gd
+[Log]       call_suffix:()
+[Log]         value_arguments:()
+[Log]           (:(
+[Log]           ):)
+[Log]     navigation_suffix:.s
+[Log]       .:.
+[Log]       simple_identifier:s
+[Log]     .:.
 [Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (call_expression (simple_identifier) (call_suffix (value_arguments)))))))))
+(x4) [Log] Child nextsibling: undefined, child nextsibling text: undefined
+[Log] testing potential variable: Minecraft
+[Log] checking if navigation expression is import
+[Log] testing node for import: Minecraft.g.gd().s
+[Log] Matched import symbol path: net.minecraft.client.Minecraft
+[Log] 2found imported class: net.minecraft.client.Minecraft
+[Log] Suffix parent type: navigation_expression, Suffix parent text: Minecraft.g
+[Log] Suffix parent type: navigation_expression, Suffix parent text: Minecraft.g.gd
+[Log] Suffix parent type: navigation_expression, Suffix parent text: Minecraft.g.gd().s
+[Log] Suffix parent type: navigation_expression, Suffix parent text: Minecraft.g.gd().s.p
+[Log] source_file:import net.minecraft.client.Minecraft
+Minecraft.g.gd().s.p()
+[Log]   import_list:import net.minecraft.client.Minecraft
+[Log]     import_header:import net.minecraft.client.Minecraft
+[Log]       import:import
+[Log]       identifier:net.minecraft.client.Minecraft
+[Log]         simple_identifier:net
+[Log]         .:.
+[Log]         simple_identifier:minecraft
+[Log]         .:.
+[Log]         simple_identifier:client
+[Log]         .:.
+[Log]         simple_identifier:Minecraft
+[Log]   call_expression:Minecraft.g.gd().s.p()
+[Log]     navigation_expression:Minecraft.g.gd().s.p
+[Log]       navigation_expression:Minecraft.g.gd().s
+[Log]         call_expression:Minecraft.g.gd()
+[Log]           navigation_expression:Minecraft.g.gd
+[Log]             navigation_expression:Minecraft.g
+[Log]               simple_identifier:Minecraft
+[Log]               navigation_suffix:.g
+[Log]                 .:.
+[Log]                 simple_identifier:g
+[Log]             navigation_suffix:.gd
+[Log]               .:.
+[Log]               simple_identifier:gd
+[Log]           call_suffix:()
+[Log]             value_arguments:()
+[Log]               (:(
+[Log]               ):)
+[Log]         navigation_suffix:.s
+[Log]           .:.
+[Log]           simple_identifier:s
+[Log]       navigation_suffix:.p
+[Log]         .:.
+[Log]         simple_identifier:p
+[Log]     call_suffix:()
+[Log]       value_arguments:()
+[Log]         (:(
+[Log]         ):)
 [Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (call_expression (simple_identifier) (call_suffix (value_arguments))) (ERROR)))))))
-[Log] Node text: ., node type: .
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: ., parent node type: ERROR
-[Log] grandparent node text: var varName: Minecraft
-    varName()., parent node type: statements
-[Log] Scope: 1:1:3
-[Log] Scope: 1:1:4
-(x2) [Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier)))))))))
-[Log] Node text: g, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: .g, parent node type: navigation_suffix
-[Log] grandparent node text: varName().g, parent node type: navigation_expression
-[Log] Scope: 1:1:3
-[Log] Scope: 1:1:4
-(x2) [Log] false
-[Log] Ident node: call_expression, ident node text: varName()
-[Log] false
-[Log] I node type: simple_identifier, i node text: varName
-[Log] found scoped variable: Minecraft
-[Log] Checking for import: Minecraft, importsymbold path: net.minecraft.client.Minecraft
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier)))))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (call_expression (simple_identifier) (call_suffix (value_arguments))) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: ., node type: .
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: ., parent node type: ERROR
-[Log] grandparent node text: var varName: Minecraft
-    varName., parent node type: statements
-[Log] Scope: 1:1:5
-[Log] Scope: 1:1:6
-(x2) [Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] Node text: g, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: .g, parent node type: navigation_suffix
-[Log] grandparent node text: varName.g, parent node type: navigation_expression
-[Log] Scope: 1:1:6
-[Log] Scope: 1:1:7
-(x2) [Log] false
-[Log] Ident node: simple_identifier, ident node text: varName
-[Log] false
-[Log] I node type: simple_identifier, i node text: varName
-[Log] found scoped variable: Minecraft
-[Log] Checking for import: Minecraft, importsymbold path: net.minecraft.client.Minecraft
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: ., node type: .
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: ., parent node type: ERROR
-[Log] grandparent node text: var varName: Minecraft
-    varName., parent node type: statements
-[Log] Scope: 1:1:7
-[Log] Scope: 1:1:8
-(x2) [Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] Node text: g, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: .g, parent node type: navigation_suffix
-[Log] grandparent node text: varName.g, parent node type: navigation_expression
-[Log] Scope: 1:1:8
-[Log] Scope: 1:1:9
-(x2) [Log] false
-[Log] Ident node: simple_identifier, ident node text: varName
-[Log] false
-[Log] I node type: simple_identifier, i node text: varName
-[Log] found scoped variable: Minecraft
-[Log] Checking for import: Minecraft, importsymbold path: net.minecraft.client.Minecraft
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier)))))))
-[Log] Node text: S, node type: type_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: S, parent node type: user_type
-[Log] grandparent node text: varName: S, parent node type: variable_declaration
-[Log] Scope: 1:1:10
-[Log] Scope: 1:1:11
-(x2) [Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: ., node type: .
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: ., parent node type: ERROR
-[Log] grandparent node text: var varName: String
-    varName., parent node type: statements
-[Log] Scope: 1:1:12
-[Log] Scope: 1:1:13
-(x2) [Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] Node text: g, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: .g, parent node type: navigation_suffix
-[Log] grandparent node text: varName.g, parent node type: navigation_expression
-[Log] Scope: 1:1:14
-[Log] Scope: 1:1:15
-(x2) [Log] false
-[Log] Ident node: simple_identifier, ident node text: varName
-[Log] false
-[Log] I node type: simple_identifier, i node text: varName
-[Log] found scoped variable: String
-[Log] Checking for import: String, importsymbold path: net.minecraft.client.Minecraft
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (simple_identifier) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: i, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: import net.minecraft.client.Minecraft
-i
-a{
-    var varName: String
-    varName.
-}, parent node type: source_file
-[Log] grandparent node text: undefined, parent node type: undefined
-[Log] Scope: 1:1:15
-[Log] Scope: 1:1:16
-[Log] true
-[Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (simple_identifier) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (ERROR (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (simple_identifier)) (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR))))
-[Log] updating tokens
-[Log] Root node: (source_file (ERROR (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (simple_identifier)) (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: n, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: n, parent node type: identifier
-[Log] grandparent node text: import n, parent node type: import_header
-[Log] Scope: 2:1:18
-[Log] true
-[Log] false
-[Log] Root node: (source_file (ERROR (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (simple_identifier) (simple_identifier) (ERROR)))
-[Log] Node text: ., node type: .
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: import net.minecraft.client.Minecraft
-import net.
-a{
-    var varName: String
-    varName.
-}, parent node type: ERROR
-[Log] grandparent node text: import net.minecraft.client.Minecraft
-import net.
-a{
-    var varName: String
-    varName.
-}, parent node type: source_file
-[Log] Scope: 2:1:18
-[Log] true
-[Log] false
-[Log] Root node: (source_file (ERROR (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (simple_identifier) (simple_identifier) (ERROR)))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: net, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: net, parent node type: identifier
-[Log] grandparent node text: import net, parent node type: import_header
-[Log] true
-[Log] false
-[Log] Root node: (source_file (ERROR (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (simple_identifier)) (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: j, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: j, parent node type: identifier
-[Log] grandparent node text: import j, parent node type: import_header
-[Log] Scope: 2:1:17
-[Log] true
-[Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (ERROR (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (simple_identifier) (simple_identifier) (ERROR)))
-[Log] Node text: ., node type: .
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: import net.minecraft.client.Minecraft
-import java.
-a{
-    var varName: String
-    varName.
-}, parent node type: ERROR
-[Log] grandparent node text: import net.minecraft.client.Minecraft
-import java.
-a{
-    var varName: String
-    varName.
-}, parent node type: source_file
-[Log] Scope: 2:1:17
-[Log] Scope: 2:1:18
-[Log] true
-[Log] false
-[Log] Root node: (source_file (ERROR (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (simple_identifier) (simple_identifier) (ERROR)))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: l, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: java.l, parent node type: identifier
-[Log] grandparent node text: import java.l, parent node type: import_header
-[Log] true
-[Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (ERROR (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (simple_identifier) (simple_identifier) (ERROR)))
-[Log] Node text: ., node type: .
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: import net.minecraft.client.Minecraft
-import java.
-a{
-    var varName: String
-    varName.
-}, parent node type: ERROR
-[Log] grandparent node text: import net.minecraft.client.Minecraft
-import java.
-a{
-    var varName: String
-    varName.
-}, parent node type: source_file
-[Log] Scope: 2:1:20
-[Log] Scope: 2:1:21
-[Log] true
-[Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: i, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: java.i, parent node type: identifier
-[Log] grandparent node text: import java.i, parent node type: import_header
-[Log] Scope: 2:1:20
-[Log] Scope: 2:1:21
-[Log] true
-[Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: j, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: j, parent node type: identifier
-[Log] grandparent node text: import j, parent node type: import_header
-[Log] Scope: 2:1:24
-[Log] Scope: 2:1:25
-[Log] true
-[Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (ERROR (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (simple_identifier)) (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: k, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: k, parent node type: identifier
-[Log] grandparent node text: import k, parent node type: import_header
-[Log] Scope: 2:1:30
-[Log] true
-[Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (ERROR (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (simple_identifier) (simple_identifier) (ERROR)))
-[Log] Node text: ., node type: .
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: import net.minecraft.client.Minecraft
-import kotlin.
-a{
-    var varName: String
-    varName.
-}, parent node type: ERROR
-[Log] grandparent node text: import net.minecraft.client.Minecraft
-import kotlin.
-a{
-    var varName: String
-    varName.
-}, parent node type: source_file
-[Log] Scope: 2:1:33
-[Log] Scope: 2:1:34
-[Log] true
-[Log] false
-[Log] Root node: (source_file (ERROR (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (simple_identifier) (simple_identifier) (ERROR)))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: Strin, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: kotlin.Strin, parent node type: identifier
-[Log] grandparent node text: import kotlin.Strin, parent node type: import_header
-[Log] Scope: 2:1:33
-[Log] Scope: 2:1:34
-[Log] true
-[Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: ., node type: .
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: ., parent node type: ERROR
-[Log] grandparent node text: var varName: String
-    varName., parent node type: statements
-[Log] Scope: 2:1:34
-[Log] Scope: 2:1:35
-(x2) [Log] false
-[Log] document has not changed
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] Node text: s, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: .s, parent node type: navigation_suffix
-[Log] grandparent node text: varName.s, parent node type: navigation_expression
-[Log] Scope: 2:1:34
-[Log] Scope: 2:1:35
-(x2) [Log] false
-[Log] Ident node: simple_identifier, ident node text: varName
-[Log] false
-[Log] I node type: simple_identifier, i node text: varName
-[Log] found scoped variable: String
-[Log] Checking for import: String, importsymbold path: net.minecraft.client.Minecraft
-[Log] Checking for import: String, importsymbold path: kotlin.String
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] Node text: t, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: .t, parent node type: navigation_suffix
-[Log] grandparent node text: varName.t, parent node type: navigation_expression
-[Log] Scope: 2:1:36
-[Log] Scope: 2:1:37
-(x2) [Log] false
-[Log] Ident node: simple_identifier, ident node text: varName
-[Log] false
-[Log] I node type: simple_identifier, i node text: varName
-[Log] found scoped variable: String
-[Log] Checking for import: String, importsymbold path: net.minecraft.client.Minecraft
-[Log] Checking for import: String, importsymbold path: kotlin.String
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] Node text: e, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: .e, parent node type: navigation_suffix
-[Log] grandparent node text: varName.e, parent node type: navigation_expression
-[Log] Scope: 2:1:37
-[Log] Scope: 2:1:38
-(x2) [Log] false
-[Log] Ident node: simple_identifier, ident node text: varName
-[Log] false
-[Log] I node type: simple_identifier, i node text: varName
-[Log] found scoped variable: String
-[Log] Checking for import: String, importsymbold path: net.minecraft.client.Minecraft
-[Log] Checking for import: String, importsymbold path: kotlin.String
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: E, node type: type_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: E, parent node type: user_type
-[Log] grandparent node text: varName: E, parent node type: variable_declaration
-[Log] Scope: 1:1:38
-[Log] Scope: 1:1:39
-(x2) [Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] document has not changed
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] Node text: ., node type: .
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: ., parent node type: ERROR
-[Log] grandparent node text: var varName: Entity
-    varName., parent node type: statements
-[Log] Scope: 2:1:42
-[Log] Scope: 2:1:43
-(x2) [Log] false
-[Log] document has not changed
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] Node text: e, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: .e, parent node type: navigation_suffix
-[Log] grandparent node text: varName.e, parent node type: navigation_expression
-[Log] Scope: 2:1:42
-[Log] Scope: 2:1:43
-(x2) [Log] false
-[Log] Ident node: simple_identifier, ident node text: varName
-[Log] false
-[Log] I node type: simple_identifier, i node text: varName
-[Log] found scoped variable: Entity
-[Log] Checking for import: Entity, importsymbold path: net.minecraft.client.Minecraft
-[Log] Checking for import: Entity, importsymbold path: net.minecraft.world.entity.Entity
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (simple_identifier) (navigation_suffix (simple_identifier)))))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (call_expression (simple_identifier) (call_suffix (value_arguments)))))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (call_expression (simple_identifier) (call_suffix (value_arguments))) (ERROR)))))))
-[Log] Node text: ., node type: .
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: ., parent node type: ERROR
-[Log] grandparent node text: var varName: Entity
-    varName()., parent node type: statements
-[Log] Scope: 2:1:44
-[Log] Scope: 2:1:45
-(x2) [Log] false
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (call_expression (simple_identifier) (call_suffix (value_arguments))) (ERROR)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier)))))))))
-[Log] Node text: c, node type: simple_identifier
-[Log] Child text: undefined, node type: undefined
-[Log] Parent Node text: .c, parent node type: navigation_suffix
-[Log] grandparent node text: varName().c, parent node type: navigation_expression
-[Log] Scope: 2:1:45
-[Log] Scope: 2:1:46
-(x2) [Log] false
-[Log] Ident node: call_expression, ident node text: varName()
-[Log] false
-[Log] I node type: simple_identifier, i node text: varName
-[Log] found scoped variable: Entity
-[Log] Checking for import: Entity, importsymbold path: net.minecraft.client.Minecraft
-[Log] Checking for import: Entity, importsymbold path: net.minecraft.world.entity.Entity
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (navigation_expression (call_expression (simple_identifier) (call_suffix (value_arguments))) (navigation_suffix (simple_identifier)))))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier)))) (simple_identifier)))))))
-[Log] updating tokens
-[Log] Root node: (source_file (import_list (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier))) (import_header (identifier (simple_identifier) (simple_identifier) (simple_identifier) (simple_identifier)))) (call_expression (simple_identifier) (call_suffix (annotated_lambda (lambda_literal (statements (property_declaration (binding_pattern_kind) (variable_declaration (simple_identifier) (user_type (type_identifier))))))))))
-[Log] updating tokens
+[Log] Closed document: file:///d%3A/minecraft/instances/1.21%20fab/package.json

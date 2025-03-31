@@ -19,6 +19,7 @@ import {
     semanticTokensEnabled
 } from './constants'
 import { currentEditor } from './semantictokensprovider';
+import { SyntaxNode } from 'web-tree-sitter';
 
 let cachedTypingSuggestions: TypingSuggestion[] | null = null;
 let cachedTypingMembers: TypingsMember[] | null = null;
@@ -310,4 +311,19 @@ export function debounce<T extends (...args: any[]) => void>(func: T, delay: num
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => func(...args), delay);
     } as T;
+}
+
+export function logNodeTree(node: any, depth: number = 0): void {
+    const indent = ' '.repeat(depth * 2);
+    const nodeText = node.text ? `:${node.text}` : '';
+    log(`${indent}${node.type}${nodeText}`);
+
+    for (let i = 0; i < node.childCount; i++) {
+        logNodeTree(node.child(i), depth + 1);
+    }
+}
+export function logNode(node: SyntaxNode | null, name: string) {
+    if (node)
+        log(`${name} type: ${node.type}, ${name} text: ${node.text}`)
+    else log(name + " is null.")
 }

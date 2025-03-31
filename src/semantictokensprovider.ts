@@ -41,6 +41,7 @@ import { availableClasses, typingSuggestions } from './extension';
 import { log, warn, error } from './extension';
 import { console } from './extension'
 import { ImportCodeLensProvider } from './codelens';
+import { logNodeTree } from './utils';
 
 export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
     public readonly highlightQuery: TSParser.Query;
@@ -100,7 +101,8 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         if (modifiedNode.parent && modifiedNode.parent.type != "source_file") {
             modifiedNode = modifiedNode.parent
         }
-        console.log("Root node: " + tree.rootNode)
+        //console.log("Root node: " + tree.rootNode)
+        logNodeTree(tree.rootNode)
         let l: vscode.Range[] = []
         const m: vscode.Range[] = []
         let modifiedNodeRange = this.treeProvider.supplyRange(modifiedNode)
