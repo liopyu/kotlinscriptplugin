@@ -102,7 +102,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             modifiedNode = modifiedNode.parent
         }
         //console.log("Root node: " + tree.rootNode)
-        logNodeTree(tree.rootNode)
+        // logNodeTree(tree.rootNode)
         let l: vscode.Range[] = []
         const m: vscode.Range[] = []
         let modifiedNodeRange = this.treeProvider.supplyRange(modifiedNode)

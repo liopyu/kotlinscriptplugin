@@ -243,14 +243,14 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             if (importSymbol.path === classOrPath ||
                 importSymbol.simpleName === classOrPath) {
                 classPath = importSymbol.path;
-                console.log(`Matched import symbol path: ${classPath}`);
+                // console.log(`Matched import symbol path: ${classPath}`);
             }
         }
         return classPath
     }
     private getTypingsMember(classPath: string): TypingsMember | undefined {
         let className = classPath.includes(".") ? classPath.split(".").pop() ?? "" : classPath
-        console.log("Checking typings member. ClassName: " + className + ", ClassPath: " + classPath)
+        // console.log("Checking typings member. ClassName: " + className + ", ClassPath: " + classPath)
         const matchedTyping: TypingsMember | undefined = this.indexedClassMap
             .get(className.charAt(0).toUpperCase())
             ?.get(classPath);
@@ -317,7 +317,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             potentialVariableName = treeProvider.findChild(firstChild, "simple_identifier", null)
         }
 
-        console.log("testing potential variable: " + potentialVariableName?.text)
+        //console.log("testing potential variable: " + potentialVariableName?.text)
         let scopedVariable = scope?.resolveVariable(potentialVariableName?.text ?? "");
         let baseType = ""
         if (scopedVariable) {
@@ -325,16 +325,16 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             baseType = classPath
         } else {
             if (this.isClassImported(iNode.text, document)) {
-                console.log("Imported class found")
+                //console.log("Imported class found")
                 className = iNode.text
             } else {
-                console.log("checking if navigation expression is import")
-                let potentialImports = treeProvider.findChildren(iNode, ["navigation_expression"], null)
+                // console.log("checking if navigation expression is import")
+                let potentialImports = treeProvider.findChildren(iNode?.parent ?? iNode, ["navigation_expression"], null)
                 for (const syntaxNode of potentialImports) {
-                    console.log("testing node for import: " + syntaxNode.text)
+                    // console.log("testing node for import: " + syntaxNode.text)
                     let childClassName = treeProvider.findChild(syntaxNode, "simple_identifier", null)
                     if (syntaxNode && this.isClassImported(syntaxNode.text, document)) {
-                        console.log("1found imported class: " + syntaxNode.text)
+                        //console.log("1found imported class: " + syntaxNode.text)
                         className = childClassName
                         baseType = syntaxNode.text
                         if (this.isMethodCall(syntaxNode)) {
@@ -343,7 +343,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                         break
                     } else if (childClassName && this.isClassImported(childClassName?.text, document)) {
                         let classPath = this.getImportFromClassOrPath(childClassName?.text, treeProvider)
-                        console.log("2found imported class: " + classPath)
+                        // console.log("2found imported class: " + classPath)
                         className = childClassName
                         baseType = classPath
                         if (this.isMethodCall(childClassName)) {
@@ -354,9 +354,9 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                 }
             }
         }
-        console.log("Is initializer static call: " + isStaticClassCall)
+        //console.log("Is initializer static call: " + isStaticClassCall)
         if (!iNode.parent) {
-            console.log("iNode parent is null")
+            // console.log("iNode parent is null")
             return
         }
         let suffixes = treeProvider.findChildren(iNode.parent, ["navigation_suffix"], null)
@@ -374,56 +374,66 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         let currentIsStatic = false
         let currentMethodOrField: Field | Method | null = null
         let foundTypingsMember: TypingsMember | undefined
-        for (let i = 0; i < refinedSuffixes.length; i++) {
-            const element = refinedSuffixes[i];
-            console.log(element + ": " + i)
-            let methodCall = false
-            if (element.endsWith("()")) methodCall = true
-            let typingsMember = this.getTypingsMember(currentType)
-            let isAvailableOffCurrentType = false
-            foundTypingsMember = typingsMember
-            if (typingsMember) {
-                if (methodCall) {
-                    isAvailableOffCurrentType = typingsMember.methods.some(method => method.name == element)
-                    if (isAvailableOffCurrentType) {
-                        let method = typingsMember.methods.find(method => method.name == element)
-                        if (method) {
-                            currentType = method?.returns
-                            currentIsStatic = method?.isStatic
-                            currentMethodOrField = method
-                            console.log("Typings member: " + foundTypingsMember?.classPath + ", for: " + currentMethodOrField?.name)
+        let isCallOffClass = treeProvider.findChild(iNode, "navigation_expression") == null
+        if (!isCallOffClass)
+            for (let i = 0; i < refinedSuffixes.length; i++) {
+                const element = refinedSuffixes[i];
+                //console.log(element + ": " + i)
+                let methodCall = false
+                if (element.endsWith("()")) methodCall = true
+                let typingsMember = this.getTypingsMember(currentType)
+                let isAvailableOffCurrentType = false
+                foundTypingsMember = typingsMember
+                if (typingsMember) {
+                    if (methodCall) {
+                        isAvailableOffCurrentType = typingsMember.methods.some(method => method.name == element)
+                        if (isAvailableOffCurrentType) {
+                            let method = typingsMember.methods.find(method => method.name == element)
+                            if (method) {
+                                currentType = method?.returns
+                                currentIsStatic = method?.isStatic
+                                currentMethodOrField = method
+                                // console.log("Typings member: " + foundTypingsMember?.classPath + ", for: " + currentMethodOrField?.name)
 
+                            }
+                        } else {
+                            if (refinedSuffixes.length == i)
+                                foundTypingsMember = undefined
+                            break
                         }
-                    } else break
-                } else {
-                    isAvailableOffCurrentType = typingsMember.fields.some(field => field.name == element)
-                    if (isAvailableOffCurrentType) {
-                        let field = typingsMember.fields.find(field => field.name == element)
-                        if (field) {
-                            currentType = field?.returns
-                            currentIsStatic = field?.isStatic
-                            currentMethodOrField = field
-                            console.log("Typings member: " + foundTypingsMember?.classPath + ", for: " + currentMethodOrField?.name)
+                    } else {
+                        isAvailableOffCurrentType = typingsMember.fields.some(field => field.name == element)
+                        if (isAvailableOffCurrentType) {
+                            let field = typingsMember.fields.find(field => field.name == element)
+                            if (field) {
+                                currentType = field?.returns
+                                currentIsStatic = field?.isStatic
+                                currentMethodOrField = field
+                                // console.log("Typings member: " + foundTypingsMember?.classPath + ", for: " + currentMethodOrField?.name)
 
+                            }
+                        } else {
+                            if (refinedSuffixes.length == i)
+                                foundTypingsMember = undefined
+                            break
                         }
-                    } else break
+                    }
                 }
             }
-        }
-        logNode(treeProvider.findChild(iNode, "navigation_expression"), "INode child")
-        let isCallOffClass = treeProvider.findChild(iNode, "navigation_expression") == null
+        //logNode(treeProvider.findChild(iNode, "navigation_expression"), "INode child")
         if (isCallOffClass) {
-            console.log("No other expressions")
+            //console.log("No other expressions, baseType: " + baseType)
             foundTypingsMember = this.getTypingsMember(baseType)
             currentType = baseType
             currentIsStatic = isStaticClassCall
         } else isStaticClassCall = currentIsStatic
         let someTypingsmember = this.getTypingsMember(baseType)
-        console.log("Final foundTypingsMember: " + foundTypingsMember?.classPath)
+        // console.log("Final foundTypingsMember: " + foundTypingsMember?.classPath)
         if (foundTypingsMember) {
-            console.log(`Matched TypingsMember for: ${currentType}`);
+            //console.log(`Matched TypingsMember for: ${currentType}. Is call off class: ${isCallOffClass}, `);
             for (const method of foundTypingsMember.methods) {
-                if (!isCallOffClass && method.isStatic) continue;
+                if ((!isCallOffClass && method.isStatic) || (isCallOffClass && isStaticClassCall && !method.isStatic) ||
+                    (isCallOffClass && !isStaticClassCall && method.isStatic)) continue;
                 const methodCompletion = new vscode.CompletionItem(
                     `${method.name.replace("()", "") + (method.args.length ? `(${method.args?.join(', ') || ''})` : "()")}`,
                     vscode.CompletionItemKind.Method
@@ -435,7 +445,8 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             }
 
             for (const field of foundTypingsMember.fields) {
-                if (!isCallOffClass && field.isStatic) continue;
+                if ((!isCallOffClass && field.isStatic) || (isCallOffClass && isStaticClassCall && !field.isStatic) ||
+                    (isCallOffClass && !isStaticClassCall && field.isStatic)) continue;
                 const fieldCompletion = new vscode.CompletionItem(
                     field.name,
                     vscode.CompletionItemKind.Field
@@ -455,20 +466,20 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         if (!t)
             if (iNode.type == "navigation_expression") {
                 if (this.isClassImported(iNode.text, document)) {
-                    console.log("Imported class found")
+                    // console.log("Imported class found")
                     className = iNode.text
                 } else {
-                    console.log("checking if navigation expression is import")
+                    // console.log("checking if navigation expression is import")
                     let potentialImports = treeProvider.findChildren(iNode, ["navigation_expression"], null)
                     for (const syntaxNode of potentialImports) {
-                        console.log("testing node for import: " + syntaxNode.text)
+                        //console.log("testing node for import: " + syntaxNode.text)
                         let childClassName = treeProvider.findChild(syntaxNode, "simple_identifier", null)
                         if (syntaxNode && this.isClassImported(syntaxNode.text, document)) {
-                            console.log("found imported class: " + syntaxNode.text)
+                            // console.log("found imported class: " + syntaxNode.text)
                             className = childClassName
                             break
                         } else if (childClassName && this.isClassImported(childClassName?.text, document)) {
-                            console.log("found imported class: " + childClassName.text)
+                            // console.log("found imported class: " + childClassName.text)
                             className = childClassName
                             break
                         }
@@ -483,20 +494,20 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                     return
                 }
 
-                console.log(`Scoped Variable Found: ${scopedVariable !== undefined}`);
+                // console.log(`Scoped Variable Found: ${scopedVariable !== undefined}`);
                 resolvedType = scopedVariable?.type
-                console.log("Resolved type; " + resolvedType)
+                // console.log("Resolved type; " + resolvedType)
                 let classPath = this.getImportFromClassOrPath(resolvedType ?? "", treeProvider)
-                console.log("Typings member class: " + this.getTypingsMember(classPath)?.classPath)
+                //  console.log("Typings member class: " + this.getTypingsMember(classPath)?.classPath)
                 if ((chainNode && this.isClassImported(chainNode.text, document)) ||
                     treeProvider.imports.get(chainNode?.text) ||
                     scopedVariable) {
 
                     let className = chainNode.text.split(".").pop() ?? "";
-                    console.log(`Resolved Class Name: ${className}`);
+                    //  console.log(`Resolved Class Name: ${className}`);
 
                     if (scopedVariable) {
-                        console.log("Found scoped variable: " + scopedVariable.type);
+                        // console.log("Found scoped variable: " + scopedVariable.type);
                         className = scopedVariable.type;
                     }
 
@@ -506,7 +517,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                             importSymbol.simpleName === chainNode.text ||
                             importSymbol.simpleName === className) {
                             classPath = importSymbol.path;
-                            console.log(`Matched import symbol path: ${classPath}`);
+                            // console.log(`Matched import symbol path: ${classPath}`);
                         }
                     }
 
@@ -515,7 +526,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                         ?.get(classPath);
 
                     if (matchedTyping) {
-                        console.log(`Matched TypingsMember for: ${className}`);
+                        //  console.log(`Matched TypingsMember for: ${className}`);
                         for (const method of matchedTyping.methods) {
                             if (isStaticCall && !method.isStatic) continue;
                             const methodCompletion = new vscode.CompletionItem(

@@ -1,0 +1,11 @@
+{
+    "net.liopyu.kotlinscript.FabricBootstrap": {
+        "someStaticMethod()": {
+            "returns": "kotlin.String",
+            "args": []
+        },
+        "someValue": {
+            "returns": "int"
+        }
+    }
+}
