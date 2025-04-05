@@ -114,56 +114,63 @@ export class Utils {
 }
 
 
-
 export async function loadTypingMembers(ktsDirectory: string): Promise<TypingsMember[]> {
     if (cachedTypingMembers) {
         return cachedTypingMembers;
     }
 
     const suggestions: TypingsMember[] = [];
-    const jsonFilePath = path.join(ktsDirectory, 'typings', 'available_members.json');
 
-    try {
-        if (fs.existsSync(jsonFilePath)) {
-            console.log('Loading typing suggestions from JSON file...');
-            const fileContent = fs.readFileSync(jsonFilePath, 'utf-8');
-            const parsedData = JSON.parse(fileContent);
+    const loadFile = (filePath: string, forceStatic = false) => {
+        if (!fs.existsSync(filePath)) return;
 
-            Object.entries(parsedData).forEach(([classPath, members]) => {
-                const methods: Method[] = [];
-                const fields: Field[] = [];
-                Object.entries(members as Record<string, any>).forEach(([name, details]) => {
-                    if (name.endsWith('()')) {
-                        methods.push(new Method(
-                            name,
-                            (details as { args?: string[] }).args || [],
-                            (details as { returns?: string }).returns || 'Unit',
-                            (details as { isStatic?: boolean }).isStatic || false
-                        ));
-                    } else {
-                        fields.push(new Field(
-                            name,
-                            (details as { type?: string }).type || 'Unknown',
-                            (details as { isStatic?: boolean }).isStatic || false
-                        ));
-                    }
-                });
+        console.log(`Loading typing suggestions from ${path.basename(filePath)}...`);
+        const fileContent = fs.readFileSync(filePath, 'utf-8');
+        const parsedData = JSON.parse(fileContent);
 
+        Object.entries(parsedData).forEach(([classPath, members]) => {
+            const methods: Method[] = [];
+            const fields: Field[] = [];
 
-
-
-                suggestions.push(new TypingsMember(classPath, methods, fields));
+            Object.entries(members as Record<string, any>).forEach(([name, details]) => {
+                if (name.endsWith('()')) {
+                    methods.push(new Method(
+                        name,
+                        (details as { args?: string[] }).args || [],
+                        (details as { returns?: string }).returns || 'Unit',
+                        forceStatic || (details as { isStatic?: boolean }).isStatic || false,
+                        (details as { description?: string }).description || '',
+                    ));
+                } else {
+                    fields.push(new Field(
+                        name,
+                        (details as { type?: string, returns?: string }).type || (details as any).returns || 'Unknown',
+                        forceStatic || (details as { isStatic?: boolean }).isStatic || false,
+                        (details as { description?: string }).description || '',
+                    ));
+                }
             });
 
-            log(`Loaded ${suggestions.length} member suggestions.`);
-            cachedTypingMembers = suggestions;
-        }
+            suggestions.push(new TypingsMember(classPath, methods, fields, forceStatic));
+        });
+    };
+
+    try {
+        const jsonFilePath = path.join(ktsDirectory, 'typings', 'available_members.json');
+        const companionJsonFilePath = path.join(ktsDirectory, 'typings', 'companion_objects.json');
+
+        loadFile(jsonFilePath);
+        loadFile(companionJsonFilePath, true);
+
+        log(`Loaded ${suggestions.length} member suggestions.`);
+        cachedTypingMembers = suggestions;
     } catch (error) {
         warn(`Error loading member suggestions: ${error}`);
     }
 
     return suggestions;
 }
+
 
 export async function loadTypingSuggestions(ktsDirectory: string): Promise<TypingSuggestion[]> {
     if (cachedTypingSuggestions) {

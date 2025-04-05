@@ -293,19 +293,10 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             row: line,
             column: character,
         });
+
         let snippetCompletions: vscode.CompletionItem[] = []
         let iNode = treeProvider.findParent(node, "navigation_expression", range)
-        /*  if (iNode?.parent) {
-             treeProvider.findChildren(iNode.parent, ["navigation_expression"]).forEach(navChild => {
-                 logNode(navChild, "NavChild is method: " + this.isMethodCall(navChild).valueOf())
-             })
-         } */
         if (!iNode) return
-        let iChildren = treeProvider.findChildren(iNode, ["navigation_suffix"], null)
-        /*  for (const child of iChildren) {
-             //let methodOrField: Method | Field =  child.text.replace(".", "") + "()"
-             console.log("Child nextsibling: " + child.nextSibling?.type + ", child nextsibling text: " + child.nextSibling?.text)
-         } */
         let className
         let potentialVariableName
         let isStaticClassCall = true
@@ -317,7 +308,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             potentialVariableName = treeProvider.findChild(firstChild, "simple_identifier", null)
         }
 
-        //console.log("testing potential variable: " + potentialVariableName?.text)
+        console.log("testing potential variable: " + potentialVariableName?.text)
         let scopedVariable = scope?.resolveVariable(potentialVariableName?.text ?? "");
         let baseType = ""
         if (scopedVariable) {
@@ -325,16 +316,16 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             baseType = classPath
         } else {
             if (this.isClassImported(iNode.text, document)) {
-                //console.log("Imported class found")
+                console.log("Imported class found")
                 className = iNode.text
             } else {
-                // console.log("checking if navigation expression is import")
+                console.log("checking if navigation expression is import")
                 let potentialImports = treeProvider.findChildren(iNode?.parent ?? iNode, ["navigation_expression"], null)
                 for (const syntaxNode of potentialImports) {
-                    // console.log("testing node for import: " + syntaxNode.text)
+                    console.log("testing node for import: " + syntaxNode.text)
                     let childClassName = treeProvider.findChild(syntaxNode, "simple_identifier", null)
                     if (syntaxNode && this.isClassImported(syntaxNode.text, document)) {
-                        //console.log("1found imported class: " + syntaxNode.text)
+                        console.log("1found imported class: " + syntaxNode.text)
                         className = childClassName
                         baseType = syntaxNode.text
                         if (this.isMethodCall(syntaxNode)) {
@@ -343,7 +334,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                         break
                     } else if (childClassName && this.isClassImported(childClassName?.text, document)) {
                         let classPath = this.getImportFromClassOrPath(childClassName?.text, treeProvider)
-                        // console.log("2found imported class: " + classPath)
+                        console.log("2found imported class: " + classPath)
                         className = childClassName
                         baseType = classPath
                         if (this.isMethodCall(childClassName)) {
@@ -354,9 +345,9 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                 }
             }
         }
-        //console.log("Is initializer static call: " + isStaticClassCall)
+        console.log("Is initializer static call: " + isStaticClassCall)
         if (!iNode.parent) {
-            // console.log("iNode parent is null")
+            console.log("iNode parent is null")
             return
         }
         let suffixes = treeProvider.findChildren(iNode.parent, ["navigation_suffix"], null)
@@ -364,9 +355,9 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
 
         suffixes.forEach(suff => {
             refinedSuffixes.push(suff.text.replace(".", "") + (this.isMethodCall(suff?.parent) ? "()" : ""))
-            // logNode(suff, "Suffix")
-            /* if (suff.parent)
-                log("Suffix is method call?: " + this.isMethodCall(suff.parent)) */
+            logNode(suff, "Suffix")
+            if (suff.parent)
+                log("Suffix is method call?: " + this.isMethodCall(suff.parent))
 
         })
 
@@ -378,7 +369,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         if (!isCallOffClass)
             for (let i = 0; i < refinedSuffixes.length; i++) {
                 const element = refinedSuffixes[i];
-                //console.log(element + ": " + i)
+                console.log(element + ": " + i)
                 let methodCall = false
                 if (element.endsWith("()")) methodCall = true
                 let typingsMember = this.getTypingsMember(currentType)
@@ -393,7 +384,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                                 currentType = method?.returns
                                 currentIsStatic = method?.isStatic
                                 currentMethodOrField = method
-                                // console.log("Typings member: " + foundTypingsMember?.classPath + ", for: " + currentMethodOrField?.name)
+                                console.log("Typings member: " + foundTypingsMember?.classPath + ", for: " + currentMethodOrField?.name)
 
                             }
                         } else {
@@ -409,7 +400,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                                 currentType = field?.returns
                                 currentIsStatic = field?.isStatic
                                 currentMethodOrField = field
-                                // console.log("Typings member: " + foundTypingsMember?.classPath + ", for: " + currentMethodOrField?.name)
+                                console.log("Typings member: " + foundTypingsMember?.classPath + ", for: " + currentMethodOrField?.name)
 
                             }
                         } else {
@@ -420,17 +411,17 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                     }
                 }
             }
-        //logNode(treeProvider.findChild(iNode, "navigation_expression"), "INode child")
+        logNode(treeProvider.findChild(iNode, "navigation_expression"), "INode child")
         if (isCallOffClass) {
-            //console.log("No other expressions, baseType: " + baseType)
+            console.log("No other expressions, baseType: " + baseType)
             foundTypingsMember = this.getTypingsMember(baseType)
             currentType = baseType
             currentIsStatic = isStaticClassCall
         } else isStaticClassCall = currentIsStatic
         let someTypingsmember = this.getTypingsMember(baseType)
-        // console.log("Final foundTypingsMember: " + foundTypingsMember?.classPath)
+        console.log("Final foundTypingsMember: " + foundTypingsMember?.classPath)
         if (foundTypingsMember) {
-            //console.log(`Matched TypingsMember for: ${currentType}. Is call off class: ${isCallOffClass}, `);
+            console.log(`Matched TypingsMember for: ${currentType}. Is call off class: ${isCallOffClass}, `);
             for (const method of foundTypingsMember.methods) {
                 if ((!isCallOffClass && method.isStatic) || (isCallOffClass && isStaticClassCall && !method.isStatic) ||
                     (isCallOffClass && !isStaticClassCall && method.isStatic)) continue;
@@ -458,135 +449,38 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         } else {
             console.log(`No TypingsMember found for classPath: ${currentType}`);
         }
-        /*  if (currentMethodOrField instanceof Field) {
-             currentMethodOrField.
-         } else if (currentMethodOrField instanceof Method) {
- 
-         } */
-        if (!t)
-            if (iNode.type == "navigation_expression") {
-                if (this.isClassImported(iNode.text, document)) {
-                    // console.log("Imported class found")
-                    className = iNode.text
-                } else {
-                    // console.log("checking if navigation expression is import")
-                    let potentialImports = treeProvider.findChildren(iNode, ["navigation_expression"], null)
-                    for (const syntaxNode of potentialImports) {
-                        //console.log("testing node for import: " + syntaxNode.text)
-                        let childClassName = treeProvider.findChild(syntaxNode, "simple_identifier", null)
-                        if (syntaxNode && this.isClassImported(syntaxNode.text, document)) {
-                            // console.log("found imported class: " + syntaxNode.text)
-                            className = childClassName
-                            break
-                        } else if (childClassName && this.isClassImported(childClassName?.text, document)) {
-                            // console.log("found imported class: " + childClassName.text)
-                            className = childClassName
-                            break
-                        }
-                    }
-                }
-                let isStaticCall = true;
-                let resolvedType: string | undefined = undefined;
-                let chainNode = iNode.parent;
+        if (!t && iNode) {
+            let i = iNode?.parent?.firstChild;
+            if (!i) return
+            if (!expressionTypes.includes(i.type)) return
+            if (i) {
+                let iRange = treeProvider.supplyRange(i);
+                if (linePrefix.trim().endsWith("t")) {
+                    const item = new vscode.CompletionItem("try-catch block", vscode.CompletionItemKind.Snippet);
+                    const lines = i.text.split('\n');
+                    const baseIndentation = lines[0].match(/^\s*/)?.[0] ?? "";
+                    const indentedBlock = lines.map(line => baseIndentation + '\t' + line).join('\n');
+                    item.insertText = new vscode.SnippetString(
+                        `${baseIndentation}try {\n${indentedBlock}\n${baseIndentation}} catch (e: Exception) {\n${baseIndentation}\tTODO("Not yet implemented")$0\n${baseIndentation}}`
+                    );
+                    const mergedRange = new vscode.Range(
+                        iRange.start,
+                        range.end
+                    );
+                    item.additionalTextEdits = [
+                        vscode.TextEdit.replace(mergedRange, "")
+                    ];
+                    item.additionalTextEdits = [
+                        vscode.TextEdit.replace(iRange, ""),
 
-                if (!chainNode) {
-                    console.log("No chain node found")
-                    return
-                }
-
-                // console.log(`Scoped Variable Found: ${scopedVariable !== undefined}`);
-                resolvedType = scopedVariable?.type
-                // console.log("Resolved type; " + resolvedType)
-                let classPath = this.getImportFromClassOrPath(resolvedType ?? "", treeProvider)
-                //  console.log("Typings member class: " + this.getTypingsMember(classPath)?.classPath)
-                if ((chainNode && this.isClassImported(chainNode.text, document)) ||
-                    treeProvider.imports.get(chainNode?.text) ||
-                    scopedVariable) {
-
-                    let className = chainNode.text.split(".").pop() ?? "";
-                    //  console.log(`Resolved Class Name: ${className}`);
-
-                    if (scopedVariable) {
-                        // console.log("Found scoped variable: " + scopedVariable.type);
-                        className = scopedVariable.type;
-                    }
-
-                    let classPath = className;
-                    for (const [k, importSymbol] of treeProvider.imports.entries()) {
-                        if (importSymbol.path === chainNode.text ||
-                            importSymbol.simpleName === chainNode.text ||
-                            importSymbol.simpleName === className) {
-                            classPath = importSymbol.path;
-                            // console.log(`Matched import symbol path: ${classPath}`);
-                        }
-                    }
-
-                    const matchedTyping: TypingsMember | undefined = this.indexedClassMap
-                        .get(className.charAt(0).toUpperCase())
-                        ?.get(classPath);
-
-                    if (matchedTyping) {
-                        //  console.log(`Matched TypingsMember for: ${className}`);
-                        for (const method of matchedTyping.methods) {
-                            if (isStaticCall && !method.isStatic) continue;
-                            const methodCompletion = new vscode.CompletionItem(
-                                `${method.name.replace("()", "") + (method.args.length ? `(${method.args?.join(', ') || ''})` : "()")}`,
-                                vscode.CompletionItemKind.Method
-                            );
-                            methodCompletion.kind = vscode.CompletionItemKind.Method;
-                            methodCompletion.detail = `Returns: ${method.returns}`;
-                            methodCompletion.insertText = method.name;
-                            snippetCompletions.push(methodCompletion);
-                        }
-
-                        for (const field of matchedTyping.fields) {
-                            if (isStaticCall && !field.isStatic) continue;
-                            const fieldCompletion = new vscode.CompletionItem(
-                                field.name,
-                                vscode.CompletionItemKind.Field
-                            );
-                            fieldCompletion.kind = vscode.CompletionItemKind.Field;
-                            fieldCompletion.detail = `Returns: ${field.returns}`;
-                            snippetCompletions.push(fieldCompletion);
-                        }
-                    } else {
-                        console.log(`No TypingsMember found for classPath: ${classPath}`);
-                    }
+                        vscode.TextEdit.replace(range, "")
+                    ];
+                    item.detail = "Wraps the current block in a try-catch";
+                    item.sortText = "0";
+                    snippetCompletions.push(item);
                 }
             }
-
-            else if (iNode) {
-                let i = iNode?.parent?.firstChild;
-                if (!i) return
-                if (!expressionTypes.includes(i.type)) return
-                if (i) {
-                    let iRange = treeProvider.supplyRange(i);
-                    if (linePrefix.trim().endsWith("t")) {
-                        const item = new vscode.CompletionItem("try-catch block", vscode.CompletionItemKind.Snippet);
-                        const lines = i.text.split('\n');
-                        const baseIndentation = lines[0].match(/^\s*/)?.[0] ?? "";
-                        const indentedBlock = lines.map(line => baseIndentation + '\t' + line).join('\n');
-                        item.insertText = new vscode.SnippetString(
-                            `${baseIndentation}try {\n${indentedBlock}\n${baseIndentation}} catch (e: Exception) {\n${baseIndentation}\tTODO("Not yet implemented")$0\n${baseIndentation}}`
-                        );
-                        const mergedRange = new vscode.Range(
-                            iRange.start,
-                            range.end
-                        );
-                        item.additionalTextEdits = [
-                            vscode.TextEdit.replace(mergedRange, "")
-                        ];
-                        item.additionalTextEdits = [
-                            vscode.TextEdit.replace(iRange, ""),
-
-                            vscode.TextEdit.replace(range, "")
-                        ];
-                        item.detail = "Wraps the current block in a try-catch";
-                        item.sortText = "0";
-                        snippetCompletions.push(item);
-                    }
-                }
-            }
+        }
 
         return [...snippetCompletions];
     }

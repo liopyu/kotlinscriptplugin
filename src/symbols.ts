@@ -247,6 +247,7 @@ export class TypingsMember {
         public classPath: string,
         public methods: Method[],
         public fields: Field[],
+        public hasCompanionObject: boolean,
     ) { }
 }
 
@@ -255,7 +256,8 @@ export class Method {
         public name: string,
         public args: string[],
         public returns: string,
-        public isStatic: boolean
+        public isStatic: boolean,
+        public description: string | null,
     ) { }
 }
 export class Field {
@@ -263,6 +265,7 @@ export class Field {
         public name: string,
         public returns: string,
         public isStatic: boolean,
+        public description: string | null,
     ) { }
 }
 
