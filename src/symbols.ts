@@ -239,7 +239,8 @@ export class TypingSuggestion {
         public path: string | null,
         public parentType: string | null,
         public requiresImport: boolean,
-        public isClass: boolean
+        public isClass: boolean,
+        public returnType: string | null,
     ) { }
 }
 export class TypingsMember {
@@ -248,6 +249,7 @@ export class TypingsMember {
         public methods: Method[],
         public fields: Field[],
         public hasCompanionObject: boolean,
+        public hasInvokeOperator: boolean,
     ) { }
 }
 

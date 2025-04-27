@@ -131,7 +131,7 @@ export async function loadTypingMembers(ktsDirectory: string): Promise<TypingsMe
         Object.entries(parsedData).forEach(([classPath, members]) => {
             const methods: Method[] = [];
             const fields: Field[] = [];
-
+            let hasInvokeOperator = false
             Object.entries(members as Record<string, any>).forEach(([name, details]) => {
                 if (name.endsWith('()')) {
                     methods.push(new Method(
@@ -141,6 +141,11 @@ export async function loadTypingMembers(ktsDirectory: string): Promise<TypingsMe
                         forceStatic || (details as { isStatic?: boolean }).isStatic || false,
                         (details as { description?: string }).description || '',
                     ));
+                    if (!hasInvokeOperator)
+                        hasInvokeOperator = (details as { isInvokeOperator?: boolean }).isInvokeOperator ?? false
+                    /*  if (hasInvokeOperator) {
+                         log("adding invoke operator to class: " + classPath + ", for method: " + name)
+                     } */
                 } else {
                     fields.push(new Field(
                         name,
@@ -151,7 +156,7 @@ export async function loadTypingMembers(ktsDirectory: string): Promise<TypingsMe
                 }
             });
 
-            suggestions.push(new TypingsMember(classPath, methods, fields, forceStatic));
+            suggestions.push(new TypingsMember(classPath, methods, fields, forceStatic, hasInvokeOperator));
         });
     };
 
@@ -197,7 +202,8 @@ export async function loadTypingSuggestions(ktsDirectory: string): Promise<Typin
                             item.path || null,
                             item.parentType || null,
                             item.requiresImport || false,
-                            item.isClass || false
+                            item.isClass || false,
+                            item.returnType || null,
                         )
                     );
                 });
@@ -329,7 +335,7 @@ export function logNodeTree(node: any, depth: number = 0): void {
         logNodeTree(node.child(i), depth + 1);
     }
 }
-export function logNode(node: SyntaxNode | null, name: string) {
+export function logNode(node: SyntaxNode | null | undefined, name: string) {
     if (node)
         log(`${name} type: ${node.type}, ${name} text: ${node.text}`)
     else log(name + " is null.")

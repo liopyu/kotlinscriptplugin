@@ -1,459 +1,227 @@
 [Log] Loading classes from binary file...
-[Log] Loaded 54007 classes from binary file.
+[Log] Loaded 65126 classes from binary file.
 [Log] Loading typing suggestions from JSON file...
-[Log] Loaded 1146 typing suggestions.
-[Log] Loaded 53758 member suggestions.
-[Log] Typing suggestions loaded: 1146
+[Log] Loaded 2127 typing suggestions.
+[Log] Loaded 64877 member suggestions.
+[Log] Typing suggestions loaded: 2127
 [Log] Semantic Tokens Provider Initialized
 [Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().levelt
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .levelt
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] levelt: 1
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance
-[Log] Final foundTypingsMember: net.minecraft.client.Minecraft
-[Log] Matched TypingsMember for: net.minecraft.client.Minecraft. Is call off class: false, 
+[Log] INode is null.
+[Log] Node type: simple_identifier, Node text: L
 [Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().level
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .level
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] level: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: level
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance
-[Log] Final foundTypingsMember: net.minecraft.client.Minecraft
-[Log] Matched TypingsMember for: net.minecraft.client.multiplayer.ClientLevel. Is call off class: false, 
-[Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().level.
-    varName
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .level
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .
-    varName
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .s
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] level: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: level
-[Log] 
-    varName: 2
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().level
-[Log] Final foundTypingsMember: net.minecraft.client.multiplayer.ClientLevel
-[Log] Matched TypingsMember for: net.minecraft.client.multiplayer.ClientLevel. Is call off class: false, 
-[Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().level.getEntities().
-    varName
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .level
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getEntities
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .
-    varName
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .s
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] level: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: level
-[Log] getEntities(): 2
-[Log] Typings member: net.minecraft.client.multiplayer.ClientLevel, for: getEntities()
-[Log] 
-    varName: 3
-[Log] s: 4
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().level.getEntities
-[Log] Final foundTypingsMember: undefined
-[Log] No TypingsMember found for classPath: void
-[Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().level.getEntities().a
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .level
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getEntities
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .a
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] level: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: level
-[Log] getEntities(): 2
-[Log] Typings member: net.minecraft.client.multiplayer.ClientLevel, for: getEntities()
-[Log] a: 3
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().level.getEntities
-[Log] Final foundTypingsMember: undefined
-[Log] No TypingsMember found for classPath: void
-[Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().level.getEntities().s
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .level
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getEntities
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .s
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] level: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: level
-[Log] getEntities(): 2
-[Log] Typings member: net.minecraft.client.multiplayer.ClientLevel, for: getEntities()
-[Log] s: 3
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().level.getEntities
-[Log] Final foundTypingsMember: undefined
-[Log] No TypingsMember found for classPath: void
-[Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().level.getEntities().o
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .level
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getEntities
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .o
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] level: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: level
-[Log] getEntities(): 2
-[Log] Typings member: net.minecraft.client.multiplayer.ClientLevel, for: getEntities()
-[Log] o: 3
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().level.getEntities
-[Log] Final foundTypingsMember: undefined
-[Log] No TypingsMember found for classPath: void
-[Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().level.getEntities().e
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .level
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getEntities
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .e
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] level: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: level
-[Log] getEntities(): 2
-[Log] Typings member: net.minecraft.client.multiplayer.ClientLevel, for: getEntities()
-[Log] e: 3
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().level.getEntities
-[Log] Final foundTypingsMember: undefined
-[Log] No TypingsMember found for classPath: void
-[Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().gameRenderer.getShader().s
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .gameRenderer
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getShader
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .s
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] gameRenderer: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: gameRenderer
-[Log] getShader(): 2
-[Log] Typings member: net.minecraft.client.renderer.GameRenderer, for: getShader()
-[Log] s: 3
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().gameRenderer.getShader
-[Log] Final foundTypingsMember: net.minecraft.client.renderer.ShaderInstance
-[Log] Matched TypingsMember for: net.minecraft.client.renderer.ShaderInstance. Is call off class: false, 
 [Log] document has not changed
 [Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().gameRenderer.getShader().setSampler().a
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .gameRenderer
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getShader
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .setSampler
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .a
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] gameRenderer: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: gameRenderer
-[Log] getShader(): 2
-[Log] Typings member: net.minecraft.client.renderer.GameRenderer, for: getShader()
-[Log] setSampler(): 3
-[Log] Typings member: net.minecraft.client.renderer.ShaderInstance, for: setSampler()
-[Log] a: 4
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().gameRenderer.getShader().setSampler
-[Log] Final foundTypingsMember: undefined
-[Log] No TypingsMember found for classPath: void
+[Log] INode is null.
+[Log] Node type: ., Node text: .
 [Log] updating tokens
-[Log] testing potential variable: Minecraft
+[Log] INode type: navigation_expression, INode text: Level.g
+[Log] Node type: simple_identifier, Node text: g
+[Log] no last child, going off Inode
+[Log] testing potential variable: Level
 [Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().gameRenderer.getShader().setSampler().s
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
+[Log] Parent type: navigation_expression, Parent text: Level.g
+[Log] testing node for import: Level.g
+[Log] 2found imported class: net.minecraft.world.level.Level
+[Log] Suffix type: navigation_suffix, Suffix text: .reflect
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .jvm
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .internal
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .impl
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .types
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .typesApproximation
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .approximateCapturedTypes
 [Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .gameRenderer
+[Log] Suffix type: navigation_suffix, Suffix text: .lang
 [Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getShader
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .setSampler
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .s
+[Log] Suffix type: navigation_suffix, Suffix text: .invoke
 [Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] gameRenderer: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: gameRenderer
-[Log] getShader(): 2
-[Log] Typings member: net.minecraft.client.renderer.GameRenderer, for: getShader()
-[Log] setSampler(): 3
-[Log] Typings member: net.minecraft.client.renderer.ShaderInstance, for: setSampler()
-[Log] s: 4
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().gameRenderer.getShader().setSampler
-[Log] Final foundTypingsMember: undefined
-[Log] No TypingsMember found for classPath: void
-(x2) [Log] updating tokens
-[Log] document has not changed
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().gameRenderer.getShader().d
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .gameRenderer
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getShader
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .d
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] gameRenderer: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: gameRenderer
-[Log] getShader(): 2
-[Log] Typings member: net.minecraft.client.renderer.GameRenderer, for: getShader()
-[Log] d: 3
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().gameRenderer.getShader
-[Log] Final foundTypingsMember: net.minecraft.client.renderer.ShaderInstance
-[Log] Matched TypingsMember for: net.minecraft.client.renderer.ShaderInstance. Is call off class: false, 
-[Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().gameRenderer.getShader().LIGHT0_DIRECTION.a
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .gameRenderer
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getShader
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .LIGHT0_DIRECTION
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .a
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] gameRenderer: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: gameRenderer
-[Log] getShader(): 2
-[Log] Typings member: net.minecraft.client.renderer.GameRenderer, for: getShader()
-[Log] LIGHT0_DIRECTION: 3
-[Log] Typings member: net.minecraft.client.renderer.ShaderInstance, for: LIGHT0_DIRECTION
-[Log] a: 4
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().gameRenderer.getShader().LIGHT0_DIRECTION
-[Log] Final foundTypingsMember: com.mojang.blaze3d.shaders.Uniform
-[Log] Matched TypingsMember for: com.mojang.blaze3d.shaders.Uniform. Is call off class: false, 
-[Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().gameRenderer.getShader().LIGHT0_DIRECTION.e
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .gameRenderer
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getShader
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .LIGHT0_DIRECTION
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .e
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] gameRenderer: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: gameRenderer
-[Log] getShader(): 2
-[Log] Typings member: net.minecraft.client.renderer.GameRenderer, for: getShader()
-[Log] LIGHT0_DIRECTION: 3
-[Log] Typings member: net.minecraft.client.renderer.ShaderInstance, for: LIGHT0_DIRECTION
-[Log] e: 4
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().gameRenderer.getShader().LIGHT0_DIRECTION
-[Log] Final foundTypingsMember: com.mojang.blaze3d.shaders.Uniform
-[Log] Matched TypingsMember for: com.mojang.blaze3d.shaders.Uniform. Is call off class: false, 
-[Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().gameRenderer.getShader().LIGHT0_DIRECTION.o
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .gameRenderer
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getShader
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .LIGHT0_DIRECTION
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .o
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] gameRenderer: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: gameRenderer
-[Log] getShader(): 2
-[Log] Typings member: net.minecraft.client.renderer.GameRenderer, for: getShader()
-[Log] LIGHT0_DIRECTION: 3
-[Log] Typings member: net.minecraft.client.renderer.ShaderInstance, for: LIGHT0_DIRECTION
-[Log] o: 4
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().gameRenderer.getShader().LIGHT0_DIRECTION
-[Log] Final foundTypingsMember: com.mojang.blaze3d.shaders.Uniform
-[Log] Matched TypingsMember for: com.mojang.blaze3d.shaders.Uniform. Is call off class: false, 
-[Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().gameRenderer.getShader().LIGHT0_DIRECTION.s
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .gameRenderer
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getShader
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .LIGHT0_DIRECTION
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .s
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] gameRenderer: 1
-[Log] Typings member: net.minecraft.client.Minecraft, for: gameRenderer
-[Log] getShader(): 2
-[Log] Typings member: net.minecraft.client.renderer.GameRenderer, for: getShader()
-[Log] LIGHT0_DIRECTION: 3
-[Log] Typings member: net.minecraft.client.renderer.ShaderInstance, for: LIGHT0_DIRECTION
-[Log] s: 4
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance().gameRenderer.getShader().LIGHT0_DIRECTION
-[Log] Final foundTypingsMember: com.mojang.blaze3d.shaders.Uniform
-[Log] Matched TypingsMember for: com.mojang.blaze3d.shaders.Uniform. Is call off class: false, 
-[Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().g
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .g
-[Log] Suffix is method call?: false
-[Log] getInstance(): 0
-[Log] Typings member: net.minecraft.client.Minecraft, for: getInstance()
-[Log] g: 1
-[Log] INode child type: navigation_expression, INode child text: Minecraft.getInstance
-[Log] Final foundTypingsMember: net.minecraft.client.Minecraft
-[Log] Matched TypingsMember for: net.minecraft.client.Minecraft. Is call off class: false, 
-[Log] updating tokens
-[Log] testing potential variable: Minecraft
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().gameDirectory
-[Log] 2found imported class: net.minecraft.client.Minecraft
-[Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .gameDirectory
+[Log] Suffix type: navigation_suffix, Suffix text: .MethodHandles
 [Log] Suffix is method call?: false
 [Log] Suffix type: navigation_suffix, Suffix text: .g
 [Log] Suffix is method call?: false
 [Log] INode child is null.
-[Log] No other expressions, baseType: net.minecraft.client.Minecraft
-[Log] Final foundTypingsMember: net.minecraft.client.Minecraft
-[Log] Matched TypingsMember for: net.minecraft.client.Minecraft. Is call off class: true, 
-[Log] updating tokens
-[Log] testing potential variable: some
-[Log] checking if navigation expression is import
-[Log] testing node for import: Minecraft.getInstance().gameDirectory
-[Log] 2found imported class: net.minecraft.client.Minecraft
+[Log] No other expressions, baseType: net.minecraft.world.level.Level
+(x2) [Log] ClassPath: net.minecraft.world.level.Level
+[Log] Final foundTypingsMember: net.minecraft.world.level.Level
+[Log] Matched TypingsMember for: net.minecraft.world.level.Level. Is call off class: true 
+[Log] potential variable type: navigation_expression, potential variable text: Level.g
+[Log] has invoke operator: false
 [Log] Is initializer static call: true
-[Log] Suffix type: navigation_suffix, Suffix text: .getInstance
+[Log] updating tokens
+[Log] INode type: navigation_expression, INode text: Level.s
+[Log] Node type: simple_identifier, Node text: s
+[Log] no last child, going off Inode
+[Log] testing potential variable: Level
+[Log] checking if navigation expression is import
+[Log] Parent type: navigation_expression, Parent text: Level.s
+[Log] testing node for import: Level.s
+[Log] 2found imported class: net.minecraft.world.level.Level
+[Log] Suffix type: navigation_suffix, Suffix text: .reflect
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .jvm
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .internal
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .impl
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .types
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .typesApproximation
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .approximateCapturedTypes
 [Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .gameDirectory
+[Log] Suffix type: navigation_suffix, Suffix text: .lang
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .invoke
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .MethodHandles
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .s
+[Log] Suffix is method call?: false
+[Log] INode child is null.
+[Log] No other expressions, baseType: net.minecraft.world.level.Level
+(x2) [Log] ClassPath: net.minecraft.world.level.Level
+[Log] Final foundTypingsMember: net.minecraft.world.level.Level
+[Log] Matched TypingsMember for: net.minecraft.world.level.Level. Is call off class: true 
+[Log] potential variable type: navigation_expression, potential variable text: Level.s
+[Log] has invoke operator: false
+[Log] Is initializer static call: true
+[Log] updating tokens
+[Log] INode is null.
+[Log] Node type: ., Node text: .
+[Log] updating tokens
+[Log] INode type: navigation_expression, INode text: Level().g
+[Log] Node type: simple_identifier, Node text: g
+[Log] no last child, going off Inode
+[Log] testing potential variable: Level
+[Log] checking if navigation expression is import
+[Log] Parent type: navigation_expression, Parent text: Level().g
+[Log] testing node for import: Level().g
+[Log] 2found imported class: net.minecraft.world.level.Level
+[Log] Suffix type: navigation_suffix, Suffix text: .reflect
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .jvm
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .internal
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .impl
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .types
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .typesApproximation
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .approximateCapturedTypes
+[Log] Suffix is method call?: true
+[Log] Suffix type: navigation_suffix, Suffix text: .lang
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .invoke
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .MethodHandles
 [Log] Suffix is method call?: false
 [Log] Suffix type: navigation_suffix, Suffix text: .g
 [Log] Suffix is method call?: false
 [Log] INode child is null.
-[Log] No other expressions, baseType: net.minecraft.client.Minecraft
-[Log] Final foundTypingsMember: net.minecraft.client.Minecraft
-[Log] Matched TypingsMember for: net.minecraft.client.Minecraft. Is call off class: true, 
+[Log] No other expressions, baseType: net.minecraft.world.level.Level
+(x2) [Log] ClassPath: net.minecraft.world.level.Level
+[Log] Final foundTypingsMember: net.minecraft.world.level.Level
+[Log] Matched TypingsMember for: net.minecraft.world.level.Level. Is call off class: true 
+[Log] potential variable type: call_expression, potential variable text: Level()
+[Log] has invoke operator: false
+[Log] Is initializer static call: false
+[Log] updating tokens
+[Log] INode is null.
+[Log] Node type: ., Node text: .
+[Log] updating tokens
+[Log] INode type: navigation_expression, INode text: Level().getServer().s
+[Log] Node type: simple_identifier, Node text: s
+[Log] first child found, going off firstChild
+[Log] testing potential variable: Level
+[Log] checking if navigation expression is import
+[Log] Parent type: navigation_expression, Parent text: Level().getServer().s
+[Log] testing node for import: Level().getServer
+[Log] 2found imported class: net.minecraft.world.level.Level
+[Log] Suffix type: navigation_suffix, Suffix text: .reflect
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .jvm
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .internal
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .impl
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .types
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .typesApproximation
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .approximateCapturedTypes
+[Log] Suffix is method call?: true
+[Log] Suffix type: navigation_suffix, Suffix text: .lang
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .invoke
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .MethodHandles
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .getServer
+[Log] Suffix is method call?: true
+[Log] Suffix type: navigation_suffix, Suffix text: .s
+[Log] Suffix is method call?: false
+[Log] is not call off class
+[Log] reflect: 0
+[Log] ClassPath: net.minecraft.world.level.Level
+[Log] INode child type: navigation_expression, INode child text: Level().getServer
+[Log] ClassPath: net.minecraft.world.level.Level
+[Log] Final foundTypingsMember: net.minecraft.world.level.Level
+[Log] Matched TypingsMember for: net.minecraft.world.level.Level. Is call off class: false 
+[Log] potential variable type: call_expression, potential variable text: Level()
+[Log] has invoke operator: false
+[Log] Is initializer static call: false
 [Log] updating tokens
 [Log] Closed document: file:///d%3A/minecraft/instances/1.21%20fab/package.json
+[Log] document has not changed
+[Log] INode type: navigation_expression, INode text: Level().getServer().s
+[Log] Node type: simple_identifier, Node text: s
+[Log] first child found, going off firstChild
+[Log] testing potential variable: Level
+[Log] checking if navigation expression is import
+[Log] Parent type: navigation_expression, Parent text: Level().getServer().s
+[Log] testing node for import: Level().getServer
+[Log] 2found imported class: net.minecraft.world.level.Level
+[Log] Suffix type: navigation_suffix, Suffix text: .reflect
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .jvm
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .internal
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .impl
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .types
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .typesApproximation
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .approximateCapturedTypes
+[Log] Suffix is method call?: true
+[Log] Suffix type: navigation_suffix, Suffix text: .lang
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .invoke
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .MethodHandles
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .getServer
+[Log] Suffix is method call?: true
+[Log] Suffix type: navigation_suffix, Suffix text: .s
+[Log] Suffix is method call?: false
+[Log] is not call off class
+[Log] reflect: 0
+[Log] ClassPath: net.minecraft.world.level.Level
+[Log] INode child type: navigation_expression, INode child text: Level().getServer
+[Log] ClassPath: net.minecraft.world.level.Level
+[Log] Final foundTypingsMember: net.minecraft.world.level.Level
+[Log] Matched TypingsMember for: net.minecraft.world.level.Level. Is call off class: false 
+[Log] potential variable type: call_expression, potential variable text: Level()
+[Log] has invoke operator: false
+[Log] Is initializer static call: false
+[Log] document has not changed
