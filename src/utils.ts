@@ -193,10 +193,12 @@ export async function loadTypingSuggestions(ktsDirectory: string): Promise<Typin
 
             if (Array.isArray(parsedData)) {
                 parsedData.forEach(item => {
+                    const fqName: string = item.path + "." + item.fullyQualifiedName.substring(item.fullyQualifiedName.lastIndexOf('.') + 1).split('(')[0];
+                    const parsedSimpleName = fqName.substring(fqName.lastIndexOf('.') + 1).split('(')[0];
                     suggestions.push(
                         new TypingSuggestion(
-                            item.fullyQualifiedName,
-                            item.simpleName || '',
+                            fqName,
+                            parsedSimpleName,
                             item.source || null,
                             item.type || null,
                             item.path || null,
@@ -204,12 +206,14 @@ export async function loadTypingSuggestions(ktsDirectory: string): Promise<Typin
                             item.requiresImport || false,
                             item.isClass || false,
                             item.returnType || null,
+                            item.args || [],
                         )
                     );
                 });
                 log(`Loaded ${suggestions.length} typing suggestions.`);
                 cachedTypingSuggestions = suggestions;
             }
+
         }
     } catch (error) {
         console.error(`Error loading typing suggestions: ${error}`);

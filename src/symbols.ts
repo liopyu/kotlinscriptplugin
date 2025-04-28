@@ -241,6 +241,7 @@ export class TypingSuggestion {
         public requiresImport: boolean,
         public isClass: boolean,
         public returnType: string | null,
+        public args: string[],
     ) { }
 }
 export class TypingsMember {

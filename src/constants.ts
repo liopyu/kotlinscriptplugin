@@ -117,3 +117,13 @@ export const reservedCharacters = [
 ]
 export const documentData = new Map<string, CustomData>();
 export const semanticTokensEnabled = true
+export const kotlinCorePackages = [
+    "kotlin",
+    "kotlin.io",
+    "kotlin.text",
+    "kotlin.collections",
+    "kotlin.ranges",
+    "kotlin.sequences",
+    "kotlin.comparisons",
+    "kotlin.annotation"
+]

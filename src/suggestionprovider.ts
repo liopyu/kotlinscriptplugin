@@ -17,7 +17,8 @@ import {
     standinReserved,
     reservedCharacters,
     documentData,
-    semanticTokensEnabled
+    semanticTokensEnabled,
+    kotlinCorePackages
 } from './constants'
 import { logNode } from './utils';
 
@@ -147,7 +148,7 @@ export class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 
 
         completionItems = this.suggestions
-            .filter(suggestion => (suggestion.parentType == null ||
+            .filter(suggestion => ((suggestion.parentType == null || suggestion.parentType == "kotlin.Unit") ||
                 (suggestion.parentType != null && ["lambda", "infix_lambda"].includes(suggestion.type ? suggestion.type : ""))) &&
                 !suggestion.isClass || (suggestion.isClass && !imports.has(suggestion.fullyQualifiedName))
             )
@@ -237,12 +238,13 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         });
         return isInTypingSuggestions;
     }
-    private getImportFromClassOrPath(classOrPath: string, treeProvider: TreeProvider): string {
-        let classPath = classOrPath;
+    private getImportFromClassOrPath(classOrPath: string, treeProvider: TreeProvider): string | null {
+        let classPath = null;
         for (const [k, importSymbol] of treeProvider.imports.entries()) {
             if (importSymbol.path === classOrPath ||
                 importSymbol.simpleName === classOrPath) {
                 classPath = importSymbol.path;
+
             }
         }
         return classPath
@@ -255,6 +257,23 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             ?.get(classPath);
         return matchedTyping
     }
+    private getTypingsSuggestionFromSimpleName(simpleName: string): TypingSuggestion | undefined {
+        const className = simpleName.split(".").pop() ?? "";
+        let matchedTyping = typingSuggestions.find(s => s.simpleName === className || s.fullyQualifiedName === simpleName);
+        if (matchedTyping) {
+            return matchedTyping;
+        }
+        for (const basePackage of kotlinCorePackages) {
+            const potentialFQName = `${basePackage}.${className}`;
+            matchedTyping = typingSuggestions.find(s => s.fullyQualifiedName === potentialFQName);
+            if (matchedTyping) {
+                return matchedTyping;
+            }
+        }
+        return undefined;
+    }
+
+
     private isMethodCall(node: SyntaxNode | null): boolean {
         return node != null && node.nextNamedSibling != null &&
             node.nextNamedSibling.type == "call_suffix" &&
@@ -312,11 +331,12 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         }
         console.log("testing potential variable: " + potentialVariable?.text)
         let scopedVariable = scope?.resolveVariable(potentialVariable?.text ?? "");
-        let baseType = ""
+        let baseType: string | null = null
+        let isCallOffClass = treeProvider.findChild(iNode, "navigation_expression") == null
         if (scopedVariable) {
             console.log("found scoped variable: " + scopedVariable.name)
             let classPath = this.getImportFromClassOrPath(scopedVariable.type, treeProvider)
-            baseType = classPath
+            baseType = classPath ?? scopedVariable.type
         } else {
             if (this.isClassImported(iNode.text, document)) {
                 console.log("Imported class found")
@@ -342,24 +362,35 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                         console.log("2found imported class: " + classPath)
                         className = childClassName
                         baseType = classPath
+                        console.log("baseType: " + baseType)
                         if (this.isMethodCall(childClassName)) {
                             isStaticClassCall = false
                         }
-                        break
-                    } else if (!baseType) {
-                        console.log("No baseType found, checking for TypingSuggestion match")
-                        logNode(syntaxNode, "INode")
-                        const fallbackSuggestion = typingSuggestions.find(s => {
-                            //console.log("checking for fallback suggestion: " + s.simpleName)
-                            return s.fullyQualifiedName === syntaxNode.text
-                        });
-                        console.log("Fallback suggestion" + fallbackSuggestion?.fullyQualifiedName)
+                        if (baseType)
+                            break
+                    }
+                    if (!baseType) {
+                        console.log("No baseType found, checking for TypingSuggestion match");
+                        logNode(syntaxNode, "INode");
+
+                        let syntaxNodeText = syntaxNode.text;
+
+                        const parenIndex = syntaxNodeText.indexOf("(");
+                        if (parenIndex !== -1) {
+                            syntaxNodeText = syntaxNodeText.substring(0, parenIndex);
+                        }
+
+
+                        const fallbackSuggestion = this.getTypingsSuggestionFromSimpleName(syntaxNodeText);
+
+                        console.log("Fallback suggestion" + fallbackSuggestion?.fullyQualifiedName);
                         if (fallbackSuggestion?.returnType) {
                             console.log("Fallback TypingSuggestion match during baseType resolution. Using returnType: " + fallbackSuggestion.returnType);
                             baseType = fallbackSuggestion.returnType;
                             className = treeProvider.findChild(syntaxNode, "simple_identifier", null);
                             isStaticClassCall = true;
-                            break
+                            isCallOffClass = false
+                            break;
                         }
                     }
                 }
@@ -382,11 +413,10 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
 
         })
 
-        let currentType = baseType
+        let currentType = baseType || "kotlin.Any"
         let currentIsStatic = false
         let currentMethodOrField: Field | Method | null = null
         let foundTypingsMember: TypingsMember | undefined
-        let isCallOffClass = treeProvider.findChild(iNode, "navigation_expression") == null
         if (scopedVariable && potentialVariable?.parent && potentialVariable.parent.type == "call_expression" && /* !lastChild && */
             foundTypingsMember?.hasInvokeOperator
         ) {
@@ -443,7 +473,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         logNode(treeProvider.findChild(iNode, "navigation_expression"), "INode child")
         if (isCallOffClass) {
             console.log("No other expressions, baseType: " + baseType)
-            foundTypingsMember = this.getTypingsMember(baseType);
+            foundTypingsMember = this.getTypingsMember(baseType ?? "kotlin.Any");
 
             if (!foundTypingsMember) {
                 const fallbackSuggestion = typingSuggestions.find(s => s.simpleName === iNode.text || s.fullyQualifiedName === iNode.text);
@@ -454,10 +484,10 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                 }
             }
 
-            currentType = baseType
+            currentType = baseType ?? "kotlin.Any"
             currentIsStatic = isStaticClassCall
         } else isStaticClassCall = currentIsStatic
-        let someTypingsmember = this.getTypingsMember(baseType)
+        let someTypingsmember = this.getTypingsMember(baseType ?? "kotlin.Any")
         console.log("Final foundTypingsMember: " + foundTypingsMember?.classPath)
         if (foundTypingsMember) {
             console.log(`Matched TypingsMember for: ${currentType}. Is call off class: ${isCallOffClass} `);

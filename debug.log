@@ -1,150 +1,114 @@
 [Log] Loading classes from binary file...
 [Log] Loaded 65126 classes from binary file.
 [Log] Loading typing suggestions from JSON file...
-[Log] Loaded 2127 typing suggestions.
+[Log] Loaded 3987 typing suggestions.
 [Log] Loaded 64877 member suggestions.
-[Log] Typing suggestions loaded: 2127
+[Log] Typing suggestions loaded: 3987
 [Log] Semantic Tokens Provider Initialized
 [Log] updating tokens
-[Log] INode is null.
-[Log] Node type: simple_identifier, Node text: L
-[Log] updating tokens
 [Log] document has not changed
+[Log] INode type: navigation_expression, INode text: walkBottomUp().i
+[Log] Node type: simple_identifier, Node text: i
+[Log] no last child, going off Inode
+[Log] testing potential variable: walkBottomUp
+[Log] checking if navigation expression is import
+[Log] Parent type: navigation_expression, Parent text: walkBottomUp().i
+[Log] testing node for import: walkBottomUp().i
+[Log] 2found imported class: null
+[Log] baseType: null
+[Log] No baseType found, checking for TypingSuggestion match
+[Log] INode type: navigation_expression, INode text: walkBottomUp().i
+[Log] Fallback suggestionkotlin.io.walkBottomUp
+[Log] Fallback TypingSuggestion match during baseType resolution. Using returnType: kotlin.io.FileTreeWalk
+[Log] Suffix type: navigation_suffix, Suffix text: .i
+[Log] Suffix is method call?: false
+[Log] is not call off class
+[Log] i: 0
+[Log] ClassPath: kotlin.io.FileTreeWalk
+[Log] INode child is null.
+[Log] ClassPath: kotlin.io.FileTreeWalk
+[Log] Final foundTypingsMember: kotlin.io.FileTreeWalk
+[Log] Matched TypingsMember for: kotlin.io.FileTreeWalk. Is call off class: false 
+[Log] potential variable type: call_expression, potential variable text: walkBottomUp()
+[Log] has invoke operator: false
+[Log] Is initializer static call: false
+[Log] document has not changed
+(x2) [Log] updating tokens
+[Log] INode is null.
+[Log] Node type: simple_identifier, Node text: p
 [Log] updating tokens
 [Log] INode is null.
 [Log] Node type: ., Node text: .
 [Log] updating tokens
-[Log] INode type: navigation_expression, INode text: Level.g
-[Log] Node type: simple_identifier, Node text: g
+[Log] INode type: navigation_expression, INode text: println().i
+[Log] Node type: simple_identifier, Node text: i
 [Log] no last child, going off Inode
-[Log] testing potential variable: Level
+[Log] testing potential variable: println
 [Log] checking if navigation expression is import
-[Log] Parent type: navigation_expression, Parent text: Level.g
-[Log] testing node for import: Level.g
-[Log] 2found imported class: net.minecraft.world.level.Level
-[Log] Suffix type: navigation_suffix, Suffix text: .reflect
+[Log] Parent type: navigation_expression, Parent text: println().i
+[Log] testing node for import: println().i
+[Log] 2found imported class: null
+[Log] baseType: null
+[Log] No baseType found, checking for TypingSuggestion match
+[Log] INode type: navigation_expression, INode text: println().i
+[Log] Fallback suggestionkotlin.io.println
+[Log] Fallback TypingSuggestion match during baseType resolution. Using returnType: kotlin.Unit
+[Log] Suffix type: navigation_suffix, Suffix text: .i
 [Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .jvm
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .internal
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .impl
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .types
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .typesApproximation
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .approximateCapturedTypes
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .lang
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .invoke
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .MethodHandles
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .g
-[Log] Suffix is method call?: false
+[Log] is not call off class
+[Log] i: 0
+[Log] ClassPath: kotlin.Unit
 [Log] INode child is null.
-[Log] No other expressions, baseType: net.minecraft.world.level.Level
-(x2) [Log] ClassPath: net.minecraft.world.level.Level
-[Log] Final foundTypingsMember: net.minecraft.world.level.Level
-[Log] Matched TypingsMember for: net.minecraft.world.level.Level. Is call off class: true 
-[Log] potential variable type: navigation_expression, potential variable text: Level.g
+[Log] ClassPath: kotlin.Unit
+[Log] Final foundTypingsMember: kotlin.Unit
+[Log] Matched TypingsMember for: kotlin.Unit. Is call off class: false 
+[Log] potential variable type: call_expression, potential variable text: println()
 [Log] has invoke operator: false
-[Log] Is initializer static call: true
+[Log] Is initializer static call: false
 [Log] updating tokens
-[Log] INode type: navigation_expression, INode text: Level.s
-[Log] Node type: simple_identifier, Node text: s
+[Log] INode type: navigation_expression, INode text: println().a
+[Log] Node type: simple_identifier, Node text: a
 [Log] no last child, going off Inode
-[Log] testing potential variable: Level
+[Log] testing potential variable: println
 [Log] checking if navigation expression is import
-[Log] Parent type: navigation_expression, Parent text: Level.s
-[Log] testing node for import: Level.s
-[Log] 2found imported class: net.minecraft.world.level.Level
-[Log] Suffix type: navigation_suffix, Suffix text: .reflect
+[Log] Parent type: navigation_expression, Parent text: println().a
+[Log] testing node for import: println().a
+[Log] 2found imported class: null
+[Log] baseType: null
+[Log] No baseType found, checking for TypingSuggestion match
+[Log] INode type: navigation_expression, INode text: println().a
+[Log] Fallback suggestionkotlin.io.println
+[Log] Fallback TypingSuggestion match during baseType resolution. Using returnType: kotlin.Unit
+[Log] Suffix type: navigation_suffix, Suffix text: .a
 [Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .jvm
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .internal
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .impl
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .types
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .typesApproximation
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .approximateCapturedTypes
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .lang
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .invoke
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .MethodHandles
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .s
-[Log] Suffix is method call?: false
+[Log] is not call off class
+[Log] a: 0
+[Log] ClassPath: kotlin.Unit
 [Log] INode child is null.
-[Log] No other expressions, baseType: net.minecraft.world.level.Level
-(x2) [Log] ClassPath: net.minecraft.world.level.Level
-[Log] Final foundTypingsMember: net.minecraft.world.level.Level
-[Log] Matched TypingsMember for: net.minecraft.world.level.Level. Is call off class: true 
-[Log] potential variable type: navigation_expression, potential variable text: Level.s
-[Log] has invoke operator: false
-[Log] Is initializer static call: true
-[Log] updating tokens
-[Log] INode is null.
-[Log] Node type: ., Node text: .
-[Log] updating tokens
-[Log] INode type: navigation_expression, INode text: Level().g
-[Log] Node type: simple_identifier, Node text: g
-[Log] no last child, going off Inode
-[Log] testing potential variable: Level
-[Log] checking if navigation expression is import
-[Log] Parent type: navigation_expression, Parent text: Level().g
-[Log] testing node for import: Level().g
-[Log] 2found imported class: net.minecraft.world.level.Level
-[Log] Suffix type: navigation_suffix, Suffix text: .reflect
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .jvm
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .internal
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .impl
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .types
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .typesApproximation
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .approximateCapturedTypes
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .lang
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .invoke
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .MethodHandles
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .g
-[Log] Suffix is method call?: false
-[Log] INode child is null.
-[Log] No other expressions, baseType: net.minecraft.world.level.Level
-(x2) [Log] ClassPath: net.minecraft.world.level.Level
-[Log] Final foundTypingsMember: net.minecraft.world.level.Level
-[Log] Matched TypingsMember for: net.minecraft.world.level.Level. Is call off class: true 
-[Log] potential variable type: call_expression, potential variable text: Level()
+[Log] ClassPath: kotlin.Unit
+[Log] Final foundTypingsMember: kotlin.Unit
+[Log] Matched TypingsMember for: kotlin.Unit. Is call off class: false 
+[Log] potential variable type: call_expression, potential variable text: println()
 [Log] has invoke operator: false
 [Log] Is initializer static call: false
 [Log] updating tokens
 [Log] INode is null.
+[Log] Node type: simple_identifier, Node text: s
+[Log] updating tokens
+[Log] INode is null.
 [Log] Node type: ., Node text: .
 [Log] updating tokens
-[Log] INode type: navigation_expression, INode text: Level().getServer().s
-[Log] Node type: simple_identifier, Node text: s
+[Log] INode type: navigation_expression, INode text: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors().g
+[Log] Node type: simple_identifier, Node text: g
 [Log] first child found, going off firstChild
-[Log] testing potential variable: Level
+[Log] testing potential variable: kotlin
 [Log] checking if navigation expression is import
-[Log] Parent type: navigation_expression, Parent text: Level().getServer().s
-[Log] testing node for import: Level().getServer
-[Log] 2found imported class: net.minecraft.world.level.Level
+[Log] Parent type: navigation_expression, Parent text: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors().g
+[Log] testing node for import: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors
+[Log] No baseType found, checking for TypingSuggestion match
+[Log] INode type: navigation_expression, INode text: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors
+[Log] Fallback suggestionkotlin.reflect.jvm.internal.impl.types.sameTypeConstructors
+[Log] Fallback TypingSuggestion match during baseType resolution. Using returnType: kotlin.Boolean
 [Log] Suffix type: navigation_suffix, Suffix text: .reflect
 [Log] Suffix is method call?: false
 [Log] Suffix type: navigation_suffix, Suffix text: .jvm
@@ -155,41 +119,86 @@
 [Log] Suffix is method call?: false
 [Log] Suffix type: navigation_suffix, Suffix text: .types
 [Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .typesApproximation
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .approximateCapturedTypes
+[Log] Suffix type: navigation_suffix, Suffix text: .sameTypeConstructors
 [Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .lang
+[Log] Suffix type: navigation_suffix, Suffix text: .g
 [Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .invoke
+[Log] is not call off class
+[Log] reflect: 0
+[Log] ClassPath: kotlin.Boolean
+[Log] jvm: 1
+[Log] ClassPath: kotlin.Boolean
+[Log] internal: 2
+[Log] ClassPath: kotlin.Boolean
+[Log] impl: 3
+[Log] ClassPath: kotlin.Boolean
+[Log] types: 4
+[Log] ClassPath: kotlin.Boolean
+[Log] sameTypeConstructors(): 5
+[Log] ClassPath: kotlin.Boolean
+[Log] g: 6
+[Log] ClassPath: kotlin.Boolean
+[Log] INode child type: navigation_expression, INode child text: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors
+[Log] ClassPath: kotlin.Boolean
+[Log] Final foundTypingsMember: undefined
+[Log] No TypingsMember found for classPath: kotlin.Boolean
+[Log] updating tokens
+[Log] INode type: navigation_expression, INode text: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors().s
+[Log] Node type: simple_identifier, Node text: s
+[Log] first child found, going off firstChild
+[Log] testing potential variable: kotlin
+[Log] checking if navigation expression is import
+[Log] Parent type: navigation_expression, Parent text: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors().s
+[Log] testing node for import: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors
+[Log] No baseType found, checking for TypingSuggestion match
+[Log] INode type: navigation_expression, INode text: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors
+[Log] Fallback suggestionkotlin.reflect.jvm.internal.impl.types.sameTypeConstructors
+[Log] Fallback TypingSuggestion match during baseType resolution. Using returnType: kotlin.Boolean
+[Log] Suffix type: navigation_suffix, Suffix text: .reflect
 [Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .MethodHandles
+[Log] Suffix type: navigation_suffix, Suffix text: .jvm
 [Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getServer
+[Log] Suffix type: navigation_suffix, Suffix text: .internal
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .impl
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .types
+[Log] Suffix is method call?: false
+[Log] Suffix type: navigation_suffix, Suffix text: .sameTypeConstructors
 [Log] Suffix is method call?: true
 [Log] Suffix type: navigation_suffix, Suffix text: .s
 [Log] Suffix is method call?: false
 [Log] is not call off class
 [Log] reflect: 0
-[Log] ClassPath: net.minecraft.world.level.Level
-[Log] INode child type: navigation_expression, INode child text: Level().getServer
-[Log] ClassPath: net.minecraft.world.level.Level
-[Log] Final foundTypingsMember: net.minecraft.world.level.Level
-[Log] Matched TypingsMember for: net.minecraft.world.level.Level. Is call off class: false 
-[Log] potential variable type: call_expression, potential variable text: Level()
-[Log] has invoke operator: false
-[Log] Is initializer static call: false
+[Log] ClassPath: kotlin.Boolean
+[Log] jvm: 1
+[Log] ClassPath: kotlin.Boolean
+[Log] internal: 2
+[Log] ClassPath: kotlin.Boolean
+[Log] impl: 3
+[Log] ClassPath: kotlin.Boolean
+[Log] types: 4
+[Log] ClassPath: kotlin.Boolean
+[Log] sameTypeConstructors(): 5
+[Log] ClassPath: kotlin.Boolean
+[Log] s: 6
+[Log] ClassPath: kotlin.Boolean
+[Log] INode child type: navigation_expression, INode child text: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors
+[Log] ClassPath: kotlin.Boolean
+[Log] Final foundTypingsMember: undefined
+[Log] No TypingsMember found for classPath: kotlin.Boolean
 [Log] updating tokens
-[Log] Closed document: file:///d%3A/minecraft/instances/1.21%20fab/package.json
-[Log] document has not changed
-[Log] INode type: navigation_expression, INode text: Level().getServer().s
-[Log] Node type: simple_identifier, Node text: s
+[Log] INode type: navigation_expression, INode text: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors().e
+[Log] Node type: simple_identifier, Node text: e
 [Log] first child found, going off firstChild
-[Log] testing potential variable: Level
+[Log] testing potential variable: kotlin
 [Log] checking if navigation expression is import
-[Log] Parent type: navigation_expression, Parent text: Level().getServer().s
-[Log] testing node for import: Level().getServer
-[Log] 2found imported class: net.minecraft.world.level.Level
+[Log] Parent type: navigation_expression, Parent text: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors().e
+[Log] testing node for import: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors
+[Log] No baseType found, checking for TypingSuggestion match
+[Log] INode type: navigation_expression, INode text: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors
+[Log] Fallback suggestionkotlin.reflect.jvm.internal.impl.types.sameTypeConstructors
+[Log] Fallback TypingSuggestion match during baseType resolution. Using returnType: kotlin.Boolean
 [Log] Suffix type: navigation_suffix, Suffix text: .reflect
 [Log] Suffix is method call?: false
 [Log] Suffix type: navigation_suffix, Suffix text: .jvm
@@ -200,28 +209,29 @@
 [Log] Suffix is method call?: false
 [Log] Suffix type: navigation_suffix, Suffix text: .types
 [Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .typesApproximation
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .approximateCapturedTypes
+[Log] Suffix type: navigation_suffix, Suffix text: .sameTypeConstructors
 [Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .lang
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .invoke
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .MethodHandles
-[Log] Suffix is method call?: false
-[Log] Suffix type: navigation_suffix, Suffix text: .getServer
-[Log] Suffix is method call?: true
-[Log] Suffix type: navigation_suffix, Suffix text: .s
+[Log] Suffix type: navigation_suffix, Suffix text: .e
 [Log] Suffix is method call?: false
 [Log] is not call off class
 [Log] reflect: 0
-[Log] ClassPath: net.minecraft.world.level.Level
-[Log] INode child type: navigation_expression, INode child text: Level().getServer
-[Log] ClassPath: net.minecraft.world.level.Level
-[Log] Final foundTypingsMember: net.minecraft.world.level.Level
-[Log] Matched TypingsMember for: net.minecraft.world.level.Level. Is call off class: false 
-[Log] potential variable type: call_expression, potential variable text: Level()
-[Log] has invoke operator: false
-[Log] Is initializer static call: false
+[Log] ClassPath: kotlin.Boolean
+[Log] jvm: 1
+[Log] ClassPath: kotlin.Boolean
+[Log] internal: 2
+[Log] ClassPath: kotlin.Boolean
+[Log] impl: 3
+[Log] ClassPath: kotlin.Boolean
+[Log] types: 4
+[Log] ClassPath: kotlin.Boolean
+[Log] sameTypeConstructors(): 5
+[Log] ClassPath: kotlin.Boolean
+[Log] e: 6
+[Log] ClassPath: kotlin.Boolean
+[Log] INode child type: navigation_expression, INode child text: kotlin.reflect.jvm.internal.impl.types.sameTypeConstructors
+[Log] ClassPath: kotlin.Boolean
+[Log] Final foundTypingsMember: undefined
+[Log] No TypingsMember found for classPath: kotlin.Boolean
+[Log] updating tokens
 [Log] document has not changed
+[Log] updating tokens
