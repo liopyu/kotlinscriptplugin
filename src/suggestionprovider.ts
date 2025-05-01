@@ -1,6 +1,6 @@
 
 import * as vscode from 'vscode';
-import { Field, ImportSymbol, Method, TypingsMember, TypingSuggestion } from './symbols';
+import { Field, ImportSymbol, Method, Scope, TypingsMember, TypingSuggestion, VariableNode, VariableSymbol } from './symbols';
 import { TreeProvider } from './treeprovider';
 import { SyntaxNode, Tree } from 'web-tree-sitter';
 import { log, error, warn, availableClasses, typingSuggestions, available_members } from './extension';
@@ -149,19 +149,18 @@ export class TypingSuggestionProvider implements vscode.CompletionItemProvider {
 
         completionItems = this.suggestions
             .filter(suggestion => ((suggestion.parentType == null || suggestion.parentType == "kotlin.Unit") ||
-                (suggestion.parentType != null && ["lambda", "infix_lambda"].includes(suggestion.type ? suggestion.type : ""))) &&
-                !suggestion.isClass || (suggestion.isClass && !imports.has(suggestion.fullyQualifiedName))
+                (suggestion.parentType != null && ["lambda", "infix_lambda"].includes(suggestion.type ? suggestion.type : "")))
             )
             .map(suggestion => {
                 const item = new vscode.CompletionItem(
                     suggestion.simpleName,
-                    suggestion.isClass ? vscode.CompletionItemKind.Class : vscode.CompletionItemKind.Function
+                    vscode.CompletionItemKind.Function
                 );
                 item.detail = suggestion.fullyQualifiedName;
                 item.documentation = suggestion.source
                     ? `Source: ${suggestion.source}\nType: ${suggestion.type}`
                     : `Type: ${suggestion.type}`;
-                item.insertText = (suggestion.isClass && !imports.has(suggestion.fullyQualifiedName)) ? (!suggestion.requiresImport ? suggestion.simpleName : suggestion.fullyQualifiedName) : completeSuggestion(suggestion, treeProvider, node);
+                item.insertText = completeSuggestion(suggestion, treeProvider, node);
                 return item;
             });
 
@@ -182,20 +181,21 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
     }
     private buildClassMap(availableMembers: TypingsMember[]): void {
         for (const member of availableMembers) {
-            const simpleName = member.classPath.replace(/\$/g, '.').split('.').pop()?.trim();
-            if (!simpleName) {
-                continue;
-            }
+            const normalizedPath = member.classPath.replace(/\$/g, '.');
+            const simpleName = normalizedPath.split('.').pop()?.trim();
+            if (!simpleName) continue;
 
             const firstLetter = simpleName.charAt(0).toUpperCase();
-            if (!this.indexedClassMap.has(firstLetter)) {
-                this.indexedClassMap.set(firstLetter, new Map());
+            let letterBucket = this.indexedClassMap.get(firstLetter);
+            if (!letterBucket) {
+                letterBucket = new Map<string, TypingsMember>();
+                this.indexedClassMap.set(firstLetter, letterBucket);
             }
 
-            const letterBucket = this.indexedClassMap.get(firstLetter)!;
-            letterBucket.set(member.classPath, member);
+            letterBucket.set(normalizedPath, member);
         }
     }
+
     private isClassImported(className: string, document: vscode.TextDocument): boolean {
         const documentUri = document.uri.toString();
         const data = documentData.get(documentUri);
@@ -239,15 +239,13 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         return isInTypingSuggestions;
     }
     private getImportFromClassOrPath(classOrPath: string, treeProvider: TreeProvider): string | null {
-        let classPath = null;
-        for (const [k, importSymbol] of treeProvider.imports.entries()) {
-            if (importSymbol.path === classOrPath ||
-                importSymbol.simpleName === classOrPath) {
-                classPath = importSymbol.path;
-
+        for (const [_, importSymbol] of treeProvider.imports.entries()) {
+            if (importSymbol.path === classOrPath || importSymbol.simpleName === classOrPath) {
+                return importSymbol.path;
             }
         }
-        return classPath
+        return null;
+
     }
     private getTypingsMember(classPath: string): TypingsMember | undefined {
         console.log("ClassPath: " + classPath)
@@ -272,258 +270,406 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         }
         return undefined;
     }
-
-
     private isMethodCall(node: SyntaxNode | null): boolean {
-        return node != null && node.nextNamedSibling != null &&
-            node.nextNamedSibling.type == "call_suffix" &&
-            node.nextNamedSibling.text.startsWith("(")
+        if (!node) return false;
+
+        if (node.type === "call_expression") {
+            console.log(`[isMethodCall] Direct call_expression: ${node.text}`);
+            return true;
+        }
+
+        if (node.type === "navigation_expression") {
+            const callExpr = node.child(0);
+            if (callExpr?.type === "call_expression") {
+                console.log(`[isMethodCall] navigation_expression contains call_expression: ${callExpr.text}`);
+                return true;
+            }
+        }
+
+        if (node.type === "navigation_suffix" && node.parent?.type === "navigation_expression") {
+            const callExpr = node.parent.parent;
+            const hasCallSuffix = callExpr?.type === "call_expression" &&
+                callExpr.children.some(c => c.type === "call_suffix");
+            if (hasCallSuffix) {
+                console.log(`[isMethodCall] navigation_suffix leads into call_expression: ${node.text}`);
+                return true;
+            }
+        }
+
+        return false;
     }
+
+
     async provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ): Promise<vscode.CompletionItem[] | undefined> {
-        const linePrefix = document.lineAt(position).text.substring(0, position.character);
+        console.log("[provideCompletionItems] Starting provideCompletionItems...");
+        const setup = this.prepareContext(document, position);
+        if (!setup) {
+            console.log("[provideCompletionItems] Setup preparation failed, exiting.");
+            return;
+        }
+        const { data, treeProvider, tree, range, iNode, scope, node } = setup;
+
+        logNode(iNode, "[provideCompletionItems] iNode (navigation_expression)");
+        if (scope) {
+            console.log("[provideCompletionItems] Scope exists for current position.");
+        } else {
+            console.log("[provideCompletionItems] No scope found for current position.");
+        }
+
+        let {
+            baseType,
+            className,
+            isStaticClassCall,
+            isCallOffClass,
+            potentialVariable,
+            scopedVariable
+        } = this.resolveBaseType(treeProvider, document, iNode, scope);
+
+
+        if (!baseType) {
+            console.log("[provideCompletionItems] No baseType resolved, exiting.");
+            return;
+        }
+
+        const { currentType, foundTypingsMember, currentIsStatic } = this.resolveTypingsFromSuffixes(
+            treeProvider,
+            iNode,
+            baseType,
+            isCallOffClass,
+            potentialVariable
+        );
+        if (!foundTypingsMember) {
+            console.log(`[provideCompletionItems] No TypingsMember found for classPath: ${currentType}`);
+            return;
+        }
+        logNode(potentialVariable?.parent, "potentialVariable");
+        if (
+            potentialVariable?.text &&
+            !potentialVariable.text.endsWith(".Companion")
+        ) {
+            console.log("[provideCompletionItems] Variable is not Companion, forcing instance context.");
+            isCallOffClass = false;
+            isStaticClassCall = false;
+
+            if (foundTypingsMember.hasInvokeOperator && this.isMethodCall(potentialVariable?.parent)) {
+                const invokeMethod = foundTypingsMember.methods.find(m => {
+                    log("Method: " + m.name + ", isStatic: " + m.isStatic)
+                    return m.name === "invoke"
+                });
+                if (invokeMethod) {
+                    log("invoke method: " + invokeMethod.name)
+                    console.log(`[provideCompletionItems] Found invoke() operator, refining type to: ${invokeMethod.returns}`);
+                    const invokedTypingsMember = this.getTypingsMember(invokeMethod.returns);
+                    if (invokedTypingsMember) {
+                        console.log(`[provideCompletionItems] Switching context to type: ${invokedTypingsMember.classPath}`);
+                        return this.buildCompletionItems(invokedTypingsMember, false, false);
+                    }
+                }
+            }
+        }
+        console.log(`[provideCompletionItems] Found TypingsMember: ${foundTypingsMember.classPath}, preparing completions.`);
+        return this.buildCompletionItems(foundTypingsMember, isCallOffClass, isStaticClassCall);
+    }
+
+
+    private prepareContext(document: vscode.TextDocument, position: vscode.Position) {
+        console.log("[prepareContext] Preparing editor context...");
         const documentUri = document.uri.toString();
         const data = documentData.get(documentUri);
-        //if (t) return
-
         if (!data) {
-            console.log("No tree provider data found for this document.");
-            return;
+            console.log("[prepareContext] No semantic token data found for document.");
+            return null;
         }
+
         const treeProvider = data.semanticTokensProvider?.treeProvider;
-        if (!treeProvider) return
-        const tree = treeProvider.tree
-        if (!tree) {
-            console.log("No syntax tree available for this document.");
-            return;
+        if (!treeProvider) {
+            console.log("[prepareContext] No tree provider available.");
+            return null;
         }
+
+        const tree = treeProvider.tree;
+        if (!tree) {
+            console.log("[prepareContext] No tree available inside tree provider.");
+            return null;
+        }
+
         const line = position.line;
         const character = position.character - 1;
+        console.log(`[prepareContext] Position line=${line}, character=${character}`);
+
         const startPosition = new vscode.Position(line, character);
         const endPosition = new vscode.Position(line, character + 1);
         const range = new vscode.Range(startPosition, endPosition);
-        let scope = data.semanticTokensProvider?.currentScopeFromRange(range)
-        const node = tree.rootNode.descendantForPosition({
-            row: line,
-            column: character,
-        });
 
-        let snippetCompletions: vscode.CompletionItem[] = []
-        let iNode = treeProvider.findParent(node, "navigation_expression", range)
-        logNode(iNode, "INode")
-        logNode(node, "Node")
-        if (!iNode) return
-        let className
-        let potentialVariable
-        let isStaticClassCall = true
-        let lastChild = treeProvider.findLastChildInRange(iNode, "navigation_expression", null, treeProvider.supplyRange(iNode))
-        let firstChild = treeProvider.findChild(iNode, "navigation_expression")
-        if (!lastChild) {
-            log("no last child, going off Inode")
-            potentialVariable = treeProvider.findChild(iNode, "simple_identifier", null)
-        } else if (firstChild) {
-            log("first child found, going off firstChild")
-            potentialVariable = treeProvider.findChild(firstChild, "simple_identifier", null)
+        const scope = data.semanticTokensProvider?.currentScopeFromRange(range);
+        const node = tree.rootNode.descendantForPosition({ row: line, column: character });
+        if (!node) {
+            console.log("[prepareContext] No node found at current cursor position.");
         }
-        console.log("testing potential variable: " + potentialVariable?.text)
-        let scopedVariable = scope?.resolveVariable(potentialVariable?.text ?? "");
-        let baseType: string | null = null
-        let isCallOffClass = treeProvider.findChild(iNode, "navigation_expression") == null
-        if (scopedVariable) {
-            console.log("found scoped variable: " + scopedVariable.name)
-            let classPath = this.getImportFromClassOrPath(scopedVariable.type, treeProvider)
-            baseType = classPath ?? scopedVariable.type
-        } else {
-            if (this.isClassImported(iNode.text, document)) {
-                console.log("Imported class found")
-                className = iNode.text
-            } else {
-                console.log("checking if navigation expression is import")
-                let potentialImports = treeProvider.findChildren(iNode, ["navigation_expression"], null)
-                potentialImports.push(iNode)
-                logNode(iNode, "Parent")
-                for (const syntaxNode of potentialImports) {
-                    console.log("testing node for import: " + syntaxNode.text)
-                    let childClassName = treeProvider.findChild(syntaxNode, "simple_identifier", null)
-                    if (syntaxNode && this.isClassImported(syntaxNode.text, document)) {
-                        console.log("1found imported class: " + syntaxNode.text)
-                        className = childClassName
-                        baseType = syntaxNode.text
-                        if (this.isMethodCall(syntaxNode)) {
-                            isStaticClassCall = false
-                        }
-                        break
-                    } else if (childClassName && this.isClassImported(childClassName?.text, document)) {
-                        let classPath = this.getImportFromClassOrPath(childClassName?.text, treeProvider)
-                        console.log("2found imported class: " + classPath)
-                        className = childClassName
-                        baseType = classPath
-                        console.log("baseType: " + baseType)
-                        if (this.isMethodCall(childClassName)) {
-                            isStaticClassCall = false
-                        }
-                        if (baseType)
-                            break
-                    }
-                    if (!baseType) {
-                        console.log("No baseType found, checking for TypingSuggestion match");
-                        logNode(syntaxNode, "INode");
 
-                        let syntaxNodeText = syntaxNode.text;
-
-                        const parenIndex = syntaxNodeText.indexOf("(");
-                        if (parenIndex !== -1) {
-                            syntaxNodeText = syntaxNodeText.substring(0, parenIndex);
-                        }
-
-
-                        const fallbackSuggestion = this.getTypingsSuggestionFromSimpleName(syntaxNodeText);
-
-                        console.log("Fallback suggestion" + fallbackSuggestion?.fullyQualifiedName);
-                        if (fallbackSuggestion?.returnType) {
-                            console.log("Fallback TypingSuggestion match during baseType resolution. Using returnType: " + fallbackSuggestion.returnType);
-                            baseType = fallbackSuggestion.returnType;
-                            className = treeProvider.findChild(syntaxNode, "simple_identifier", null);
-                            isStaticClassCall = true;
-                            isCallOffClass = false
-                            break;
-                        }
-                    }
-                }
-            }
-
-
+        const iNode = treeProvider.findParent(node, "navigation_expression", range);
+        if (!iNode) {
+            console.log("[prepareContext] No navigation_expression iNode found.");
+            return null;
         }
-        if (!iNode.parent) {
-            console.log("iNode parent is null")
-            return
-        }
-        let suffixes = scopedVariable && potentialVariable?.parent ? treeProvider.findChildren(potentialVariable?.parent, ["navigation_suffix"], null) : treeProvider.findChildren(iNode.parent, ["navigation_suffix"], null)
-        let refinedSuffixes: string[] = []
 
-        suffixes.forEach(suff => {
-            refinedSuffixes.push(suff.text.replace(".", "") + (this.isMethodCall(suff?.parent) ? "()" : ""))
-            logNode(suff, "Suffix")
-            if (suff.parent)
-                log("Suffix is method call?: " + this.isMethodCall(suff.parent))
+        console.log("[prepareContext] Successfully prepared context.");
+        logNode(iNode, "[prepareContext] Found iNode");
 
-        })
-
-        let currentType = baseType || "kotlin.Any"
-        let currentIsStatic = false
-        let currentMethodOrField: Field | Method | null = null
-        let foundTypingsMember: TypingsMember | undefined
-        if (scopedVariable && potentialVariable?.parent && potentialVariable.parent.type == "call_expression" && /* !lastChild && */
-            foundTypingsMember?.hasInvokeOperator
-        ) {
-            currentType = "kotlin.Any"
-            isStaticClassCall = false
-        }
-        if (!isCallOffClass) {
-            log("is not call off class")
-            for (let i = 0; i < refinedSuffixes.length; i++) {
-                const element = refinedSuffixes[i];
-                console.log(element + ": " + i)
-                let methodCall = false
-                if (element.endsWith("()")) methodCall = true
-                let typingsMember = this.getTypingsMember(currentType)
-                let isAvailableOffCurrentType = false
-                foundTypingsMember = typingsMember
-                if (typingsMember) {
-                    if (methodCall) {
-                        isAvailableOffCurrentType = typingsMember.methods.some(method => method.name == element)
-                        if (isAvailableOffCurrentType) {
-                            let method = typingsMember.methods.find(method => method.name == element)
-                            if (method) {
-                                currentType = method?.returns
-                                currentIsStatic = method?.isStatic
-                                currentMethodOrField = method
-                                console.log("Typings member: " + foundTypingsMember?.classPath + ", for: " + currentMethodOrField?.name)
-
-                            }
-                        } else {
-                            if (refinedSuffixes.length == i)
-                                foundTypingsMember = undefined
-                            break
-                        }
-                    } else {
-                        isAvailableOffCurrentType = typingsMember.fields.some(field => field.name == element)
-                        if (isAvailableOffCurrentType) {
-                            let field = typingsMember.fields.find(field => field.name == element)
-                            if (field) {
-                                currentType = field?.returns
-                                currentIsStatic = field?.isStatic
-                                currentMethodOrField = field
-                                console.log("Typings member: " + foundTypingsMember?.classPath + ", for: " + currentMethodOrField?.name)
-
-                            }
-                        } else {
-                            if (refinedSuffixes.length == i)
-                                foundTypingsMember = undefined
-                            break
-                        }
-                    }
-                }
-            }
-        }
-        logNode(treeProvider.findChild(iNode, "navigation_expression"), "INode child")
-        if (isCallOffClass) {
-            console.log("No other expressions, baseType: " + baseType)
-            foundTypingsMember = this.getTypingsMember(baseType ?? "kotlin.Any");
-
-            if (!foundTypingsMember) {
-                const fallbackSuggestion = typingSuggestions.find(s => s.simpleName === iNode.text || s.fullyQualifiedName === iNode.text);
-                if (fallbackSuggestion?.returnType) {
-                    console.log("Fallback TypingSuggestion match, returnType: " + fallbackSuggestion.returnType);
-                    foundTypingsMember = this.getTypingsMember(fallbackSuggestion.returnType);
-                    currentType = fallbackSuggestion.returnType;
-                }
-            }
-
-            currentType = baseType ?? "kotlin.Any"
-            currentIsStatic = isStaticClassCall
-        } else isStaticClassCall = currentIsStatic
-        let someTypingsmember = this.getTypingsMember(baseType ?? "kotlin.Any")
-        console.log("Final foundTypingsMember: " + foundTypingsMember?.classPath)
-        if (foundTypingsMember) {
-            console.log(`Matched TypingsMember for: ${currentType}. Is call off class: ${isCallOffClass} `);
-            logNode(potentialVariable?.parent, "potential variable")
-            log("has invoke operator: " + foundTypingsMember?.hasInvokeOperator)
-            console.log("Is initializer static call: " + isStaticClassCall)
-            for (const method of foundTypingsMember.methods) {
-
-                if ((!isCallOffClass && method.isStatic) || (isCallOffClass && isStaticClassCall && !method.isStatic) ||
-                    (isCallOffClass && !isStaticClassCall && method.isStatic)) continue;
-                const methodCompletion = new vscode.CompletionItem(
-                    `${method.name.replace("()", "") + (method.args.length ? `(${method.args?.join(', ') || ''})` : "()")}`,
-                    vscode.CompletionItemKind.Method
-                );
-                methodCompletion.kind = vscode.CompletionItemKind.Method;
-                methodCompletion.detail = `Returns: ${method.returns}`;
-                methodCompletion.insertText = method.name;
-                snippetCompletions.push(methodCompletion);
-            }
-
-            for (const field of foundTypingsMember.fields) {
-                if ((!isCallOffClass && field.isStatic) || (isCallOffClass && isStaticClassCall && !field.isStatic) ||
-                    (isCallOffClass && !isStaticClassCall && field.isStatic)) continue;
-                const fieldCompletion = new vscode.CompletionItem(
-                    field.name,
-                    vscode.CompletionItemKind.Field
-                );
-                fieldCompletion.kind = vscode.CompletionItemKind.Field;
-                fieldCompletion.detail = `Returns: ${field.returns}`;
-                snippetCompletions.push(fieldCompletion);
-            }
-        } else {
-            console.log(`No TypingsMember found for classPath: ${currentType}`);
-        }
-        return [...snippetCompletions];
+        return { data, treeProvider, tree, range, iNode, scope, node };
     }
+    private resolveBaseType(
+        treeProvider: TreeProvider,
+        document: vscode.TextDocument,
+        iNode: SyntaxNode,
+        scope: Scope | undefined
+    ) {
+        console.log("[resolveBaseType] Starting base type resolution...");
+
+        let className;
+        let isStaticClassCall = false;
+        let potentialVariable;
+        let baseType: string | null = null;
+
+        let lastChild = treeProvider.findLastChildInRange(iNode, "navigation_expression", null, treeProvider.supplyRange(iNode));
+        let firstChild = treeProvider.findChild(iNode, "navigation_expression");
+
+        if (!lastChild) {
+            console.log("[resolveBaseType] No lastChild found, using simple_identifier from current node");
+            potentialVariable = treeProvider.findChild(iNode, "simple_identifier", null);
+        } else if (firstChild) {
+            console.log("[resolveBaseType] Found firstChild navigation_expression");
+            potentialVariable = treeProvider.findChild(firstChild, "simple_identifier", null);
+        }
+
+        const scopedVariable = scope?.resolveVariable(potentialVariable?.text ?? "");
+        if (scopedVariable) {
+            console.log("[resolveBaseType] Found scoped variable: " + scopedVariable.name);
+            const classPath = this.getImportFromClassOrPath(scopedVariable.type, treeProvider);
+            baseType = classPath ?? scopedVariable.type;
+        } else {
+            console.log("[resolveBaseType] No scoped variable found, falling back to resolveBaseTypeFromImports");
+            ({ baseType, className, isStaticClassCall } = this.resolveBaseTypeFromImports(treeProvider, document, iNode));
+        }
+
+        const isCallOffClass = treeProvider.findChild(iNode, "navigation_expression") == null;
+
+        if (isCallOffClass && !this.isMethodCall(iNode)) {
+            console.log("[resolveBaseType] Call is directly off class, setting isStaticClassCall = true");
+            isStaticClassCall = true;
+        }
+
+        console.log("[resolveBaseType] Final resolved baseType: " + baseType);
+        console.log("[resolveBaseType] isCallOffClass: " + isCallOffClass);
+        console.log("[resolveBaseType] isStaticClassCall: " + isStaticClassCall);
+
+        return {
+            baseType,
+            className,
+            isStaticClassCall,
+            isCallOffClass,
+            potentialVariable,
+            scopedVariable
+        };
+    }
+    private resolveBaseTypeFromImports(treeProvider: TreeProvider, document: vscode.TextDocument, iNode: SyntaxNode) {
+        console.log("[resolveBaseTypeFromImports] Starting import-based resolution...");
+
+        let className: SyntaxNode | null | undefined;
+        let isStaticClassCall = true;
+        let isCallOffClass = true;
+        let baseType: string | null = null;
+
+        const potentialImports = [...treeProvider.findChildren(iNode, ["navigation_expression"], null), iNode];
+        console.log(`[resolveBaseTypeFromImports] Checking ${potentialImports.length} potential imports...`);
+
+        for (const syntaxNode of potentialImports) {
+            const rawText = syntaxNode.text;
+            const simpleIdentifier = treeProvider.findChild(syntaxNode, "simple_identifier", null);
+            const candidates = [rawText, simpleIdentifier?.text].filter(Boolean) as string[];
+
+            for (const name of candidates) {
+                if (this.isClassImported(name, document)) {
+                    baseType = this.getImportFromClassOrPath(name, treeProvider) ?? name;
+                    className = simpleIdentifier;
+                    if (this.isMethodCall(syntaxNode)) isStaticClassCall = false;
+                    console.log(`[resolveBaseTypeFromImports] Resolved from import: ${name}`);
+                    return { baseType, className, isStaticClassCall, isCallOffClass };
+                }
+            }
+
+            if (!baseType) {
+                console.log("[resolveBaseTypeFromImports] No import match, checking TypingSuggestion fallback...");
+                logNode(syntaxNode, "INode");
+
+                let fallbackKey = rawText.includes("(") ? rawText.substring(0, rawText.indexOf("(")) : rawText;
+                const fallbackSuggestion = this.getTypingsSuggestionFromSimpleName(fallbackKey);
+
+                if (fallbackSuggestion?.returnType) {
+                    baseType = fallbackSuggestion.returnType;
+                    className = simpleIdentifier;
+                    isStaticClassCall = true;
+                    isCallOffClass = false;
+                    console.log(`[resolveBaseTypeFromImports] Fallback TypingSuggestion used: ${baseType}`);
+                    return { baseType, className, isStaticClassCall, isCallOffClass };
+                }
+            }
+        }
+
+        console.log("[resolveBaseTypeFromImports] Resolution failed, returning null baseType.");
+        return { baseType, className, isStaticClassCall, isCallOffClass };
+    }
+
+    private resolveTypingsFromSuffixes(
+        treeProvider: TreeProvider,
+        iNode: SyntaxNode,
+        baseType: string,
+        isCallOffClass: boolean,
+        potentialVariable: SyntaxNode | undefined | null
+    ) {
+        console.log(`[resolveTypingsFromSuffixes] BaseType at start: ${baseType}`);
+        console.log(`[resolveTypingsFromSuffixes] isCallOffClass: ${isCallOffClass}`);
+
+        const suffixes = treeProvider.findChildren(iNode, ["navigation_suffix"], null) ?? [];
+        const refinedSuffixes: string[] = [];
+
+        for (const suffix of suffixes) {
+            const identifier = treeProvider.findChild(suffix, "simple_identifier", null);
+            if (!identifier || identifier.text === potentialVariable?.text) continue;
+
+            const isCall = this.isMethodCall(suffix);
+            refinedSuffixes.push(identifier.text + (isCall ? "()" : ""));
+            console.log(`[resolveTypingsFromSuffixes] Found suffix: ${identifier.text}, isMethodCall: ${isCall}`);
+        }
+
+        console.log("[resolveTypingsFromSuffixes] Found refined suffixes:", refinedSuffixes);
+
+        let currentType = baseType;
+        let currentIsStatic = false;
+        let foundTypingsMember = this.getTypingsMember(currentType);
+
+        if (!isCallOffClass) {
+            console.log(`[resolveTypingsFromSuffixes] Resolving instance chain from baseType: ${currentType}`);
+
+            for (const element of refinedSuffixes) {
+                if (!foundTypingsMember) {
+                    console.log(`[resolveTypingsFromSuffixes] Stopped - no TypingsMember found for: ${currentType}`);
+                    break;
+                }
+
+                console.log(`[resolveTypingsFromSuffixes] Processing suffix: ${element}`);
+                const isMethod = element.endsWith("()");
+                if (isMethod) {
+                    const method = foundTypingsMember.methods.find(m => m.name === element);
+                    if (!method) {
+                        console.log(`[resolveTypingsFromSuffixes] Method not found: ${element} in ${foundTypingsMember.classPath}`);
+                        break;
+                    }
+                    console.log(`[resolveTypingsFromSuffixes] Matched method '${method.name}' -> returns ${method.returns}`);
+                    currentType = method.returns;
+                    currentIsStatic = method.isStatic;
+                } else {
+                    const field = foundTypingsMember.fields.find(f => f.name === element);
+                    if (!field) {
+                        console.log(`[resolveTypingsFromSuffixes] Field not found: ${element} in ${foundTypingsMember.classPath}`);
+                        break;
+                    }
+                    console.log(`[resolveTypingsFromSuffixes] Matched field '${field.name}' -> returns ${field.returns}`);
+                    currentType = field.returns;
+                    currentIsStatic = field.isStatic;
+                }
+
+                foundTypingsMember = this.getTypingsMember(currentType);
+            }
+        } else {
+            console.log(`[resolveTypingsFromSuffixes] Static call context, checking baseType: ${baseType}`);
+            if (!foundTypingsMember) {
+                const fallback = typingSuggestions.find(
+                    s => s.simpleName === iNode.text || s.fullyQualifiedName === iNode.text
+                );
+                if (fallback?.returnType) {
+                    console.log(`[resolveTypingsFromSuffixes] Fallback TypingSuggestion used: ${fallback.returnType}`);
+                    currentType = fallback.returnType;
+                    foundTypingsMember = this.getTypingsMember(currentType);
+                }
+            } else {
+                console.log(`[resolveTypingsFromSuffixes] Found TypingsMember: ${foundTypingsMember.classPath}`);
+            }
+        }
+
+        console.log(`[resolveTypingsFromSuffixes] Final resolved currentType: ${currentType}`);
+        return { currentType, foundTypingsMember, currentIsStatic };
+    }
+
+
+
+    private buildCompletionItems(foundTypingsMember: TypingsMember, isCallOffClass: boolean, isStaticClassCall: boolean): vscode.CompletionItem[] {
+        console.log("[buildCompletionItems] Building completions for:", foundTypingsMember.classPath);
+        console.log(`[buildCompletionItems] isCallOffClass: ${isCallOffClass}, isStaticClassCall: ${isStaticClassCall}`);
+
+        const snippetCompletions: vscode.CompletionItem[] = [];
+
+        for (const method of foundTypingsMember.methods) {
+            if (isCallOffClass) {
+                if (isStaticClassCall && !method.isStatic) continue;
+                if (!isStaticClassCall && method.isStatic) continue;
+            } else {
+                if (method.isStatic) continue;
+            }
+            const cleanName = method.name.replace(/\(.*\)$/, '');
+
+            const methodCompletion = new vscode.CompletionItem(
+                cleanName,
+                vscode.CompletionItemKind.Method
+            );
+
+            methodCompletion.insertText = cleanName + "()";
+            const argsText = method.args.length > 0
+                ? `\`\`\`kotlin\n${cleanName}(${method.args.join(', ')})\n\`\`\`\n`
+                : '';
+
+            const returnText = `\`\`\`kotlin\nReturns: ${method.returns}\n\`\`\``;
+            const doc = new vscode.MarkdownString();
+            doc.appendMarkdown("`fun` `println`(`\"Hello\"`)  \n");
+            doc.appendMarkdown("`Returns:` `Unit`");
+            methodCompletion.documentation = new vscode.MarkdownString("```kotlin\nfun something() = 1\n```");
+
+
+            //methodCompletion.detail = method.name; 
+            //methodCompletion.documentation = new vscode.MarkdownString(`${argsText}${returnText}`);
+
+
+
+            snippetCompletions.push(methodCompletion);
+        }
+
+
+        for (const field of foundTypingsMember.fields) {
+            if (isCallOffClass) {
+                if (isStaticClassCall && !field.isStatic) continue;
+                if (!isStaticClassCall && field.isStatic) continue;
+            } else {
+                if (field.isStatic) continue;
+            }
+
+            const fieldCompletion = new vscode.CompletionItem(
+                field.name,
+                vscode.CompletionItemKind.Field
+            );
+            fieldCompletion.detail = `Returns: ${field.returns}`;
+            snippetCompletions.push(fieldCompletion);
+        }
+
+        console.log(`[buildCompletionItems] Built ${snippetCompletions.length} completion items.`);
+        return snippetCompletions;
+    }
+
+
 }
 export class ImportDefinitionProvider implements vscode.CompletionItemProvider {
     constructor() {
@@ -575,24 +721,7 @@ export class ImportDefinitionProvider implements vscode.CompletionItemProvider {
             item.sortText = "0";
             return item;
         });
-        const tSuggestions = !isTypeNode ? [] : typingSuggestions
-            .filter(suggestion => {
-                return !suggestion.requiresImport &&
-                    suggestion.isClass &&
-                    !treeProvider.imports.has(suggestion.fullyQualifiedName)
-            })
-            .map(suggestion => {
-                const item = new vscode.CompletionItem(
-                    suggestion.simpleName,
-                    vscode.CompletionItemKind.Class
-                );
-                item.detail = suggestion.fullyQualifiedName;
-                item.documentation = suggestion.source
-                    ? `Source: ${suggestion.source}\nType: ${suggestion.type}`
-                    : `Type: ${suggestion.type}`;
-                item.insertText = suggestion.simpleName
-                return item;
-            });
+
         if (importPrefix.length > 0 && node.parent && !isTypeNode) {
             const prefixParts = importPrefix.split('.');
             const lastPrefixPart = prefixParts.pop() ?? '';
@@ -628,7 +757,7 @@ export class ImportDefinitionProvider implements vscode.CompletionItemProvider {
                 });
             }
         }
-        return [...snippetCompletions, ...importCompletionItems, ...tSuggestions];
+        return [...snippetCompletions, ...importCompletionItems];
     }
 
 

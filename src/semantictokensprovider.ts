@@ -68,6 +68,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
     setLastDocumentText(text: string) {
         this.lastDocumentText = text
     }
+    public s = false
     updateTokens(document: vscode.TextDocument, visibleRanges: vscode.Range | null = null) {
         const tree = this.treeProvider.tree;
         const builder = new vscode.SemanticTokensBuilder(LEGEND);
@@ -89,7 +90,10 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         );
         const matches = this.highlightQuery.matches(tree.rootNode);
         this.treeProvider.updateTokens();
-
+        if (!this.s) {
+            logNodeTree(tree.rootNode)
+            this.s = true
+        }
         this.tempInterpolatedRanges = [];
         this.errorType = [];
 

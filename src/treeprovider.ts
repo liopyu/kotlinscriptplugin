@@ -808,6 +808,7 @@ export class TreeProvider {
             }
         }
     }
+
     public getRangeKey(range: vscode.Range): string {
         const start = `${range.start.line}:${range.start.character}`;
         const end = `${range.end.line}:${range.end.character}`;

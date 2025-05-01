@@ -13,7 +13,7 @@
             "contentName": "meta.embedded.block.kotlin",
             "patterns": [
                 {
-                    "include": "source.kotlin"
+                    "include": "source.kotlinscript"
                 }
             ]
         }

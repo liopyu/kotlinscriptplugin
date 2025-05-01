@@ -55,8 +55,8 @@
     ],
     "grammars": [
       {
-        "scopeName": "source.kotlin",
-        "path": "./syntaxes/Kotlin.tmLanguage"
+        "scopeName": "source.kotlinscript",
+        "path": "./syntaxes/Kotlin.tmLanguage.json"
       },
       {
         "scopeName": "markdown.kotlin.codeblock",
@@ -71,7 +71,7 @@
       {
         "language": "kotlin",
         "scopeName": "source.kotlinscript",
-        "path": "./syntaxes/simple-comments.tmLanguage.json"
+        "path": "./syntaxes/Kotlin.tmLanguage.json"
       }
     ],
     "languages": [

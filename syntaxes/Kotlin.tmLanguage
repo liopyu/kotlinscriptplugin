@@ -1060,7 +1060,7 @@
       </dict>
     </dict>
     <key>scopeName</key>
-    <string>source.kotlin</string>
+    <string>source.kotlinscript</string>
     <key>uuid</key>
     <string>d9380650-5edc-447d-8dbd-98838c7d0adf</string>
   </dict>

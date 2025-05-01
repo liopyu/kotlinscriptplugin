@@ -239,7 +239,6 @@ export class TypingSuggestion {
         public path: string | null,
         public parentType: string | null,
         public requiresImport: boolean,
-        public isClass: boolean,
         public returnType: string | null,
         public args: string[],
     ) { }

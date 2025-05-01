@@ -193,8 +193,14 @@ export async function loadTypingSuggestions(ktsDirectory: string): Promise<Typin
 
             if (Array.isArray(parsedData)) {
                 parsedData.forEach(item => {
-                    const fqName: string = item.path + "." + item.fullyQualifiedName.substring(item.fullyQualifiedName.lastIndexOf('.') + 1).split('(')[0];
-                    const parsedSimpleName = fqName.substring(fqName.lastIndexOf('.') + 1).split('(')[0];
+                    const baseName = item.fullyQualifiedName.split('(')[0];
+                    const fqName = item.path + '.' + baseName.substring(baseName.lastIndexOf('.') + 1);
+                    const parsedSimpleName = baseName.substring(baseName.lastIndexOf('.') + 1);
+                    const rawArgsMatch: RegExpMatchArray | null = item.fullyQualifiedName.match(/\((.*)\)/);
+                    const extractedArgs: string[] = rawArgsMatch?.[1]
+                        ? splitTopLevelArgs(rawArgsMatch[1])
+                        : [];
+
                     suggestions.push(
                         new TypingSuggestion(
                             fqName,
@@ -204,9 +210,8 @@ export async function loadTypingSuggestions(ktsDirectory: string): Promise<Typin
                             item.path || null,
                             item.parentType || null,
                             item.requiresImport || false,
-                            item.isClass || false,
                             item.returnType || null,
-                            item.args || [],
+                            extractedArgs
                         )
                     );
                 });
@@ -264,6 +269,33 @@ export async function loadAvailableClasses(ktsDirectory: string): Promise<Set<st
         console.error(`Error loading available classes: ${error}`);
         return availableClasses;
     }
+}
+function splitTopLevelArgs(argString: string): string[] {
+    const args: string[] = [];
+    let current = '';
+    let depth = 0;
+
+    for (let i = 0; i < argString.length; i++) {
+        const char = argString[i];
+        if (char === '<') {
+            depth++;
+            current += char;
+        } else if (char === '>') {
+            depth--;
+            current += char;
+        } else if (char === ',' && depth === 0) {
+            args.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+
+    if (current.trim().length > 0) {
+        args.push(current.trim());
+    }
+
+    return args;
 }
 
 export function updateTokensForDocument(document: vscode.TextDocument) {
@@ -332,13 +364,14 @@ export function debounce<T extends (...args: any[]) => void>(func: T, delay: num
 
 export function logNodeTree(node: any, depth: number = 0): void {
     const indent = ' '.repeat(depth * 2);
-    const nodeText = node.text ? `:${node.text}` : '';
-    log(`${indent}${node.type}${nodeText}`);
+    const nodeText = node.text ? `: ${node.text}` : '';
+    log(`${indent}[${depth}] ${node.type}${nodeText}`);
 
     for (let i = 0; i < node.childCount; i++) {
         logNodeTree(node.child(i), depth + 1);
     }
 }
+
 export function logNode(node: SyntaxNode | null | undefined, name: string) {
     if (node)
         log(`${name} type: ${node.type}, ${name} text: ${node.text}`)
