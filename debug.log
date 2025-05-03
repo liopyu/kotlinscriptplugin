@@ -1,0 +1,187 @@
+[Log] Loading classes from binary file...
+[Log] Loaded 91519 classes from binary file.
+[Log] Loading typing suggestions from JSON file...
+[Log] Loaded 3214 typing suggestions.
+[Log] Loaded 75330 member suggestions.
+[Log] Loaded 92896 classes from JSON file.
+[Log] Typing suggestions loaded: 3214
+[Log] Semantic Tokens Provider Initialized
+[Log] updating tokens
+[Log] [provideCompletionItems] Starting provideCompletionItems...
+[Log] [prepareContext] Preparing editor context...
+[Log] [prepareContext] Position line=7, character=10
+[Log] [prepareContext] Successfully prepared context.
+[Log] [prepareContext] Found iNode type: navigation_expression, [prepareContext] Found iNode text: Minecraft.g
+[Log] [provideCompletionItems] iNode (navigation_expression) type: navigation_expression, [provideCompletionItems] iNode (navigation_expression) text: Minecraft.g
+[Log] [provideCompletionItems] No scope found for current position.
+[Log] [resolveBaseType] Starting base type resolution...
+[Log] [resolveBaseType] No lastChild found, using simple_identifier from current node
+[Log] [resolveBaseType] No scoped variable found, falling back to resolveBaseTypeFromImports
+[Log] [resolveBaseTypeFromImports] Starting import-based resolution...
+[Log] [resolveBaseTypeFromImports] Checking 1 potential imports...
+[Log] [resolveBaseTypeFromImports] Resolved from import: Minecraft
+[Log] [resolveBaseType] Call is directly off class, setting isStaticClassCall = true
+[Log] [resolveBaseType] Final resolved baseType: net.minecraft.client.Minecraft
+[Log] [resolveBaseType] isCallOffClass: true
+[Log] [resolveBaseType] isStaticClassCall: true
+[Log] [resolveTypingsFromSuffixes] BaseType at start: net.minecraft.client.Minecraft
+[Log] [resolveTypingsFromSuffixes] isCallOffClass: true
+[Log] [resolveTypingsFromSuffixes] Found suffix: g, isMethodCall: false
+[Log] [resolveTypingsFromSuffixes] Found refined suffixes: [
+  "g"
+]
+[Log] ClassPath: net.minecraft.client.Minecraft
+[Log] [resolveTypingsFromSuffixes] Static call context, checking baseType: net.minecraft.client.Minecraft
+[Log] [resolveTypingsFromSuffixes] Found TypingsMember: net.minecraft.client.Minecraft
+[Log] [resolveTypingsFromSuffixes] Final resolved currentType: net.minecraft.client.Minecraft
+[Log] [provideCompletionItems] Variable is not Companion, forcing instance context.
+[Log] [provideCompletionItems] Found TypingsMember: net.minecraft.client.Minecraft, preparing completions.
+[Log] [buildCompletionItems] Building completions for: net.minecraft.client.Minecraft
+[Log] [buildCompletionItems] isCallOffClass: false, isStaticClassCall: false
+(x2) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: java.lang.Runnable
+(x2) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: java.lang.String
+[Log] ClassPath: com.mojang.authlib.minecraft.UserApiService
+(x7) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: com.mojang.blaze3d.pipeline.RenderTarget
+(x2) [Log] ClassPath: java.lang.String
+(x4) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: kotlin.Boolean
+(x2) [Log] ClassPath: java.util.concurrent.CompletableFuture
+[Log] ClassPath: kotlin.Unit
+[Log] ClassPath: net.minecraft.world.level.storage.LevelStorageSource
+(x6) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: net.minecraft.util.profiling.ProfilerFiller
+(x3) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: kotlin.Int
+[Log] ClassPath: kotlin.Long
+[Log] ClassPath: kotlin.Int
+[Log] ClassPath: kotlin.Unit
+[Log] ClassPath: kotlin.Boolean
+(x2) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: java.nio.file.Path
+(x3) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: kotlin.Boolean
+(x2) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: kotlin.Unit
+[Log] ClassPath: net.minecraft.client.sounds.MusicManager
+[Log] ClassPath: kotlin.Unit
+(x2) [Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: kotlin.Unit
+[Log] ClassPath: net.minecraft.client.telemetry.ClientTelemetryManager
+[Log] ClassPath: kotlin.Double
+[Log] ClassPath: net.minecraft.client.multiplayer.ProfileKeyPairManager
+[Log] ClassPath: net.minecraft.client.gui.screens.worldselection.WorldOpenFlows
+(x10) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: com.mojang.authlib.minecraft.UserApiService$UserProperties
+(x5) [Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: com.mojang.authlib.minecraft.BanDetails
+(x2) [Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: net.minecraft.client.Minecraft$ChatStatus
+[Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: net.minecraft.client.multiplayer.ClientPacketListener
+(x2) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: net.minecraft.CrashReport
+[Log] ClassPath: kotlin.Unit
+[Log] ClassPath: java.util.concurrent.CompletableFuture
+[Log] ClassPath: kotlin.Unit
+[Log] ClassPath: net.minecraft.client.multiplayer.ServerData
+(x2) [Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: net.minecraft.client.server.IntegratedServer
+(x2) [Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: net.minecraft.client.User
+[Log] ClassPath: com.mojang.authlib.GameProfile
+[Log] ClassPath: java.net.Proxy
+[Log] ClassPath: net.minecraft.client.renderer.texture.TextureManager
+[Log] ClassPath: net.minecraft.server.packs.resources.ResourceManager
+[Log] ClassPath: net.minecraft.server.packs.repository.PackRepository
+[Log] ClassPath: net.minecraft.server.packs.VanillaPackResources
+[Log] ClassPath: net.minecraft.client.resources.server.DownloadedPackSource
+[Log] ClassPath: java.nio.file.Path
+[Log] ClassPath: net.minecraft.client.resources.language.LanguageManager
+[Log] ClassPath: java.util.function.Function
+[Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: net.minecraft.client.renderer.GpuWarnlistManager
+[Log] ClassPath: net.minecraft.client.sounds.SoundManager
+[Log] ClassPath: net.minecraft.sounds.Music
+[Log] ClassPath: com.mojang.authlib.minecraft.MinecraftSessionService
+[Log] ClassPath: net.minecraft.client.resources.SkinManager
+[Log] ClassPath: net.minecraft.world.entity.Entity
+[Log] ClassPath: kotlin.Unit
+[Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: java.lang.Thread
+[Log] ClassPath: java.lang.Runnable
+[Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: net.minecraft.client.renderer.block.BlockRenderDispatcher
+[Log] ClassPath: net.minecraft.client.renderer.entity.EntityRenderDispatcher
+[Log] ClassPath: net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher
+[Log] ClassPath: net.minecraft.client.renderer.entity.ItemRenderer
+[Log] ClassPath: com.mojang.datafixers.DataFixer
+[Log] ClassPath: net.minecraft.client.DeltaTracker
+[Log] ClassPath: net.minecraft.client.color.block.BlockColors
+[Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: net.minecraft.client.gui.components.toasts.ToastComponent
+[Log] ClassPath: net.minecraft.client.tutorial.Tutorial
+[Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: net.minecraft.client.HotbarManager
+[Log] ClassPath: net.minecraft.client.resources.model.ModelManager
+[Log] ClassPath: net.minecraft.client.resources.PaintingTextureManager
+[Log] ClassPath: net.minecraft.client.resources.MobEffectTextureManager
+[Log] ClassPath: net.minecraft.client.resources.MapDecorationTextureManager
+[Log] ClassPath: net.minecraft.client.gui.GuiSpriteManager
+[Log] ClassPath: kotlin.Unit
+(x2) [Log] ClassPath: net.minecraft.network.chat.Component
+[Log] ClassPath: net.minecraft.util.profiling.ProfilerFiller
+[Log] ClassPath: net.minecraft.server.level.progress.StoringChunkProgressListener
+[Log] ClassPath: net.minecraft.client.resources.SplashManager
+[Log] ClassPath: net.minecraft.client.gui.screens.Overlay
+[Log] ClassPath: net.minecraft.client.gui.screens.social.PlayerSocialManager
+[Log] ClassPath: com.mojang.blaze3d.platform.Window
+[Log] ClassPath: net.minecraft.client.gui.components.DebugScreenOverlay
+[Log] ClassPath: net.minecraft.client.renderer.RenderBuffers
+[Log] ClassPath: kotlin.Unit
+[Log] ClassPath: net.minecraft.client.model.geom.EntityModelSet
+[Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: kotlin.Unit
+[Log] ClassPath: net.minecraft.util.SignatureValidator
+[Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: net.minecraft.client.InputType
+[Log] ClassPath: kotlin.Unit
+[Log] ClassPath: net.minecraft.client.GameNarrator
+[Log] ClassPath: net.minecraft.client.multiplayer.chat.ChatListener
+[Log] ClassPath: net.minecraft.client.multiplayer.chat.report.ReportingContext
+[Log] ClassPath: com.mojang.realmsclient.gui.RealmsDataFetcher
+[Log] ClassPath: net.minecraft.client.quickplay.QuickPlayLog
+[Log] ClassPath: net.minecraft.client.CommandHistory
+[Log] ClassPath: net.minecraft.world.level.validation.DirectoryValidator
+[Log] ClassPath: kotlin.Float
+(x2) [Log] ClassPath: java.lang.String
+[Log] ClassPath: net.minecraft.client.server.IntegratedServer
+[Log] ClassPath: net.minecraft.server.level.progress.ChunkProgressListener
+(x10) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: net.minecraft.CrashReport
+[Log] ClassPath: kotlin.Unit
+[Log] ClassPath: net.minecraft.client.gui.screens.Screen
+(x6) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: com.mojang.authlib.minecraft.UserApiService$UserProperties
+[Log] ClassPath: com.mojang.authlib.yggdrasil.ProfileResult
+[Log] ClassPath: kotlin.Int
+[Log] ClassPath: java.util.List
+[Log] ClassPath: java.lang.String
+[Log] ClassPath: kotlin.Unit
+(x2) [Log] ClassPath: java.util.concurrent.CompletableFuture
+[Log] ClassPath: kotlin.Unit
+(x2) [Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: kotlin.Unit
+[Log] ClassPath: kotlin.Boolean
+[Log] ClassPath: kotlin.Int
+(x3) [Log] ClassPath: java.util.concurrent.CompletableFuture
+(x5) [Log] ClassPath: kotlin.Unit
+[Log] ClassPath: kotlin.Boolean
+(x2) [Log] ClassPath: kotlin.Unit
+[Log] [buildCompletionItems] Built 328 completion items.
+[Log] updating tokens
+[Log] Closed document: file:///d%3A/minecraft/instances/1.21%20fab/package.json

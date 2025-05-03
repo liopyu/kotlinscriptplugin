@@ -185,6 +185,33 @@ export async function activate(context: vscode.ExtensionContext) {
 				}
 		}
 	});
+	function getTypingsMember(classPath: string): TypingsMember | undefined {
+		let className = classPath.includes(".") ? classPath.split(".").pop() ?? "" : classPath
+		const matchedTyping: TypingsMember | undefined = indexedClassMap
+			.get(className.charAt(0).toUpperCase())
+			?.get(classPath);
+		return matchedTyping
+	}
+	let currentType: string | null = null;
+	let recentTypeHistory: string[] = [];
+	const annotationModifiers: Record<string, string> = {
+		"synchronized": "@Synchronized",
+		"transient": "@Transient",
+		"volatile": "@Volatile"
+	};
+
+	function extractAnnotations(modStr: string): string[] {
+		return Object.entries(annotationModifiers)
+			.filter(([key]) => modStr.includes(key))
+			.map(([, annotation]) => annotation);
+	}
+
+	function stripAnnotationModifiers(modStr: string): string {
+		return Object.keys(annotationModifiers)
+			.reduce((acc, mod) => acc.replace(mod, ''), modStr)
+			.replace(/\s+/g, ' ')
+			.trim();
+	}
 	context.subscriptions.push(
 		vscode.commands.registerCommand('extension.gotoTypingDefinition', (args) => {
 			const typeName = args.type;
@@ -212,8 +239,6 @@ export async function activate(context: vscode.ExtensionContext) {
 				vscode.window.showWarningMessage(`Type "${typeName}" not found in index.`);
 				return;
 			}
-
-
 			const fqUri = vscode.Uri.parse(`kotlin-preview:/${encodeURIComponent(baseType)}.md`);
 			vscode.workspace.openTextDocument(fqUri).then(() => {
 				vscode.commands.executeCommand('markdown.showPreview', fqUri);
@@ -221,162 +246,185 @@ export async function activate(context: vscode.ExtensionContext) {
 
 		})
 	);
-	function getTypingsMember(classPath: string): TypingsMember | undefined {
-		//console.log("ClassPath: " + classPath)
-		let className = classPath.includes(".") ? classPath.split(".").pop() ?? "" : classPath
-		const matchedTyping: TypingsMember | undefined = indexedClassMap
-			.get(className.charAt(0).toUpperCase())
-			?.get(classPath);
-		return matchedTyping
-	}
-	let currentType: string | null = null;
-	let recentTypeHistory: string[] = [];
+
 	vscode.workspace.registerTextDocumentContentProvider('kotlin-preview', {
 		provideTextDocumentContent(uri) {
 			const fqName = decodeURIComponent(uri.path.replace(/^\/+/, '').replace(/\.md$/, ''));
-			if (fqName !== currentType) {
-				const exists = recentTypeHistory.includes(fqName);
-				if (!exists) {
-					recentTypeHistory.push(fqName);
-					if (recentTypeHistory.length > 10) {
-						const removed = recentTypeHistory.shift();
-					}
-				}
-			}
-
+			const typingsMember = getTypingsMember(fqName)
 			currentType = fqName;
-			return generateKotlinDeclarationPreview(fqName, getTypingsMember(fqName));
-			//return generateKotlinPreview(fqName, getTypingsMember(fqName));
+			return generateKotlinDeclarationPreview(fqName, typingsMember);
 		}
 	});
+
+
 	function generateKotlinDeclarationPreview(fqName: string, member: TypingsMember | undefined): string {
-		const packageName = fqName.substring(0, fqName.lastIndexOf('.'));
-		const className = fqName.substring(fqName.lastIndexOf('.') + 1);
 		const lines: string[] = [];
-		if (!recentTypeHistory.includes(fqName) && member) {
-			recentTypeHistory.push(fqName);
-			if (recentTypeHistory.length > 10) {
-				recentTypeHistory.shift();
+		try {
+			const packageName = fqName.substring(0, fqName.lastIndexOf('.'));
+			const className = fqName.substring(fqName.lastIndexOf('.') + 1);
+
+			if (!recentTypeHistory.includes(fqName)) {
+				recentTypeHistory.push(fqName);
+				if (recentTypeHistory.length > 10) {
+					recentTypeHistory.shift();
+				}
 			}
-		}
-		if (recentTypeHistory.length > 1) {
-			lines.push(`<details open>`);
-			lines.push('<summary><strong>History</strong></summary>');
-			lines.push('');
-			for (const type of recentTypeHistory) {
-				const short = type.split('.').pop();
-				lines.push(`- [${short}](./${type}.md)`);
+			if (recentTypeHistory.length > 1) {
+				lines.push(`<details open>`);
+				lines.push('<summary><strong>History</strong></summary>');
+				lines.push('');
+				for (const type of recentTypeHistory) {
+					const short = type.split('.').pop();
+					lines.push(`- [${short}](./${type}.md)`);
+				}
+				lines.push('</details>');
+				lines.push('');
 			}
-			lines.push('</details>');
+
+			if (!member) {
+				lines.push(`// No member found for \`${fqName}\``);
+				return lines.join('\n');
+			}
+
+			const encodeTypeCommand = (type: string): string => {
+				const rawType = type.split('<')[0].trim();
+				const simple = rawType.substring(rawType.lastIndexOf('.') + 1);
+				const generics = type.includes('<') ? type.substring(type.indexOf('<')) : '';
+				return `${simple}${generics}`;
+			};
+
+			const fields = member.fields;
+			const methods = member.methods;
+			const superclass = encodeTypeCommand(member.superclass || '');
+			const interfaces = member.interfaces || [];
+			const implemented = interfaces.map(encodeTypeCommand);
+
+			const inheritanceClause = [
+				superclass && superclass !== 'Any' ? superclass : null,
+				...implemented
+			].filter(Boolean).join(', ');
+
+			lines.push('```kotlin');
+			lines.push(`package ${packageName}`);
 			lines.push('');
-		}
+			lines.push(`${member.modifiers != "" ? member.modifiers + " " : ""}${member.modifiers.includes("interface") ? "" : "class "}${className}${inheritanceClause ? " : " + inheritanceClause : ""} {`);
 
-		if (!member) {
-			lines.push(`// No member found for \`${fqName}\``);
-			return lines.join('\n');
-		}
-		const encodeTypeCommand = (type: string): string => {
-			const rawType = type.split('<')[0].trim();
-			const simple = rawType.substring(rawType.lastIndexOf('.') + 1);
-			const generics = type.includes('<') ? type.substring(type.indexOf('<')) : '';
-			return `${simple}${generics}`;
-		};
-		const fields = member.fields;
-		const methods = member.methods;
-		const superclass = encodeTypeCommand(member.superclass || '');
-		const interfaces = member.interfaces || [];
-		const implemented = interfaces.map(encodeTypeCommand);
+			const instanceFields = fields.filter(f => !f.modifiers.includes("static"));
+			const staticFields = fields.filter(f => f.modifiers.includes("static"));
+			const instanceMethods = methods.filter(m => !m.modifiers.includes("static"));
+			const staticMethods = methods.filter(m => m.modifiers.includes("static"));
 
-		const inheritanceClause = [
-			superclass && superclass !== 'Any' ? superclass : null,
-			...implemented
-		].filter(Boolean).join(', ');
-		lines.push('```kotlin');
-		lines.push(`package ${packageName}`);
-		lines.push('');
-		lines.push(`${member.modifiers}${member.modifiers.includes("interface") ? " " : " class "}${className}${inheritanceClause ? " : " + inheritanceClause : ""} {`);
 
-		if (fields.length) {
-			lines.push('');
-			for (const f of fields) {
-				const modifier = f.modifiers.trim();
+
+			for (const f of instanceFields) {
+				const annotations = extractAnnotations(f.modifiers);
+				const modifier = stripAnnotationModifiers(f.modifiers);
 				const type = encodeTypeCommand(f.returns);
-				lines.push(`    ${modifier} val ${f.name}: ${type}`);
+				for (const annotation of annotations) lines.push(`    ${annotation}`);
+				lines.push(`    ${modifier ? modifier + " " : ""}val ${f.name}: ${type}`);
 			}
-		}
 
-		if (methods.length) {
-			lines.push('');
-			for (const m of methods) {
-				const modifier = m.modifiers.trim();
+			for (const m of instanceMethods) {
+				const annotations = extractAnnotations(m.modifiers);
+				const modifier = stripAnnotationModifiers(m.modifiers);
 				const name = m.name.replace(/\(.*$/, '');
 				const args = m.args.map((arg, i) => `arg${i}: ${encodeTypeCommand(arg)}`).join(', ');
 				const returns = encodeTypeCommand(m.returns);
-				lines.push(`    ${modifier} fun ${name}(${args}): ${returns} {}`);
+				for (const annotation of annotations) lines.push(`    ${annotation}`);
+				lines.push(`    ${modifier ? modifier + " " : ""}fun ${name}(${args}): ${returns} {}`);
 			}
+
+			if (staticFields.length || staticMethods.length) {
+				lines.push('');
+				lines.push('    companion object {');
+				for (const f of staticFields) {
+					const annotations = extractAnnotations(f.modifiers);
+					const modifier = stripAnnotationModifiers(f.modifiers.replace("static", ""));
+					const type = encodeTypeCommand(f.returns);
+					for (const annotation of annotations) lines.push(`        ${annotation}`);
+					lines.push(`        ${modifier ? modifier + " " : ""}val ${f.name}: ${type}`);
+				}
+				for (const m of staticMethods) {
+					const annotations = extractAnnotations(m.modifiers);
+					const modifier = stripAnnotationModifiers(m.modifiers.replace("static", ""));
+					const name = m.name.replace(/\(.*$/, '');
+					const args = m.args.map((arg, i) => `arg${i}: ${encodeTypeCommand(arg)}`).join(', ');
+					const returns = encodeTypeCommand(m.returns);
+					for (const annotation of annotations) lines.push(`        ${annotation}`);
+					lines.push(`        ${modifier ? modifier + " " : ""}fun ${name}(${args}): ${returns} {}`);
+				}
+				lines.push('    }');
+			}
+			lines.push('}');
+			lines.push('```');
+		} catch (error) {
+			console.error("1" + error)
 		}
-
-		lines.push('}');
-		lines.push('```');
-
 		return lines.join('\n') + "\n" + generateKotlinPreview(fqName, getTypingsMember(fqName));
 	}
+
 
 	function generateKotlinPreview(fqName: string, member: TypingsMember | undefined): string {
 		const packageName = fqName.substring(0, fqName.lastIndexOf('.'));
 		const className = fqName.substring(fqName.lastIndexOf('.') + 1);
 		const lines: string[] = [];
+		try {
+			if (!member) {
+				return ""
+			}
+			const encodeTypeCommand = (type: string): string => {
+				const rawType = type.split('<')[0].trim();
+				const simple = rawType.substring(rawType.lastIndexOf('.') + 1);
+				const generics = type.includes('<') ? type.substring(type.indexOf('<')) : '';
+				return `[${simple}](./${rawType}.md)${generics}`;
+			};
+			const fields: Field[] = member.fields;
+			const methods: Method[] = member.methods;
+			const interfaces: TypingsMember[] = []
+			const leftOverInterfaces: string[] = []
+			const rawInterfaces = Array.isArray(member.interfaces) ? member.interfaces : [];
+			rawInterfaces.forEach(i => {
+				const mem = getTypingsMember(i);
+				if (mem)
+					interfaces.push(mem);
+				else
+					leftOverInterfaces.push(i);
+			});
 
-		if (!member) {
-			return ""
-		}
-		const fields: Field[] = member.fields;
-		const methods: Method[] = member.methods;
-		const interfaces: TypingsMember[] = []
-		const leftOverInterfaces: string[] = []
-		member.interfaces.forEach(i => {
-			let mem = getTypingsMember(i)
-			if (mem)
-				interfaces.push(mem)
-			else leftOverInterfaces.push(i)
-		})
-		const superclass: String = member.superclass
-		const encodeTypeCommand = (type: string): string => {
-			const rawType = type.split('<')[0].trim();
-			const simple = rawType.substring(rawType.lastIndexOf('.') + 1);
-			const generics = type.includes('<') ? type.substring(type.indexOf('<')) : '';
-			return `[${simple}](./${rawType}.md)${generics}`;
-		};
 
+			const superclass = member.superclass != "" ? encodeTypeCommand(member.superclass || '') : "";
 
-		lines.push(`# ${fqName}`);
-		lines.push('');
-		lines.push(`**Package:** \`${packageName}\``);
-		if (superclass != "") {
+			lines.push(`# ${fqName}`);
 			lines.push('');
-			lines.push(`**Extends:** \`${superclass}\``);
-		}
-		if (member.interfaces.length) {
+			lines.push(`**Package:** \`${packageName}\``);
+			if (superclass != "") {
+				log("superclass: " + superclass)
+				lines.push('');
+				lines.push(`**Extends:** \`${superclass}\``);
+			}
+			if (member.interfaces.length) {
+				lines.push('');
+				lines.push(`**Implements:**\n` + [
+					...interfaces.map(i => `- ${encodeTypeCommand(i.classPath)}`),
+					...leftOverInterfaces.map(i => `- \`${i}\``)
+				].join('\n'));
+			}
 			lines.push('');
-			lines.push(`**Implements:**\n` + [
-				...interfaces.map(i => `- ${encodeTypeCommand(i.classPath)}`),
-				...leftOverInterfaces.map(i => `- \`${i}\``)
-			].join('\n'));
+			lines.push(`## Fields`);
+			lines.push(fields.length ? '' : '_(none)_');
+			for (const f of fields) {
+				lines.push(`- ${f.name}: ${encodeTypeCommand(f.returns)}`);
+			}
+			lines.push('');
+			lines.push(`## Methods`);
+			lines.push(methods.length ? '' : '_(none)_');
+			for (const m of methods) {
+				const args = m.args.map((arg, idx) => `arg${idx}: ${encodeTypeCommand(arg)}`).join(', ');
+				lines.push(`- ${m.name.replace(/\(.*$/, '')}(${args}): ${encodeTypeCommand(m.returns)}`);
+			}
+		} catch (error) {
+			console.error("2" + error)
 		}
-		lines.push('');
-		lines.push(`## Fields`);
-		lines.push(fields.length ? '' : '_(none)_');
-		for (const f of fields) {
-			lines.push(`- ${f.name}: ${encodeTypeCommand(f.returns)}`);
-		}
-		lines.push('');
-		lines.push(`## Methods`);
-		lines.push(methods.length ? '' : '_(none)_');
-		for (const m of methods) {
-			const args = m.args.map((arg, idx) => `arg${idx}: ${encodeTypeCommand(arg)}`).join(', ');
-			lines.push(`- ${m.name.replace(/\(.*$/, '')}(${args}): ${encodeTypeCommand(m.returns)}`);
-		}
-
 		return lines.join('\n');
 	}
 

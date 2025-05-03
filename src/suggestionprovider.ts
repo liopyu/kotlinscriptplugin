@@ -611,9 +611,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
     private buildCompletionItems(foundTypingsMember: TypingsMember, isCallOffClass: boolean, isStaticClassCall: boolean): vscode.CompletionItem[] {
         console.log("[buildCompletionItems] Building completions for:", foundTypingsMember.classPath);
         console.log(`[buildCompletionItems] isCallOffClass: ${isCallOffClass}, isStaticClassCall: ${isStaticClassCall}`);
-
         const snippetCompletions: vscode.CompletionItem[] = [];
-        log("Typingsmember: " + foundTypingsMember.methods.length + ", " + foundTypingsMember.fields.length)
         for (const method of foundTypingsMember.methods) {
             if (isCallOffClass) {
                 if (isStaticClassCall && !method.isStatic) continue;
@@ -621,10 +619,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             } else {
                 if (method.isStatic) continue;
             }
-
             const cleanName = method.name.replace(/\(.*\)$/, '');
-            log("cleanname: " + cleanName)
-            log("return: " + method.returns)
             const label = method.args.length > 0
                 ? `${cleanName}(${method.args.map((arg, idx) => `arg${idx}: ${arg}`).join(', ')})`
                 : `${cleanName}()`;
@@ -632,7 +627,6 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                 label,
                 vscode.CompletionItemKind.Method
             );
-
             methodCompletion.insertText = `${cleanName}()`;
             const doc = new vscode.MarkdownString(undefined, true);
             doc.isTrusted = true;
@@ -683,8 +677,6 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             snippetCompletions.push(methodCompletion);
         }
 
-
-
         for (const field of foundTypingsMember.fields) {
             if (isCallOffClass) {
                 if (isStaticClassCall && !field.isStatic) continue;
@@ -698,8 +690,20 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                 vscode.CompletionItemKind.Field
             );
             fieldCompletion.detail = `Returns: ${field.returns}`;
+
+            const doc = new vscode.MarkdownString(undefined, true);
+            doc.isTrusted = true;
+            const rawReturn = field.returns.split('<')[0].trim();
+            const returnTypeDisplay = rawReturn.substring(rawReturn.lastIndexOf('.') + 1);
+            const commandUri = `command:extension.gotoTypingDefinition?${encodeURIComponent(JSON.stringify({ type: rawReturn }))}`;
+
+            doc.appendCodeblock(`${field.name}: ${field.returns}`, 'kotlin');
+            doc.appendMarkdown(`\n\n**Type:** [${returnTypeDisplay}](${commandUri})`);
+
+            fieldCompletion.documentation = doc;
             snippetCompletions.push(fieldCompletion);
         }
+
 
         console.log(`[buildCompletionItems] Built ${snippetCompletions.length} completion items.`);
         return snippetCompletions;
