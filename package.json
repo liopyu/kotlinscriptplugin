@@ -40,6 +40,10 @@
       {
         "command": "extension.insertImport",
         "title": "Insert Import"
+      },
+      {
+        "command": "extension.gotoTypingDefinition",
+        "title": "Goto Definition"
       }
     ],
     "codeLens": [

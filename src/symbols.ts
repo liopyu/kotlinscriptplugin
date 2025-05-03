@@ -250,6 +250,9 @@ export class TypingsMember {
         public fields: Field[],
         public hasCompanionObject: boolean,
         public hasInvokeOperator: boolean,
+        public modifiers: string,
+        public superclass: string,
+        public interfaces: string[]
     ) { }
 }
 
@@ -260,6 +263,7 @@ export class Method {
         public returns: string,
         public isStatic: boolean,
         public description: string | null,
+        public modifiers: string
     ) { }
 }
 export class Field {
@@ -268,6 +272,7 @@ export class Field {
         public returns: string,
         public isStatic: boolean,
         public description: string | null,
+        public modifiers: string
     ) { }
 }
 

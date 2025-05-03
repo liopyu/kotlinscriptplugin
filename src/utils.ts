@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { Field, Method, TypingsMember, TypingSuggestion } from './symbols';
 import { TreeProvider } from './treeprovider';
-import { log, error, warn } from './extension';
+import { log, error, warn, availableClasses } from './extension';
 import {
     t,
     TOKEN_TYPES,
@@ -112,6 +112,76 @@ export class Utils {
         this.logToFile('error', args);
     }
 }
+export function writeAlphabeticalTypingsIndex(ktsDirectory: string) {
+    const inputFiles = [
+        'available_members.json',
+        'kotlin_members.json',
+        'companion_objects.json'
+    ];
+
+    const outputDir = path.join(ktsDirectory, 'typings', 'members');
+    const indexMap: Record<string, Record<string, any>> = {};
+
+    for (const fileName of inputFiles) {
+        const inputPath = path.join(ktsDirectory, 'typings', fileName);
+
+        if (!fs.existsSync(inputPath)) {
+            console.warn(`⚠️ Input file not found: ${inputPath}`);
+            continue;
+        }
+
+        const jsonData = JSON.parse(fs.readFileSync(inputPath, 'utf-8'));
+
+        for (const [fqName, details] of Object.entries(jsonData)) {
+            const className = fqName.split('.').pop()?.split('<')[0] || fqName;
+            const indexLetter = className[0].toUpperCase();
+
+            if (!indexMap[indexLetter]) indexMap[indexLetter] = {};
+            if (indexMap[indexLetter][fqName]) continue;
+
+            indexMap[indexLetter][fqName] = details;
+        }
+    }
+
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    for (const [letter, contents] of Object.entries(indexMap)) {
+        const filePath = path.join(outputDir, `${letter}-index.json`);
+        fs.writeFileSync(filePath, JSON.stringify(contents, null, 2), 'utf-8');
+    }
+
+    console.log(`✅ Alphabetical index files written to: ${outputDir}`);
+}
+
+
+function getKotlinBoxedType(type: string): string {
+    const primitiveToBoxedMap: Record<string, string> = {
+        byte: 'kotlin.Byte',
+        short: 'kotlin.Short',
+        int: 'kotlin.Int',
+        long: 'kotlin.Long',
+        float: 'kotlin.Float',
+        double: 'kotlin.Double',
+        boolean: 'kotlin.Boolean',
+        char: 'kotlin.Char',
+        void: 'kotlin.Unit'
+    }
+
+    const genericMatch = type.match(/^(\w+)<(.+)>$/)
+    if (genericMatch) {
+        const genericName = genericMatch[1]
+        const innerTypes = genericMatch[2]
+        const mappedInnerTypes = innerTypes
+            .split(',')
+            .map(t => getKotlinBoxedType(t.trim()))
+            .join(', ')
+        return `${genericName}<${mappedInnerTypes}>`
+    }
+
+    return primitiveToBoxedMap[type.toLowerCase()] ?? type
+}
 
 
 export async function loadTypingMembers(ktsDirectory: string): Promise<TypingsMember[]> {
@@ -131,41 +201,62 @@ export async function loadTypingMembers(ktsDirectory: string): Promise<TypingsMe
         Object.entries(parsedData).forEach(([classPath, members]) => {
             const methods: Method[] = [];
             const fields: Field[] = [];
-            let hasInvokeOperator = false
+            let hasInvokeOperator = false;
+            const membersRecord = members as Record<string, any>;
+            const classModifiers = membersRecord["$modifiers"] || "";
+            const superclass = membersRecord["$superclass"] || "";
+            const interfaces = membersRecord["$interfaces"] || "";
+
             Object.entries(members as Record<string, any>).forEach(([name, details]) => {
-                if (name.endsWith('()')) {
+                if (["$superclass", "$modifiers", "$interfaces"].includes(name)) {
+                } else if (name.endsWith(')')) {
+                    const rawArgsMatch: RegExpMatchArray | null = name.match(/\((.*)\)/);
+                    const extractedArgs: string[] = rawArgsMatch?.[1]
+                        ? splitTopLevelArgs(rawArgsMatch[1]).map(arg => getKotlinBoxedType(arg.trim()))
+                        : [];
+
+                    const isStatic = (details as { modifiers?: string }).modifiers?.includes("static");
+
                     methods.push(new Method(
                         name,
-                        (details as { args?: string[] }).args || [],
-                        (details as { returns?: string }).returns || 'Unit',
-                        forceStatic || (details as { isStatic?: boolean }).isStatic || false,
+                        extractedArgs,
+                        getKotlinBoxedType((details as { returns?: string }).returns || 'Any'),
+                        forceStatic || isStatic || false,
                         (details as { description?: string }).description || '',
+                        (details as { modifiers?: string }).modifiers || '',
                     ));
+
                     if (!hasInvokeOperator)
-                        hasInvokeOperator = (details as { isInvokeOperator?: boolean }).isInvokeOperator ?? false
-                    /*  if (hasInvokeOperator) {
-                         log("adding invoke operator to class: " + classPath + ", for method: " + name)
-                     } */
+                        hasInvokeOperator = (details as { isInvokeOperator?: boolean }).isInvokeOperator ?? false;
+
                 } else {
+                    const isStatic = (details as { modifiers?: string }).modifiers?.includes("static");
+
                     fields.push(new Field(
                         name,
-                        (details as { type?: string, returns?: string }).type || (details as any).returns || 'Unknown',
-                        forceStatic || (details as { isStatic?: boolean }).isStatic || false,
+                        getKotlinBoxedType(
+                            (details as { type?: string, returns?: string }).type || (details as any).returns || 'Unknown'
+                        ),
+                        forceStatic || isStatic || false,
                         (details as { description?: string }).description || '',
+                        (details as { modifiers?: string }).modifiers || '',
                     ));
                 }
             });
-
-            suggestions.push(new TypingsMember(classPath, methods, fields, forceStatic, hasInvokeOperator));
+            if (!availableClasses.has(classPath)) availableClasses.add(classPath)
+            suggestions.push(new TypingsMember(classPath, methods, fields, forceStatic, hasInvokeOperator, classModifiers, superclass, interfaces));
         });
     };
 
+
     try {
         const jsonFilePath = path.join(ktsDirectory, 'typings', 'available_members.json');
-        const companionJsonFilePath = path.join(ktsDirectory, 'typings', 'companion_objects.json');
+        //const companionJsonFilePath = path.join(ktsDirectory, 'typings', 'companion_objects.json');
+        const kotlinMembers = path.join(ktsDirectory, 'typings', 'kotlin_members.json');
 
+        loadFile(kotlinMembers);
         loadFile(jsonFilePath);
-        loadFile(companionJsonFilePath, true);
+        // loadFile(companionJsonFilePath, true);
 
         log(`Loaded ${suggestions.length} member suggestions.`);
         cachedTypingMembers = suggestions;
@@ -214,6 +305,7 @@ export async function loadTypingSuggestions(ktsDirectory: string): Promise<Typin
                             extractedArgs
                         )
                     );
+                    if (!availableClasses.has(fqName)) availableClasses.add(fqName)
                 });
                 log(`Loaded ${suggestions.length} typing suggestions.`);
                 cachedTypingSuggestions = suggestions;
@@ -260,7 +352,6 @@ export async function loadAvailableClasses(ktsDirectory: string): Promise<Set<st
                 throw new Error('Invalid JSON format: expected an array of classes');
             }
 
-            log(`Loaded ${availableClasses.size} classes from JSON file.`);
             return availableClasses;
         }
         warn('No available_classes.json or binary file found.');

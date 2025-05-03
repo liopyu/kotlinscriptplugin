@@ -171,10 +171,11 @@ function getStr(params: string, provider: PeriodTypingSuggestionProvider): strin
     provider.suggestionProviderChange = true
     return params
 }
+
+export let indexedClassMap: Map<string, Map<string, TypingsMember>> = new Map();
 export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProvider {
     public suggestions: TypingSuggestion[];
     public suggestionProviderChange: boolean = false
-    public indexedClassMap: Map<string, Map<string, TypingsMember>> = new Map();
     constructor(suggestions: TypingSuggestion[]) {
         this.suggestions = suggestions;
         this.buildClassMap(available_members)
@@ -186,10 +187,10 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             if (!simpleName) continue;
 
             const firstLetter = simpleName.charAt(0).toUpperCase();
-            let letterBucket = this.indexedClassMap.get(firstLetter);
+            let letterBucket = indexedClassMap.get(firstLetter);
             if (!letterBucket) {
                 letterBucket = new Map<string, TypingsMember>();
-                this.indexedClassMap.set(firstLetter, letterBucket);
+                indexedClassMap.set(firstLetter, letterBucket);
             }
 
             letterBucket.set(normalizedPath, member);
@@ -250,7 +251,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
     private getTypingsMember(classPath: string): TypingsMember | undefined {
         console.log("ClassPath: " + classPath)
         let className = classPath.includes(".") ? classPath.split(".").pop() ?? "" : classPath
-        const matchedTyping: TypingsMember | undefined = this.indexedClassMap
+        const matchedTyping: TypingsMember | undefined = indexedClassMap
             .get(className.charAt(0).toUpperCase())
             ?.get(classPath);
         return matchedTyping
@@ -347,7 +348,6 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             console.log(`[provideCompletionItems] No TypingsMember found for classPath: ${currentType}`);
             return;
         }
-        logNode(potentialVariable?.parent, "potentialVariable");
         if (
             potentialVariable?.text &&
             !potentialVariable.text.endsWith(".Companion")
@@ -613,7 +613,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         console.log(`[buildCompletionItems] isCallOffClass: ${isCallOffClass}, isStaticClassCall: ${isStaticClassCall}`);
 
         const snippetCompletions: vscode.CompletionItem[] = [];
-
+        log("Typingsmember: " + foundTypingsMember.methods.length + ", " + foundTypingsMember.fields.length)
         for (const method of foundTypingsMember.methods) {
             if (isCallOffClass) {
                 if (isStaticClassCall && !method.isStatic) continue;
@@ -621,32 +621,68 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             } else {
                 if (method.isStatic) continue;
             }
-            const cleanName = method.name.replace(/\(.*\)$/, '');
 
+            const cleanName = method.name.replace(/\(.*\)$/, '');
+            log("cleanname: " + cleanName)
+            log("return: " + method.returns)
+            const label = method.args.length > 0
+                ? `${cleanName}(${method.args.map((arg, idx) => `arg${idx}: ${arg}`).join(', ')})`
+                : `${cleanName}()`;
             const methodCompletion = new vscode.CompletionItem(
-                cleanName,
+                label,
                 vscode.CompletionItemKind.Method
             );
 
-            methodCompletion.insertText = cleanName + "()";
-            const argsText = method.args.length > 0
-                ? `\`\`\`kotlin\n${cleanName}(${method.args.join(', ')})\n\`\`\`\n`
-                : '';
+            methodCompletion.insertText = `${cleanName}()`;
+            const doc = new vscode.MarkdownString(undefined, true);
+            doc.isTrusted = true;
 
-            const returnText = `\`\`\`kotlin\nReturns: ${method.returns}\n\`\`\``;
-            const doc = new vscode.MarkdownString();
-            doc.appendMarkdown("`fun` `println`(`\"Hello\"`)  \n");
-            doc.appendMarkdown("`Returns:` `Unit`");
-            methodCompletion.documentation = new vscode.MarkdownString("```kotlin\nfun something() = 1\n```");
+            if (method.args.length > 0) {
+                const argsBlock = method.args
+                    .map((arg, idx) => `   arg${idx}: ${arg}`)
+                    .join(', \n');
+                doc.appendCodeblock(`${cleanName}(\n${argsBlock}\n)`, 'kotlin');
+            } else {
+                doc.appendCodeblock(`${cleanName}()`, 'kotlin');
+            }
+
+            // Clickable argument type links
+            if (method.args.length > 0) {
+                doc.appendMarkdown(`\n\n**Args:**\n`);
+
+                method.args.forEach((arg, idx) => {
+                    const raw = arg.trim();
+
+                    // Extract outer type (e.g. kotlin.jvm.functions.Function1<...>)
+                    const match = raw.match(/^([^<]+)(<.*>)?$/);
+                    const baseType = match?.[1] || raw;
+                    const generics = match?.[2] || '';
+
+                    const typeOnly = baseType.split('.').pop() || baseType;
+                    const commandUri = `command:extension.gotoTypingDefinition?${encodeURIComponent(JSON.stringify({ type: baseType }))}`;
+
+                    doc.appendMarkdown(`- \`arg${idx}\`: [${typeOnly}](${commandUri})${generics}\n`);
+                });
+
+            }
+
+            // Strip off generic content from full return path
+            const rawReturn = method.returns.split('<')[0].trim(); // "java.util.List"
+
+            // Extract simple name for display (List)
+            const returnTypeDisplay = rawReturn.substring(rawReturn.lastIndexOf('.') + 1);
+
+            // Append clickable Markdown link that uses full path for command, simple name for display
+            doc.appendMarkdown(
+                `\n\n**Returns:** [${returnTypeDisplay}](command:extension.gotoTypingDefinition?${encodeURIComponent(JSON.stringify({ type: rawReturn, typingsMember: this.getTypingsMember(rawReturn) }))})`
+            );
 
 
-            //methodCompletion.detail = method.name; 
-            //methodCompletion.documentation = new vscode.MarkdownString(`${argsText}${returnText}`);
-
-
+            methodCompletion.documentation = doc;
 
             snippetCompletions.push(methodCompletion);
         }
+
 
 
         for (const field of foundTypingsMember.fields) {

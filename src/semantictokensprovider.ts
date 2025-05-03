@@ -90,10 +90,10 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         );
         const matches = this.highlightQuery.matches(tree.rootNode);
         this.treeProvider.updateTokens();
-        if (!this.s) {
-            logNodeTree(tree.rootNode)
-            this.s = true
-        }
+        /*  if (!this.s) {
+             logNodeTree(tree.rootNode)
+             this.s = true
+         } */
         this.tempInterpolatedRanges = [];
         this.errorType = [];
 
