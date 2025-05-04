@@ -20,7 +20,7 @@ import {
     semanticTokensEnabled,
     kotlinCorePackages
 } from './constants'
-import { logNode } from './utils';
+import { getTypingsMember, logNode } from './utils';
 
 export class TypingSuggestionProvider implements vscode.CompletionItemProvider {
     public suggestions: TypingSuggestion[];
@@ -251,9 +251,9 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
     private getTypingsMember(classPath: string): TypingsMember | undefined {
         console.log("ClassPath: " + classPath)
         let className = classPath.includes(".") ? classPath.split(".").pop() ?? "" : classPath
-        const matchedTyping: TypingsMember | undefined = indexedClassMap
+        const matchedTyping: TypingsMember | undefined = getTypingsMember(classPath)/* indexedClassMap
             .get(className.charAt(0).toUpperCase())
-            ?.get(classPath);
+            ?.get(classPath); */
         return matchedTyping
     }
     private getTypingsSuggestionFromSimpleName(simpleName: string): TypingSuggestion | undefined {
@@ -364,7 +364,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                 if (invokeMethod) {
                     log("invoke method: " + invokeMethod.name)
                     console.log(`[provideCompletionItems] Found invoke() operator, refining type to: ${invokeMethod.returns}`);
-                    const invokedTypingsMember = this.getTypingsMember(invokeMethod.returns);
+                    const invokedTypingsMember = getTypingsMember(invokeMethod.returns);
                     if (invokedTypingsMember) {
                         console.log(`[provideCompletionItems] Switching context to type: ${invokedTypingsMember.classPath}`);
                         return this.buildCompletionItems(invokedTypingsMember, false, false);
@@ -551,7 +551,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
 
         let currentType = baseType;
         let currentIsStatic = false;
-        let foundTypingsMember = this.getTypingsMember(currentType);
+        let foundTypingsMember = getTypingsMember(currentType);
 
         if (!isCallOffClass) {
             console.log(`[resolveTypingsFromSuffixes] Resolving instance chain from baseType: ${currentType}`);
@@ -584,7 +584,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                     currentIsStatic = field.isStatic;
                 }
 
-                foundTypingsMember = this.getTypingsMember(currentType);
+                foundTypingsMember = getTypingsMember(currentType);
             }
         } else {
             console.log(`[resolveTypingsFromSuffixes] Static call context, checking baseType: ${baseType}`);
@@ -595,7 +595,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                 if (fallback?.returnType) {
                     console.log(`[resolveTypingsFromSuffixes] Fallback TypingSuggestion used: ${fallback.returnType}`);
                     currentType = fallback.returnType;
-                    foundTypingsMember = this.getTypingsMember(currentType);
+                    foundTypingsMember = getTypingsMember(currentType);
                 }
             } else {
                 console.log(`[resolveTypingsFromSuffixes] Found TypingsMember: ${foundTypingsMember.classPath}`);
@@ -660,15 +660,12 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
 
             }
 
-            // Strip off generic content from full return path
-            const rawReturn = method.returns.split('<')[0].trim(); // "java.util.List"
+            const rawReturn = method.returns.split('<')[0].trim();
 
-            // Extract simple name for display (List)
             const returnTypeDisplay = rawReturn.substring(rawReturn.lastIndexOf('.') + 1);
 
-            // Append clickable Markdown link that uses full path for command, simple name for display
             doc.appendMarkdown(
-                `\n\n**Returns:** [${returnTypeDisplay}](command:extension.gotoTypingDefinition?${encodeURIComponent(JSON.stringify({ type: rawReturn, typingsMember: this.getTypingsMember(rawReturn) }))})`
+                `\n\n**Returns:** [${returnTypeDisplay}](command:extension.gotoTypingDefinition?${encodeURIComponent(JSON.stringify({ type: rawReturn, typingsMember: getTypingsMember(rawReturn) }))})`
             );
 
 

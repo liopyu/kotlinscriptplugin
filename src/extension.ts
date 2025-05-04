@@ -50,6 +50,8 @@ import { buildClassMap, ImportCodeLensProvider } from './codelens';
 export let availableClasses: Set<string>;
 export let typingSuggestions: TypingSuggestion[] = []
 export let available_members: TypingsMember[] = []
+export let available_members_index: Record<string, Record<string, Record<string, Record<string, TypingsMember>>>> = {};
+
 let util: utils.Utils
 export let console = {
 	log,
@@ -67,7 +69,7 @@ export function warn(...args: any[]) {
 }
 const config = vscode.workspace.getConfiguration('kotlinscript');
 const ktsDirectory = config.get<string>('ktsDirectory', 'config/scripts');
-
+export const package_index: Record<string, TypingsMember[]> = {};
 export const absoluteKtsDirectory = path.isAbsolute(ktsDirectory) ? ktsDirectory : path.join(vscode.workspace.rootPath || '', ktsDirectory);
 export async function activate(context: vscode.ExtensionContext) {
 	util = utils.Utils.getInstance(context);
@@ -75,8 +77,44 @@ export async function activate(context: vscode.ExtensionContext) {
 	availableClasses = await utils.loadAvailableClasses(absoluteKtsDirectory);
 	typingSuggestions = await utils.loadTypingSuggestions(absoluteKtsDirectory);
 	available_members = await utils.loadTypingMembers(absoluteKtsDirectory);
-	utils.writeAlphabeticalTypingsIndex(absoluteKtsDirectory);
+	//utils.writeAlphabeticalTypingsIndex(absoluteKtsDirectory);
+	await vscode.window.withProgress({
+		location: vscode.ProgressLocation.Window,
+		title: "[KotlinScript]: Indexing classes",
+		cancellable: false
+	}, async (progress) => {
+		const total = available_members.length;
 
+		for (let i = 0; i < total; i++) {
+			const member = available_members[i];
+			const className = member.classPath.split('.').pop() || member.classPath;
+			const first = className[0]?.toUpperCase() || '_';
+			const second = className[1]?.toLowerCase() || '_';
+			const third = className[2]?.toLowerCase() || '_';
+			const threeKey = `${first}${second}${third}`;
+
+			if (!available_members_index[first]) available_members_index[first] = {};
+			if (!available_members_index[first][`${first}${second}`]) available_members_index[first][`${first}${second}`] = {};
+			if (!available_members_index[first][`${first}${second}`][threeKey]) {
+				available_members_index[first][`${first}${second}`][threeKey] = {};
+			}
+
+			available_members_index[first][`${first}${second}`][threeKey][member.classPath] = member;
+
+			if (i % 100 === 0 || i === total - 1) {
+				const percent = Math.round((i / total) * 100);
+				progress.report({ message: ` ${percent}% - ${member.classPath}` });
+				await new Promise(res => setTimeout(res, 0));
+			}
+		}
+	});
+
+	for (const member of available_members) {
+		const pathParts = member.classPath.split('.');
+		const packagePath = pathParts.slice(0, -1).join('.');
+		if (!package_index[packagePath]) package_index[packagePath] = [];
+		package_index[packagePath].push(member);
+	}
 	log(`Loaded ${availableClasses.size} classes from JSON file.`);
 	console.log(`Typing suggestions loaded: ${typingSuggestions.length}`);
 	/* typingSuggestions.forEach(suggestion => {
@@ -185,247 +223,477 @@ export async function activate(context: vscode.ExtensionContext) {
 				}
 		}
 	});
-	function getTypingsMember(classPath: string): TypingsMember | undefined {
+	/* function getTypingsMember(classPath: string): TypingsMember | undefined {
 		let className = classPath.includes(".") ? classPath.split(".").pop() ?? "" : classPath
 		const matchedTyping: TypingsMember | undefined = indexedClassMap
 			.get(className.charAt(0).toUpperCase())
 			?.get(classPath);
 		return matchedTyping
-	}
+	} */
 	let currentType: string | null = null;
 	let recentTypeHistory: string[] = [];
 	const annotationModifiers: Record<string, string> = {
 		"synchronized": "@Synchronized",
 		"transient": "@Transient",
-		"volatile": "@Volatile"
+		"volatile": "@Volatile",
+		"static": "@JvmStatic"
 	};
 
 	function extractAnnotations(modStr: string): string[] {
-		return Object.entries(annotationModifiers)
-			.filter(([key]) => modStr.includes(key))
-			.map(([, annotation]) => annotation);
+		const mods = modStr.split(/\s+/);
+		return mods.map(m => annotationModifiers[m]).filter(Boolean);
 	}
 
 	function stripAnnotationModifiers(modStr: string): string {
-		return Object.keys(annotationModifiers)
-			.reduce((acc, mod) => acc.replace(mod, ''), modStr)
-			.replace(/\s+/g, ' ')
-			.trim();
+		const mods = modStr.split(/\s+/).filter(m => !annotationModifiers[m]);
+		return mods.join(" ").trim();
 	}
+	function generateClassHtml(member: TypingsMember): string {
+		const lines: string[] = [];
+		const packagePath = member.classPath.substring(0, member.classPath.lastIndexOf('.'));
+		const className = member.classPath.split('.').pop()!;
+		const superclass = member.superclass?.trim() || '';
+		const interfaces = member.interfaces ?? [];
+		const isInterface = member.modifiers.includes('interface');
+		const classKeyword = isInterface ? 'interface' : 'class';
+		const renderKeyword = (kw: string) => `<span class="kw">${kw}</span>`;
+		const renderIdentifier = (name: string) => `<span class="ident">${name}</span>`;
+		const renderMethodName = (name: string) => `<span class="method-name">${name}</span>`;
+		const renderArgName = (name: string) => `<span class="arg-name">${name}</span>`;
+		const renderType = (type: string | null) => {
+			const raw = type?.split('<')[0];
+			const simple = raw?.split('.').pop();
+			const generics = type?.match(/<(.+)>/)?.[1];
+			const renderedGenerics = generics
+				?.split(',')
+				.map(t => t.trim().split('.').pop())
+				.join(', ');
+			return `<span class="type-link" data-type="${raw}">${simple}</span>${generics ? `&lt;${renderedGenerics}&gt;` : ''}`;
+		};
+
+		const renderAnnotation = (text: string) => `<span class="annotation">@${text}</span>`;
+
+		const renderAnnotations = (mods: string, indent: number = 2) =>
+			extractAnnotations(mods)
+				.map(a => `<div style="padding-left: ${indent}em">${renderAnnotation(a.replace('@', ''))}</div>`)
+				.join('\n');
+
+
+		const renderModifiers = (mods: string) => {
+			const stripped = stripAnnotationModifiers(mods)
+				.replace(/\bnative\b/g, 'external')
+				.replace(/\bpublic\b/g, '');
+
+			return stripped
+				.trim()
+				.split(/\s+/)
+				.filter(Boolean)
+				.map(renderKeyword)
+				.join(' ') + (stripped.trim() ? ' ' : '');
+		};
+
+
+		const renderField = (f: Field, indent: number) => {
+			const annotations = renderAnnotations(f.modifiers, indent);
+			const modStr = renderModifiers(f.modifiers);
+			const type = renderType(f.returns);
+			return `${annotations}<div style="padding-left: ${indent}em">${modStr}${renderKeyword('val')} ${renderIdentifier(f.name)}: ${type};</div>`;
+		};
+
+		const renderMethod = (m: Method, indent: number) => {
+			const annotations = renderAnnotations(m.modifiers, indent);
+			let methodModifiers = m.modifiers;
+
+			if (isInterface) {
+				methodModifiers = methodModifiers.replace(/\babstract\b/g, '');
+			}
+
+			const modStr = renderModifiers(methodModifiers);
+			const methodName = m.name.replace(/\(.*$/, '');
+			const args = m.args.map((a, i) =>
+				`${renderArgName('arg' + i)}: ${renderType(a)}`
+			).join(', ');
+			const ret = renderType(m.returns);
+
+			const isAbstract = /\babstract\b/.test(m.modifiers);
+			const isExternal = /\bnative\b/.test(m.modifiers);
+			const suffix = (isAbstract || isExternal) ? ';' : ' {};';
+
+			return `${annotations}<div style="padding-left: ${indent}em">${modStr}${renderKeyword('fun')} ${renderMethodName(methodName)}(${args}): ${ret}${suffix}</div>`;
+		};
+
+		const inheritance = [superclass !== 'java.lang.Object' ? superclass : null, ...interfaces]
+			.filter(Boolean)
+			.map(renderType)
+			.join(', ');
+		let strippedModifiers = stripAnnotationModifiers(member.modifiers);
+
+		if (isInterface) {
+			strippedModifiers = strippedModifiers
+				.replace(/\binterface\b/g, '')
+				.replace(/\babstract\b/g, '');
+		}
+
+		const topModifiers = strippedModifiers
+			.replace(/\bpublic\b/g, '')
+			.trim()
+			.split(/\s+/)
+			.filter(Boolean)
+			.map(renderKeyword)
+			.join(' ');
+
+		const packageSegments = packagePath.split('.');
+		const renderedPackage = packageSegments.map((segment, i) => {
+			const fullPath = packageSegments.slice(0, i + 1).join('.');
+			return `<span class="type-link" data-package="${fullPath}"><span class="ident">${segment}</span></span>`;
+		}).join('<span>.</span>');
+
+		lines.push(`<div>${renderKeyword('package')} ${renderedPackage}</div><br>`);
+
+		const classSimpleName = member.classPath.split('.').pop()!;
+		lines.push(`<div id="current-class">${topModifiers} ${renderKeyword(classKeyword)} ${renderIdentifier(classSimpleName)}${inheritance ? ' : ' + inheritance : ''} {</div>`);
+
+		const instanceFields = member.fields.filter(f => !f.modifiers.includes('static'));
+		const staticFields = member.fields.filter(f => f.modifiers.includes('static'));
+		const instanceMethods = member.methods.filter(m => !m.modifiers.includes('static'));
+		const staticMethods = member.methods.filter(m => m.modifiers.includes('static'));
+
+		instanceFields.forEach(f => lines.push(renderField(f, 2)));
+		instanceMethods.forEach(m => lines.push(renderMethod(m, 2)));
+
+		if (staticFields.length || staticMethods.length) {
+			lines.push(`<br><div style="padding-left: 2em">${renderKeyword('companion object')} {</div>`);
+			staticFields.forEach(f => lines.push(renderField(f, 4)));
+			staticMethods.forEach(m => lines.push(renderMethod(m, 4)));
+			lines.push(`<div style="padding-left: 2em">}</div>`);
+		}
+
+		lines.push(`<div>}</div>`);
+		lines.push(`</div>`);
+
+		return lines.map(line => `<div class="line" style="opacity: 0;">${line}</div>`).join('\n');
+
+	}
+
+
+
+
+	let currentClassFQName: string | undefined;
+	let packagePanel: vscode.WebviewPanel | undefined;
+	const classPanels = new Map<string, vscode.WebviewPanel>();
+	const packagePanels = new Map<string, vscode.WebviewPanel>();
+
 	context.subscriptions.push(
 		vscode.commands.registerCommand('extension.gotoTypingDefinition', (args) => {
-			const typeName = args.type;
-			const baseType = typeName.split('<')[0];
-			const className = baseType.substring(baseType.lastIndexOf('.') + 1);
-			const indexLetter = className[0].toUpperCase();
-			const indexFile = path.join(absoluteKtsDirectory, 'typings', 'members', `${indexLetter}-index.json`);
-
-			if (!fs.existsSync(indexFile)) {
-				vscode.window.showWarningMessage(`Index file for type "${typeName}" not found.`);
-				return;
-			}
-
-			let json: Record<string, TypingsMember>;
-			try {
-				const rawJson = fs.readFileSync(indexFile, 'utf-8');
-				json = JSON.parse(rawJson);
-			} catch (e) {
-				vscode.window.showErrorMessage(`Failed to parse index file: ${e}`);
-				return;
-			}
-
-			const fqName = Object.keys(json).find(k => k === baseType);
-			if (!fqName) {
-				vscode.window.showWarningMessage(`Type "${typeName}" not found in index.`);
-				return;
-			}
-			const fqUri = vscode.Uri.parse(`kotlin-preview:/${encodeURIComponent(baseType)}.md`);
-			vscode.workspace.openTextDocument(fqUri).then(() => {
-				vscode.commands.executeCommand('markdown.showPreview', fqUri);
-			});
-
+			handleTypingDefinition(args.type);
 		})
 	);
 
-	vscode.workspace.registerTextDocumentContentProvider('kotlin-preview', {
-		provideTextDocumentContent(uri) {
-			const fqName = decodeURIComponent(uri.path.replace(/^\/+/, '').replace(/\.md$/, ''));
-			const typingsMember = getTypingsMember(fqName)
-			currentType = fqName;
-			return generateKotlinDeclarationPreview(fqName, typingsMember);
+	function handleTypingDefinition(typeName: string) {
+		const baseType = typeName.split('<')[0];
+		if (currentClassFQName === baseType) return;
+
+		const className = baseType.substring(baseType.lastIndexOf('.') + 1);
+		const typingsMember = utils.getTypingsMember(typeName);
+
+		if (!typingsMember) {
+			const classNames = getClassesInPackage(baseType);
+			if (classNames.length > 0) {
+				openPackagePanel(baseType);
+			} else {
+				vscode.window.showWarningMessage(`No class or package found for "${typeName}".`);
+			}
+			return;
 		}
-	});
 
 
-	function generateKotlinDeclarationPreview(fqName: string, member: TypingsMember | undefined): string {
-		const lines: string[] = [];
-		try {
-			const packageName = fqName.substring(0, fqName.lastIndexOf('.'));
-			const className = fqName.substring(fqName.lastIndexOf('.') + 1);
-
-			if (!recentTypeHistory.includes(fqName)) {
-				recentTypeHistory.push(fqName);
-				if (recentTypeHistory.length > 10) {
-					recentTypeHistory.shift();
-				}
-			}
-			if (recentTypeHistory.length > 1) {
-				lines.push(`<details open>`);
-				lines.push('<summary><strong>History</strong></summary>');
-				lines.push('');
-				for (const type of recentTypeHistory) {
-					const short = type.split('.').pop();
-					lines.push(`- [${short}](./${type}.md)`);
-				}
-				lines.push('</details>');
-				lines.push('');
-			}
-
-			if (!member) {
-				lines.push(`// No member found for \`${fqName}\``);
-				return lines.join('\n');
-			}
-
-			const encodeTypeCommand = (type: string): string => {
-				const rawType = type.split('<')[0].trim();
-				const simple = rawType.substring(rawType.lastIndexOf('.') + 1);
-				const generics = type.includes('<') ? type.substring(type.indexOf('<')) : '';
-				return `${simple}${generics}`;
-			};
-
-			const fields = member.fields;
-			const methods = member.methods;
-			const superclass = encodeTypeCommand(member.superclass || '');
-			const interfaces = member.interfaces || [];
-			const implemented = interfaces.map(encodeTypeCommand);
-
-			const inheritanceClause = [
-				superclass && superclass !== 'Any' ? superclass : null,
-				...implemented
-			].filter(Boolean).join(', ');
-
-			lines.push('```kotlin');
-			lines.push(`package ${packageName}`);
-			lines.push('');
-			lines.push(`${member.modifiers != "" ? member.modifiers + " " : ""}${member.modifiers.includes("interface") ? "" : "class "}${className}${inheritanceClause ? " : " + inheritanceClause : ""} {`);
-
-			const instanceFields = fields.filter(f => !f.modifiers.includes("static"));
-			const staticFields = fields.filter(f => f.modifiers.includes("static"));
-			const instanceMethods = methods.filter(m => !m.modifiers.includes("static"));
-			const staticMethods = methods.filter(m => m.modifiers.includes("static"));
-
-
-
-			for (const f of instanceFields) {
-				const annotations = extractAnnotations(f.modifiers);
-				const modifier = stripAnnotationModifiers(f.modifiers);
-				const type = encodeTypeCommand(f.returns);
-				for (const annotation of annotations) lines.push(`    ${annotation}`);
-				lines.push(`    ${modifier ? modifier + " " : ""}val ${f.name}: ${type}`);
-			}
-
-			for (const m of instanceMethods) {
-				const annotations = extractAnnotations(m.modifiers);
-				const modifier = stripAnnotationModifiers(m.modifiers);
-				const name = m.name.replace(/\(.*$/, '');
-				const args = m.args.map((arg, i) => `arg${i}: ${encodeTypeCommand(arg)}`).join(', ');
-				const returns = encodeTypeCommand(m.returns);
-				for (const annotation of annotations) lines.push(`    ${annotation}`);
-				lines.push(`    ${modifier ? modifier + " " : ""}fun ${name}(${args}): ${returns} {}`);
-			}
-
-			if (staticFields.length || staticMethods.length) {
-				lines.push('');
-				lines.push('    companion object {');
-				for (const f of staticFields) {
-					const annotations = extractAnnotations(f.modifiers);
-					const modifier = stripAnnotationModifiers(f.modifiers.replace("static", ""));
-					const type = encodeTypeCommand(f.returns);
-					for (const annotation of annotations) lines.push(`        ${annotation}`);
-					lines.push(`        ${modifier ? modifier + " " : ""}val ${f.name}: ${type}`);
-				}
-				for (const m of staticMethods) {
-					const annotations = extractAnnotations(m.modifiers);
-					const modifier = stripAnnotationModifiers(m.modifiers.replace("static", ""));
-					const name = m.name.replace(/\(.*$/, '');
-					const args = m.args.map((arg, i) => `arg${i}: ${encodeTypeCommand(arg)}`).join(', ');
-					const returns = encodeTypeCommand(m.returns);
-					for (const annotation of annotations) lines.push(`        ${annotation}`);
-					lines.push(`        ${modifier ? modifier + " " : ""}fun ${name}(${args}): ${returns} {}`);
-				}
-				lines.push('    }');
-			}
-			lines.push('}');
-			lines.push('```');
-		} catch (error) {
-			console.error("1" + error)
-		}
-		return lines.join('\n') + "\n" + generateKotlinPreview(fqName, getTypingsMember(fqName));
+		openClassPanel(baseType, className, typingsMember);
 	}
 
 
-	function generateKotlinPreview(fqName: string, member: TypingsMember | undefined): string {
-		const packageName = fqName.substring(0, fqName.lastIndexOf('.'));
-		const className = fqName.substring(fqName.lastIndexOf('.') + 1);
-		const lines: string[] = [];
-		try {
-			if (!member) {
-				return ""
-			}
-			const encodeTypeCommand = (type: string): string => {
-				const rawType = type.split('<')[0].trim();
-				const simple = rawType.substring(rawType.lastIndexOf('.') + 1);
-				const generics = type.includes('<') ? type.substring(type.indexOf('<')) : '';
-				return `[${simple}](./${rawType}.md)${generics}`;
-			};
-			const fields: Field[] = member.fields;
-			const methods: Method[] = member.methods;
-			const interfaces: TypingsMember[] = []
-			const leftOverInterfaces: string[] = []
-			const rawInterfaces = Array.isArray(member.interfaces) ? member.interfaces : [];
-			rawInterfaces.forEach(i => {
-				const mem = getTypingsMember(i);
-				if (mem)
-					interfaces.push(mem);
-				else
-					leftOverInterfaces.push(i);
+	function openPackagePanel(packageName: string) {
+		const classNames = getClassesInPackage(packageName);
+		if (classNames.length === 0) return;
+
+		const listHtml = classNames.map(name =>
+			`<div class="line" style="padding-left: 1em;">
+		<span style="color: rgba(255, 255, 255, 0.5); margin-right: 0.5em;">•</span>
+		<span class="type-link" data-type="${name}">${name.split('.').pop()}</span>
+	</div>`
+		).join('\n');
+
+
+		const html = generateFullHtml(listHtml, `Package: ${packageName}`);
+
+		let panel = packagePanels.get(packageName);
+		if (panel) {
+			panel.reveal();
+		} else {
+			panel = vscode.window.createWebviewPanel(
+				'kotlinPackagePreview',
+				`Package: ${packageName}`,
+				vscode.ViewColumn.Active,
+				{
+					enableScripts: true,
+					retainContextWhenHidden: true
+				}
+			);
+			panel.webview.html = html;
+
+			panel.webview.onDidReceiveMessage(msg => {
+				if (msg.command === 'openType') {
+					vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: msg.type });
+				}
+				if (msg.command === 'openPackage') {
+					vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: msg.package });
+				}
 			});
 
+			panel.onDidDispose(() => {
+				packagePanels.delete(packageName);
+			});
 
-			const superclass = member.superclass != "" ? encodeTypeCommand(member.superclass || '') : "";
-
-			lines.push(`# ${fqName}`);
-			lines.push('');
-			lines.push(`**Package:** \`${packageName}\``);
-			if (superclass != "") {
-				log("superclass: " + superclass)
-				lines.push('');
-				lines.push(`**Extends:** \`${superclass}\``);
-			}
-			if (member.interfaces.length) {
-				lines.push('');
-				lines.push(`**Implements:**\n` + [
-					...interfaces.map(i => `- ${encodeTypeCommand(i.classPath)}`),
-					...leftOverInterfaces.map(i => `- \`${i}\``)
-				].join('\n'));
-			}
-			lines.push('');
-			lines.push(`## Fields`);
-			lines.push(fields.length ? '' : '_(none)_');
-			for (const f of fields) {
-				lines.push(`- ${f.name}: ${encodeTypeCommand(f.returns)}`);
-			}
-			lines.push('');
-			lines.push(`## Methods`);
-			lines.push(methods.length ? '' : '_(none)_');
-			for (const m of methods) {
-				const args = m.args.map((arg, idx) => `arg${idx}: ${encodeTypeCommand(arg)}`).join(', ');
-				lines.push(`- ${m.name.replace(/\(.*$/, '')}(${args}): ${encodeTypeCommand(m.returns)}`);
-			}
-		} catch (error) {
-			console.error("2" + error)
+			packagePanels.set(packageName, panel);
 		}
-		return lines.join('\n');
+	}
+
+	function openClassPanel(baseType: string, className: string, typingsMember: TypingsMember) {
+		const existing = classPanels.get(baseType);
+		if (existing) {
+			existing.reveal();
+			return;
+		}
+
+		const classHtml = generateClassHtml(typingsMember);
+		const htmlContent = generateClassHtmlContent(classHtml);
+
+		const panel = vscode.window.createWebviewPanel(
+			'kotlinClassPreview',
+			`Kotlin: ${className}`,
+			vscode.ViewColumn.Active,
+			{
+				enableScripts: true,
+				retainContextWhenHidden: true
+			}
+		);
+
+		panel.webview.html = htmlContent;
+		currentClassFQName = baseType;
+		classPanels.set(baseType, panel);
+
+		const history: string[] = [];
+
+		panel.webview.onDidReceiveMessage(message => {
+			if (message.command === 'openType') {
+				history.push(currentClassFQName ?? "");
+				vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: message.type });
+			}
+			if (message.command === 'openPackage') {
+				vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: message.package });
+			}
+		});
+
+		panel.onDidDispose(() => {
+			classPanels.delete(baseType);
+			currentClassFQName = undefined;
+		});
+	}
+
+
+	function generateClassHtmlContent(classHtml: string): string {
+		return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+	body {
+		margin: 0;
+		display: flex;
+		font-family: Consolas, 'Courier New', monospace;
+		background: #1e1e1e;
+		color: rgb(210, 222, 174);
+		font-size: 14px;
+		font-weight: 0;
+		overflow: hidden;
+	}
+	@keyframes pop {
+		0% { transform: scale(1); }
+		50% { transform: scale(1.04); }
+		100% { transform: scale(1.035); }
+	}
+	#main {
+		flex-grow: 1;
+		overflow-y: scroll;
+		height: 100vh;
+		padding: 16px;
+		box-sizing: border-box;
+	}
+	.kw { color: rgba(76, 156, 222, 0.93); font-weight: bold; }
+	.annotation { color: rgb(238, 223, 154); }
+	.type-link {
+		color: rgba(108, 220, 175, 0.92);
+		cursor: pointer;
+		text-decoration: none;
+	}
+	.type-link:hover {
+		color: rgb(227, 240, 184);
+		text-decoration: underline;
+		display: inline-block;
+		animation: pop 0.17s ease-in-out forwards;
+	}
+	.ident { color: #9cdcfe; }
+	.method-name { color: rgba(231, 229, 151, 0.92); }
+	.arg-name { color: rgba(104, 208, 237, 0.97); }
+	.line {
+		opacity: 0;
+		transition: opacity 0.05s linear;
+	}
+</style>
+</head>
+<body>
+<div id="main">${classHtml}</div>
+<script>
+	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
+	document.getElementById('current-class')?.scrollIntoView({ block: 'start' });
+
+	document.addEventListener('click', e => {
+		let target = e.target;
+		while (target && !target.classList.contains('type-link')) {
+			target = target.parentElement;
+		}
+		if (!target) return;
+
+		const typeName = target.getAttribute('data-type');
+		if (typeName) {
+			vscode.postMessage({ command: 'openType', type: typeName });
+			return;
+		}
+		const pkg = target.getAttribute('data-package');
+		if (pkg) {
+			vscode.postMessage({ command: 'openPackage', package: pkg });
+		}
+	});
+
+	const lines = Array.from(document.querySelectorAll('.line'));
+	let index = 0;
+	function revealNextLine() {
+		if (index < lines.length) {
+			lines[index].style.opacity = '1';
+			index++;
+			setTimeout(revealNextLine, 10);
+		}
+	}
+	revealNextLine();
+</script>
+</body>
+</html>`;
+	}
+
+	function attachMessageHandler(panel: vscode.WebviewPanel) {
+		panel.webview.onDidReceiveMessage(message => {
+			if (message.command === 'openType') {
+				vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: message.type });
+			}
+			if (message.command === 'openPackage') {
+				vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: message.package });
+			}
+		});
+	}
+
+	function getClassesInPackage(pkg: string): string[] {
+		const members = package_index[pkg];
+		if (!members || members.length === 0) {
+			return [];
+		}
+		return members.map(m => m.classPath);
+	}
+
+
+
+	function generateFullHtml(content: string, title: string): string {
+		return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+@keyframes pop {
+		0% { transform: scale(1); }
+		50% { transform: scale(1.04); }
+		100% { transform: scale(1.035); }
+	}
+	body {
+		margin: 0;
+		font-family: Consolas, monospace;
+		background: #1e1e1e;
+		color: rgb(210, 222, 174);
+		padding: 16px;
+	}
+	.type-link {
+		color: rgba(108, 220, 175, 0.92);
+		cursor: pointer;
+		text-decoration: none;
+	}
+	.type-link:hover {
+		color: rgb(227, 240, 184);
+		text-decoration: underline;
+		display: inline-block;
+		animation: pop 0.17s ease-in-out forwards;
+	}
+	.line {
+		margin-bottom: 4px;
+		opacity: 0;
+		transition: opacity 0.05s linear;
+	}
+</style>
+</head>
+<body>
+	<h3>Package: ${renderPackageSegments(title.replace("Package: ", "").trim())}</h3>
+
+	${content}
+<script>
+	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
+document.addEventListener('click', e => {
+	let target = e.target;
+	while (target && !target.classList.contains('type-link')) {
+		target = target.parentElement;
+	}
+	if (!target) return;
+
+	const pkg = target.getAttribute('data-package');
+	if (pkg) {
+		console.log("[WebView] Sending openPackage for:", pkg);
+		vscode.postMessage({ command: 'openPackage', package: pkg });
+		return; // ✅ prevent it from also running the openType logic
+	}
+
+	const typeName = target.getAttribute('data-type');
+	if (typeName) {
+		console.log("[WebView] Sending openType for:", typeName);
+		vscode.postMessage({ command: 'openType', type: typeName });
+	}
+});
+const lines = Array.from(document.querySelectorAll('.line'));
+	let index = 0;
+	function revealNextLine() {
+		if (index < lines.length) {
+			lines[index].style.opacity = '1';
+			index++;
+			setTimeout(revealNextLine, 10);
+		}
+	}
+	revealNextLine();
+
+</script>
+</body>
+</html>`;
+	}
+
+	function renderPackageSegments(packagePath: string): string {
+		const segments = packagePath.split('.');
+		return segments.map((segment, i) => {
+			const fullPath = segments.slice(0, i + 1).join('.');
+			return `<span class="type-link" data-package="${fullPath}"><span class="ident">${segment}</span></span>`;
+		}).join('<span>.</span>');
 	}
 
 

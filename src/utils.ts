@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { Field, Method, TypingsMember, TypingSuggestion } from './symbols';
 import { TreeProvider } from './treeprovider';
-import { log, error, warn, availableClasses } from './extension';
+import { log, error, warn, availableClasses, available_members_index } from './extension';
 import {
     t,
     TOKEN_TYPES,
@@ -112,6 +112,15 @@ export class Utils {
         this.logToFile('error', args);
     }
 }
+export function getTypingsMember(fqName: string): TypingsMember | undefined {
+    const className = fqName.split('.').pop() || fqName;
+    const first = className[0]?.toUpperCase() || '_';
+    const second = className[1]?.toLowerCase() || '_';
+    const third = className[2]?.toLowerCase() || '_';
+    const threeKey = `${first}${second}${third}`;
+    return available_members_index[first]?.[`${first}${second}`]?.[threeKey]?.[fqName];
+}
+
 export function writeAlphabeticalTypingsIndex(ktsDirectory: string) {
     const inputFiles = [
         'available_members.json',
@@ -119,8 +128,8 @@ export function writeAlphabeticalTypingsIndex(ktsDirectory: string) {
         'companion_objects.json'
     ];
 
-    const outputDir = path.join(ktsDirectory, 'typings', 'members');
-    const indexMap: Record<string, Record<string, any>> = {};
+    const outputBaseDir = path.join(ktsDirectory, 'typings', 'members');
+    const indexMap: Record<string, Record<string, Record<string, Record<string, any>>>> = {};
 
     for (const fileName of inputFiles) {
         const inputPath = path.join(ktsDirectory, 'typings', fileName);
@@ -134,25 +143,50 @@ export function writeAlphabeticalTypingsIndex(ktsDirectory: string) {
 
         for (const [fqName, details] of Object.entries(jsonData)) {
             const className = fqName.split('.').pop()?.split('<')[0] || fqName;
-            const indexLetter = className[0].toUpperCase();
+            const first = className[0]?.toUpperCase() || '_';
+            const second = className[1]?.toLowerCase() || '_';
+            const third = className[2]?.toLowerCase() || '_';
+            const fileKey = `${first}${second}${third}`;
 
-            if (!indexMap[indexLetter]) indexMap[indexLetter] = {};
-            if (indexMap[indexLetter][fqName]) continue;
+            if (!indexMap[first]) indexMap[first] = {};
+            if (!indexMap[first][`${first}${second}`]) indexMap[first][`${first}${second}`] = {};
+            if (!indexMap[first][`${first}${second}`][fileKey]) indexMap[first][`${first}${second}`][fileKey] = {};
+            if (indexMap[first][`${first}${second}`][fileKey][fqName]) continue;
 
-            indexMap[indexLetter][fqName] = details;
+            indexMap[first][`${first}${second}`][fileKey][fqName] = details;
         }
     }
 
-    if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
+    for (const [firstLevel, secondLevelMap] of Object.entries(indexMap)) {
+        const firstLevelPath = path.join(outputBaseDir, firstLevel);
+        if (!fs.existsSync(firstLevelPath)) fs.mkdirSync(firstLevelPath, { recursive: true });
+
+        for (const [secondLevelKey, thirdLevelMap] of Object.entries(secondLevelMap)) {
+            const secondLevelPath = path.join(firstLevelPath, secondLevelKey);
+            if (!fs.existsSync(secondLevelPath)) fs.mkdirSync(secondLevelPath, { recursive: true });
+
+            for (const [fileKey, data] of Object.entries(thirdLevelMap)) {
+                const filePath = path.join(secondLevelPath, `${fileKey}-index.json`);
+                fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+            }
+        }
+    }
+    const manifest: Record<string, string> = {};
+
+    for (const [firstLevel, secondLevelMap] of Object.entries(indexMap)) {
+        for (const [secondLevelKey, thirdLevelMap] of Object.entries(secondLevelMap)) {
+            for (const [fileKey, fqMap] of Object.entries(thirdLevelMap)) {
+                const relativePath = `${firstLevel}/${secondLevelKey}/${fileKey}-index.json`;
+                for (const fqName of Object.keys(fqMap)) {
+                    manifest[fqName] = relativePath;
+                }
+            }
+        }
     }
 
-    for (const [letter, contents] of Object.entries(indexMap)) {
-        const filePath = path.join(outputDir, `${letter}-index.json`);
-        fs.writeFileSync(filePath, JSON.stringify(contents, null, 2), 'utf-8');
-    }
-
-    console.log(`✅ Alphabetical index files written to: ${outputDir}`);
+    const manifestPath = path.join(outputBaseDir, 'manifest.json');
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf-8');
+    console.log(`✅ Three-level alphabetical index files written to: ${outputBaseDir}`);
 }
 
 
