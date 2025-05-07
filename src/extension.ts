@@ -80,7 +80,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	//utils.writeAlphabeticalTypingsIndex(absoluteKtsDirectory);
 	await vscode.window.withProgress({
 		location: vscode.ProgressLocation.Window,
-		title: "[KotlinScript]: Indexing classes",
+		title: "[KotlinScript] Indexing classes",
 		cancellable: false
 	}, async (progress) => {
 		const total = available_members.length;
@@ -223,15 +223,6 @@ export async function activate(context: vscode.ExtensionContext) {
 				}
 		}
 	});
-	/* function getTypingsMember(classPath: string): TypingsMember | undefined {
-		let className = classPath.includes(".") ? classPath.split(".").pop() ?? "" : classPath
-		const matchedTyping: TypingsMember | undefined = indexedClassMap
-			.get(className.charAt(0).toUpperCase())
-			?.get(classPath);
-		return matchedTyping
-	} */
-	let currentType: string | null = null;
-	let recentTypeHistory: string[] = [];
 	const annotationModifiers: Record<string, string> = {
 		"synchronized": "@Synchronized",
 		"transient": "@Transient",
@@ -375,11 +366,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	}
 
-
-
-
 	let currentClassFQName: string | undefined;
-	let packagePanel: vscode.WebviewPanel | undefined;
 	const classPanels = new Map<string, vscode.WebviewPanel>();
 	const packagePanels = new Map<string, vscode.WebviewPanel>();
 
@@ -465,6 +452,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 
 		const classHtml = generateClassHtml(typingsMember);
+		console.log(classHtml)
 		const htmlContent = generateClassHtmlContent(classHtml);
 
 		const panel = vscode.window.createWebviewPanel(
@@ -521,6 +509,17 @@ export async function activate(context: vscode.ExtensionContext) {
 		50% { transform: scale(1.04); }
 		100% { transform: scale(1.035); }
 	}
+mark {
+		background-color: rgba(255, 160, 80, 0.35);
+		color: inherit;
+		padding: 0;
+		border-radius: 2px;
+	}
+mark.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.2);
+}
+
 	#main {
 		flex-grow: 1;
 		overflow-y: scroll;
@@ -548,9 +547,36 @@ export async function activate(context: vscode.ExtensionContext) {
 		opacity: 0;
 		transition: opacity 0.05s linear;
 	}
+			#search-bar button {
+		background-color:rgba(30, 30, 30, 0.27);
+		color: white;
+		border: 1px solid #555;
+		border-radius: 6px;
+		padding: 4px 8px;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+		font-size: 13px;
+		font-family: inherit;
+		user-select: none;
+	}
+
+	#search-bar button.active {
+		background-color: #094771;
+		border-color: #3794ff;
+		color: white;
+	}
 </style>
 </head>
 <body>
+<div id="search-bar" style="display: none; position: fixed; top: 8px; right: 8px; z-index: 100; background: #2c2c2c; padding: 4px 8px; border-radius: 4px; display: flex; gap: 4px; align-items: center;">
+	<input type="text" id="search-input" placeholder="Search..." style="width: 180px; background: #1e1e1e; color: white; border: 1px solid #555; padding: 4px;" />
+	<button id="toggle-case" title="Match Case">Aa</button>
+	<button id="toggle-whole" title="Whole Word">⛶</button>
+	<button id="toggle-regex" title="Regex">*</button>
+	<span id="search-count" style="color: white; min-width: 30px; text-align: center; font-size: 11px;"></span>
+	<button id="search-prev" title="Previous Match">↑</button>
+	<button id="search-next" title="Next Match">↓</button>
+</div>
 <div id="main">${classHtml}</div>
 <script>
 	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
@@ -584,22 +610,191 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 	}
 	revealNextLine();
+	let matchCase = false;
+let matchWhole = false;
+let useRegex = false;
+document.getElementById('search-next').addEventListener('click', function() {
+	if (allMarkElements.length === 0) return;
+	matchIndex = (matchIndex + 1) % allMarkElements.length;
+	document.querySelectorAll('mark.current').forEach(function(m) {
+		m.classList.remove('current');
+	});
+	allMarkElements[matchIndex].classList.add('current');
+	allMarkElements[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-prev').addEventListener('click', function() {
+	if (allMarkElements.length === 0) return;
+	matchIndex = (matchIndex - 1 + allMarkElements.length) % allMarkElements.length;
+	document.querySelectorAll('mark.current').forEach(function(m) {
+		m.classList.remove('current');
+	});
+	allMarkElements[matchIndex].classList.add('current');
+	allMarkElements[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+
+document.getElementById('toggle-case').addEventListener('click', () => {
+	matchCase = !matchCase;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-whole').addEventListener('click', () => {
+	matchWhole = !matchWhole;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-regex').addEventListener('click', () => {
+	useRegex = !useRegex;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+function updateMatchCount() {
+	const countLabel = document.getElementById('search-count');
+	if (allMarkElements.length === 0) {
+		countLabel.textContent = '';
+		return;
+	}
+	countLabel.textContent = (matchIndex + 1) + " of " + allMarkElements.length;
+}
+
+
+function updateToggleUI() {
+	document.getElementById('toggle-case').classList.toggle('active', matchCase);
+	document.getElementById('toggle-whole').classList.toggle('active', matchWhole);
+	document.getElementById('toggle-regex').classList.toggle('active', useRegex);
+}
+
+
+// Search support
+const searchBar = document.getElementById('search-bar');
+const searchInput = document.getElementById('search-input');
+let lastMatches = [];
+let allMarkElements = [];
+
+let matchIndex = 0;
+function clearSearchHighlights() {
+	lastMatches.forEach(function(entry) {
+		entry.element.innerHTML = entry.originalHTML;
+	});
+	lastMatches = [];
+	matchIndex = 0;
+}
+
+function performSearch(term) {
+	clearSearchHighlights();
+	if (!term.trim()) return;
+
+	let pattern = term;
+
+	if (!useRegex) {
+		pattern = term.replace(/[.*+?^\${}()|[\]\\]/g, '\\$&');
+	}
+
+	if (matchWhole && !useRegex) {
+	pattern = '(?<![a-zA-Z0-9])' + pattern + '(?![a-zA-Z0-9])';
+}
+
+	const flags = matchCase ? "g" : "gi";
+
+	let regex;
+	try {
+		regex = new RegExp(pattern, flags);
+	} catch (err) {
+		return;
+	}
+	lines.forEach(function(line) {
+		const originalHTML = line.innerHTML;
+		const rawText = line.innerText;
+		if (!regex.test(rawText)) {
+			return;
+		}
+
+		highlightTextNodes(line, regex);
+
+		const marks = line.querySelectorAll('mark');
+		if (marks.length > 0) {
+			lastMatches.push({
+				element: line,
+				originalHTML: originalHTML,
+				marks: Array.from(marks)
+			});
+		}
+	});
+
+	allMarkElements = lastMatches.flatMap(function(entry) {
+		return entry.marks;
+	});
+
+	if (allMarkElements.length > 0) {
+		matchIndex = 0;
+		allMarkElements[0].classList.add('current');
+		allMarkElements[0].scrollIntoView({ block: "center" });
+		updateMatchCount();
+	} else {
+		document.getElementById('search-count').textContent = '';
+	}
+
+
+}
+function highlightTextNodes(node, regex) {
+	for (let child of Array.from(node.childNodes)) {
+		if (child.nodeType === Node.TEXT_NODE) {
+			if (regex.test(child.textContent)) {
+				const span = document.createElement('span');
+				const escaped = escapeHTML(child.textContent);
+
+				if (matchWhole && !useRegex) {
+					// Use plain replace since no groups are present
+					span.innerHTML = escaped.replace(regex, "<mark>$&</mark>");
+				} else {
+					span.innerHTML = escaped.replace(regex, "<mark>$&</mark>");
+				}
+
+				node.replaceChild(span, child);
+			}
+		} else if (child.nodeType === Node.ELEMENT_NODE) {
+			highlightTextNodes(child, regex);
+		}
+	}
+}
+
+function escapeHTML(str) {
+	return str.replace(/&/g, '&amp;')
+	          .replace(/</g, '&lt;')
+	          .replace(/>/g, '&gt;')
+	          .replace(/"/g, '&quot;')
+	          .replace(/'/g, '&#39;');
+}
+
+
+searchInput.addEventListener('input', () => {
+	performSearch(searchInput.value);
+});
+
+document.addEventListener('keydown', e => {
+	if (e.ctrlKey && e.key === 'f') {
+		e.preventDefault();
+		searchBar.style.display = 'block';
+		searchInput.focus();
+		searchInput.select();
+	}
+	if (e.key === 'Escape') {
+		searchBar.style.display = 'none';
+		searchInput.value = '';
+		clearSearchHighlights();
+	}
+	if (e.key === 'Enter' && lastMatches.length > 0) {
+		matchIndex = (matchIndex + 1) % lastMatches.length;
+		lastMatches[matchIndex].scrollIntoView({ block: 'center' });
+	}
+});
 </script>
 </body>
 </html>`;
 	}
-
-	function attachMessageHandler(panel: vscode.WebviewPanel) {
-		panel.webview.onDidReceiveMessage(message => {
-			if (message.command === 'openType') {
-				vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: message.type });
-			}
-			if (message.command === 'openPackage') {
-				vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: message.package });
-			}
-		});
-	}
-
 	function getClassesInPackage(pkg: string): string[] {
 		const members = package_index[pkg];
 		if (!members || members.length === 0) {
