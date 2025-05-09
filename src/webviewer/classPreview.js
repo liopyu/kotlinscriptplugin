@@ -53,8 +53,13 @@ window.addEventListener('message', event => {
         classPreviewCache.set(msg.type, msg.html);
 
         const box = document.getElementById('hover-preview');
-        box.innerHTML = msg.html;
+        const contentBox = document.getElementById('hover-content');
         box.style.display = 'block';
+
+        if (contentBox) {
+            contentBox.innerHTML = msg.html;
+        }
+
         addDebugCornersAndSides();
     }
 });
@@ -136,7 +141,7 @@ previewBox.addEventListener('mouseleave', () => {
             lastHoveredType = null;
             isInsidePreview = false;
         }
-    }, 100); // Small delay gives time for cursor to re-enter from child elements
+    }, 100);
 });
 
 document.addEventListener('click', (e) => {
@@ -167,7 +172,7 @@ document.addEventListener('keyup', e => {
 function addDebugCornersAndSides() {
     const box = document.getElementById('hover-preview');
     if (!box) return;
-
+    box.querySelectorAll('.corner, .side').forEach(el => el.remove());
     const cornerSize = 20;
     const sideThickness = 8;
 
@@ -329,7 +334,6 @@ function addDebugCornersAndSides() {
         }
     });
 })();
-
 document.addEventListener('mouseover', (e) => {
     const target = e.target.closest('.type-link');
     if (!target) return;
@@ -344,10 +348,17 @@ document.addEventListener('mouseover', (e) => {
         positionPreview(target);
 
         const box = document.getElementById('hover-preview');
+        const contentBox = document.getElementById('hover-content');
         const preview = classPreviewCache.get(typeName);
+
         box.style.display = 'block';
 
-        box.innerHTML = preview || 'Loading...';
+        if (contentBox) {
+            contentBox.innerHTML = preview || 'Loading...';
+        }
+
+        addDebugCornersAndSides();
+
         if (!preview) {
             vscode.postMessage({ command: 'requestPreview', type: typeName });
         }

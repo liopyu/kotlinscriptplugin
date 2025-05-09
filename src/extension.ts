@@ -708,6 +708,7 @@ pointer-events: auto;
 	cursor: grab;
 	
 ">
+<div id="hover-content"></div>
 </div>
 
  <script src="${jsUri}"></script>

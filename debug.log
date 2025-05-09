@@ -1,0 +1,237 @@
+[Log] Loading classes from binary file...
+[Log] Loaded 96581 classes from binary file.
+[Log] Loading typing suggestions from JSON file...
+[Log] Loaded 3214 typing suggestions.
+[Log] Loaded 61734 member suggestions.
+[Log] Loaded 97958 classes from JSON file.
+[Log] Typing suggestions loaded: 3214
+[Log] Semantic Tokens Provider Initialized
+[Log] updating tokens
+[Log] [provideCompletionItems] Starting provideCompletionItems...
+[Log] [prepareContext] Preparing editor context...
+[Log] [prepareContext] Position line=7, character=16
+[Log] [prepareContext] Successfully prepared context.
+[Log] [prepareContext] Found iNode type: navigation_expression, [prepareContext] Found iNode text: AnomalyRenderer.c
+[Log] [provideCompletionItems] iNode (navigation_expression) type: navigation_expression, [provideCompletionItems] iNode (navigation_expression) text: AnomalyRenderer.c
+[Log] [provideCompletionItems] No scope found for current position.
+[Log] [resolveBaseType] Starting base type resolution...
+[Log] [resolveBaseType] No lastChild found, using simple_identifier from current node
+[Log] [resolveBaseType] No scoped variable found, falling back to resolveBaseTypeFromImports
+[Log] [resolveBaseTypeFromImports] Starting import-based resolution...
+[Log] [resolveBaseTypeFromImports] Checking 1 potential imports...
+[Log] [resolveBaseTypeFromImports] Resolved from import: AnomalyRenderer
+[Log] [resolveBaseType] Call is directly off class, setting isStaticClassCall = true
+[Log] [resolveBaseType] Final resolved baseType: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [resolveBaseType] isCallOffClass: true
+[Log] [resolveBaseType] isStaticClassCall: true
+[Log] [resolveTypingsFromSuffixes] BaseType at start: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [resolveTypingsFromSuffixes] isCallOffClass: true
+[Log] [resolveTypingsFromSuffixes] Found suffix: c, isMethodCall: false
+[Log] [resolveTypingsFromSuffixes] Found refined suffixes: [
+  "c"
+]
+[Log] [resolveTypingsFromSuffixes] Static call context, checking baseType: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [resolveTypingsFromSuffixes] Found TypingsMember: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [resolveTypingsFromSuffixes] Final resolved currentType: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [provideCompletionItems] Variable is not Companion, forcing instance context.
+[Log] [provideCompletionItems] Found TypingsMember: biomesoplenty.client.renderer.AnomalyRenderer, preparing completions.
+[Log] [buildCompletionItems] Building completions for: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [buildCompletionItems] isCallOffClass: false, isStaticClassCall: false
+[Log] [buildCompletionItems] Built 6 completion items.
+[Log] updating tokens
+[Log] [provideCompletionItems] Starting provideCompletionItems...
+[Log] [prepareContext] Preparing editor context...
+[Log] [prepareContext] Position line=7, character=16
+[Log] [prepareContext] Successfully prepared context.
+[Log] [prepareContext] Found iNode type: navigation_expression, [prepareContext] Found iNode text: AnomalyRenderer.c
+[Log] [provideCompletionItems] iNode (navigation_expression) type: navigation_expression, [provideCompletionItems] iNode (navigation_expression) text: AnomalyRenderer.c
+[Log] [provideCompletionItems] No scope found for current position.
+[Log] [resolveBaseType] Starting base type resolution...
+[Log] [resolveBaseType] No lastChild found, using simple_identifier from current node
+[Log] [resolveBaseType] No scoped variable found, falling back to resolveBaseTypeFromImports
+[Log] [resolveBaseTypeFromImports] Starting import-based resolution...
+[Log] [resolveBaseTypeFromImports] Checking 1 potential imports...
+[Log] [resolveBaseTypeFromImports] Resolved from import: AnomalyRenderer
+[Log] [resolveBaseType] Call is directly off class, setting isStaticClassCall = true
+[Log] [resolveBaseType] Final resolved baseType: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [resolveBaseType] isCallOffClass: true
+[Log] [resolveBaseType] isStaticClassCall: true
+[Log] [resolveTypingsFromSuffixes] BaseType at start: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [resolveTypingsFromSuffixes] isCallOffClass: true
+[Log] [resolveTypingsFromSuffixes] Found suffix: c, isMethodCall: false
+[Log] [resolveTypingsFromSuffixes] Found refined suffixes: [
+  "c"
+]
+[Log] [resolveTypingsFromSuffixes] Static call context, checking baseType: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [resolveTypingsFromSuffixes] Found TypingsMember: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [resolveTypingsFromSuffixes] Final resolved currentType: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [provideCompletionItems] Variable is not Companion, forcing instance context.
+[Log] [provideCompletionItems] Found TypingsMember: biomesoplenty.client.renderer.AnomalyRenderer, preparing completions.
+[Log] [buildCompletionItems] Building completions for: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [buildCompletionItems] isCallOffClass: false, isStaticClassCall: false
+[Log] [buildCompletionItems] Built 6 completion items.
+[Log] document has not changed
+[Log] <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+	body {
+		margin: 0;
+		font-family: Consolas, 'Courier New', monospace;
+		background: #1e1e1e;
+		color: rgb(210, 222, 174);
+		font-size: 14px;
+		font-weight: 0;
+	}
+	@keyframes pop {
+		0% { transform: scale(1); }
+		50% { transform: scale(1.04); }
+		100% { transform: scale(1.035); }
+	}
+mark {
+		background-color: rgba(255, 160, 80, 0.35);
+		color: inherit;
+		padding: 0;
+		border-radius: 2px;
+	}
+mark.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.2);
+}
+
+	#main {
+		cursor: text;
+		flex-grow: 1;
+		height: 100vh;
+	overflow-y: auto;
+		padding: 16px;
+		box-sizing: border-box;
+	}
+	.kw { color: rgba(76, 156, 222, 0.93); font-weight: bold; }
+	.annotation { color: rgb(238, 223, 154); }
+.type-link {
+
+	color: rgba(108, 220, 175, 0.92); /* dimmed green */
+	cursor: default;
+	text-decoration: none;
+pointer-events: auto;
+}
+
+.ctrl-down .type-link {
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+.ctrl-down .type-link:hover {
+	color: rgba(158, 234, 203, 0.92);
+	text-decoration: underline;
+	display: inline-block;
+	animation: pop 0.17s ease-in-out forwards;
+}
+
+
+	.ident { color: #9cdcfe; }
+	.method-name { color: rgba(231, 229, 151, 0.92); }
+	.arg-name { color: rgba(104, 208, 237, 0.97); }
+	.line {
+		opacity: 0;
+		transition: opacity 0.05s linear;
+	}
+		.highlight-layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: auto;
+
+	z-index: 50;
+}
+.highlight-box {
+	position: absolute;
+	background-color: rgba(255, 160, 80, 0.35);
+	border-radius: 2px;
+}
+.highlight-box.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.3); /* lighter blue */
+	box-shadow: 0 0 4px #3794ff99;
+	z-index: 60;
+}
+
+		
+			#search-bar button {
+		background-color:rgba(30, 30, 30, 0.27);
+		color: white;
+		border: 1px solid #555;
+		border-radius: 6px;
+		padding: 4px 8px;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+		font-size: 13px;
+		font-family: inherit;
+		user-select: none;
+	}
+
+	#search-bar button.active {
+		background-color: #094771;
+		border-color: #3794ff;
+		color: white;
+	}
+
+
+</style>
+</head>
+<body>
+<div id="search-bar" style="display: none; position: fixed; top: 8px; right: 8px; z-index: 100; background: #2c2c2c; padding: 4px 8px; border-radius: 4px; display: flex; gap: 4px; align-items: center;">
+	<input type="text" id="search-input" placeholder="Search..." style="width: 180px; background: #1e1e1e; color: white; border: 1px solid #555; padding: 4px;" />
+	<button id="toggle-case" title="Match Case">Aa</button>
+	<button id="toggle-whole" title="Whole Word">⛶</button>
+	<button id="toggle-regex" title="Regex">*</button>
+	<span id="search-count" style="color: white; min-width: 30px; text-align: center; font-size: 13px; font-family: Arial, sans-serif;">No Results</span>
+	<button id="search-prev" title="Previous Match">↑</button>
+	<button id="search-next" title="Next Match">↓</button>
+	<button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
+	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div>
+
+</div>
+<div id="main"><div class="line" data-text="package com.mojang.blaze3d.vertex" style="opacity: 0;"><div><span class="kw">package</span> <span class="type-link" data-package="com"><span class="ident">com</span></span><span>.</span><span class="type-link" data-package="com.mojang"><span class="ident">mojang</span></span><span>.</span><span class="type-link" data-package="com.mojang.blaze3d"><span class="ident">blaze3d</span></span><span>.</span><span class="type-link" data-package="com.mojang.blaze3d.vertex"><span class="ident">vertex</span></span></div><br></div>
+<div class="line" data-text=" class PoseStack {" style="opacity: 0;"><div id="current-class"> <span class="kw">class</span> <span class="ident">PoseStack</span> {</div></div>
+<div class="line" data-text="private final val poseStack: Deque<PoseStack$Pose>;" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">final</span> <span class="kw">val</span> <span class="ident">poseStack</span>: <span class="type-link" data-type="java.util.Deque">Deque</span>&lt;PoseStack$Pose&gt;;</div></div>
+<div class="line" data-text="fun translate(arg0: Double, arg1: Double, arg2: Double): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">translate</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Double">Double</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun translate(arg0: Float, arg1: Float, arg2: Float): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">translate</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun scale(arg0: Float, arg1: Float, arg2: Float): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">scale</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun mulPose(arg0: Quaternionf): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">mulPose</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="org.joml.Quaternionf">Quaternionf</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun rotateAround(arg0: Float, arg1: Float, arg2: Float, arg3: Quaternionf): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rotateAround</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg3</span>: <span class="type-link" data-type="org.joml.Quaternionf">Quaternionf</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun pushPose(): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">pushPose</span>(): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun popPose(): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">popPose</span>(): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun last(): PoseStack$Pose {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">last</span>(): <span class="type-link" data-type="com.mojang.blaze3d.vertex.PoseStack$Pose">PoseStack$Pose</span> {};</div></div>
+<div class="line" data-text="fun clear(): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">clear</span>(): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun setIdentity(): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">setIdentity</span>(): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun mulPose(arg0: Matrix4f): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">mulPose</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="org.joml.Matrix4f">Matrix4f</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="companion object {" style="opacity: 0;"><br><div style="padding-left: 2em"><span class="kw">companion object</span> {</div></div>
+<div class="line" data-text="@JvmStaticprivate fun method_22908(arg0: ArrayDeque): Unit {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">method_22908</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.ArrayDeque">ArrayDeque</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div style="padding-left: 2em">}</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div>}</div></div>
+<div class="line" data-text="" style="opacity: 0;"></div></div></div>
+<div id="hover-preview" style="
+	position: fixed;
+	overflow: auto;
+	background: #2b2b2b;
+	color: #ddd;
+	border: 1px solid #444;
+	border-radius: 6px;
+	font-size: 13px;
+	padding: 8px;
+	display: none;
+	z-index: 50;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+	pointer-events: auto;
+	cursor: grab;
+	
+">
+<div id="hover-content"></div>
+</div>
+
+ <script src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/Users/subli/kotlinscript/dist/classPreview.js"></script>
+</body>
+</html>
