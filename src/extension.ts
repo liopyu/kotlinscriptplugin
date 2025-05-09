@@ -362,7 +362,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		lines.push(`<div>}</div>`);
 		lines.push(`</div>`);
 
-		return lines.map(line => `<div class="line" style="opacity: 0;">${line}</div>`).join('\n');
+		/* return lines.map(line => `<div class="line" style="opacity: 0;">${line}</div>`).join('\n'); */
+		return lines.map(line => {
+			const plain = line.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+			return `<div class="line" data-text="${plain}" style="opacity: 0;">${line}</div>`;
+		}).join('\n');
+
 
 	}
 
@@ -452,9 +457,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 
 		const classHtml = generateClassHtml(typingsMember);
-		console.log(classHtml)
-		const htmlContent = generateClassHtmlContent(classHtml);
 
+		const htmlContent = generateClassHtmlContent(classHtml);
+		console.log(htmlContent)
 		const panel = vscode.window.createWebviewPanel(
 			'kotlinClassPreview',
 			`Kotlin: ${className}`,
@@ -486,6 +491,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			currentClassFQName = undefined;
 		});
 	}
+
 
 
 	function generateClassHtmlContent(classHtml: string): string {
@@ -529,17 +535,26 @@ mark.current {
 	}
 	.kw { color: rgba(76, 156, 222, 0.93); font-weight: bold; }
 	.annotation { color: rgb(238, 223, 154); }
-	.type-link {
-		color: rgba(108, 220, 175, 0.92);
-		cursor: pointer;
-		text-decoration: none;
-	}
-	.type-link:hover {
-		color: rgb(227, 240, 184);
-		text-decoration: underline;
-		display: inline-block;
-		animation: pop 0.17s ease-in-out forwards;
-	}
+.type-link {
+	color: rgba(108, 220, 175, 0.92); /* dimmed green */
+	cursor: default;
+	text-decoration: none;
+	pointer-events: none;
+}
+
+.ctrl-down .type-link {
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+.ctrl-down .type-link:hover {
+	color: rgba(158, 234, 203, 0.92);
+	text-decoration: underline;
+	display: inline-block;
+	animation: pop 0.17s ease-in-out forwards;
+}
+
+
 	.ident { color: #9cdcfe; }
 	.method-name { color: rgba(231, 229, 151, 0.92); }
 	.arg-name { color: rgba(104, 208, 237, 0.97); }
@@ -547,6 +562,26 @@ mark.current {
 		opacity: 0;
 		transition: opacity 0.05s linear;
 	}
+		.highlight-layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	z-index: 50;
+}
+.highlight-box {
+	position: absolute;
+	background-color: rgba(255, 160, 80, 0.35);
+	border-radius: 2px;
+}
+.highlight-box.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.3); /* lighter blue */
+	box-shadow: 0 0 4px #3794ff99;
+	z-index: 60;
+}
+
+		
 			#search-bar button {
 		background-color:rgba(30, 30, 30, 0.27);
 		color: white;
@@ -573,10 +608,14 @@ mark.current {
 	<button id="toggle-case" title="Match Case">Aa</button>
 	<button id="toggle-whole" title="Whole Word">⛶</button>
 	<button id="toggle-regex" title="Regex">*</button>
-	<span id="search-count" style="color: white; min-width: 30px; text-align: center; font-size: 11px;"></span>
+	<span id="search-count" style="color: white; min-width: 30px; text-align: center; font-size: 13px; font-family: Arial, sans-serif;">No Results</span>
 	<button id="search-prev" title="Previous Match">↑</button>
 	<button id="search-next" title="Next Match">↓</button>
+	<button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
+	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div>
+
 </div>
+
 <div id="main">${classHtml}</div>
 <script>
 	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
@@ -601,6 +640,10 @@ mark.current {
 	});
 
 	const lines = Array.from(document.querySelectorAll('.line'));
+	const highlightLayer = document.createElement('div');
+highlightLayer.className = 'highlight-layer';
+document.body.appendChild(highlightLayer);
+
 	let index = 0;
 	function revealNextLine() {
 		if (index < lines.length) {
@@ -613,25 +656,27 @@ mark.current {
 	let matchCase = false;
 let matchWhole = false;
 let useRegex = false;
-document.getElementById('search-next').addEventListener('click', function() {
-	if (allMarkElements.length === 0) return;
-	matchIndex = (matchIndex + 1) % allMarkElements.length;
-	document.querySelectorAll('mark.current').forEach(function(m) {
-		m.classList.remove('current');
-	});
-	allMarkElements[matchIndex].classList.add('current');
-	allMarkElements[matchIndex].scrollIntoView({ block: "center" });
+document.getElementById('search-next').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex + 1) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
 	updateMatchCount();
 });
 
-document.getElementById('search-prev').addEventListener('click', function() {
-	if (allMarkElements.length === 0) return;
-	matchIndex = (matchIndex - 1 + allMarkElements.length) % allMarkElements.length;
-	document.querySelectorAll('mark.current').forEach(function(m) {
-		m.classList.remove('current');
-	});
-	allMarkElements[matchIndex].classList.add('current');
-	allMarkElements[matchIndex].scrollIntoView({ block: "center" });
+document.getElementById('search-prev').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex - 1 + allMatchBoxes.length) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-close').addEventListener('click', function() {
+	searchBar.style.display = 'none';
+	clearSearchHighlights();
 	updateMatchCount();
 });
 
@@ -653,112 +698,28 @@ document.getElementById('toggle-regex').addEventListener('click', () => {
 });
 function updateMatchCount() {
 	const countLabel = document.getElementById('search-count');
-	if (allMarkElements.length === 0) {
-		countLabel.textContent = '';
+	if (allMatchBoxes.length === 0) {
+		countLabel.textContent = 'No Results';
 		return;
 	}
-	countLabel.textContent = (matchIndex + 1) + " of " + allMarkElements.length;
+	countLabel.textContent = (matchIndex + 1) + " of " + allMatchBoxes.length;
 }
+document.addEventListener('mousemove', e => {
+	document.body.classList.toggle('ctrl-down', e.ctrlKey);
+});
+document.addEventListener('keydown', e => {
+	if (e.key === 'Control') document.body.classList.add('ctrl-down');
+});
+document.addEventListener('keyup', e => {
+	if (e.key === 'Control') document.body.classList.remove('ctrl-down');
+});
+
 
 
 function updateToggleUI() {
 	document.getElementById('toggle-case').classList.toggle('active', matchCase);
 	document.getElementById('toggle-whole').classList.toggle('active', matchWhole);
 	document.getElementById('toggle-regex').classList.toggle('active', useRegex);
-}
-
-
-// Search support
-const searchBar = document.getElementById('search-bar');
-const searchInput = document.getElementById('search-input');
-let lastMatches = [];
-let allMarkElements = [];
-
-let matchIndex = 0;
-function clearSearchHighlights() {
-	lastMatches.forEach(function(entry) {
-		entry.element.innerHTML = entry.originalHTML;
-	});
-	lastMatches = [];
-	matchIndex = 0;
-}
-
-function performSearch(term) {
-	clearSearchHighlights();
-	if (!term.trim()) return;
-
-	let pattern = term;
-
-	if (!useRegex) {
-		pattern = term.replace(/[.*+?^\${}()|[\]\\]/g, '\\$&');
-	}
-
-	if (matchWhole && !useRegex) {
-	pattern = '(?<![a-zA-Z0-9])' + pattern + '(?![a-zA-Z0-9])';
-}
-
-	const flags = matchCase ? "g" : "gi";
-
-	let regex;
-	try {
-		regex = new RegExp(pattern, flags);
-	} catch (err) {
-		return;
-	}
-	lines.forEach(function(line) {
-		const originalHTML = line.innerHTML;
-		const rawText = line.innerText;
-		if (!regex.test(rawText)) {
-			return;
-		}
-
-		highlightTextNodes(line, regex);
-
-		const marks = line.querySelectorAll('mark');
-		if (marks.length > 0) {
-			lastMatches.push({
-				element: line,
-				originalHTML: originalHTML,
-				marks: Array.from(marks)
-			});
-		}
-	});
-
-	allMarkElements = lastMatches.flatMap(function(entry) {
-		return entry.marks;
-	});
-
-	if (allMarkElements.length > 0) {
-		matchIndex = 0;
-		allMarkElements[0].classList.add('current');
-		allMarkElements[0].scrollIntoView({ block: "center" });
-		updateMatchCount();
-	} else {
-		document.getElementById('search-count').textContent = '';
-	}
-
-
-}
-function highlightTextNodes(node, regex) {
-	for (let child of Array.from(node.childNodes)) {
-		if (child.nodeType === Node.TEXT_NODE) {
-			if (regex.test(child.textContent)) {
-				const span = document.createElement('span');
-				const escaped = escapeHTML(child.textContent);
-
-				if (matchWhole && !useRegex) {
-					// Use plain replace since no groups are present
-					span.innerHTML = escaped.replace(regex, "<mark>$&</mark>");
-				} else {
-					span.innerHTML = escaped.replace(regex, "<mark>$&</mark>");
-				}
-
-				node.replaceChild(span, child);
-			}
-		} else if (child.nodeType === Node.ELEMENT_NODE) {
-			highlightTextNodes(child, regex);
-		}
-	}
 }
 
 function escapeHTML(str) {
@@ -769,17 +730,173 @@ function escapeHTML(str) {
 	          .replace(/'/g, '&#39;');
 }
 
+function clearSearchHighlights() {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+	matchIndex = 0;
+}
 
+// Search support
+const searchBar = document.getElementById('search-bar');
+const searchInput = document.getElementById('search-input');
+let lastMatches = [];
+let allMarkElements = [];
+let matchIndex = 0;
+let allMatchBoxes = [];
+function highlightWithOverlay(regex) {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+
+	lines.forEach(line => {
+		const text = line.textContent;
+		regex.lastIndex = 0;
+
+		let match;
+		while ((match = regex.exec(text)) !== null) {
+			const fullMatch = match[0];
+			const coreMatch = match[1] ? fullMatch.slice(match[1].length) : fullMatch;
+
+			const start = match.index + (match[1]?.length ?? 0);
+			const end = start + coreMatch.length;
+
+			const range = getRangeFromTextOffsets(line, start, end);
+			if (!range) continue;
+
+			const rects = range.getClientRects(); 
+const union = Array.from(rects).reduce((acc, rect) => {
+	if (!acc) return {
+		top: rect.top,
+		left: rect.left,
+		right: rect.right,
+		bottom: rect.bottom
+	};
+
+	return {
+		top: Math.min(acc.top, rect.top),
+		left: Math.min(acc.left, rect.left),
+		right: Math.max(acc.right, rect.right),
+		bottom: Math.max(acc.bottom, rect.bottom)
+	};
+}, null);
+
+if (union) {
+	const box = document.createElement('div');
+	box.className = 'highlight-box';
+
+	const verticalOffset = 2; 
+	const heightReduction = 2;
+
+	box.style.top = union.top + window.scrollY + verticalOffset + 'px';
+	box.style.left = union.left + window.scrollX + 'px';
+	box.style.width = union.right - union.left + 'px';
+	box.style.height = union.bottom - union.top - heightReduction + 'px';
+
+	box.dataset.index = allMatchBoxes.length;
+	box.dataset.line = line.textContent.slice(0, 40);
+	box.dataset.start = start;
+	highlightLayer.appendChild(box);
+	allMatchBoxes.push(box);
+}
+
+
+		}
+	});
+
+	if (allMatchBoxes.length > 0) {
+		matchIndex = 0;
+		allMatchBoxes[0].classList.add('current');
+		allMatchBoxes[0].scrollIntoView({ block: "center" });
+	}
+	updateMatchCount();
+}
+
+
+function getRangeFromTextOffsets(container, startOffset, endOffset) {
+	const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+	let currentOffset = 0;
+
+	while (walker.nextNode()) {
+		const node = walker.currentNode;
+		const nodeText = node.textContent;
+		const nodeLength = nodeText.length;
+
+		if (startOffset >= currentOffset && startOffset < currentOffset + nodeLength) {
+			const startNode = node;
+			const startNodeOffset = startOffset - currentOffset;
+
+			let endNode = startNode;
+			let endNodeOffset = Math.min(endOffset - currentOffset, nodeLength);
+
+			let tempOffset = currentOffset + nodeLength;
+
+			while (tempOffset < endOffset && walker.nextNode()) {
+				endNode = walker.currentNode;
+				const remaining = endOffset - tempOffset;
+				endNodeOffset = Math.min(remaining, endNode.textContent.length);
+				tempOffset += endNode.textContent.length;
+			}
+
+			const range = document.createRange();
+			range.setStart(startNode, startNodeOffset);
+			range.setEnd(endNode, endNodeOffset);
+			return range;
+		}
+
+		currentOffset += nodeLength;
+	}
+	return null;
+}
+function performSearch(term) {
+	clearSearchHighlights();
+	updateMatchCount();
+	if (!term.trim()) return;
+
+	let pattern = term;
+
+	if (!useRegex) {
+		pattern = pattern.replace(/[.*+?^\\\${}()|[\\]\\\\]/g, '\\\\$&');
+	}
+if (matchWhole && !useRegex) {
+	pattern = '(^|[^a-zA-Z0-9_])' + pattern + '(?=[^a-zA-Z0-9_]|$)';
+	
+
+}
+
+
+	console.log("Escaped pattern:", pattern);
+
+	const flags = matchCase ? 'g' : 'gi';
+	let regex;
+	try {
+		regex = new RegExp(pattern, flags);
+	} catch (err) {
+		console.warn("Invalid regex:", pattern, err);
+		return;
+	}
+
+	console.log("Final regex pattern:", pattern);
+	highlightWithOverlay(regex);
+}
 searchInput.addEventListener('input', () => {
 	performSearch(searchInput.value);
+	updateMatchCount()
 });
 
 document.addEventListener('keydown', e => {
 	if (e.ctrlKey && e.key === 'f') {
 		e.preventDefault();
 		searchBar.style.display = 'block';
-		searchInput.focus();
-		searchInput.select();
+		let selectedText = window.getSelection()?.toString()?.trim();
+
+	if (selectedText) {
+		searchInput.value = selectedText;
+	} else {
+		selectedText = searchInput.value;
+	}
+
+	searchInput.focus();
+	searchInput.select();
+	performSearch(selectedText);
 	}
 	if (e.key === 'Escape') {
 		searchBar.style.display = 'none';
@@ -791,6 +908,53 @@ document.addEventListener('keydown', e => {
 		lastMatches[matchIndex].scrollIntoView({ block: 'center' });
 	}
 });
+(function () {
+	const consoleDiv = document.getElementById('console-output');
+	if (!consoleDiv) return;
+
+	function logToConsole(type, args) {
+		const line = document.createElement('div');
+		line.style.whiteSpace = 'pre-wrap';
+		line.style.marginBottom = '4px';
+
+		const prefix = document.createElement('span');
+		prefix.textContent = \`[\${ type.toUpperCase() }]\`;
+		prefix.style.color = type === 'error' ? '#f55' :
+			type === 'warn' ? '#ffa500' : '#66f';
+
+		line.appendChild(prefix);
+		line.appendChild(document.createTextNode(args.map(a => {
+			try {
+				return typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a);
+			} catch {
+				return String(a);
+			}
+		}).join(' ')));
+
+		consoleDiv.appendChild(line);
+		consoleDiv.scrollTop = consoleDiv.scrollHeight;
+	}
+
+	const originalLog = console.log;
+	const originalWarn = console.warn;
+	const originalError = console.error;
+
+	console.log = function (...args) {
+		originalLog.apply(console, args);
+		logToConsole('log', args);
+	};
+
+	console.warn = function (...args) {
+		originalWarn.apply(console, args);
+		logToConsole('warn', args);
+	};
+
+	console.error = function (...args) {
+		originalError.apply(console, args);
+		logToConsole('error', args);
+	};
+})();
+
 </script>
 </body>
 </html>`;
@@ -848,6 +1012,7 @@ document.addEventListener('keydown', e => {
 <script>
 	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
 document.addEventListener('click', e => {
+if (!e.ctrlKey) return; 
 	let target = e.target;
 	while (target && !target.classList.contains('type-link')) {
 		target = target.parentElement;
@@ -858,7 +1023,7 @@ document.addEventListener('click', e => {
 	if (pkg) {
 		console.log("[WebView] Sending openPackage for:", pkg);
 		vscode.postMessage({ command: 'openPackage', package: pkg });
-		return; // ✅ prevent it from also running the openType logic
+		return; 
 	}
 
 	const typeName = target.getAttribute('data-type');

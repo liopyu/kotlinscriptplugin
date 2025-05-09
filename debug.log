@@ -3,3 +3,3035 @@
 [Log] Loading typing suggestions from JSON file...
 [Log] Loaded 3214 typing suggestions.
 [Log] Loaded 61734 member suggestions.
+[Log] Loaded 97958 classes from JSON file.
+[Log] Typing suggestions loaded: 3214
+[Log] Semantic Tokens Provider Initialized
+[Log] updating tokens
+[Log] [provideCompletionItems] Starting provideCompletionItems...
+[Log] [prepareContext] Preparing editor context...
+[Log] [prepareContext] Position line=7, character=16
+[Log] [prepareContext] Successfully prepared context.
+[Log] [prepareContext] Found iNode type: navigation_expression, [prepareContext] Found iNode text: AnomalyRenderer.c
+[Log] [provideCompletionItems] iNode (navigation_expression) type: navigation_expression, [provideCompletionItems] iNode (navigation_expression) text: AnomalyRenderer.c
+[Log] [provideCompletionItems] No scope found for current position.
+[Log] [resolveBaseType] Starting base type resolution...
+[Log] [resolveBaseType] No lastChild found, using simple_identifier from current node
+[Log] [resolveBaseType] No scoped variable found, falling back to resolveBaseTypeFromImports
+[Log] [resolveBaseTypeFromImports] Starting import-based resolution...
+[Log] [resolveBaseTypeFromImports] Checking 1 potential imports...
+[Log] [resolveBaseTypeFromImports] Resolved from import: AnomalyRenderer
+[Log] [resolveBaseType] Call is directly off class, setting isStaticClassCall = true
+[Log] [resolveBaseType] Final resolved baseType: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [resolveBaseType] isCallOffClass: true
+[Log] [resolveBaseType] isStaticClassCall: true
+[Log] [resolveTypingsFromSuffixes] BaseType at start: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [resolveTypingsFromSuffixes] isCallOffClass: true
+[Log] [resolveTypingsFromSuffixes] Found suffix: c, isMethodCall: false
+[Log] [resolveTypingsFromSuffixes] Found refined suffixes: [
+  "c"
+]
+[Log] [resolveTypingsFromSuffixes] Static call context, checking baseType: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [resolveTypingsFromSuffixes] Found TypingsMember: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [resolveTypingsFromSuffixes] Final resolved currentType: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [provideCompletionItems] Variable is not Companion, forcing instance context.
+[Log] [provideCompletionItems] Found TypingsMember: biomesoplenty.client.renderer.AnomalyRenderer, preparing completions.
+[Log] [buildCompletionItems] Building completions for: biomesoplenty.client.renderer.AnomalyRenderer
+[Log] [buildCompletionItems] isCallOffClass: false, isStaticClassCall: false
+[Log] [buildCompletionItems] Built 6 completion items.
+[Log] updating tokens
+[Log] <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+	body {
+		margin: 0;
+		display: flex;
+		font-family: Consolas, 'Courier New', monospace;
+		background: #1e1e1e;
+		color: rgb(210, 222, 174);
+		font-size: 14px;
+		font-weight: 0;
+		overflow: hidden;
+	}
+	@keyframes pop {
+		0% { transform: scale(1); }
+		50% { transform: scale(1.04); }
+		100% { transform: scale(1.035); }
+	}
+mark {
+		background-color: rgba(255, 160, 80, 0.35);
+		color: inherit;
+		padding: 0;
+		border-radius: 2px;
+	}
+mark.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.2);
+}
+
+	#main {
+		flex-grow: 1;
+		overflow-y: scroll;
+		height: 100vh;
+		padding: 16px;
+		box-sizing: border-box;
+	}
+	.kw { color: rgba(76, 156, 222, 0.93); font-weight: bold; }
+	.annotation { color: rgb(238, 223, 154); }
+.type-link {
+	color: rgba(108, 220, 175, 0.92); /* dimmed green */
+	cursor: default;
+	text-decoration: none;
+	pointer-events: none;
+}
+
+.ctrl-down .type-link {
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+.ctrl-down .type-link:hover {
+	color: rgba(158, 234, 203, 0.92);
+	text-decoration: underline;
+	display: inline-block;
+	animation: pop 0.17s ease-in-out forwards;
+}
+
+
+	.ident { color: #9cdcfe; }
+	.method-name { color: rgba(231, 229, 151, 0.92); }
+	.arg-name { color: rgba(104, 208, 237, 0.97); }
+	.line {
+		opacity: 0;
+		transition: opacity 0.05s linear;
+	}
+		.highlight-layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	z-index: 50;
+}
+.highlight-box {
+	position: absolute;
+	background-color: rgba(255, 160, 80, 0.35);
+	border-radius: 2px;
+}
+.highlight-box.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.3); /* lighter blue */
+	box-shadow: 0 0 4px #3794ff99;
+	z-index: 60;
+}
+
+		
+			#search-bar button {
+		background-color:rgba(30, 30, 30, 0.27);
+		color: white;
+		border: 1px solid #555;
+		border-radius: 6px;
+		padding: 4px 8px;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+		font-size: 13px;
+		font-family: inherit;
+		user-select: none;
+	}
+
+	#search-bar button.active {
+		background-color: #094771;
+		border-color: #3794ff;
+		color: white;
+	}
+</style>
+</head>
+<body>
+<div id="search-bar" style="display: none; position: fixed; top: 8px; right: 8px; z-index: 100; background: #2c2c2c; padding: 4px 8px; border-radius: 4px; display: flex; gap: 4px; align-items: center;">
+	<input type="text" id="search-input" placeholder="Search..." style="width: 180px; background: #1e1e1e; color: white; border: 1px solid #555; padding: 4px;" />
+	<button id="toggle-case" title="Match Case">Aa</button>
+	<button id="toggle-whole" title="Whole Word">⛶</button>
+	<button id="toggle-regex" title="Regex">*</button>
+	<span id="search-count" style="color: white; min-width: 30px; text-align: center; font-size: 13px; font-family: Arial, sans-serif;">No Results</span>
+	<button id="search-prev" title="Previous Match">↑</button>
+	<button id="search-next" title="Next Match">↓</button>
+	<button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
+	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div>
+
+</div>
+
+<div id="main"><div class="line" data-text="package com.mojang.blaze3d.vertex" style="opacity: 0;"><div><span class="kw">package</span> <span class="type-link" data-package="com"><span class="ident">com</span></span><span>.</span><span class="type-link" data-package="com.mojang"><span class="ident">mojang</span></span><span>.</span><span class="type-link" data-package="com.mojang.blaze3d"><span class="ident">blaze3d</span></span><span>.</span><span class="type-link" data-package="com.mojang.blaze3d.vertex"><span class="ident">vertex</span></span></div><br></div>
+<div class="line" data-text=" class PoseStack {" style="opacity: 0;"><div id="current-class"> <span class="kw">class</span> <span class="ident">PoseStack</span> {</div></div>
+<div class="line" data-text="private final val poseStack: Deque<PoseStack$Pose>;" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">final</span> <span class="kw">val</span> <span class="ident">poseStack</span>: <span class="type-link" data-type="java.util.Deque">Deque</span>&lt;PoseStack$Pose&gt;;</div></div>
+<div class="line" data-text="fun translate(arg0: Double, arg1: Double, arg2: Double): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">translate</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Double">Double</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun translate(arg0: Float, arg1: Float, arg2: Float): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">translate</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun scale(arg0: Float, arg1: Float, arg2: Float): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">scale</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun mulPose(arg0: Quaternionf): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">mulPose</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="org.joml.Quaternionf">Quaternionf</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun rotateAround(arg0: Float, arg1: Float, arg2: Float, arg3: Quaternionf): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rotateAround</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg3</span>: <span class="type-link" data-type="org.joml.Quaternionf">Quaternionf</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun pushPose(): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">pushPose</span>(): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun popPose(): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">popPose</span>(): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun last(): PoseStack$Pose {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">last</span>(): <span class="type-link" data-type="com.mojang.blaze3d.vertex.PoseStack$Pose">PoseStack$Pose</span> {};</div></div>
+<div class="line" data-text="fun clear(): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">clear</span>(): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun setIdentity(): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">setIdentity</span>(): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun mulPose(arg0: Matrix4f): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">mulPose</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="org.joml.Matrix4f">Matrix4f</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="companion object {" style="opacity: 0;"><br><div style="padding-left: 2em"><span class="kw">companion object</span> {</div></div>
+<div class="line" data-text="@JvmStaticprivate fun method_22908(arg0: ArrayDeque): Unit {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">method_22908</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.ArrayDeque">ArrayDeque</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div style="padding-left: 2em">}</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div>}</div></div>
+<div class="line" data-text="" style="opacity: 0;"></div></div></div>
+<script>
+	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
+	document.getElementById('current-class')?.scrollIntoView({ block: 'start' });
+
+	document.addEventListener('click', e => {
+		let target = e.target;
+		while (target && !target.classList.contains('type-link')) {
+			target = target.parentElement;
+		}
+		if (!target) return;
+
+		const typeName = target.getAttribute('data-type');
+		if (typeName) {
+			vscode.postMessage({ command: 'openType', type: typeName });
+			return;
+		}
+		const pkg = target.getAttribute('data-package');
+		if (pkg) {
+			vscode.postMessage({ command: 'openPackage', package: pkg });
+		}
+	});
+
+	const lines = Array.from(document.querySelectorAll('.line'));
+	const highlightLayer = document.createElement('div');
+highlightLayer.className = 'highlight-layer';
+document.body.appendChild(highlightLayer);
+
+	let index = 0;
+	function revealNextLine() {
+		if (index < lines.length) {
+			lines[index].style.opacity = '1';
+			index++;
+			setTimeout(revealNextLine, 10);
+		}
+	}
+	revealNextLine();
+	let matchCase = false;
+let matchWhole = false;
+let useRegex = false;
+document.getElementById('search-next').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex + 1) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-prev').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex - 1 + allMatchBoxes.length) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-close').addEventListener('click', function() {
+	searchBar.style.display = 'none';
+	clearSearchHighlights();
+	updateMatchCount();
+});
+
+
+document.getElementById('toggle-case').addEventListener('click', () => {
+	matchCase = !matchCase;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-whole').addEventListener('click', () => {
+	matchWhole = !matchWhole;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-regex').addEventListener('click', () => {
+	useRegex = !useRegex;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+function updateMatchCount() {
+	const countLabel = document.getElementById('search-count');
+	if (allMatchBoxes.length === 0) {
+		countLabel.textContent = 'No Results';
+		return;
+	}
+	countLabel.textContent = (matchIndex + 1) + " of " + allMatchBoxes.length;
+}
+document.addEventListener('mousemove', e => {
+	document.body.classList.toggle('ctrl-down', e.ctrlKey);
+});
+document.addEventListener('keydown', e => {
+	if (e.key === 'Control') document.body.classList.add('ctrl-down');
+});
+document.addEventListener('keyup', e => {
+	if (e.key === 'Control') document.body.classList.remove('ctrl-down');
+});
+
+
+
+function updateToggleUI() {
+	document.getElementById('toggle-case').classList.toggle('active', matchCase);
+	document.getElementById('toggle-whole').classList.toggle('active', matchWhole);
+	document.getElementById('toggle-regex').classList.toggle('active', useRegex);
+}
+
+function escapeHTML(str) {
+	return str.replace(/&/g, '&amp;')
+	          .replace(/</g, '&lt;')
+	          .replace(/>/g, '&gt;')
+	          .replace(/"/g, '&quot;')
+	          .replace(/'/g, '&#39;');
+}
+
+function clearSearchHighlights() {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+	matchIndex = 0;
+}
+
+// Search support
+const searchBar = document.getElementById('search-bar');
+const searchInput = document.getElementById('search-input');
+let lastMatches = [];
+let allMarkElements = [];
+let matchIndex = 0;
+let allMatchBoxes = [];
+function highlightWithOverlay(regex) {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+
+	lines.forEach(line => {
+		const text = line.textContent;
+		regex.lastIndex = 0;
+
+		let match;
+		while ((match = regex.exec(text)) !== null) {
+			const fullMatch = match[0];
+			const coreMatch = match[1] ? fullMatch.slice(match[1].length) : fullMatch;
+
+			const start = match.index + (match[1]?.length ?? 0);
+			const end = start + coreMatch.length;
+
+			const range = getRangeFromTextOffsets(line, start, end);
+			if (!range) continue;
+
+			const rects = range.getClientRects(); 
+const union = Array.from(rects).reduce((acc, rect) => {
+	if (!acc) return {
+		top: rect.top,
+		left: rect.left,
+		right: rect.right,
+		bottom: rect.bottom
+	};
+
+	return {
+		top: Math.min(acc.top, rect.top),
+		left: Math.min(acc.left, rect.left),
+		right: Math.max(acc.right, rect.right),
+		bottom: Math.max(acc.bottom, rect.bottom)
+	};
+}, null);
+
+if (union) {
+	const box = document.createElement('div');
+	box.className = 'highlight-box';
+
+	const verticalOffset = 2; 
+	const heightReduction = 2;
+
+	box.style.top = union.top + window.scrollY + verticalOffset + 'px';
+	box.style.left = union.left + window.scrollX + 'px';
+	box.style.width = union.right - union.left + 'px';
+	box.style.height = union.bottom - union.top - heightReduction + 'px';
+
+	box.dataset.index = allMatchBoxes.length;
+	box.dataset.line = line.textContent.slice(0, 40);
+	box.dataset.start = start;
+	highlightLayer.appendChild(box);
+	allMatchBoxes.push(box);
+}
+
+
+		}
+	});
+
+	if (allMatchBoxes.length > 0) {
+		matchIndex = 0;
+		allMatchBoxes[0].classList.add('current');
+		allMatchBoxes[0].scrollIntoView({ block: "center" });
+	}
+	updateMatchCount();
+}
+
+
+function getRangeFromTextOffsets(container, startOffset, endOffset) {
+	const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+	let currentOffset = 0;
+
+	while (walker.nextNode()) {
+		const node = walker.currentNode;
+		const nodeText = node.textContent;
+		const nodeLength = nodeText.length;
+
+		if (startOffset >= currentOffset && startOffset < currentOffset + nodeLength) {
+			const startNode = node;
+			const startNodeOffset = startOffset - currentOffset;
+
+			let endNode = startNode;
+			let endNodeOffset = Math.min(endOffset - currentOffset, nodeLength);
+
+			let tempOffset = currentOffset + nodeLength;
+
+			while (tempOffset < endOffset && walker.nextNode()) {
+				endNode = walker.currentNode;
+				const remaining = endOffset - tempOffset;
+				endNodeOffset = Math.min(remaining, endNode.textContent.length);
+				tempOffset += endNode.textContent.length;
+			}
+
+			const range = document.createRange();
+			range.setStart(startNode, startNodeOffset);
+			range.setEnd(endNode, endNodeOffset);
+			return range;
+		}
+
+		currentOffset += nodeLength;
+	}
+	return null;
+}
+function performSearch(term) {
+	clearSearchHighlights();
+	updateMatchCount();
+	if (!term.trim()) return;
+
+	let pattern = term;
+
+	if (!useRegex) {
+		pattern = pattern.replace(/[.*+?^\${}()|[\]\\]/g, '\\$&');
+	}
+if (matchWhole && !useRegex) {
+	pattern = '(^|[^a-zA-Z0-9_])' + pattern + '(?=[^a-zA-Z0-9_]|$)';
+	
+
+}
+
+
+	console.log("Escaped pattern:", pattern);
+
+	const flags = matchCase ? 'g' : 'gi';
+	let regex;
+	try {
+		regex = new RegExp(pattern, flags);
+	} catch (err) {
+		console.warn("Invalid regex:", pattern, err);
+		return;
+	}
+
+	console.log("Final regex pattern:", pattern);
+	highlightWithOverlay(regex);
+}
+searchInput.addEventListener('input', () => {
+	performSearch(searchInput.value);
+	updateMatchCount()
+});
+
+document.addEventListener('keydown', e => {
+	if (e.ctrlKey && e.key === 'f') {
+		e.preventDefault();
+		searchBar.style.display = 'block';
+		let selectedText = window.getSelection()?.toString()?.trim();
+
+	if (selectedText) {
+		searchInput.value = selectedText;
+	} else {
+		selectedText = searchInput.value;
+	}
+
+	searchInput.focus();
+	searchInput.select();
+	performSearch(selectedText);
+	}
+	if (e.key === 'Escape') {
+		searchBar.style.display = 'none';
+		searchInput.value = '';
+		clearSearchHighlights();
+	}
+	if (e.key === 'Enter' && lastMatches.length > 0) {
+		matchIndex = (matchIndex + 1) % lastMatches.length;
+		lastMatches[matchIndex].scrollIntoView({ block: 'center' });
+	}
+});
+(function () {
+	const consoleDiv = document.getElementById('console-output');
+	if (!consoleDiv) return;
+
+	function logToConsole(type, args) {
+		const line = document.createElement('div');
+		line.style.whiteSpace = 'pre-wrap';
+		line.style.marginBottom = '4px';
+
+		const prefix = document.createElement('span');
+		prefix.textContent = `[${ type.toUpperCase() }]`;
+		prefix.style.color = type === 'error' ? '#f55' :
+			type === 'warn' ? '#ffa500' : '#66f';
+
+		line.appendChild(prefix);
+		line.appendChild(document.createTextNode(args.map(a => {
+			try {
+				return typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a);
+			} catch {
+				return String(a);
+			}
+		}).join(' ')));
+
+		consoleDiv.appendChild(line);
+		consoleDiv.scrollTop = consoleDiv.scrollHeight;
+	}
+
+	const originalLog = console.log;
+	const originalWarn = console.warn;
+	const originalError = console.error;
+
+	console.log = function (...args) {
+		originalLog.apply(console, args);
+		logToConsole('log', args);
+	};
+
+	console.warn = function (...args) {
+		originalWarn.apply(console, args);
+		logToConsole('warn', args);
+	};
+
+	console.error = function (...args) {
+		originalError.apply(console, args);
+		logToConsole('error', args);
+	};
+})();
+
+</script>
+</body>
+</html>
+[Log] <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+	body {
+		margin: 0;
+		display: flex;
+		font-family: Consolas, 'Courier New', monospace;
+		background: #1e1e1e;
+		color: rgb(210, 222, 174);
+		font-size: 14px;
+		font-weight: 0;
+		overflow: hidden;
+	}
+	@keyframes pop {
+		0% { transform: scale(1); }
+		50% { transform: scale(1.04); }
+		100% { transform: scale(1.035); }
+	}
+mark {
+		background-color: rgba(255, 160, 80, 0.35);
+		color: inherit;
+		padding: 0;
+		border-radius: 2px;
+	}
+mark.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.2);
+}
+
+	#main {
+		flex-grow: 1;
+		overflow-y: scroll;
+		height: 100vh;
+		padding: 16px;
+		box-sizing: border-box;
+	}
+	.kw { color: rgba(76, 156, 222, 0.93); font-weight: bold; }
+	.annotation { color: rgb(238, 223, 154); }
+.type-link {
+	color: rgba(108, 220, 175, 0.92); /* dimmed green */
+	cursor: default;
+	text-decoration: none;
+	pointer-events: none;
+}
+
+.ctrl-down .type-link {
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+.ctrl-down .type-link:hover {
+	color: rgba(158, 234, 203, 0.92);
+	text-decoration: underline;
+	display: inline-block;
+	animation: pop 0.17s ease-in-out forwards;
+}
+
+
+	.ident { color: #9cdcfe; }
+	.method-name { color: rgba(231, 229, 151, 0.92); }
+	.arg-name { color: rgba(104, 208, 237, 0.97); }
+	.line {
+		opacity: 0;
+		transition: opacity 0.05s linear;
+	}
+		.highlight-layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	z-index: 50;
+}
+.highlight-box {
+	position: absolute;
+	background-color: rgba(255, 160, 80, 0.35);
+	border-radius: 2px;
+}
+.highlight-box.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.3); /* lighter blue */
+	box-shadow: 0 0 4px #3794ff99;
+	z-index: 60;
+}
+
+		
+			#search-bar button {
+		background-color:rgba(30, 30, 30, 0.27);
+		color: white;
+		border: 1px solid #555;
+		border-radius: 6px;
+		padding: 4px 8px;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+		font-size: 13px;
+		font-family: inherit;
+		user-select: none;
+	}
+
+	#search-bar button.active {
+		background-color: #094771;
+		border-color: #3794ff;
+		color: white;
+	}
+</style>
+</head>
+<body>
+<div id="search-bar" style="display: none; position: fixed; top: 8px; right: 8px; z-index: 100; background: #2c2c2c; padding: 4px 8px; border-radius: 4px; display: flex; gap: 4px; align-items: center;">
+	<input type="text" id="search-input" placeholder="Search..." style="width: 180px; background: #1e1e1e; color: white; border: 1px solid #555; padding: 4px;" />
+	<button id="toggle-case" title="Match Case">Aa</button>
+	<button id="toggle-whole" title="Whole Word">⛶</button>
+	<button id="toggle-regex" title="Regex">*</button>
+	<span id="search-count" style="color: white; min-width: 30px; text-align: center; font-size: 13px; font-family: Arial, sans-serif;">No Results</span>
+	<button id="search-prev" title="Previous Match">↑</button>
+	<button id="search-next" title="Next Match">↓</button>
+	<button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
+	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div>
+
+</div>
+
+<div id="main"><div class="line" data-text="package kotlin" style="opacity: 0;"><div><span class="kw">package</span> <span class="type-link" data-package="kotlin"><span class="ident">kotlin</span></span></div><br></div>
+<div class="line" data-text=" class Float {" style="opacity: 0;"><div id="current-class"> <span class="kw">class</span> <span class="ident">Float</span> {</div></div>
+<div class="line" data-text="fun compareTo(arg0: Byte): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">compareTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun compareTo(arg0: Short): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">compareTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun compareTo(arg0: Int): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">compareTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun compareTo(arg0: Long): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">compareTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun compareTo(arg0: Float): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">compareTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun compareTo(arg0: Double): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">compareTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun plus(arg0: Byte): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">plus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun plus(arg0: Short): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">plus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun plus(arg0: Int): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">plus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun plus(arg0: Long): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">plus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun plus(arg0: Float): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">plus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun plus(arg0: Double): Double {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">plus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Double">Double</span> {};</div></div>
+<div class="line" data-text="fun minus(arg0: Byte): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">minus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun minus(arg0: Short): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">minus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun minus(arg0: Int): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">minus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun minus(arg0: Long): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">minus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun minus(arg0: Float): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">minus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun minus(arg0: Double): Double {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">minus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Double">Double</span> {};</div></div>
+<div class="line" data-text="fun times(arg0: Byte): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">times</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun times(arg0: Short): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">times</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun times(arg0: Int): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">times</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun times(arg0: Long): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">times</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun times(arg0: Float): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">times</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun times(arg0: Double): Double {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">times</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Double">Double</span> {};</div></div>
+<div class="line" data-text="fun div(arg0: Byte): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">div</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun div(arg0: Short): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">div</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun div(arg0: Int): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">div</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun div(arg0: Long): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">div</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun div(arg0: Float): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">div</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun div(arg0: Double): Double {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">div</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Double">Double</span> {};</div></div>
+<div class="line" data-text="fun rem(arg0: Byte): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rem</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun rem(arg0: Short): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rem</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun rem(arg0: Int): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rem</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun rem(arg0: Long): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rem</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun rem(arg0: Float): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rem</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun rem(arg0: Double): Double {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rem</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Double">Double</span> {};</div></div>
+<div class="line" data-text="fun inc(): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">inc</span>(): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun dec(): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">dec</span>(): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun unaryPlus(): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">unaryPlus</span>(): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun unaryMinus(): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">unaryMinus</span>(): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun toByte(): Byte {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toByte</span>(): <span class="type-link" data-type="kotlin.Byte">Byte</span> {};</div></div>
+<div class="line" data-text="fun toChar(): Char {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toChar</span>(): <span class="type-link" data-type="kotlin.Char">Char</span> {};</div></div>
+<div class="line" data-text="fun toShort(): Short {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toShort</span>(): <span class="type-link" data-type="kotlin.Short">Short</span> {};</div></div>
+<div class="line" data-text="fun toInt(): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toInt</span>(): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun toLong(): Long {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toLong</span>(): <span class="type-link" data-type="kotlin.Long">Long</span> {};</div></div>
+<div class="line" data-text="fun toFloat(): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toFloat</span>(): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun toDouble(): Double {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toDouble</span>(): <span class="type-link" data-type="kotlin.Double">Double</span> {};</div></div>
+<div class="line" data-text="fun toString(): String {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toString</span>(): <span class="type-link" data-type="kotlin.String">String</span> {};</div></div>
+<div class="line" data-text="fun equals(arg0: Any): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">equals</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Any">Any</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div>}</div></div>
+<div class="line" data-text="" style="opacity: 0;"></div></div></div>
+<script>
+	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
+	document.getElementById('current-class')?.scrollIntoView({ block: 'start' });
+
+	document.addEventListener('click', e => {
+		let target = e.target;
+		while (target && !target.classList.contains('type-link')) {
+			target = target.parentElement;
+		}
+		if (!target) return;
+
+		const typeName = target.getAttribute('data-type');
+		if (typeName) {
+			vscode.postMessage({ command: 'openType', type: typeName });
+			return;
+		}
+		const pkg = target.getAttribute('data-package');
+		if (pkg) {
+			vscode.postMessage({ command: 'openPackage', package: pkg });
+		}
+	});
+
+	const lines = Array.from(document.querySelectorAll('.line'));
+	const highlightLayer = document.createElement('div');
+highlightLayer.className = 'highlight-layer';
+document.body.appendChild(highlightLayer);
+
+	let index = 0;
+	function revealNextLine() {
+		if (index < lines.length) {
+			lines[index].style.opacity = '1';
+			index++;
+			setTimeout(revealNextLine, 10);
+		}
+	}
+	revealNextLine();
+	let matchCase = false;
+let matchWhole = false;
+let useRegex = false;
+document.getElementById('search-next').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex + 1) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-prev').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex - 1 + allMatchBoxes.length) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-close').addEventListener('click', function() {
+	searchBar.style.display = 'none';
+	clearSearchHighlights();
+	updateMatchCount();
+});
+
+
+document.getElementById('toggle-case').addEventListener('click', () => {
+	matchCase = !matchCase;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-whole').addEventListener('click', () => {
+	matchWhole = !matchWhole;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-regex').addEventListener('click', () => {
+	useRegex = !useRegex;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+function updateMatchCount() {
+	const countLabel = document.getElementById('search-count');
+	if (allMatchBoxes.length === 0) {
+		countLabel.textContent = 'No Results';
+		return;
+	}
+	countLabel.textContent = (matchIndex + 1) + " of " + allMatchBoxes.length;
+}
+document.addEventListener('mousemove', e => {
+	document.body.classList.toggle('ctrl-down', e.ctrlKey);
+});
+document.addEventListener('keydown', e => {
+	if (e.key === 'Control') document.body.classList.add('ctrl-down');
+});
+document.addEventListener('keyup', e => {
+	if (e.key === 'Control') document.body.classList.remove('ctrl-down');
+});
+
+
+
+function updateToggleUI() {
+	document.getElementById('toggle-case').classList.toggle('active', matchCase);
+	document.getElementById('toggle-whole').classList.toggle('active', matchWhole);
+	document.getElementById('toggle-regex').classList.toggle('active', useRegex);
+}
+
+function escapeHTML(str) {
+	return str.replace(/&/g, '&amp;')
+	          .replace(/</g, '&lt;')
+	          .replace(/>/g, '&gt;')
+	          .replace(/"/g, '&quot;')
+	          .replace(/'/g, '&#39;');
+}
+
+function clearSearchHighlights() {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+	matchIndex = 0;
+}
+
+// Search support
+const searchBar = document.getElementById('search-bar');
+const searchInput = document.getElementById('search-input');
+let lastMatches = [];
+let allMarkElements = [];
+let matchIndex = 0;
+let allMatchBoxes = [];
+function highlightWithOverlay(regex) {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+
+	lines.forEach(line => {
+		const text = line.textContent;
+		regex.lastIndex = 0;
+
+		let match;
+		while ((match = regex.exec(text)) !== null) {
+			const fullMatch = match[0];
+			const coreMatch = match[1] ? fullMatch.slice(match[1].length) : fullMatch;
+
+			const start = match.index + (match[1]?.length ?? 0);
+			const end = start + coreMatch.length;
+
+			const range = getRangeFromTextOffsets(line, start, end);
+			if (!range) continue;
+
+			const rects = range.getClientRects(); 
+const union = Array.from(rects).reduce((acc, rect) => {
+	if (!acc) return {
+		top: rect.top,
+		left: rect.left,
+		right: rect.right,
+		bottom: rect.bottom
+	};
+
+	return {
+		top: Math.min(acc.top, rect.top),
+		left: Math.min(acc.left, rect.left),
+		right: Math.max(acc.right, rect.right),
+		bottom: Math.max(acc.bottom, rect.bottom)
+	};
+}, null);
+
+if (union) {
+	const box = document.createElement('div');
+	box.className = 'highlight-box';
+
+	const verticalOffset = 2; 
+	const heightReduction = 2;
+
+	box.style.top = union.top + window.scrollY + verticalOffset + 'px';
+	box.style.left = union.left + window.scrollX + 'px';
+	box.style.width = union.right - union.left + 'px';
+	box.style.height = union.bottom - union.top - heightReduction + 'px';
+
+	box.dataset.index = allMatchBoxes.length;
+	box.dataset.line = line.textContent.slice(0, 40);
+	box.dataset.start = start;
+	highlightLayer.appendChild(box);
+	allMatchBoxes.push(box);
+}
+
+
+		}
+	});
+
+	if (allMatchBoxes.length > 0) {
+		matchIndex = 0;
+		allMatchBoxes[0].classList.add('current');
+		allMatchBoxes[0].scrollIntoView({ block: "center" });
+	}
+	updateMatchCount();
+}
+
+
+function getRangeFromTextOffsets(container, startOffset, endOffset) {
+	const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+	let currentOffset = 0;
+
+	while (walker.nextNode()) {
+		const node = walker.currentNode;
+		const nodeText = node.textContent;
+		const nodeLength = nodeText.length;
+
+		if (startOffset >= currentOffset && startOffset < currentOffset + nodeLength) {
+			const startNode = node;
+			const startNodeOffset = startOffset - currentOffset;
+
+			let endNode = startNode;
+			let endNodeOffset = Math.min(endOffset - currentOffset, nodeLength);
+
+			let tempOffset = currentOffset + nodeLength;
+
+			while (tempOffset < endOffset && walker.nextNode()) {
+				endNode = walker.currentNode;
+				const remaining = endOffset - tempOffset;
+				endNodeOffset = Math.min(remaining, endNode.textContent.length);
+				tempOffset += endNode.textContent.length;
+			}
+
+			const range = document.createRange();
+			range.setStart(startNode, startNodeOffset);
+			range.setEnd(endNode, endNodeOffset);
+			return range;
+		}
+
+		currentOffset += nodeLength;
+	}
+	return null;
+}
+function performSearch(term) {
+	clearSearchHighlights();
+	updateMatchCount();
+	if (!term.trim()) return;
+
+	let pattern = term;
+
+	if (!useRegex) {
+		pattern = pattern.replace(/[.*+?^\${}()|[\]\\]/g, '\\$&');
+	}
+if (matchWhole && !useRegex) {
+	pattern = '(^|[^a-zA-Z0-9_])' + pattern + '(?=[^a-zA-Z0-9_]|$)';
+	
+
+}
+
+
+	console.log("Escaped pattern:", pattern);
+
+	const flags = matchCase ? 'g' : 'gi';
+	let regex;
+	try {
+		regex = new RegExp(pattern, flags);
+	} catch (err) {
+		console.warn("Invalid regex:", pattern, err);
+		return;
+	}
+
+	console.log("Final regex pattern:", pattern);
+	highlightWithOverlay(regex);
+}
+searchInput.addEventListener('input', () => {
+	performSearch(searchInput.value);
+	updateMatchCount()
+});
+
+document.addEventListener('keydown', e => {
+	if (e.ctrlKey && e.key === 'f') {
+		e.preventDefault();
+		searchBar.style.display = 'block';
+		let selectedText = window.getSelection()?.toString()?.trim();
+
+	if (selectedText) {
+		searchInput.value = selectedText;
+	} else {
+		selectedText = searchInput.value;
+	}
+
+	searchInput.focus();
+	searchInput.select();
+	performSearch(selectedText);
+	}
+	if (e.key === 'Escape') {
+		searchBar.style.display = 'none';
+		searchInput.value = '';
+		clearSearchHighlights();
+	}
+	if (e.key === 'Enter' && lastMatches.length > 0) {
+		matchIndex = (matchIndex + 1) % lastMatches.length;
+		lastMatches[matchIndex].scrollIntoView({ block: 'center' });
+	}
+});
+(function () {
+	const consoleDiv = document.getElementById('console-output');
+	if (!consoleDiv) return;
+
+	function logToConsole(type, args) {
+		const line = document.createElement('div');
+		line.style.whiteSpace = 'pre-wrap';
+		line.style.marginBottom = '4px';
+
+		const prefix = document.createElement('span');
+		prefix.textContent = `[${ type.toUpperCase() }]`;
+		prefix.style.color = type === 'error' ? '#f55' :
+			type === 'warn' ? '#ffa500' : '#66f';
+
+		line.appendChild(prefix);
+		line.appendChild(document.createTextNode(args.map(a => {
+			try {
+				return typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a);
+			} catch {
+				return String(a);
+			}
+		}).join(' ')));
+
+		consoleDiv.appendChild(line);
+		consoleDiv.scrollTop = consoleDiv.scrollHeight;
+	}
+
+	const originalLog = console.log;
+	const originalWarn = console.warn;
+	const originalError = console.error;
+
+	console.log = function (...args) {
+		originalLog.apply(console, args);
+		logToConsole('log', args);
+	};
+
+	console.warn = function (...args) {
+		originalWarn.apply(console, args);
+		logToConsole('warn', args);
+	};
+
+	console.error = function (...args) {
+		originalError.apply(console, args);
+		logToConsole('error', args);
+	};
+})();
+
+</script>
+</body>
+</html>
+[Log] <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+	body {
+		margin: 0;
+		display: flex;
+		font-family: Consolas, 'Courier New', monospace;
+		background: #1e1e1e;
+		color: rgb(210, 222, 174);
+		font-size: 14px;
+		font-weight: 0;
+		overflow: hidden;
+	}
+	@keyframes pop {
+		0% { transform: scale(1); }
+		50% { transform: scale(1.04); }
+		100% { transform: scale(1.035); }
+	}
+mark {
+		background-color: rgba(255, 160, 80, 0.35);
+		color: inherit;
+		padding: 0;
+		border-radius: 2px;
+	}
+mark.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.2);
+}
+
+	#main {
+		flex-grow: 1;
+		overflow-y: scroll;
+		height: 100vh;
+		padding: 16px;
+		box-sizing: border-box;
+	}
+	.kw { color: rgba(76, 156, 222, 0.93); font-weight: bold; }
+	.annotation { color: rgb(238, 223, 154); }
+.type-link {
+	color: rgba(108, 220, 175, 0.92); /* dimmed green */
+	cursor: default;
+	text-decoration: none;
+	pointer-events: none;
+}
+
+.ctrl-down .type-link {
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+.ctrl-down .type-link:hover {
+	color: rgba(158, 234, 203, 0.92);
+	text-decoration: underline;
+	display: inline-block;
+	animation: pop 0.17s ease-in-out forwards;
+}
+
+
+	.ident { color: #9cdcfe; }
+	.method-name { color: rgba(231, 229, 151, 0.92); }
+	.arg-name { color: rgba(104, 208, 237, 0.97); }
+	.line {
+		opacity: 0;
+		transition: opacity 0.05s linear;
+	}
+		.highlight-layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	z-index: 50;
+}
+.highlight-box {
+	position: absolute;
+	background-color: rgba(255, 160, 80, 0.35);
+	border-radius: 2px;
+}
+.highlight-box.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.3); /* lighter blue */
+	box-shadow: 0 0 4px #3794ff99;
+	z-index: 60;
+}
+
+		
+			#search-bar button {
+		background-color:rgba(30, 30, 30, 0.27);
+		color: white;
+		border: 1px solid #555;
+		border-radius: 6px;
+		padding: 4px 8px;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+		font-size: 13px;
+		font-family: inherit;
+		user-select: none;
+	}
+
+	#search-bar button.active {
+		background-color: #094771;
+		border-color: #3794ff;
+		color: white;
+	}
+</style>
+</head>
+<body>
+<div id="search-bar" style="display: none; position: fixed; top: 8px; right: 8px; z-index: 100; background: #2c2c2c; padding: 4px 8px; border-radius: 4px; display: flex; gap: 4px; align-items: center;">
+	<input type="text" id="search-input" placeholder="Search..." style="width: 180px; background: #1e1e1e; color: white; border: 1px solid #555; padding: 4px;" />
+	<button id="toggle-case" title="Match Case">Aa</button>
+	<button id="toggle-whole" title="Whole Word">⛶</button>
+	<button id="toggle-regex" title="Regex">*</button>
+	<span id="search-count" style="color: white; min-width: 30px; text-align: center; font-size: 13px; font-family: Arial, sans-serif;">No Results</span>
+	<button id="search-prev" title="Previous Match">↑</button>
+	<button id="search-next" title="Next Match">↓</button>
+	<button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
+	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div>
+
+</div>
+
+<div id="main"><div class="line" data-text="package kotlin" style="opacity: 0;"><div><span class="kw">package</span> <span class="type-link" data-package="kotlin"><span class="ident">kotlin</span></span></div><br></div>
+<div class="line" data-text=" class Short {" style="opacity: 0;"><div id="current-class"> <span class="kw">class</span> <span class="ident">Short</span> {</div></div>
+<div class="line" data-text="fun compareTo(arg0: Byte): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">compareTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun compareTo(arg0: Short): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">compareTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun compareTo(arg0: Int): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">compareTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun compareTo(arg0: Long): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">compareTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun compareTo(arg0: Float): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">compareTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun compareTo(arg0: Double): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">compareTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun plus(arg0: Byte): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">plus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun plus(arg0: Short): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">plus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun plus(arg0: Int): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">plus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun plus(arg0: Long): Long {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">plus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.Long">Long</span> {};</div></div>
+<div class="line" data-text="fun plus(arg0: Float): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">plus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun plus(arg0: Double): Double {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">plus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Double">Double</span> {};</div></div>
+<div class="line" data-text="fun minus(arg0: Byte): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">minus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun minus(arg0: Short): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">minus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun minus(arg0: Int): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">minus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun minus(arg0: Long): Long {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">minus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.Long">Long</span> {};</div></div>
+<div class="line" data-text="fun minus(arg0: Float): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">minus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun minus(arg0: Double): Double {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">minus</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Double">Double</span> {};</div></div>
+<div class="line" data-text="fun times(arg0: Byte): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">times</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun times(arg0: Short): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">times</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun times(arg0: Int): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">times</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun times(arg0: Long): Long {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">times</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.Long">Long</span> {};</div></div>
+<div class="line" data-text="fun times(arg0: Float): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">times</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun times(arg0: Double): Double {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">times</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Double">Double</span> {};</div></div>
+<div class="line" data-text="fun div(arg0: Byte): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">div</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun div(arg0: Short): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">div</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun div(arg0: Int): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">div</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun div(arg0: Long): Long {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">div</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.Long">Long</span> {};</div></div>
+<div class="line" data-text="fun div(arg0: Float): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">div</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun div(arg0: Double): Double {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">div</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Double">Double</span> {};</div></div>
+<div class="line" data-text="fun rem(arg0: Byte): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rem</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun rem(arg0: Short): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rem</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun rem(arg0: Int): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rem</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun rem(arg0: Long): Long {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rem</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.Long">Long</span> {};</div></div>
+<div class="line" data-text="fun rem(arg0: Float): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rem</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun rem(arg0: Double): Double {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rem</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Double">Double</span> {};</div></div>
+<div class="line" data-text="fun inc(): Short {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">inc</span>(): <span class="type-link" data-type="kotlin.Short">Short</span> {};</div></div>
+<div class="line" data-text="fun dec(): Short {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">dec</span>(): <span class="type-link" data-type="kotlin.Short">Short</span> {};</div></div>
+<div class="line" data-text="fun unaryPlus(): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">unaryPlus</span>(): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun unaryMinus(): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">unaryMinus</span>(): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun rangeTo(arg0: Byte): IntRange {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rangeTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.ranges.IntRange">IntRange</span> {};</div></div>
+<div class="line" data-text="fun rangeTo(arg0: Short): IntRange {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rangeTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.ranges.IntRange">IntRange</span> {};</div></div>
+<div class="line" data-text="fun rangeTo(arg0: Int): IntRange {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rangeTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.ranges.IntRange">IntRange</span> {};</div></div>
+<div class="line" data-text="fun rangeTo(arg0: Long): LongRange {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rangeTo</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.ranges.LongRange">LongRange</span> {};</div></div>
+<div class="line" data-text="fun rangeUntil(arg0: Byte): IntRange {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rangeUntil</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Byte">Byte</span>): <span class="type-link" data-type="kotlin.ranges.IntRange">IntRange</span> {};</div></div>
+<div class="line" data-text="fun rangeUntil(arg0: Short): IntRange {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rangeUntil</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.ranges.IntRange">IntRange</span> {};</div></div>
+<div class="line" data-text="fun rangeUntil(arg0: Int): IntRange {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rangeUntil</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.ranges.IntRange">IntRange</span> {};</div></div>
+<div class="line" data-text="fun rangeUntil(arg0: Long): LongRange {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">rangeUntil</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="kotlin.ranges.LongRange">LongRange</span> {};</div></div>
+<div class="line" data-text="fun toByte(): Byte {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toByte</span>(): <span class="type-link" data-type="kotlin.Byte">Byte</span> {};</div></div>
+<div class="line" data-text="fun toChar(): Char {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toChar</span>(): <span class="type-link" data-type="kotlin.Char">Char</span> {};</div></div>
+<div class="line" data-text="fun toShort(): Short {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toShort</span>(): <span class="type-link" data-type="kotlin.Short">Short</span> {};</div></div>
+<div class="line" data-text="fun toInt(): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toInt</span>(): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun toLong(): Long {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toLong</span>(): <span class="type-link" data-type="kotlin.Long">Long</span> {};</div></div>
+<div class="line" data-text="fun toFloat(): Float {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toFloat</span>(): <span class="type-link" data-type="kotlin.Float">Float</span> {};</div></div>
+<div class="line" data-text="fun toDouble(): Double {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toDouble</span>(): <span class="type-link" data-type="kotlin.Double">Double</span> {};</div></div>
+<div class="line" data-text="fun toString(): String {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toString</span>(): <span class="type-link" data-type="kotlin.String">String</span> {};</div></div>
+<div class="line" data-text="fun equals(arg0: Any): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">equals</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Any">Any</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div>}</div></div>
+<div class="line" data-text="" style="opacity: 0;"></div></div></div>
+<script>
+	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
+	document.getElementById('current-class')?.scrollIntoView({ block: 'start' });
+
+	document.addEventListener('click', e => {
+		let target = e.target;
+		while (target && !target.classList.contains('type-link')) {
+			target = target.parentElement;
+		}
+		if (!target) return;
+
+		const typeName = target.getAttribute('data-type');
+		if (typeName) {
+			vscode.postMessage({ command: 'openType', type: typeName });
+			return;
+		}
+		const pkg = target.getAttribute('data-package');
+		if (pkg) {
+			vscode.postMessage({ command: 'openPackage', package: pkg });
+		}
+	});
+
+	const lines = Array.from(document.querySelectorAll('.line'));
+	const highlightLayer = document.createElement('div');
+highlightLayer.className = 'highlight-layer';
+document.body.appendChild(highlightLayer);
+
+	let index = 0;
+	function revealNextLine() {
+		if (index < lines.length) {
+			lines[index].style.opacity = '1';
+			index++;
+			setTimeout(revealNextLine, 10);
+		}
+	}
+	revealNextLine();
+	let matchCase = false;
+let matchWhole = false;
+let useRegex = false;
+document.getElementById('search-next').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex + 1) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-prev').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex - 1 + allMatchBoxes.length) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-close').addEventListener('click', function() {
+	searchBar.style.display = 'none';
+	clearSearchHighlights();
+	updateMatchCount();
+});
+
+
+document.getElementById('toggle-case').addEventListener('click', () => {
+	matchCase = !matchCase;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-whole').addEventListener('click', () => {
+	matchWhole = !matchWhole;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-regex').addEventListener('click', () => {
+	useRegex = !useRegex;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+function updateMatchCount() {
+	const countLabel = document.getElementById('search-count');
+	if (allMatchBoxes.length === 0) {
+		countLabel.textContent = 'No Results';
+		return;
+	}
+	countLabel.textContent = (matchIndex + 1) + " of " + allMatchBoxes.length;
+}
+document.addEventListener('mousemove', e => {
+	document.body.classList.toggle('ctrl-down', e.ctrlKey);
+});
+document.addEventListener('keydown', e => {
+	if (e.key === 'Control') document.body.classList.add('ctrl-down');
+});
+document.addEventListener('keyup', e => {
+	if (e.key === 'Control') document.body.classList.remove('ctrl-down');
+});
+
+
+
+function updateToggleUI() {
+	document.getElementById('toggle-case').classList.toggle('active', matchCase);
+	document.getElementById('toggle-whole').classList.toggle('active', matchWhole);
+	document.getElementById('toggle-regex').classList.toggle('active', useRegex);
+}
+
+function escapeHTML(str) {
+	return str.replace(/&/g, '&amp;')
+	          .replace(/</g, '&lt;')
+	          .replace(/>/g, '&gt;')
+	          .replace(/"/g, '&quot;')
+	          .replace(/'/g, '&#39;');
+}
+
+function clearSearchHighlights() {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+	matchIndex = 0;
+}
+
+// Search support
+const searchBar = document.getElementById('search-bar');
+const searchInput = document.getElementById('search-input');
+let lastMatches = [];
+let allMarkElements = [];
+let matchIndex = 0;
+let allMatchBoxes = [];
+function highlightWithOverlay(regex) {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+
+	lines.forEach(line => {
+		const text = line.textContent;
+		regex.lastIndex = 0;
+
+		let match;
+		while ((match = regex.exec(text)) !== null) {
+			const fullMatch = match[0];
+			const coreMatch = match[1] ? fullMatch.slice(match[1].length) : fullMatch;
+
+			const start = match.index + (match[1]?.length ?? 0);
+			const end = start + coreMatch.length;
+
+			const range = getRangeFromTextOffsets(line, start, end);
+			if (!range) continue;
+
+			const rects = range.getClientRects(); 
+const union = Array.from(rects).reduce((acc, rect) => {
+	if (!acc) return {
+		top: rect.top,
+		left: rect.left,
+		right: rect.right,
+		bottom: rect.bottom
+	};
+
+	return {
+		top: Math.min(acc.top, rect.top),
+		left: Math.min(acc.left, rect.left),
+		right: Math.max(acc.right, rect.right),
+		bottom: Math.max(acc.bottom, rect.bottom)
+	};
+}, null);
+
+if (union) {
+	const box = document.createElement('div');
+	box.className = 'highlight-box';
+
+	const verticalOffset = 2; 
+	const heightReduction = 2;
+
+	box.style.top = union.top + window.scrollY + verticalOffset + 'px';
+	box.style.left = union.left + window.scrollX + 'px';
+	box.style.width = union.right - union.left + 'px';
+	box.style.height = union.bottom - union.top - heightReduction + 'px';
+
+	box.dataset.index = allMatchBoxes.length;
+	box.dataset.line = line.textContent.slice(0, 40);
+	box.dataset.start = start;
+	highlightLayer.appendChild(box);
+	allMatchBoxes.push(box);
+}
+
+
+		}
+	});
+
+	if (allMatchBoxes.length > 0) {
+		matchIndex = 0;
+		allMatchBoxes[0].classList.add('current');
+		allMatchBoxes[0].scrollIntoView({ block: "center" });
+	}
+	updateMatchCount();
+}
+
+
+function getRangeFromTextOffsets(container, startOffset, endOffset) {
+	const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+	let currentOffset = 0;
+
+	while (walker.nextNode()) {
+		const node = walker.currentNode;
+		const nodeText = node.textContent;
+		const nodeLength = nodeText.length;
+
+		if (startOffset >= currentOffset && startOffset < currentOffset + nodeLength) {
+			const startNode = node;
+			const startNodeOffset = startOffset - currentOffset;
+
+			let endNode = startNode;
+			let endNodeOffset = Math.min(endOffset - currentOffset, nodeLength);
+
+			let tempOffset = currentOffset + nodeLength;
+
+			while (tempOffset < endOffset && walker.nextNode()) {
+				endNode = walker.currentNode;
+				const remaining = endOffset - tempOffset;
+				endNodeOffset = Math.min(remaining, endNode.textContent.length);
+				tempOffset += endNode.textContent.length;
+			}
+
+			const range = document.createRange();
+			range.setStart(startNode, startNodeOffset);
+			range.setEnd(endNode, endNodeOffset);
+			return range;
+		}
+
+		currentOffset += nodeLength;
+	}
+	return null;
+}
+function performSearch(term) {
+	clearSearchHighlights();
+	updateMatchCount();
+	if (!term.trim()) return;
+
+	let pattern = term;
+
+	if (!useRegex) {
+		pattern = pattern.replace(/[.*+?^\${}()|[\]\\]/g, '\\$&');
+	}
+if (matchWhole && !useRegex) {
+	pattern = '(^|[^a-zA-Z0-9_])' + pattern + '(?=[^a-zA-Z0-9_]|$)';
+	
+
+}
+
+
+	console.log("Escaped pattern:", pattern);
+
+	const flags = matchCase ? 'g' : 'gi';
+	let regex;
+	try {
+		regex = new RegExp(pattern, flags);
+	} catch (err) {
+		console.warn("Invalid regex:", pattern, err);
+		return;
+	}
+
+	console.log("Final regex pattern:", pattern);
+	highlightWithOverlay(regex);
+}
+searchInput.addEventListener('input', () => {
+	performSearch(searchInput.value);
+	updateMatchCount()
+});
+
+document.addEventListener('keydown', e => {
+	if (e.ctrlKey && e.key === 'f') {
+		e.preventDefault();
+		searchBar.style.display = 'block';
+		let selectedText = window.getSelection()?.toString()?.trim();
+
+	if (selectedText) {
+		searchInput.value = selectedText;
+	} else {
+		selectedText = searchInput.value;
+	}
+
+	searchInput.focus();
+	searchInput.select();
+	performSearch(selectedText);
+	}
+	if (e.key === 'Escape') {
+		searchBar.style.display = 'none';
+		searchInput.value = '';
+		clearSearchHighlights();
+	}
+	if (e.key === 'Enter' && lastMatches.length > 0) {
+		matchIndex = (matchIndex + 1) % lastMatches.length;
+		lastMatches[matchIndex].scrollIntoView({ block: 'center' });
+	}
+});
+(function () {
+	const consoleDiv = document.getElementById('console-output');
+	if (!consoleDiv) return;
+
+	function logToConsole(type, args) {
+		const line = document.createElement('div');
+		line.style.whiteSpace = 'pre-wrap';
+		line.style.marginBottom = '4px';
+
+		const prefix = document.createElement('span');
+		prefix.textContent = `[${ type.toUpperCase() }]`;
+		prefix.style.color = type === 'error' ? '#f55' :
+			type === 'warn' ? '#ffa500' : '#66f';
+
+		line.appendChild(prefix);
+		line.appendChild(document.createTextNode(args.map(a => {
+			try {
+				return typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a);
+			} catch {
+				return String(a);
+			}
+		}).join(' ')));
+
+		consoleDiv.appendChild(line);
+		consoleDiv.scrollTop = consoleDiv.scrollHeight;
+	}
+
+	const originalLog = console.log;
+	const originalWarn = console.warn;
+	const originalError = console.error;
+
+	console.log = function (...args) {
+		originalLog.apply(console, args);
+		logToConsole('log', args);
+	};
+
+	console.warn = function (...args) {
+		originalWarn.apply(console, args);
+		logToConsole('warn', args);
+	};
+
+	console.error = function (...args) {
+		originalError.apply(console, args);
+		logToConsole('error', args);
+	};
+})();
+
+</script>
+</body>
+</html>
+[Log] Closed document: file:///d%3A/minecraft/instances/1.21%20fab/package.json
+[Log] <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+	body {
+		margin: 0;
+		display: flex;
+		font-family: Consolas, 'Courier New', monospace;
+		background: #1e1e1e;
+		color: rgb(210, 222, 174);
+		font-size: 14px;
+		font-weight: 0;
+		overflow: hidden;
+	}
+	@keyframes pop {
+		0% { transform: scale(1); }
+		50% { transform: scale(1.04); }
+		100% { transform: scale(1.035); }
+	}
+mark {
+		background-color: rgba(255, 160, 80, 0.35);
+		color: inherit;
+		padding: 0;
+		border-radius: 2px;
+	}
+mark.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.2);
+}
+
+	#main {
+		flex-grow: 1;
+		overflow-y: scroll;
+		height: 100vh;
+		padding: 16px;
+		box-sizing: border-box;
+	}
+	.kw { color: rgba(76, 156, 222, 0.93); font-weight: bold; }
+	.annotation { color: rgb(238, 223, 154); }
+.type-link {
+	color: rgba(108, 220, 175, 0.92); /* dimmed green */
+	cursor: default;
+	text-decoration: none;
+	pointer-events: none;
+}
+
+.ctrl-down .type-link {
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+.ctrl-down .type-link:hover {
+	color: rgba(158, 234, 203, 0.92);
+	text-decoration: underline;
+	display: inline-block;
+	animation: pop 0.17s ease-in-out forwards;
+}
+
+
+	.ident { color: #9cdcfe; }
+	.method-name { color: rgba(231, 229, 151, 0.92); }
+	.arg-name { color: rgba(104, 208, 237, 0.97); }
+	.line {
+		opacity: 0;
+		transition: opacity 0.05s linear;
+	}
+		.highlight-layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	z-index: 50;
+}
+.highlight-box {
+	position: absolute;
+	background-color: rgba(255, 160, 80, 0.35);
+	border-radius: 2px;
+}
+.highlight-box.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.3); /* lighter blue */
+	box-shadow: 0 0 4px #3794ff99;
+	z-index: 60;
+}
+
+		
+			#search-bar button {
+		background-color:rgba(30, 30, 30, 0.27);
+		color: white;
+		border: 1px solid #555;
+		border-radius: 6px;
+		padding: 4px 8px;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+		font-size: 13px;
+		font-family: inherit;
+		user-select: none;
+	}
+
+	#search-bar button.active {
+		background-color: #094771;
+		border-color: #3794ff;
+		color: white;
+	}
+</style>
+</head>
+<body>
+<div id="search-bar" style="display: none; position: fixed; top: 8px; right: 8px; z-index: 100; background: #2c2c2c; padding: 4px 8px; border-radius: 4px; display: flex; gap: 4px; align-items: center;">
+	<input type="text" id="search-input" placeholder="Search..." style="width: 180px; background: #1e1e1e; color: white; border: 1px solid #555; padding: 4px;" />
+	<button id="toggle-case" title="Match Case">Aa</button>
+	<button id="toggle-whole" title="Whole Word">⛶</button>
+	<button id="toggle-regex" title="Regex">*</button>
+	<span id="search-count" style="color: white; min-width: 30px; text-align: center; font-size: 13px; font-family: Arial, sans-serif;">No Results</span>
+	<button id="search-prev" title="Previous Match">↑</button>
+	<button id="search-next" title="Next Match">↓</button>
+	<button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
+	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div>
+
+</div>
+
+<div id="main"><div class="line" data-text="package java.util" style="opacity: 0;"><div><span class="kw">package</span> <span class="type-link" data-package="java"><span class="ident">java</span></span><span>.</span><span class="type-link" data-package="java.util"><span class="ident">util</span></span></div><br></div>
+<div class="line" data-text=" class ArrayDeque : AbstractCollection, Deque, Cloneable, Serializable, Queue, SequencedCollection, Collection, Iterable {" style="opacity: 0;"><div id="current-class"> <span class="kw">class</span> <span class="ident">ArrayDeque</span> : <span class="type-link" data-type="java.util.AbstractCollection">AbstractCollection</span>, <span class="type-link" data-type="java.util.Deque">Deque</span>, <span class="type-link" data-type="java.lang.Cloneable">Cloneable</span>, <span class="type-link" data-type="java.io.Serializable">Serializable</span>, <span class="type-link" data-type="java.util.Queue">Queue</span>, <span class="type-link" data-type="java.util.SequencedCollection">SequencedCollection</span>, <span class="type-link" data-type="java.util.Collection">Collection</span>, <span class="type-link" data-type="java.lang.Iterable">Iterable</span> {</div></div>
+<div class="line" data-text="@Transientval elements: Object[];" style="opacity: 0;"><div style="padding-left: 2em"><span class="annotation">@Transient</span></div><div style="padding-left: 2em"><span class="kw">val</span> <span class="ident">elements</span>: <span class="type-link" data-type="java.lang.Object[]">Object[]</span>;</div></div>
+<div class="line" data-text="@Transientval head: Int;" style="opacity: 0;"><div style="padding-left: 2em"><span class="annotation">@Transient</span></div><div style="padding-left: 2em"><span class="kw">val</span> <span class="ident">head</span>: <span class="type-link" data-type="kotlin.Int">Int</span>;</div></div>
+<div class="line" data-text="@Transientval tail: Int;" style="opacity: 0;"><div style="padding-left: 2em"><span class="annotation">@Transient</span></div><div style="padding-left: 2em"><span class="kw">val</span> <span class="ident">tail</span>: <span class="type-link" data-type="kotlin.Int">Int</span>;</div></div>
+<div class="line" data-text="private fun grow(arg0: Int): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">grow</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="private fun newCapacity(arg0: Int, arg1: Int): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">newCapacity</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun addFirst(arg0: E): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">addFirst</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="E">E</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun addLast(arg0: E): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">addLast</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="E">E</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun addAll(arg0: Collection<? extends E>): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">addAll</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.Collection">Collection</span>&lt;? extends E&gt;): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="private fun copyElements(arg0: Collection<? extends E>): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">copyElements</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.Collection">Collection</span>&lt;? extends E&gt;): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun offerFirst(arg0: E): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">offerFirst</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="E">E</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun offerLast(arg0: E): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">offerLast</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="E">E</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun removeFirst(): E {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">removeFirst</span>(): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="fun removeLast(): E {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">removeLast</span>(): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="fun pollFirst(): E {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">pollFirst</span>(): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="fun pollLast(): E {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">pollLast</span>(): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="fun getFirst(): E {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">getFirst</span>(): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="fun getLast(): E {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">getLast</span>(): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="fun peekFirst(): E {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">peekFirst</span>(): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="fun peekLast(): E {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">peekLast</span>(): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="fun removeFirstOccurrence(arg0: Object): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">removeFirstOccurrence</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun removeLastOccurrence(arg0: Object): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">removeLastOccurrence</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun add(arg0: E): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">add</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="E">E</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun offer(arg0: E): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">offer</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="E">E</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun remove(): E {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">remove</span>(): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="fun poll(): E {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">poll</span>(): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="fun element(): E {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">element</span>(): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="fun peek(): E {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">peek</span>(): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="fun push(arg0: E): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">push</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="E">E</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun pop(): E {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">pop</span>(): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="fun delete(arg0: Int): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">delete</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun size(): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">size</span>(): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun isEmpty(): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">isEmpty</span>(): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun iterator(): Iterator<E> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">iterator</span>(): <span class="type-link" data-type="java.util.Iterator">Iterator</span>&lt;E&gt; {};</div></div>
+<div class="line" data-text="fun descendingIterator(): Iterator<E> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">descendingIterator</span>(): <span class="type-link" data-type="java.util.Iterator">Iterator</span>&lt;E&gt; {};</div></div>
+<div class="line" data-text="fun spliterator(): Spliterator<E> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">spliterator</span>(): <span class="type-link" data-type="java.util.Spliterator">Spliterator</span>&lt;E&gt; {};</div></div>
+<div class="line" data-text="fun forEach(arg0: Consumer<? super E>): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">forEach</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>&lt;? super E&gt;): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun removeIf(arg0: Predicate<? super E>): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">removeIf</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Predicate">Predicate</span>&lt;? super E&gt;): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun removeAll(arg0: Collection<?>): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">removeAll</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.Collection">Collection</span>&lt;?&gt;): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun retainAll(arg0: Collection<?>): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">retainAll</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.Collection">Collection</span>&lt;?&gt;): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="private fun bulkRemove(arg0: Predicate<? super E>): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">bulkRemove</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Predicate">Predicate</span>&lt;? super E&gt;): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="private fun bulkRemoveModified(arg0: Int, arg1: Predicate<? super E>): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">bulkRemoveModified</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Predicate">Predicate</span>&lt;? super E&gt;): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun contains(arg0: Object): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">contains</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun remove(arg0: Object): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">remove</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun clear(): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">clear</span>(): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun toArray(): Object[] {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toArray</span>(): <span class="type-link" data-type="java.lang.Object[]">Object[]</span> {};</div></div>
+<div class="line" data-text="private fun toArray(arg0: Class<T[]>): T[] {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">toArray</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Class">Class</span>&lt;T[]&gt;): <span class="type-link" data-type="T[]">T[]</span> {};</div></div>
+<div class="line" data-text="fun toArray(arg0: T[]): T[] {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toArray</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="T[]">T[]</span>): <span class="type-link" data-type="T[]">T[]</span> {};</div></div>
+<div class="line" data-text="fun clone(): Object {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">clone</span>(): <span class="type-link" data-type="java.lang.Object">Object</span> {};</div></div>
+<div class="line" data-text="private fun writeObject(arg0: ObjectOutputStream): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">writeObject</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.io.ObjectOutputStream">ObjectOutputStream</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="private fun readObject(arg0: ObjectInputStream): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">readObject</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.io.ObjectInputStream">ObjectInputStream</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun checkInvariants(): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">checkInvariants</span>(): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun reversed(): SequencedCollection {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">reversed</span>(): <span class="type-link" data-type="java.util.SequencedCollection">SequencedCollection</span> {};</div></div>
+<div class="line" data-text="fun toArray(arg0: IntFunction<T[]>): T[] {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toArray</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.IntFunction">IntFunction</span>&lt;T[]&gt;): <span class="type-link" data-type="T[]">T[]</span> {};</div></div>
+<div class="line" data-text="abstract fun containsAll(arg0: Collection<?>): Boolean;" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">abstract</span> <span class="kw">fun</span> <span class="method-name">containsAll</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.Collection">Collection</span>&lt;?&gt;): <span class="type-link" data-type="kotlin.Boolean">Boolean</span>;</div></div>
+<div class="line" data-text="fun stream(): Stream<E> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">stream</span>(): <span class="type-link" data-type="java.util.stream.Stream">Stream</span>&lt;E&gt; {};</div></div>
+<div class="line" data-text="fun parallelStream(): Stream<E> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">parallelStream</span>(): <span class="type-link" data-type="java.util.stream.Stream">Stream</span>&lt;E&gt; {};</div></div>
+<div class="line" data-text="companion object {" style="opacity: 0;"><br><div style="padding-left: 2em"><span class="kw">companion object</span> {</div></div>
+<div class="line" data-text="@JvmStaticprivate final val MAX_ARRAY_SIZE: Int;" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">final</span> <span class="kw">val</span> <span class="ident">MAX_ARRAY_SIZE</span>: <span class="type-link" data-type="kotlin.Int">Int</span>;</div></div>
+<div class="line" data-text="@JvmStaticprivate final val serialVersionUID: Long;" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">final</span> <span class="kw">val</span> <span class="ident">serialVersionUID</span>: <span class="type-link" data-type="kotlin.Long">Long</span>;</div></div>
+<div class="line" data-text="@JvmStaticfinal fun inc(arg0: Int, arg1: Int): Int {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">inc</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="@JvmStaticfinal fun dec(arg0: Int, arg1: Int): Int {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">dec</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="@JvmStaticfinal fun inc(arg0: Int, arg1: Int, arg2: Int): Int {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">inc</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="@JvmStaticfinal fun sub(arg0: Int, arg1: Int, arg2: Int): Int {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">sub</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="@JvmStaticfinal fun elementAt(arg0: Int, arg1: Object[]): E {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">elementAt</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.lang.Object[]">Object[]</span>): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="@JvmStaticfinal fun nonNullElementAt(arg0: Int, arg1: Object[]): E {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">nonNullElementAt</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.lang.Object[]">Object[]</span>): <span class="type-link" data-type="E">E</span> {};</div></div>
+<div class="line" data-text="@JvmStaticprivate fun nBits(arg0: Int): long[] {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">nBits</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="long[]">long[]</span> {};</div></div>
+<div class="line" data-text="@JvmStaticprivate fun setBit(arg0: Int, arg1: long[]): Unit {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">setBit</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="long[]">long[]</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="@JvmStaticprivate fun isClear(arg0: Int, arg1: long[]): Boolean {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">isClear</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="long[]">long[]</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="@JvmStaticprivate fun circularClear(arg0: Int, arg1: Int, arg2: Object[]): Unit {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">circularClear</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.lang.Object[]">Object[]</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="@JvmStaticprivate fun finishToArray(arg0: T[], arg1: Iterator<?>): T[] {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">finishToArray</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="T[]">T[]</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.Iterator">Iterator</span>&lt;?&gt;): <span class="type-link" data-type="T[]">T[]</span> {};</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div style="padding-left: 2em">}</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div>}</div></div>
+<div class="line" data-text="" style="opacity: 0;"></div></div></div>
+<script>
+	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
+	document.getElementById('current-class')?.scrollIntoView({ block: 'start' });
+
+	document.addEventListener('click', e => {
+		let target = e.target;
+		while (target && !target.classList.contains('type-link')) {
+			target = target.parentElement;
+		}
+		if (!target) return;
+
+		const typeName = target.getAttribute('data-type');
+		if (typeName) {
+			vscode.postMessage({ command: 'openType', type: typeName });
+			return;
+		}
+		const pkg = target.getAttribute('data-package');
+		if (pkg) {
+			vscode.postMessage({ command: 'openPackage', package: pkg });
+		}
+	});
+
+	const lines = Array.from(document.querySelectorAll('.line'));
+	const highlightLayer = document.createElement('div');
+highlightLayer.className = 'highlight-layer';
+document.body.appendChild(highlightLayer);
+
+	let index = 0;
+	function revealNextLine() {
+		if (index < lines.length) {
+			lines[index].style.opacity = '1';
+			index++;
+			setTimeout(revealNextLine, 10);
+		}
+	}
+	revealNextLine();
+	let matchCase = false;
+let matchWhole = false;
+let useRegex = false;
+document.getElementById('search-next').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex + 1) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-prev').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex - 1 + allMatchBoxes.length) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-close').addEventListener('click', function() {
+	searchBar.style.display = 'none';
+	clearSearchHighlights();
+	updateMatchCount();
+});
+
+
+document.getElementById('toggle-case').addEventListener('click', () => {
+	matchCase = !matchCase;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-whole').addEventListener('click', () => {
+	matchWhole = !matchWhole;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-regex').addEventListener('click', () => {
+	useRegex = !useRegex;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+function updateMatchCount() {
+	const countLabel = document.getElementById('search-count');
+	if (allMatchBoxes.length === 0) {
+		countLabel.textContent = 'No Results';
+		return;
+	}
+	countLabel.textContent = (matchIndex + 1) + " of " + allMatchBoxes.length;
+}
+document.addEventListener('mousemove', e => {
+	document.body.classList.toggle('ctrl-down', e.ctrlKey);
+});
+document.addEventListener('keydown', e => {
+	if (e.key === 'Control') document.body.classList.add('ctrl-down');
+});
+document.addEventListener('keyup', e => {
+	if (e.key === 'Control') document.body.classList.remove('ctrl-down');
+});
+
+
+
+function updateToggleUI() {
+	document.getElementById('toggle-case').classList.toggle('active', matchCase);
+	document.getElementById('toggle-whole').classList.toggle('active', matchWhole);
+	document.getElementById('toggle-regex').classList.toggle('active', useRegex);
+}
+
+function escapeHTML(str) {
+	return str.replace(/&/g, '&amp;')
+	          .replace(/</g, '&lt;')
+	          .replace(/>/g, '&gt;')
+	          .replace(/"/g, '&quot;')
+	          .replace(/'/g, '&#39;');
+}
+
+function clearSearchHighlights() {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+	matchIndex = 0;
+}
+
+// Search support
+const searchBar = document.getElementById('search-bar');
+const searchInput = document.getElementById('search-input');
+let lastMatches = [];
+let allMarkElements = [];
+let matchIndex = 0;
+let allMatchBoxes = [];
+function highlightWithOverlay(regex) {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+
+	lines.forEach(line => {
+		const text = line.textContent;
+		regex.lastIndex = 0;
+
+		let match;
+		while ((match = regex.exec(text)) !== null) {
+			const fullMatch = match[0];
+			const coreMatch = match[1] ? fullMatch.slice(match[1].length) : fullMatch;
+
+			const start = match.index + (match[1]?.length ?? 0);
+			const end = start + coreMatch.length;
+
+			const range = getRangeFromTextOffsets(line, start, end);
+			if (!range) continue;
+
+			const rects = range.getClientRects(); 
+const union = Array.from(rects).reduce((acc, rect) => {
+	if (!acc) return {
+		top: rect.top,
+		left: rect.left,
+		right: rect.right,
+		bottom: rect.bottom
+	};
+
+	return {
+		top: Math.min(acc.top, rect.top),
+		left: Math.min(acc.left, rect.left),
+		right: Math.max(acc.right, rect.right),
+		bottom: Math.max(acc.bottom, rect.bottom)
+	};
+}, null);
+
+if (union) {
+	const box = document.createElement('div');
+	box.className = 'highlight-box';
+
+	const verticalOffset = 2; 
+	const heightReduction = 2;
+
+	box.style.top = union.top + window.scrollY + verticalOffset + 'px';
+	box.style.left = union.left + window.scrollX + 'px';
+	box.style.width = union.right - union.left + 'px';
+	box.style.height = union.bottom - union.top - heightReduction + 'px';
+
+	box.dataset.index = allMatchBoxes.length;
+	box.dataset.line = line.textContent.slice(0, 40);
+	box.dataset.start = start;
+	highlightLayer.appendChild(box);
+	allMatchBoxes.push(box);
+}
+
+
+		}
+	});
+
+	if (allMatchBoxes.length > 0) {
+		matchIndex = 0;
+		allMatchBoxes[0].classList.add('current');
+		allMatchBoxes[0].scrollIntoView({ block: "center" });
+	}
+	updateMatchCount();
+}
+
+
+function getRangeFromTextOffsets(container, startOffset, endOffset) {
+	const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+	let currentOffset = 0;
+
+	while (walker.nextNode()) {
+		const node = walker.currentNode;
+		const nodeText = node.textContent;
+		const nodeLength = nodeText.length;
+
+		if (startOffset >= currentOffset && startOffset < currentOffset + nodeLength) {
+			const startNode = node;
+			const startNodeOffset = startOffset - currentOffset;
+
+			let endNode = startNode;
+			let endNodeOffset = Math.min(endOffset - currentOffset, nodeLength);
+
+			let tempOffset = currentOffset + nodeLength;
+
+			while (tempOffset < endOffset && walker.nextNode()) {
+				endNode = walker.currentNode;
+				const remaining = endOffset - tempOffset;
+				endNodeOffset = Math.min(remaining, endNode.textContent.length);
+				tempOffset += endNode.textContent.length;
+			}
+
+			const range = document.createRange();
+			range.setStart(startNode, startNodeOffset);
+			range.setEnd(endNode, endNodeOffset);
+			return range;
+		}
+
+		currentOffset += nodeLength;
+	}
+	return null;
+}
+function performSearch(term) {
+	clearSearchHighlights();
+	updateMatchCount();
+	if (!term.trim()) return;
+
+	let pattern = term;
+
+	if (!useRegex) {
+		pattern = pattern.replace(/[.*+?^\${}()|[\]\\]/g, '\\$&');
+	}
+if (matchWhole && !useRegex) {
+	pattern = '(^|[^a-zA-Z0-9_])' + pattern + '(?=[^a-zA-Z0-9_]|$)';
+	
+
+}
+
+
+	console.log("Escaped pattern:", pattern);
+
+	const flags = matchCase ? 'g' : 'gi';
+	let regex;
+	try {
+		regex = new RegExp(pattern, flags);
+	} catch (err) {
+		console.warn("Invalid regex:", pattern, err);
+		return;
+	}
+
+	console.log("Final regex pattern:", pattern);
+	highlightWithOverlay(regex);
+}
+searchInput.addEventListener('input', () => {
+	performSearch(searchInput.value);
+	updateMatchCount()
+});
+
+document.addEventListener('keydown', e => {
+	if (e.ctrlKey && e.key === 'f') {
+		e.preventDefault();
+		searchBar.style.display = 'block';
+		let selectedText = window.getSelection()?.toString()?.trim();
+
+	if (selectedText) {
+		searchInput.value = selectedText;
+	} else {
+		selectedText = searchInput.value;
+	}
+
+	searchInput.focus();
+	searchInput.select();
+	performSearch(selectedText);
+	}
+	if (e.key === 'Escape') {
+		searchBar.style.display = 'none';
+		searchInput.value = '';
+		clearSearchHighlights();
+	}
+	if (e.key === 'Enter' && lastMatches.length > 0) {
+		matchIndex = (matchIndex + 1) % lastMatches.length;
+		lastMatches[matchIndex].scrollIntoView({ block: 'center' });
+	}
+});
+(function () {
+	const consoleDiv = document.getElementById('console-output');
+	if (!consoleDiv) return;
+
+	function logToConsole(type, args) {
+		const line = document.createElement('div');
+		line.style.whiteSpace = 'pre-wrap';
+		line.style.marginBottom = '4px';
+
+		const prefix = document.createElement('span');
+		prefix.textContent = `[${ type.toUpperCase() }]`;
+		prefix.style.color = type === 'error' ? '#f55' :
+			type === 'warn' ? '#ffa500' : '#66f';
+
+		line.appendChild(prefix);
+		line.appendChild(document.createTextNode(args.map(a => {
+			try {
+				return typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a);
+			} catch {
+				return String(a);
+			}
+		}).join(' ')));
+
+		consoleDiv.appendChild(line);
+		consoleDiv.scrollTop = consoleDiv.scrollHeight;
+	}
+
+	const originalLog = console.log;
+	const originalWarn = console.warn;
+	const originalError = console.error;
+
+	console.log = function (...args) {
+		originalLog.apply(console, args);
+		logToConsole('log', args);
+	};
+
+	console.warn = function (...args) {
+		originalWarn.apply(console, args);
+		logToConsole('warn', args);
+	};
+
+	console.error = function (...args) {
+		originalError.apply(console, args);
+		logToConsole('error', args);
+	};
+})();
+
+</script>
+</body>
+</html>
+[Log] <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+	body {
+		margin: 0;
+		display: flex;
+		font-family: Consolas, 'Courier New', monospace;
+		background: #1e1e1e;
+		color: rgb(210, 222, 174);
+		font-size: 14px;
+		font-weight: 0;
+		overflow: hidden;
+	}
+	@keyframes pop {
+		0% { transform: scale(1); }
+		50% { transform: scale(1.04); }
+		100% { transform: scale(1.035); }
+	}
+mark {
+		background-color: rgba(255, 160, 80, 0.35);
+		color: inherit;
+		padding: 0;
+		border-radius: 2px;
+	}
+mark.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.2);
+}
+
+	#main {
+		flex-grow: 1;
+		overflow-y: scroll;
+		height: 100vh;
+		padding: 16px;
+		box-sizing: border-box;
+	}
+	.kw { color: rgba(76, 156, 222, 0.93); font-weight: bold; }
+	.annotation { color: rgb(238, 223, 154); }
+.type-link {
+	color: rgba(108, 220, 175, 0.92); /* dimmed green */
+	cursor: default;
+	text-decoration: none;
+	pointer-events: none;
+}
+
+.ctrl-down .type-link {
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+.ctrl-down .type-link:hover {
+	color: rgba(158, 234, 203, 0.92);
+	text-decoration: underline;
+	display: inline-block;
+	animation: pop 0.17s ease-in-out forwards;
+}
+
+
+	.ident { color: #9cdcfe; }
+	.method-name { color: rgba(231, 229, 151, 0.92); }
+	.arg-name { color: rgba(104, 208, 237, 0.97); }
+	.line {
+		opacity: 0;
+		transition: opacity 0.05s linear;
+	}
+		.highlight-layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	z-index: 50;
+}
+.highlight-box {
+	position: absolute;
+	background-color: rgba(255, 160, 80, 0.35);
+	border-radius: 2px;
+}
+.highlight-box.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.3); /* lighter blue */
+	box-shadow: 0 0 4px #3794ff99;
+	z-index: 60;
+}
+
+		
+			#search-bar button {
+		background-color:rgba(30, 30, 30, 0.27);
+		color: white;
+		border: 1px solid #555;
+		border-radius: 6px;
+		padding: 4px 8px;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+		font-size: 13px;
+		font-family: inherit;
+		user-select: none;
+	}
+
+	#search-bar button.active {
+		background-color: #094771;
+		border-color: #3794ff;
+		color: white;
+	}
+</style>
+</head>
+<body>
+<div id="search-bar" style="display: none; position: fixed; top: 8px; right: 8px; z-index: 100; background: #2c2c2c; padding: 4px 8px; border-radius: 4px; display: flex; gap: 4px; align-items: center;">
+	<input type="text" id="search-input" placeholder="Search..." style="width: 180px; background: #1e1e1e; color: white; border: 1px solid #555; padding: 4px;" />
+	<button id="toggle-case" title="Match Case">Aa</button>
+	<button id="toggle-whole" title="Whole Word">⛶</button>
+	<button id="toggle-regex" title="Regex">*</button>
+	<span id="search-count" style="color: white; min-width: 30px; text-align: center; font-size: 13px; font-family: Arial, sans-serif;">No Results</span>
+	<button id="search-prev" title="Previous Match">↑</button>
+	<button id="search-next" title="Next Match">↓</button>
+	<button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
+	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div>
+
+</div>
+
+<div id="main"><div class="line" data-text="package kotlin" style="opacity: 0;"><div><span class="kw">package</span> <span class="type-link" data-package="kotlin"><span class="ident">kotlin</span></span></div><br></div>
+<div class="line" data-text="final class Unit {" style="opacity: 0;"><div id="current-class"><span class="kw">final</span> <span class="kw">class</span> <span class="ident">Unit</span> {</div></div>
+<div class="line" data-text="companion object {" style="opacity: 0;"><br><div style="padding-left: 2em"><span class="kw">companion object</span> {</div></div>
+<div class="line" data-text="@JvmStaticfinal val INSTANCE: Unit;" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">final</span> <span class="kw">val</span> <span class="ident">INSTANCE</span>: <span class="type-link" data-type="kotlin.Unit">Unit</span>;</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div style="padding-left: 2em">}</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div>}</div></div>
+<div class="line" data-text="" style="opacity: 0;"></div></div></div>
+<script>
+	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
+	document.getElementById('current-class')?.scrollIntoView({ block: 'start' });
+
+	document.addEventListener('click', e => {
+		let target = e.target;
+		while (target && !target.classList.contains('type-link')) {
+			target = target.parentElement;
+		}
+		if (!target) return;
+
+		const typeName = target.getAttribute('data-type');
+		if (typeName) {
+			vscode.postMessage({ command: 'openType', type: typeName });
+			return;
+		}
+		const pkg = target.getAttribute('data-package');
+		if (pkg) {
+			vscode.postMessage({ command: 'openPackage', package: pkg });
+		}
+	});
+
+	const lines = Array.from(document.querySelectorAll('.line'));
+	const highlightLayer = document.createElement('div');
+highlightLayer.className = 'highlight-layer';
+document.body.appendChild(highlightLayer);
+
+	let index = 0;
+	function revealNextLine() {
+		if (index < lines.length) {
+			lines[index].style.opacity = '1';
+			index++;
+			setTimeout(revealNextLine, 10);
+		}
+	}
+	revealNextLine();
+	let matchCase = false;
+let matchWhole = false;
+let useRegex = false;
+document.getElementById('search-next').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex + 1) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-prev').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex - 1 + allMatchBoxes.length) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-close').addEventListener('click', function() {
+	searchBar.style.display = 'none';
+	clearSearchHighlights();
+	updateMatchCount();
+});
+
+
+document.getElementById('toggle-case').addEventListener('click', () => {
+	matchCase = !matchCase;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-whole').addEventListener('click', () => {
+	matchWhole = !matchWhole;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-regex').addEventListener('click', () => {
+	useRegex = !useRegex;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+function updateMatchCount() {
+	const countLabel = document.getElementById('search-count');
+	if (allMatchBoxes.length === 0) {
+		countLabel.textContent = 'No Results';
+		return;
+	}
+	countLabel.textContent = (matchIndex + 1) + " of " + allMatchBoxes.length;
+}
+document.addEventListener('mousemove', e => {
+	document.body.classList.toggle('ctrl-down', e.ctrlKey);
+});
+document.addEventListener('keydown', e => {
+	if (e.key === 'Control') document.body.classList.add('ctrl-down');
+});
+document.addEventListener('keyup', e => {
+	if (e.key === 'Control') document.body.classList.remove('ctrl-down');
+});
+
+
+
+function updateToggleUI() {
+	document.getElementById('toggle-case').classList.toggle('active', matchCase);
+	document.getElementById('toggle-whole').classList.toggle('active', matchWhole);
+	document.getElementById('toggle-regex').classList.toggle('active', useRegex);
+}
+
+function escapeHTML(str) {
+	return str.replace(/&/g, '&amp;')
+	          .replace(/</g, '&lt;')
+	          .replace(/>/g, '&gt;')
+	          .replace(/"/g, '&quot;')
+	          .replace(/'/g, '&#39;');
+}
+
+function clearSearchHighlights() {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+	matchIndex = 0;
+}
+
+// Search support
+const searchBar = document.getElementById('search-bar');
+const searchInput = document.getElementById('search-input');
+let lastMatches = [];
+let allMarkElements = [];
+let matchIndex = 0;
+let allMatchBoxes = [];
+function highlightWithOverlay(regex) {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+
+	lines.forEach(line => {
+		const text = line.textContent;
+		regex.lastIndex = 0;
+
+		let match;
+		while ((match = regex.exec(text)) !== null) {
+			const fullMatch = match[0];
+			const coreMatch = match[1] ? fullMatch.slice(match[1].length) : fullMatch;
+
+			const start = match.index + (match[1]?.length ?? 0);
+			const end = start + coreMatch.length;
+
+			const range = getRangeFromTextOffsets(line, start, end);
+			if (!range) continue;
+
+			const rects = range.getClientRects(); 
+const union = Array.from(rects).reduce((acc, rect) => {
+	if (!acc) return {
+		top: rect.top,
+		left: rect.left,
+		right: rect.right,
+		bottom: rect.bottom
+	};
+
+	return {
+		top: Math.min(acc.top, rect.top),
+		left: Math.min(acc.left, rect.left),
+		right: Math.max(acc.right, rect.right),
+		bottom: Math.max(acc.bottom, rect.bottom)
+	};
+}, null);
+
+if (union) {
+	const box = document.createElement('div');
+	box.className = 'highlight-box';
+
+	const verticalOffset = 2; 
+	const heightReduction = 2;
+
+	box.style.top = union.top + window.scrollY + verticalOffset + 'px';
+	box.style.left = union.left + window.scrollX + 'px';
+	box.style.width = union.right - union.left + 'px';
+	box.style.height = union.bottom - union.top - heightReduction + 'px';
+
+	box.dataset.index = allMatchBoxes.length;
+	box.dataset.line = line.textContent.slice(0, 40);
+	box.dataset.start = start;
+	highlightLayer.appendChild(box);
+	allMatchBoxes.push(box);
+}
+
+
+		}
+	});
+
+	if (allMatchBoxes.length > 0) {
+		matchIndex = 0;
+		allMatchBoxes[0].classList.add('current');
+		allMatchBoxes[0].scrollIntoView({ block: "center" });
+	}
+	updateMatchCount();
+}
+
+
+function getRangeFromTextOffsets(container, startOffset, endOffset) {
+	const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+	let currentOffset = 0;
+
+	while (walker.nextNode()) {
+		const node = walker.currentNode;
+		const nodeText = node.textContent;
+		const nodeLength = nodeText.length;
+
+		if (startOffset >= currentOffset && startOffset < currentOffset + nodeLength) {
+			const startNode = node;
+			const startNodeOffset = startOffset - currentOffset;
+
+			let endNode = startNode;
+			let endNodeOffset = Math.min(endOffset - currentOffset, nodeLength);
+
+			let tempOffset = currentOffset + nodeLength;
+
+			while (tempOffset < endOffset && walker.nextNode()) {
+				endNode = walker.currentNode;
+				const remaining = endOffset - tempOffset;
+				endNodeOffset = Math.min(remaining, endNode.textContent.length);
+				tempOffset += endNode.textContent.length;
+			}
+
+			const range = document.createRange();
+			range.setStart(startNode, startNodeOffset);
+			range.setEnd(endNode, endNodeOffset);
+			return range;
+		}
+
+		currentOffset += nodeLength;
+	}
+	return null;
+}
+function performSearch(term) {
+	clearSearchHighlights();
+	updateMatchCount();
+	if (!term.trim()) return;
+
+	let pattern = term;
+
+	if (!useRegex) {
+		pattern = pattern.replace(/[.*+?^\${}()|[\]\\]/g, '\\$&');
+	}
+if (matchWhole && !useRegex) {
+	pattern = '(^|[^a-zA-Z0-9_])' + pattern + '(?=[^a-zA-Z0-9_]|$)';
+	
+
+}
+
+
+	console.log("Escaped pattern:", pattern);
+
+	const flags = matchCase ? 'g' : 'gi';
+	let regex;
+	try {
+		regex = new RegExp(pattern, flags);
+	} catch (err) {
+		console.warn("Invalid regex:", pattern, err);
+		return;
+	}
+
+	console.log("Final regex pattern:", pattern);
+	highlightWithOverlay(regex);
+}
+searchInput.addEventListener('input', () => {
+	performSearch(searchInput.value);
+	updateMatchCount()
+});
+
+document.addEventListener('keydown', e => {
+	if (e.ctrlKey && e.key === 'f') {
+		e.preventDefault();
+		searchBar.style.display = 'block';
+		let selectedText = window.getSelection()?.toString()?.trim();
+
+	if (selectedText) {
+		searchInput.value = selectedText;
+	} else {
+		selectedText = searchInput.value;
+	}
+
+	searchInput.focus();
+	searchInput.select();
+	performSearch(selectedText);
+	}
+	if (e.key === 'Escape') {
+		searchBar.style.display = 'none';
+		searchInput.value = '';
+		clearSearchHighlights();
+	}
+	if (e.key === 'Enter' && lastMatches.length > 0) {
+		matchIndex = (matchIndex + 1) % lastMatches.length;
+		lastMatches[matchIndex].scrollIntoView({ block: 'center' });
+	}
+});
+(function () {
+	const consoleDiv = document.getElementById('console-output');
+	if (!consoleDiv) return;
+
+	function logToConsole(type, args) {
+		const line = document.createElement('div');
+		line.style.whiteSpace = 'pre-wrap';
+		line.style.marginBottom = '4px';
+
+		const prefix = document.createElement('span');
+		prefix.textContent = `[${ type.toUpperCase() }]`;
+		prefix.style.color = type === 'error' ? '#f55' :
+			type === 'warn' ? '#ffa500' : '#66f';
+
+		line.appendChild(prefix);
+		line.appendChild(document.createTextNode(args.map(a => {
+			try {
+				return typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a);
+			} catch {
+				return String(a);
+			}
+		}).join(' ')));
+
+		consoleDiv.appendChild(line);
+		consoleDiv.scrollTop = consoleDiv.scrollHeight;
+	}
+
+	const originalLog = console.log;
+	const originalWarn = console.warn;
+	const originalError = console.error;
+
+	console.log = function (...args) {
+		originalLog.apply(console, args);
+		logToConsole('log', args);
+	};
+
+	console.warn = function (...args) {
+		originalWarn.apply(console, args);
+		logToConsole('warn', args);
+	};
+
+	console.error = function (...args) {
+		originalError.apply(console, args);
+		logToConsole('error', args);
+	};
+})();
+
+</script>
+</body>
+</html>
+[Log] <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+	body {
+		margin: 0;
+		display: flex;
+		font-family: Consolas, 'Courier New', monospace;
+		background: #1e1e1e;
+		color: rgb(210, 222, 174);
+		font-size: 14px;
+		font-weight: 0;
+		overflow: hidden;
+	}
+	@keyframes pop {
+		0% { transform: scale(1); }
+		50% { transform: scale(1.04); }
+		100% { transform: scale(1.035); }
+	}
+mark {
+		background-color: rgba(255, 160, 80, 0.35);
+		color: inherit;
+		padding: 0;
+		border-radius: 2px;
+	}
+mark.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.2);
+}
+
+	#main {
+		flex-grow: 1;
+		overflow-y: scroll;
+		height: 100vh;
+		padding: 16px;
+		box-sizing: border-box;
+	}
+	.kw { color: rgba(76, 156, 222, 0.93); font-weight: bold; }
+	.annotation { color: rgb(238, 223, 154); }
+.type-link {
+	color: rgba(108, 220, 175, 0.92); /* dimmed green */
+	cursor: default;
+	text-decoration: none;
+	pointer-events: none;
+}
+
+.ctrl-down .type-link {
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+.ctrl-down .type-link:hover {
+	color: rgba(158, 234, 203, 0.92);
+	text-decoration: underline;
+	display: inline-block;
+	animation: pop 0.17s ease-in-out forwards;
+}
+
+
+	.ident { color: #9cdcfe; }
+	.method-name { color: rgba(231, 229, 151, 0.92); }
+	.arg-name { color: rgba(104, 208, 237, 0.97); }
+	.line {
+		opacity: 0;
+		transition: opacity 0.05s linear;
+	}
+		.highlight-layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	z-index: 50;
+}
+.highlight-box {
+	position: absolute;
+	background-color: rgba(255, 160, 80, 0.35);
+	border-radius: 2px;
+}
+.highlight-box.current {
+	outline: 1px solid #3794ff;
+	background-color: rgba(55, 148, 255, 0.3); /* lighter blue */
+	box-shadow: 0 0 4px #3794ff99;
+	z-index: 60;
+}
+
+		
+			#search-bar button {
+		background-color:rgba(30, 30, 30, 0.27);
+		color: white;
+		border: 1px solid #555;
+		border-radius: 6px;
+		padding: 4px 8px;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+		font-size: 13px;
+		font-family: inherit;
+		user-select: none;
+	}
+
+	#search-bar button.active {
+		background-color: #094771;
+		border-color: #3794ff;
+		color: white;
+	}
+</style>
+</head>
+<body>
+<div id="search-bar" style="display: none; position: fixed; top: 8px; right: 8px; z-index: 100; background: #2c2c2c; padding: 4px 8px; border-radius: 4px; display: flex; gap: 4px; align-items: center;">
+	<input type="text" id="search-input" placeholder="Search..." style="width: 180px; background: #1e1e1e; color: white; border: 1px solid #555; padding: 4px;" />
+	<button id="toggle-case" title="Match Case">Aa</button>
+	<button id="toggle-whole" title="Whole Word">⛶</button>
+	<button id="toggle-regex" title="Regex">*</button>
+	<span id="search-count" style="color: white; min-width: 30px; text-align: center; font-size: 13px; font-family: Arial, sans-serif;">No Results</span>
+	<button id="search-prev" title="Previous Match">↑</button>
+	<button id="search-next" title="Next Match">↓</button>
+	<button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
+	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div>
+
+</div>
+
+<div id="main"><div class="line" data-text="package kotlin" style="opacity: 0;"><div><span class="kw">package</span> <span class="type-link" data-package="kotlin"><span class="ident">kotlin</span></span></div><br></div>
+<div class="line" data-text=" class ShortArray {" style="opacity: 0;"><div id="current-class"> <span class="kw">class</span> <span class="ident">ShortArray</span> {</div></div>
+<div class="line" data-text="fun get(arg0: Int): Short {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">get</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>): <span class="type-link" data-type="kotlin.Short">Short</span> {};</div></div>
+<div class="line" data-text="fun set(arg0: Int, arg1: Short): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">set</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Short">Short</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun size(): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">size</span>(): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun iterator(): ShortIterator {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">iterator</span>(): <span class="type-link" data-type="kotlin.collections.ShortIterator">ShortIterator</span> {};</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div>}</div></div>
+<div class="line" data-text="" style="opacity: 0;"></div></div></div>
+<script>
+	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
+	document.getElementById('current-class')?.scrollIntoView({ block: 'start' });
+
+	document.addEventListener('click', e => {
+		let target = e.target;
+		while (target && !target.classList.contains('type-link')) {
+			target = target.parentElement;
+		}
+		if (!target) return;
+
+		const typeName = target.getAttribute('data-type');
+		if (typeName) {
+			vscode.postMessage({ command: 'openType', type: typeName });
+			return;
+		}
+		const pkg = target.getAttribute('data-package');
+		if (pkg) {
+			vscode.postMessage({ command: 'openPackage', package: pkg });
+		}
+	});
+
+	const lines = Array.from(document.querySelectorAll('.line'));
+	const highlightLayer = document.createElement('div');
+highlightLayer.className = 'highlight-layer';
+document.body.appendChild(highlightLayer);
+
+	let index = 0;
+	function revealNextLine() {
+		if (index < lines.length) {
+			lines[index].style.opacity = '1';
+			index++;
+			setTimeout(revealNextLine, 10);
+		}
+	}
+	revealNextLine();
+	let matchCase = false;
+let matchWhole = false;
+let useRegex = false;
+document.getElementById('search-next').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex + 1) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-prev').addEventListener('click', () => {
+	if (allMatchBoxes.length === 0) return;
+	allMatchBoxes[matchIndex]?.classList.remove('current');
+	matchIndex = (matchIndex - 1 + allMatchBoxes.length) % allMatchBoxes.length;
+	allMatchBoxes[matchIndex].classList.add('current');
+	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
+	updateMatchCount();
+});
+
+document.getElementById('search-close').addEventListener('click', function() {
+	searchBar.style.display = 'none';
+	clearSearchHighlights();
+	updateMatchCount();
+});
+
+
+document.getElementById('toggle-case').addEventListener('click', () => {
+	matchCase = !matchCase;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-whole').addEventListener('click', () => {
+	matchWhole = !matchWhole;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+document.getElementById('toggle-regex').addEventListener('click', () => {
+	useRegex = !useRegex;
+	updateToggleUI();
+	performSearch(searchInput.value);
+});
+function updateMatchCount() {
+	const countLabel = document.getElementById('search-count');
+	if (allMatchBoxes.length === 0) {
+		countLabel.textContent = 'No Results';
+		return;
+	}
+	countLabel.textContent = (matchIndex + 1) + " of " + allMatchBoxes.length;
+}
+document.addEventListener('mousemove', e => {
+	document.body.classList.toggle('ctrl-down', e.ctrlKey);
+});
+document.addEventListener('keydown', e => {
+	if (e.key === 'Control') document.body.classList.add('ctrl-down');
+});
+document.addEventListener('keyup', e => {
+	if (e.key === 'Control') document.body.classList.remove('ctrl-down');
+});
+
+
+
+function updateToggleUI() {
+	document.getElementById('toggle-case').classList.toggle('active', matchCase);
+	document.getElementById('toggle-whole').classList.toggle('active', matchWhole);
+	document.getElementById('toggle-regex').classList.toggle('active', useRegex);
+}
+
+function escapeHTML(str) {
+	return str.replace(/&/g, '&amp;')
+	          .replace(/</g, '&lt;')
+	          .replace(/>/g, '&gt;')
+	          .replace(/"/g, '&quot;')
+	          .replace(/'/g, '&#39;');
+}
+
+function clearSearchHighlights() {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+	matchIndex = 0;
+}
+
+// Search support
+const searchBar = document.getElementById('search-bar');
+const searchInput = document.getElementById('search-input');
+let lastMatches = [];
+let allMarkElements = [];
+let matchIndex = 0;
+let allMatchBoxes = [];
+function highlightWithOverlay(regex) {
+	highlightLayer.innerHTML = '';
+	allMatchBoxes = [];
+
+	lines.forEach(line => {
+		const text = line.textContent;
+		regex.lastIndex = 0;
+
+		let match;
+		while ((match = regex.exec(text)) !== null) {
+			const fullMatch = match[0];
+			const coreMatch = match[1] ? fullMatch.slice(match[1].length) : fullMatch;
+
+			const start = match.index + (match[1]?.length ?? 0);
+			const end = start + coreMatch.length;
+
+			const range = getRangeFromTextOffsets(line, start, end);
+			if (!range) continue;
+
+			const rects = range.getClientRects(); 
+const union = Array.from(rects).reduce((acc, rect) => {
+	if (!acc) return {
+		top: rect.top,
+		left: rect.left,
+		right: rect.right,
+		bottom: rect.bottom
+	};
+
+	return {
+		top: Math.min(acc.top, rect.top),
+		left: Math.min(acc.left, rect.left),
+		right: Math.max(acc.right, rect.right),
+		bottom: Math.max(acc.bottom, rect.bottom)
+	};
+}, null);
+
+if (union) {
+	const box = document.createElement('div');
+	box.className = 'highlight-box';
+
+	const verticalOffset = 2; 
+	const heightReduction = 2;
+
+	box.style.top = union.top + window.scrollY + verticalOffset + 'px';
+	box.style.left = union.left + window.scrollX + 'px';
+	box.style.width = union.right - union.left + 'px';
+	box.style.height = union.bottom - union.top - heightReduction + 'px';
+
+	box.dataset.index = allMatchBoxes.length;
+	box.dataset.line = line.textContent.slice(0, 40);
+	box.dataset.start = start;
+	highlightLayer.appendChild(box);
+	allMatchBoxes.push(box);
+}
+
+
+		}
+	});
+
+	if (allMatchBoxes.length > 0) {
+		matchIndex = 0;
+		allMatchBoxes[0].classList.add('current');
+		allMatchBoxes[0].scrollIntoView({ block: "center" });
+	}
+	updateMatchCount();
+}
+
+
+function getRangeFromTextOffsets(container, startOffset, endOffset) {
+	const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+	let currentOffset = 0;
+
+	while (walker.nextNode()) {
+		const node = walker.currentNode;
+		const nodeText = node.textContent;
+		const nodeLength = nodeText.length;
+
+		if (startOffset >= currentOffset && startOffset < currentOffset + nodeLength) {
+			const startNode = node;
+			const startNodeOffset = startOffset - currentOffset;
+
+			let endNode = startNode;
+			let endNodeOffset = Math.min(endOffset - currentOffset, nodeLength);
+
+			let tempOffset = currentOffset + nodeLength;
+
+			while (tempOffset < endOffset && walker.nextNode()) {
+				endNode = walker.currentNode;
+				const remaining = endOffset - tempOffset;
+				endNodeOffset = Math.min(remaining, endNode.textContent.length);
+				tempOffset += endNode.textContent.length;
+			}
+
+			const range = document.createRange();
+			range.setStart(startNode, startNodeOffset);
+			range.setEnd(endNode, endNodeOffset);
+			return range;
+		}
+
+		currentOffset += nodeLength;
+	}
+	return null;
+}
+function performSearch(term) {
+	clearSearchHighlights();
+	updateMatchCount();
+	if (!term.trim()) return;
+
+	let pattern = term;
+
+	if (!useRegex) {
+		pattern = pattern.replace(/[.*+?^\${}()|[\]\\]/g, '\\$&');
+	}
+if (matchWhole && !useRegex) {
+	pattern = '(^|[^a-zA-Z0-9_])' + pattern + '(?=[^a-zA-Z0-9_]|$)';
+	
+
+}
+
+
+	console.log("Escaped pattern:", pattern);
+
+	const flags = matchCase ? 'g' : 'gi';
+	let regex;
+	try {
+		regex = new RegExp(pattern, flags);
+	} catch (err) {
+		console.warn("Invalid regex:", pattern, err);
+		return;
+	}
+
+	console.log("Final regex pattern:", pattern);
+	highlightWithOverlay(regex);
+}
+searchInput.addEventListener('input', () => {
+	performSearch(searchInput.value);
+	updateMatchCount()
+});
+
+document.addEventListener('keydown', e => {
+	if (e.ctrlKey && e.key === 'f') {
+		e.preventDefault();
+		searchBar.style.display = 'block';
+		let selectedText = window.getSelection()?.toString()?.trim();
+
+	if (selectedText) {
+		searchInput.value = selectedText;
+	} else {
+		selectedText = searchInput.value;
+	}
+
+	searchInput.focus();
+	searchInput.select();
+	performSearch(selectedText);
+	}
+	if (e.key === 'Escape') {
+		searchBar.style.display = 'none';
+		searchInput.value = '';
+		clearSearchHighlights();
+	}
+	if (e.key === 'Enter' && lastMatches.length > 0) {
+		matchIndex = (matchIndex + 1) % lastMatches.length;
+		lastMatches[matchIndex].scrollIntoView({ block: 'center' });
+	}
+});
+(function () {
+	const consoleDiv = document.getElementById('console-output');
+	if (!consoleDiv) return;
+
+	function logToConsole(type, args) {
+		const line = document.createElement('div');
+		line.style.whiteSpace = 'pre-wrap';
+		line.style.marginBottom = '4px';
+
+		const prefix = document.createElement('span');
+		prefix.textContent = `[${ type.toUpperCase() }]`;
+		prefix.style.color = type === 'error' ? '#f55' :
+			type === 'warn' ? '#ffa500' : '#66f';
+
+		line.appendChild(prefix);
+		line.appendChild(document.createTextNode(args.map(a => {
+			try {
+				return typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a);
+			} catch {
+				return String(a);
+			}
+		}).join(' ')));
+
+		consoleDiv.appendChild(line);
+		consoleDiv.scrollTop = consoleDiv.scrollHeight;
+	}
+
+	const originalLog = console.log;
+	const originalWarn = console.warn;
+	const originalError = console.error;
+
+	console.log = function (...args) {
+		originalLog.apply(console, args);
+		logToConsole('log', args);
+	};
+
+	console.warn = function (...args) {
+		originalWarn.apply(console, args);
+		logToConsole('warn', args);
+	};
+
+	console.error = function (...args) {
+		originalError.apply(console, args);
+		logToConsole('error', args);
+	};
+})();
+
+</script>
+</body>
+</html>
