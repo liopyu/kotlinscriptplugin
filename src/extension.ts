@@ -239,6 +239,74 @@ export async function activate(context: vscode.ExtensionContext) {
 		const mods = modStr.split(/\s+/).filter(m => !annotationModifiers[m]);
 		return mods.join(" ").trim();
 	}
+	const renderKeyword = (kw: string) => `<span class="kw">${kw}</span>`;
+	const renderIdentifier = (name: string) => `<span class="ident">${name}</span>`;
+	const renderMethodName = (name: string) => `<span class="method-name">${name}</span>`;
+	const renderArgName = (name: string) => `<span class="arg-name">${name}</span>`;
+	const renderType = (type: string | null, disableHover = false) => {
+		const raw = type?.split('<')[0];
+		const simple = raw?.split('.').pop();
+		const generics = type?.match(/<(.+)>/)?.[1];
+		const renderedGenerics = generics
+			?.split(',')
+			.map(t => t.trim().split('.').pop())
+			.join(', ');
+
+		const dataAttr = disableHover ? '' : ` data-type="${raw}"`;
+		return `<span class="type-link"${dataAttr}>${simple}</span>${generics ? `&lt;${renderedGenerics}&gt;` : ''}`;
+	};
+
+
+	const renderAnnotation = (text: string) => `<span class="annotation">@${text}</span>`;
+
+	const renderAnnotations = (mods: string, indent: number = 2) =>
+		extractAnnotations(mods)
+			.map(a => `<div style="padding-left: ${indent}em">${renderAnnotation(a.replace('@', ''))}</div>`)
+			.join('\n');
+
+
+	const renderModifiers = (mods: string) => {
+		const stripped = stripAnnotationModifiers(mods)
+			.replace(/\bnative\b/g, 'external')
+			.replace(/\bpublic\b/g, '');
+
+		return stripped
+			.trim()
+			.split(/\s+/)
+			.filter(Boolean)
+			.map(renderKeyword)
+			.join(' ') + (stripped.trim() ? ' ' : '');
+	};
+
+
+	const renderField = (f: Field, indent: number) => {
+		const annotations = renderAnnotations(f.modifiers, indent);
+		const modStr = renderModifiers(f.modifiers);
+		const type = renderType(f.returns);
+		return `${annotations}<div style="padding-left: ${indent}em">${modStr}${renderKeyword('val')} ${renderIdentifier(f.name)}: ${type};</div>`;
+	};
+
+	const renderMethod = (m: Method, indent: number, isInterface: boolean) => {
+		const annotations = renderAnnotations(m.modifiers, indent);
+		let methodModifiers = m.modifiers;
+
+		if (isInterface) {
+			methodModifiers = methodModifiers.replace(/\babstract\b/g, '');
+		}
+
+		const modStr = renderModifiers(methodModifiers);
+		const methodName = m.name.replace(/\(.*$/, '');
+		const args = m.args.map((a, i) =>
+			`${renderArgName('arg' + i)}: ${renderType(a)}`
+		).join(', ');
+		const ret = renderType(m.returns);
+
+		const isAbstract = /\babstract\b/.test(m.modifiers);
+		const isExternal = /\bnative\b/.test(m.modifiers);
+		const suffix = (isAbstract || isExternal) ? ';' : ' {};';
+
+		return `${annotations}<div style="padding-left: ${indent}em">${modStr}${renderKeyword('fun')} ${renderMethodName(methodName)}(${args}): ${ret}${suffix}</div>`;
+	};
 	function generateClassHtml(member: TypingsMember): string {
 		const lines: string[] = [];
 		const packagePath = member.classPath.substring(0, member.classPath.lastIndexOf('.'));
@@ -247,76 +315,14 @@ export async function activate(context: vscode.ExtensionContext) {
 		const interfaces = member.interfaces ?? [];
 		const isInterface = member.modifiers.includes('interface');
 		const classKeyword = isInterface ? 'interface' : 'class';
-		const renderKeyword = (kw: string) => `<span class="kw">${kw}</span>`;
-		const renderIdentifier = (name: string) => `<span class="ident">${name}</span>`;
-		const renderMethodName = (name: string) => `<span class="method-name">${name}</span>`;
-		const renderArgName = (name: string) => `<span class="arg-name">${name}</span>`;
-		const renderType = (type: string | null) => {
-			const raw = type?.split('<')[0];
-			const simple = raw?.split('.').pop();
-			const generics = type?.match(/<(.+)>/)?.[1];
-			const renderedGenerics = generics
-				?.split(',')
-				.map(t => t.trim().split('.').pop())
-				.join(', ');
-			return `<span class="type-link" data-type="${raw}">${simple}</span>${generics ? `&lt;${renderedGenerics}&gt;` : ''}`;
-		};
 
-		const renderAnnotation = (text: string) => `<span class="annotation">@${text}</span>`;
-
-		const renderAnnotations = (mods: string, indent: number = 2) =>
-			extractAnnotations(mods)
-				.map(a => `<div style="padding-left: ${indent}em">${renderAnnotation(a.replace('@', ''))}</div>`)
-				.join('\n');
-
-
-		const renderModifiers = (mods: string) => {
-			const stripped = stripAnnotationModifiers(mods)
-				.replace(/\bnative\b/g, 'external')
-				.replace(/\bpublic\b/g, '');
-
-			return stripped
-				.trim()
-				.split(/\s+/)
-				.filter(Boolean)
-				.map(renderKeyword)
-				.join(' ') + (stripped.trim() ? ' ' : '');
-		};
-
-
-		const renderField = (f: Field, indent: number) => {
-			const annotations = renderAnnotations(f.modifiers, indent);
-			const modStr = renderModifiers(f.modifiers);
-			const type = renderType(f.returns);
-			return `${annotations}<div style="padding-left: ${indent}em">${modStr}${renderKeyword('val')} ${renderIdentifier(f.name)}: ${type};</div>`;
-		};
-
-		const renderMethod = (m: Method, indent: number) => {
-			const annotations = renderAnnotations(m.modifiers, indent);
-			let methodModifiers = m.modifiers;
-
-			if (isInterface) {
-				methodModifiers = methodModifiers.replace(/\babstract\b/g, '');
-			}
-
-			const modStr = renderModifiers(methodModifiers);
-			const methodName = m.name.replace(/\(.*$/, '');
-			const args = m.args.map((a, i) =>
-				`${renderArgName('arg' + i)}: ${renderType(a)}`
-			).join(', ');
-			const ret = renderType(m.returns);
-
-			const isAbstract = /\babstract\b/.test(m.modifiers);
-			const isExternal = /\bnative\b/.test(m.modifiers);
-			const suffix = (isAbstract || isExternal) ? ';' : ' {};';
-
-			return `${annotations}<div style="padding-left: ${indent}em">${modStr}${renderKeyword('fun')} ${renderMethodName(methodName)}(${args}): ${ret}${suffix}</div>`;
-		};
 
 		const inheritance = [superclass !== 'java.lang.Object' ? superclass : null, ...interfaces]
 			.filter(Boolean)
-			.map(renderType)
+			.map(i => renderType(i, false))
 			.join(', ');
+
+
 		let strippedModifiers = stripAnnotationModifiers(member.modifiers);
 
 		if (isInterface) {
@@ -350,12 +356,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		const staticMethods = member.methods.filter(m => m.modifiers.includes('static'));
 
 		instanceFields.forEach(f => lines.push(renderField(f, 2)));
-		instanceMethods.forEach(m => lines.push(renderMethod(m, 2)));
+		instanceMethods.forEach(m => lines.push(renderMethod(m, 2, isInterface)));
 
 		if (staticFields.length || staticMethods.length) {
 			lines.push(`<br><div style="padding-left: 2em">${renderKeyword('companion object')} {</div>`);
 			staticFields.forEach(f => lines.push(renderField(f, 4)));
-			staticMethods.forEach(m => lines.push(renderMethod(m, 4)));
+			staticMethods.forEach(m => lines.push(renderMethod(m, 4, isInterface)));
 			lines.push(`<div style="padding-left: 2em">}</div>`);
 		}
 
@@ -439,6 +445,17 @@ export async function activate(context: vscode.ExtensionContext) {
 				if (msg.command === 'openPackage') {
 					vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: msg.package });
 				}
+				if (msg.command === 'requestPreview') {
+					const typeName = msg.type;
+					const previewHtml = generateMiniPreview(typeName, utils.getTypingsMember(typeName));
+					if (panel)
+						panel.webview.postMessage({
+							command: 'previewResponse',
+							type: typeName,
+							html: previewHtml
+						});
+				}
+
 			});
 
 			panel.onDidDispose(() => {
@@ -448,6 +465,42 @@ export async function activate(context: vscode.ExtensionContext) {
 			packagePanels.set(packageName, panel);
 		}
 	}
+	function generateMiniPreview(typeName: string, member: TypingsMember | undefined): string {
+		if (!member) {
+			return `<div style="color: #999;">No preview available for <code>${typeName}</code></div>`;
+		}
+
+		let html = `<div><strong style="color:#dcdcaa">${typeName}</strong><br/><br/>`;
+
+		// Fields
+		if (member.fields?.length > 0) {
+			html += `<div style="margin-bottom: 6px;"><u style="color:#c586c0">Fields</u><ul style="margin:0;padding-left:14px">`;
+			for (const field of member.fields) {
+				const type = renderType(field.returns);
+				html += `<li><code style="color:#9cdcfe">${field.name}</code>: ${type}</li>`;
+			}
+			html += `</ul></div>`;
+		}
+
+		// Methods
+		if (member.methods?.length > 0) {
+			html += `<div><u style="color:#c586c0">Methods</u><ul style="margin:0;padding-left:14px">`;
+			for (const method of member.methods) {
+				const methodName = method.name.split('(')[0];
+				const args = method.args.map((arg, i) =>
+					`${renderArgName('arg' + i)}: ${renderType(arg, true)}`
+				).join(', ');
+				const ret = renderType(method.returns, true);
+				html += `<li>${renderMethodName(methodName)}(${args}): ${ret}</li>`;
+			}
+			html += `</ul></div>`;
+		}
+
+		html += `<div style="margin-top: 8px; font-size: 11px; color: #666;">Hold <b>Ctrl</b> and click to open</div>`;
+		html += `</div>`;
+
+		return html;
+	}
 
 	function openClassPanel(baseType: string, className: string, typingsMember: TypingsMember) {
 		const existing = classPanels.get(baseType);
@@ -455,11 +508,6 @@ export async function activate(context: vscode.ExtensionContext) {
 			existing.reveal();
 			return;
 		}
-
-		const classHtml = generateClassHtml(typingsMember);
-
-		const htmlContent = generateClassHtmlContent(classHtml);
-		console.log(htmlContent)
 		const panel = vscode.window.createWebviewPanel(
 			'kotlinClassPreview',
 			`Kotlin: ${className}`,
@@ -469,6 +517,11 @@ export async function activate(context: vscode.ExtensionContext) {
 				retainContextWhenHidden: true
 			}
 		);
+
+		const classHtml = generateClassHtml(typingsMember);
+
+		const htmlContent = generateClassHtmlContent(panel.webview, context.extensionUri, classHtml);
+		console.log(htmlContent)
 
 		panel.webview.html = htmlContent;
 		currentClassFQName = baseType;
@@ -484,7 +537,19 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (message.command === 'openPackage') {
 				vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: message.package });
 			}
+
+			// 🔥 Add this block:
+			if (message.command === 'requestPreview') {
+				const typeName = message.type;
+				const previewHtml = generateMiniPreview(typeName, utils.getTypingsMember(typeName));
+				panel.webview.postMessage({
+					command: 'previewResponse',
+					type: typeName,
+					html: previewHtml
+				});
+			}
 		});
+
 
 		panel.onDidDispose(() => {
 			classPanels.delete(baseType);
@@ -494,7 +559,15 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 
-	function generateClassHtmlContent(classHtml: string): string {
+	function generateClassHtmlContent(
+		webview: vscode.Webview,
+		extensionUri: vscode.Uri,
+		classHtml: string
+	): string {
+		const jsUri = webview.asWebviewUri(
+			vscode.Uri.joinPath(extensionUri, 'dist', 'classPreview.js')
+		);
+
 		return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -502,13 +575,11 @@ export async function activate(context: vscode.ExtensionContext) {
 <style>
 	body {
 		margin: 0;
-		display: flex;
 		font-family: Consolas, 'Courier New', monospace;
 		background: #1e1e1e;
 		color: rgb(210, 222, 174);
 		font-size: 14px;
 		font-weight: 0;
-		overflow: hidden;
 	}
 	@keyframes pop {
 		0% { transform: scale(1); }
@@ -527,19 +598,21 @@ mark.current {
 }
 
 	#main {
+		cursor: text;
 		flex-grow: 1;
-		overflow-y: scroll;
 		height: 100vh;
+	overflow-y: auto;
 		padding: 16px;
 		box-sizing: border-box;
 	}
 	.kw { color: rgba(76, 156, 222, 0.93); font-weight: bold; }
 	.annotation { color: rgb(238, 223, 154); }
 .type-link {
+
 	color: rgba(108, 220, 175, 0.92); /* dimmed green */
 	cursor: default;
 	text-decoration: none;
-	pointer-events: none;
+pointer-events: auto;
 }
 
 .ctrl-down .type-link {
@@ -566,7 +639,8 @@ mark.current {
 	position: absolute;
 	top: 0;
 	left: 0;
-	pointer-events: none;
+	pointer-events: auto;
+
 	z-index: 50;
 }
 .highlight-box {
@@ -600,6 +674,8 @@ mark.current {
 		border-color: #3794ff;
 		color: white;
 	}
+
+
 </style>
 </head>
 <body>
@@ -615,347 +691,26 @@ mark.current {
 	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div>
 
 </div>
-
 <div id="main">${classHtml}</div>
-<script>
-	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
-	document.getElementById('current-class')?.scrollIntoView({ block: 'start' });
-
-	document.addEventListener('click', e => {
-		let target = e.target;
-		while (target && !target.classList.contains('type-link')) {
-			target = target.parentElement;
-		}
-		if (!target) return;
-
-		const typeName = target.getAttribute('data-type');
-		if (typeName) {
-			vscode.postMessage({ command: 'openType', type: typeName });
-			return;
-		}
-		const pkg = target.getAttribute('data-package');
-		if (pkg) {
-			vscode.postMessage({ command: 'openPackage', package: pkg });
-		}
-	});
-
-	const lines = Array.from(document.querySelectorAll('.line'));
-	const highlightLayer = document.createElement('div');
-highlightLayer.className = 'highlight-layer';
-document.body.appendChild(highlightLayer);
-
-	let index = 0;
-	function revealNextLine() {
-		if (index < lines.length) {
-			lines[index].style.opacity = '1';
-			index++;
-			setTimeout(revealNextLine, 10);
-		}
-	}
-	revealNextLine();
-	let matchCase = false;
-let matchWhole = false;
-let useRegex = false;
-document.getElementById('search-next').addEventListener('click', () => {
-	if (allMatchBoxes.length === 0) return;
-	allMatchBoxes[matchIndex]?.classList.remove('current');
-	matchIndex = (matchIndex + 1) % allMatchBoxes.length;
-	allMatchBoxes[matchIndex].classList.add('current');
-	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
-	updateMatchCount();
-});
-
-document.getElementById('search-prev').addEventListener('click', () => {
-	if (allMatchBoxes.length === 0) return;
-	allMatchBoxes[matchIndex]?.classList.remove('current');
-	matchIndex = (matchIndex - 1 + allMatchBoxes.length) % allMatchBoxes.length;
-	allMatchBoxes[matchIndex].classList.add('current');
-	allMatchBoxes[matchIndex].scrollIntoView({ block: "center" });
-	updateMatchCount();
-});
-
-document.getElementById('search-close').addEventListener('click', function() {
-	searchBar.style.display = 'none';
-	clearSearchHighlights();
-	updateMatchCount();
-});
-
-
-document.getElementById('toggle-case').addEventListener('click', () => {
-	matchCase = !matchCase;
-	updateToggleUI();
-	performSearch(searchInput.value);
-});
-document.getElementById('toggle-whole').addEventListener('click', () => {
-	matchWhole = !matchWhole;
-	updateToggleUI();
-	performSearch(searchInput.value);
-});
-document.getElementById('toggle-regex').addEventListener('click', () => {
-	useRegex = !useRegex;
-	updateToggleUI();
-	performSearch(searchInput.value);
-});
-function updateMatchCount() {
-	const countLabel = document.getElementById('search-count');
-	if (allMatchBoxes.length === 0) {
-		countLabel.textContent = 'No Results';
-		return;
-	}
-	countLabel.textContent = (matchIndex + 1) + " of " + allMatchBoxes.length;
-}
-document.addEventListener('mousemove', e => {
-	document.body.classList.toggle('ctrl-down', e.ctrlKey);
-});
-document.addEventListener('keydown', e => {
-	if (e.key === 'Control') document.body.classList.add('ctrl-down');
-});
-document.addEventListener('keyup', e => {
-	if (e.key === 'Control') document.body.classList.remove('ctrl-down');
-});
-
-
-
-function updateToggleUI() {
-	document.getElementById('toggle-case').classList.toggle('active', matchCase);
-	document.getElementById('toggle-whole').classList.toggle('active', matchWhole);
-	document.getElementById('toggle-regex').classList.toggle('active', useRegex);
-}
-
-function escapeHTML(str) {
-	return str.replace(/&/g, '&amp;')
-	          .replace(/</g, '&lt;')
-	          .replace(/>/g, '&gt;')
-	          .replace(/"/g, '&quot;')
-	          .replace(/'/g, '&#39;');
-}
-
-function clearSearchHighlights() {
-	highlightLayer.innerHTML = '';
-	allMatchBoxes = [];
-	matchIndex = 0;
-}
-
-// Search support
-const searchBar = document.getElementById('search-bar');
-const searchInput = document.getElementById('search-input');
-let lastMatches = [];
-let allMarkElements = [];
-let matchIndex = 0;
-let allMatchBoxes = [];
-function highlightWithOverlay(regex) {
-	highlightLayer.innerHTML = '';
-	allMatchBoxes = [];
-
-	lines.forEach(line => {
-		const text = line.textContent;
-		regex.lastIndex = 0;
-
-		let match;
-		while ((match = regex.exec(text)) !== null) {
-			const fullMatch = match[0];
-			const coreMatch = match[1] ? fullMatch.slice(match[1].length) : fullMatch;
-
-			const start = match.index + (match[1]?.length ?? 0);
-			const end = start + coreMatch.length;
-
-			const range = getRangeFromTextOffsets(line, start, end);
-			if (!range) continue;
-
-			const rects = range.getClientRects(); 
-const union = Array.from(rects).reduce((acc, rect) => {
-	if (!acc) return {
-		top: rect.top,
-		left: rect.left,
-		right: rect.right,
-		bottom: rect.bottom
-	};
-
-	return {
-		top: Math.min(acc.top, rect.top),
-		left: Math.min(acc.left, rect.left),
-		right: Math.max(acc.right, rect.right),
-		bottom: Math.max(acc.bottom, rect.bottom)
-	};
-}, null);
-
-if (union) {
-	const box = document.createElement('div');
-	box.className = 'highlight-box';
-
-	const verticalOffset = 2; 
-	const heightReduction = 2;
-
-	box.style.top = union.top + window.scrollY + verticalOffset + 'px';
-	box.style.left = union.left + window.scrollX + 'px';
-	box.style.width = union.right - union.left + 'px';
-	box.style.height = union.bottom - union.top - heightReduction + 'px';
-
-	box.dataset.index = allMatchBoxes.length;
-	box.dataset.line = line.textContent.slice(0, 40);
-	box.dataset.start = start;
-	highlightLayer.appendChild(box);
-	allMatchBoxes.push(box);
-}
-
-
-		}
-	});
-
-	if (allMatchBoxes.length > 0) {
-		matchIndex = 0;
-		allMatchBoxes[0].classList.add('current');
-		allMatchBoxes[0].scrollIntoView({ block: "center" });
-	}
-	updateMatchCount();
-}
-
-
-function getRangeFromTextOffsets(container, startOffset, endOffset) {
-	const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
-	let currentOffset = 0;
-
-	while (walker.nextNode()) {
-		const node = walker.currentNode;
-		const nodeText = node.textContent;
-		const nodeLength = nodeText.length;
-
-		if (startOffset >= currentOffset && startOffset < currentOffset + nodeLength) {
-			const startNode = node;
-			const startNodeOffset = startOffset - currentOffset;
-
-			let endNode = startNode;
-			let endNodeOffset = Math.min(endOffset - currentOffset, nodeLength);
-
-			let tempOffset = currentOffset + nodeLength;
-
-			while (tempOffset < endOffset && walker.nextNode()) {
-				endNode = walker.currentNode;
-				const remaining = endOffset - tempOffset;
-				endNodeOffset = Math.min(remaining, endNode.textContent.length);
-				tempOffset += endNode.textContent.length;
-			}
-
-			const range = document.createRange();
-			range.setStart(startNode, startNodeOffset);
-			range.setEnd(endNode, endNodeOffset);
-			return range;
-		}
-
-		currentOffset += nodeLength;
-	}
-	return null;
-}
-function performSearch(term) {
-	clearSearchHighlights();
-	updateMatchCount();
-	if (!term.trim()) return;
-
-	let pattern = term;
-
-	if (!useRegex) {
-		pattern = pattern.replace(/[.*+?^\\\${}()|[\\]\\\\]/g, '\\\\$&');
-	}
-if (matchWhole && !useRegex) {
-	pattern = '(^|[^a-zA-Z0-9_])' + pattern + '(?=[^a-zA-Z0-9_]|$)';
+<div id="hover-preview" style="
+	position: fixed;
+	overflow: auto;
+	background: #2b2b2b;
+	color: #ddd;
+	border: 1px solid #444;
+	border-radius: 6px;
+	font-size: 13px;
+	padding: 8px;
+	display: none;
+	z-index: 50;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+	pointer-events: auto;
+	cursor: grab;
 	
+">
+</div>
 
-}
-
-
-	console.log("Escaped pattern:", pattern);
-
-	const flags = matchCase ? 'g' : 'gi';
-	let regex;
-	try {
-		regex = new RegExp(pattern, flags);
-	} catch (err) {
-		console.warn("Invalid regex:", pattern, err);
-		return;
-	}
-
-	console.log("Final regex pattern:", pattern);
-	highlightWithOverlay(regex);
-}
-searchInput.addEventListener('input', () => {
-	performSearch(searchInput.value);
-	updateMatchCount()
-});
-
-document.addEventListener('keydown', e => {
-	if (e.ctrlKey && e.key === 'f') {
-		e.preventDefault();
-		searchBar.style.display = 'block';
-		let selectedText = window.getSelection()?.toString()?.trim();
-
-	if (selectedText) {
-		searchInput.value = selectedText;
-	} else {
-		selectedText = searchInput.value;
-	}
-
-	searchInput.focus();
-	searchInput.select();
-	performSearch(selectedText);
-	}
-	if (e.key === 'Escape') {
-		searchBar.style.display = 'none';
-		searchInput.value = '';
-		clearSearchHighlights();
-	}
-	if (e.key === 'Enter' && lastMatches.length > 0) {
-		matchIndex = (matchIndex + 1) % lastMatches.length;
-		lastMatches[matchIndex].scrollIntoView({ block: 'center' });
-	}
-});
-(function () {
-	const consoleDiv = document.getElementById('console-output');
-	if (!consoleDiv) return;
-
-	function logToConsole(type, args) {
-		const line = document.createElement('div');
-		line.style.whiteSpace = 'pre-wrap';
-		line.style.marginBottom = '4px';
-
-		const prefix = document.createElement('span');
-		prefix.textContent = \`[\${ type.toUpperCase() }]\`;
-		prefix.style.color = type === 'error' ? '#f55' :
-			type === 'warn' ? '#ffa500' : '#66f';
-
-		line.appendChild(prefix);
-		line.appendChild(document.createTextNode(args.map(a => {
-			try {
-				return typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a);
-			} catch {
-				return String(a);
-			}
-		}).join(' ')));
-
-		consoleDiv.appendChild(line);
-		consoleDiv.scrollTop = consoleDiv.scrollHeight;
-	}
-
-	const originalLog = console.log;
-	const originalWarn = console.warn;
-	const originalError = console.error;
-
-	console.log = function (...args) {
-		originalLog.apply(console, args);
-		logToConsole('log', args);
-	};
-
-	console.warn = function (...args) {
-		originalWarn.apply(console, args);
-		logToConsole('warn', args);
-	};
-
-	console.error = function (...args) {
-		originalError.apply(console, args);
-		logToConsole('error', args);
-	};
-})();
-
-</script>
+ <script src="${jsUri}"></script>
 </body>
 </html>`;
 	}
@@ -1012,7 +767,7 @@ document.addEventListener('keydown', e => {
 <script>
 	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
 document.addEventListener('click', e => {
-if (!e.ctrlKey) return; 
+
 	let target = e.target;
 	while (target && !target.classList.contains('type-link')) {
 		target = target.parentElement;

@@ -159,6 +159,7 @@
     "@types/vscode": "^1.98.0",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
+    "copy-webpack-plugin": "^13.0.0",
     "eslint": "^8.56.0",
     "mocha": "^10.8.2",
     "ts-loader": "^9.5.1",
@@ -167,8 +168,8 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@vscode/vsce": "^2.24.0",
     "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.24.0",
     "web-tree-sitter": "^0.24.4"
   }
 }
