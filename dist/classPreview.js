@@ -1,5 +1,3 @@
-const classPreviewCache = new Map();
-
 const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
 const lines = Array.from(document.querySelectorAll('.line'));
 const highlightLayer = document.createElement('div');
@@ -42,7 +40,7 @@ function revealNextLine() {
     if (index < lines.length) {
         lines[index].style.opacity = '1';
         index++;
-        setTimeout(revealNextLine, 30);
+        setTimeout(revealNextLine, 20);
     }
 }
 revealNextLine();
@@ -50,7 +48,6 @@ revealNextLine();
 window.addEventListener('message', event => {
     const msg = event.data;
     if (msg.command === 'previewResponse') {
-        classPreviewCache.set(msg.type, msg.html);
 
         const box = document.getElementById('hover-preview');
         const contentBox = document.getElementById('hover-content');
@@ -60,9 +57,55 @@ window.addEventListener('message', event => {
             contentBox.innerHTML = msg.html;
         }
 
-        addDebugCornersAndSides(); // now safe
     }
 });
+
+document.addEventListener('mousemove', e => {
+    const buffer = 8;
+    const box = document.getElementById('hover-preview');
+    const typeElement = lastHoveredElement;
+
+    if (!box || box.style.display !== 'block' || !typeElement) return;
+
+    const boxRect = box.getBoundingClientRect();
+    const typeRect = typeElement.getBoundingClientRect();
+
+    const boxZone = {
+        top: boxRect.top - buffer,
+        left: boxRect.left - buffer,
+        right: boxRect.right + buffer,
+        bottom: boxRect.bottom + buffer
+    };
+
+    const typeZone = {
+        top: typeRect.top - buffer,
+        left: typeRect.left - buffer,
+        right: typeRect.right + buffer,
+        bottom: typeRect.bottom + buffer
+    };
+
+    const insidePreviewBox =
+        e.clientX >= boxZone.left &&
+        e.clientX <= boxZone.right &&
+        e.clientY >= boxZone.top &&
+        e.clientY <= boxZone.bottom;
+
+    const insideTypeBox =
+        e.clientX >= typeZone.left &&
+        e.clientX <= typeZone.right &&
+        e.clientY >= typeZone.top &&
+        e.clientY <= typeZone.bottom;
+
+    if (!insidePreviewBox && !insideTypeBox) {
+        box.style.display = 'none';
+        lastHoveredType = null;
+        isInsidePreview = false;
+        typeElement.classList.remove('hovering');
+        lastHoveredElement = null;
+    }
+});
+
+
 
 document.getElementById('search-next').addEventListener('click', () => {
     if (allMatchBoxes.length === 0) return;
@@ -113,12 +156,44 @@ function updateMatchCount() {
     countLabel.textContent = (matchIndex + 1) + " of " + allMatchBoxes.length;
 }
 function positionPreview(target) {
-    const rect = target.getBoundingClientRect();
     const box = document.getElementById('hover-preview');
+    const rect = target.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const scrollY = window.scrollY;
 
+    box.style.maxHeight = '';
+    box.style.height = 'auto';
+    box.style.display = 'block';
+    box.style.visibility = 'hidden';
     box.style.left = rect.left + 'px';
-    box.style.top = (rect.bottom + 4) + 'px';
+
+    const fullBoxHeight = box.scrollHeight;
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    let finalHeight = fullBoxHeight;
+    let topPosition;
+
+    if (spaceBelow >= fullBoxHeight + 20) {
+        topPosition = rect.bottom + 4;
+    } else if (spaceAbove >= fullBoxHeight + 20) {
+        topPosition = rect.top - fullBoxHeight - 4;
+    } else {
+        if (spaceBelow >= spaceAbove) {
+            finalHeight = Math.max(100, spaceBelow - 20);
+            topPosition = rect.bottom + 4;
+        } else {
+            finalHeight = Math.max(100, spaceAbove - 20);
+            topPosition = rect.top - finalHeight - 4;
+        }
+    }
+
+    box.style.height = finalHeight + 'px';
+    box.style.top = (scrollY + topPosition) + 'px';
+    box.style.overflow = 'auto';
+    box.style.visibility = 'visible';
 }
+
 
 let isInsidePreview = false;
 let hoverTimeout = null;
@@ -134,19 +209,18 @@ previewBox.addEventListener('mouseenter', () => {
     }
 });
 
-previewBox.addEventListener('mouseleave', () => {
-    setTimeout(() => {
-        if (!previewBox.matches(':hover')) {
-            previewBox.style.display = 'none';
-            lastHoveredType = null;
-            isInsidePreview = false;
-        }
-    }, 100); // Small delay gives time for cursor to re-enter from child elements
-});
-
 document.addEventListener('click', (e) => {
-    const previewBox = document.getElementById('hover-preview');
     if (!previewBox) return;
+
+    const target = e.target.closest('.type-link');
+
+    if (target && e.ctrlKey) {
+        const typeName = target.getAttribute('data-type');
+        if (typeName) {
+            vscode.postMessage({ command: 'openType', type: typeName });
+        }
+        return;
+    }
 
     if (!previewBox.contains(e.target)) {
         previewBox.style.display = 'none';
@@ -156,6 +230,7 @@ document.addEventListener('click', (e) => {
 });
 
 
+
 window.addEventListener('error', (e) => {
     console.error("Window error:", e.message, e.filename, e.lineno);
 });
@@ -163,6 +238,7 @@ window.addEventListener('error', (e) => {
 document.addEventListener('mousemove', e => {
     document.body.classList.toggle('ctrl-down', e.ctrlKey);
 });
+
 document.addEventListener('keydown', e => {
     if (e.key === 'Control') document.body.classList.add('ctrl-down');
 });
@@ -172,25 +248,39 @@ document.addEventListener('keyup', e => {
 function addDebugCornersAndSides() {
     const box = document.getElementById('hover-preview');
     if (!box) return;
-    box.querySelectorAll('.corner, .side').forEach(el => el.remove());
+
+    // Remove any previous debug container
+    const existing = box.querySelector('.debug-overlay-wrapper');
+    if (existing) existing.remove();
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'debug-overlay-wrapper';
+    wrapper.style.position = 'absolute';
+    wrapper.style.top = '0';
+    wrapper.style.left = '0';
+    wrapper.style.right = '0';
+    wrapper.style.bottom = '0';
+    wrapper.style.pointerEvents = 'none';
+
     const cornerSize = 20;
     const sideThickness = 8;
 
     const zones = [
-        { className: 'corner-top-left', top: 0, left: 0, width: cornerSize, height: cornerSize },
-        { className: 'corner-top-right', top: 0, right: 0, width: cornerSize, height: cornerSize },
-        { className: 'corner-bottom-left', bottom: 0, left: 0, width: cornerSize, height: cornerSize },
-        { className: 'corner-bottom-right', bottom: 0, right: 0, width: cornerSize, height: cornerSize },
+        { className: 'corner-top-left', top: 0, left: 0, width: cornerSize, height: cornerSize, background: 'rgba(255, 0, 0, 0.3)' },
+        { className: 'corner-top-right', top: 0, left: box.clientWidth - cornerSize, width: cornerSize, height: cornerSize, background: 'rgba(0, 255, 0, 0.3)' },
+        { className: 'corner-bottom-left', bottom: 0, left: 0, width: cornerSize, height: cornerSize, background: 'rgba(0, 0, 255, 0.3)' },
+        { className: 'corner-bottom-right', bottom: 0, left: box.clientWidth - cornerSize, width: cornerSize, height: cornerSize, background: 'rgba(255, 255, 0, 0.3)' },
 
-        { className: 'side-top', top: 0, left: cornerSize, right: cornerSize, height: sideThickness },
-        { className: 'side-bottom', bottom: 0, left: cornerSize, right: cornerSize, height: sideThickness },
-        { className: 'side-left', left: 0, top: cornerSize, bottom: cornerSize, width: sideThickness },
-        { className: 'side-right', right: 0, top: cornerSize, bottom: cornerSize, width: sideThickness },
+        { className: 'side-top', top: 0, left: cornerSize, right: cornerSize, height: sideThickness, background: 'rgba(255, 0, 255, 0.3)' },
+        { className: 'side-bottom', bottom: 0, left: cornerSize, right: cornerSize, height: sideThickness, background: 'rgba(0, 255, 255, 0.3)' },
+        { className: 'side-left', left: 0, top: cornerSize, bottom: cornerSize, width: sideThickness, background: 'rgba(255, 128, 0, 0.3)' },
+        { className: 'side-right', top: cornerSize, left: box.clientWidth - sideThickness, bottom: cornerSize, width: sideThickness, background: 'rgba(0, 128, 255, 0.3)' },
     ];
 
     for (const zone of zones) {
         const el = document.createElement('div');
         el.className = zone.className;
+
         Object.assign(el.style, {
             position: 'absolute',
             pointerEvents: 'auto',
@@ -200,11 +290,18 @@ function addDebugCornersAndSides() {
             ...('height' in zone ? { height: `${zone.height}px` } : {}),
             ...('top' in zone ? { top: `${zone.top}px` } : {}),
             ...('bottom' in zone ? { bottom: `${zone.bottom}px` } : {}),
-            ...('left' in zone ? { left: `${zone.left}px` } : {}),
-            ...('right' in zone ? { right: `${zone.right}px` } : {}),
+            ...('left' in zone && !('right' in zone) ? { left: `${zone.left}px` } : {}),
+            ...('right' in zone && !('left' in zone) ? { right: `${zone.right}px` } : {}),
+            ...('left' in zone && 'right' in zone ? {
+                left: `${zone.left}px`,
+                right: `${zone.right}px`
+            } : {}),
         });
-        box.appendChild(el);
+
+        wrapper.appendChild(el);
     }
+
+    box.appendChild(wrapper);
 }
 (function enableDragForPreviewBox() {
     const box = document.getElementById('hover-preview');
@@ -222,6 +319,7 @@ function addDebugCornersAndSides() {
     let startLeft = 0;
     let startTop = 0;
     let resizeZone = null;
+
     const zoneCursors = {
         'corner-top-left': 'nwse-resize',
         'corner-top-right': 'nesw-resize',
@@ -260,14 +358,18 @@ function addDebugCornersAndSides() {
         ) return;
 
         isDragging = true;
-        offsetX = e.clientX - box.getBoundingClientRect().left;
-        offsetY = e.clientY - box.getBoundingClientRect().top;
+        const rect = box.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
         box.style.cursor = 'grabbing';
         e.preventDefault();
     });
+
     document.addEventListener('mousemove', (e) => {
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
+        let changed = false;
+
         if (isResizing && resizeZone) {
             switch (resizeZone) {
                 case 'corner-bottom-right':
@@ -305,10 +407,17 @@ function addDebugCornersAndSides() {
                     box.style.top = `${startTop + dy}px`;
                     break;
             }
-            return;
+            changed = true;
         }
 
-        if (!isDragging) {
+        if (isDragging) {
+            box.style.left = `${e.clientX - offsetX}px`;
+            box.style.top = `${e.clientY - offsetY}px`;
+            changed = true;
+        }
+
+        if (changed) addDebugCornersAndSides();
+        else {
             const hovered = e.target;
             for (const cls in zoneCursors) {
                 if (hovered.classList.contains(cls)) {
@@ -317,11 +426,7 @@ function addDebugCornersAndSides() {
                 }
             }
             box.style.cursor = 'grab';
-            return;
         }
-
-        box.style.left = `${e.clientX - offsetX}px`;
-        box.style.top = `${e.clientY - offsetY}px`;
     });
 
     document.addEventListener('mouseup', () => {
@@ -334,47 +439,38 @@ function addDebugCornersAndSides() {
         }
     });
 })();
+
+let lastHoveredElement = null;
+
 document.addEventListener('mouseover', (e) => {
+    if (isInsidePreview) return;
+
     const target = e.target.closest('.type-link');
-    if (!target) return;
+    if (!target || target.classList.contains('no-hover')) return;
 
     const typeName = target.getAttribute('data-type');
     if (!typeName || typeName === lastHoveredType) return;
 
-    clearTimeout(hoverTimeout);
+    document.querySelectorAll('.type-link.hovering').forEach(el => el.classList.remove('hovering'));
+    target.classList.add('hovering');
+    lastHoveredElement = target;
 
+    clearTimeout(hoverTimeout);
     hoverTimeout = setTimeout(() => {
         lastHoveredType = typeName;
-        positionPreview(target);
+        isInsidePreview = true;
 
+        positionPreview(target);
         const box = document.getElementById('hover-preview');
         const contentBox = document.getElementById('hover-content');
-        const preview = classPreviewCache.get(typeName);
 
         box.style.display = 'block';
-
-        if (contentBox) {
-            contentBox.innerHTML = preview || 'Loading...';
-        }
+        if (contentBox) contentBox.innerHTML = 'Loading...';
 
         addDebugCornersAndSides();
-
-        if (!preview) {
-            vscode.postMessage({ command: 'requestPreview', type: typeName });
-        }
+        vscode.postMessage({ command: 'requestPreview', type: typeName });
     }, 500);
-
-    target.addEventListener('mouseleave', (evt) => {
-        setTimeout(() => {
-            if (!previewBox.matches(':hover')) {
-                previewBox.style.display = 'none';
-                lastHoveredType = null;
-                isInsidePreview = false;
-            }
-        }, 150);
-    }, { once: true });
 });
-
 
 
 function updateToggleUI() {

@@ -239,6 +239,18 @@ export async function activate(context: vscode.ExtensionContext) {
 		const mods = modStr.split(/\s+/).filter(m => !annotationModifiers[m]);
 		return mods.join(" ").trim();
 	}
+	const renderModifiers = (mods: string) => {
+		const stripped = stripAnnotationModifiers(mods)
+			.replace(/\bnative\b/g, 'external')
+			.replace(/\bpublic\b/g, '');
+
+		return stripped
+			.trim()
+			.split(/\s+/)
+			.filter(Boolean)
+			.map(renderKeyword)
+			.join(' ') + (stripped.trim() ? ' ' : '');
+	};
 	const renderKeyword = (kw: string) => `<span class="kw">${kw}</span>`;
 	const renderIdentifier = (name: string) => `<span class="ident">${name}</span>`;
 	const renderMethodName = (name: string) => `<span class="method-name">${name}</span>`;
@@ -252,8 +264,11 @@ export async function activate(context: vscode.ExtensionContext) {
 			.map(t => t.trim().split('.').pop())
 			.join(', ');
 
-		const dataAttr = disableHover ? '' : ` data-type="${raw}"`;
-		return `<span class="type-link"${dataAttr}>${simple}</span>${generics ? `&lt;${renderedGenerics}&gt;` : ''}`;
+		const classes = ['type-link'];
+		if (disableHover) classes.push('no-hover');
+
+		return `<span class="${classes.join(' ')}" data-type="${raw}">${simple}</span>${generics ? `&lt;${renderedGenerics}&gt;` : ''
+			}`;
 	};
 
 
@@ -265,18 +280,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			.join('\n');
 
 
-	const renderModifiers = (mods: string) => {
-		const stripped = stripAnnotationModifiers(mods)
-			.replace(/\bnative\b/g, 'external')
-			.replace(/\bpublic\b/g, '');
 
-		return stripped
-			.trim()
-			.split(/\s+/)
-			.filter(Boolean)
-			.map(renderKeyword)
-			.join(' ') + (stripped.trim() ? ' ' : '');
-	};
 
 
 	const renderField = (f: Field, indent: number) => {
@@ -470,8 +474,9 @@ export async function activate(context: vscode.ExtensionContext) {
 			return `<div style="color: #999;">No preview available for <code>${typeName}</code></div>`;
 		}
 
-		let html = `<div><strong style="color:#dcdcaa">${typeName}</strong><br/><br/>`;
-
+		const packageName = typeName.split('<')[0].split('.').slice(0, -1).join('.')
+		let title = `Package: ${packageName}`
+		let html = `<h3>Package: ${renderPackageSegments(title.replace("Package: ", "").trim())}</h3>`
 		// Fields
 		if (member.fields?.length > 0) {
 			html += `<div style="margin-bottom: 6px;"><u style="color:#c586c0">Fields</u><ul style="margin:0;padding-left:14px">`;
@@ -688,7 +693,9 @@ pointer-events: auto;
 	<button id="search-prev" title="Previous Match">↑</button>
 	<button id="search-next" title="Next Match">↓</button>
 	<button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
-	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div>
+	<!-- 
+	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div> 
+	-->
 
 </div>
 <div id="main">${classHtml}</div>
@@ -705,7 +712,6 @@ pointer-events: auto;
 	z-index: 50;
 	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 	pointer-events: auto;
-	cursor: grab;
 	
 ">
 <div id="hover-content"></div>

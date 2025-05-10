@@ -39,38 +39,6 @@
 [Log] [buildCompletionItems] isCallOffClass: false, isStaticClassCall: false
 [Log] [buildCompletionItems] Built 6 completion items.
 [Log] updating tokens
-[Log] [provideCompletionItems] Starting provideCompletionItems...
-[Log] [prepareContext] Preparing editor context...
-[Log] [prepareContext] Position line=7, character=16
-[Log] [prepareContext] Successfully prepared context.
-[Log] [prepareContext] Found iNode type: navigation_expression, [prepareContext] Found iNode text: AnomalyRenderer.c
-[Log] [provideCompletionItems] iNode (navigation_expression) type: navigation_expression, [provideCompletionItems] iNode (navigation_expression) text: AnomalyRenderer.c
-[Log] [provideCompletionItems] No scope found for current position.
-[Log] [resolveBaseType] Starting base type resolution...
-[Log] [resolveBaseType] No lastChild found, using simple_identifier from current node
-[Log] [resolveBaseType] No scoped variable found, falling back to resolveBaseTypeFromImports
-[Log] [resolveBaseTypeFromImports] Starting import-based resolution...
-[Log] [resolveBaseTypeFromImports] Checking 1 potential imports...
-[Log] [resolveBaseTypeFromImports] Resolved from import: AnomalyRenderer
-[Log] [resolveBaseType] Call is directly off class, setting isStaticClassCall = true
-[Log] [resolveBaseType] Final resolved baseType: biomesoplenty.client.renderer.AnomalyRenderer
-[Log] [resolveBaseType] isCallOffClass: true
-[Log] [resolveBaseType] isStaticClassCall: true
-[Log] [resolveTypingsFromSuffixes] BaseType at start: biomesoplenty.client.renderer.AnomalyRenderer
-[Log] [resolveTypingsFromSuffixes] isCallOffClass: true
-[Log] [resolveTypingsFromSuffixes] Found suffix: c, isMethodCall: false
-[Log] [resolveTypingsFromSuffixes] Found refined suffixes: [
-  "c"
-]
-[Log] [resolveTypingsFromSuffixes] Static call context, checking baseType: biomesoplenty.client.renderer.AnomalyRenderer
-[Log] [resolveTypingsFromSuffixes] Found TypingsMember: biomesoplenty.client.renderer.AnomalyRenderer
-[Log] [resolveTypingsFromSuffixes] Final resolved currentType: biomesoplenty.client.renderer.AnomalyRenderer
-[Log] [provideCompletionItems] Variable is not Companion, forcing instance context.
-[Log] [provideCompletionItems] Found TypingsMember: biomesoplenty.client.renderer.AnomalyRenderer, preparing completions.
-[Log] [buildCompletionItems] Building completions for: biomesoplenty.client.renderer.AnomalyRenderer
-[Log] [buildCompletionItems] isCallOffClass: false, isStaticClassCall: false
-[Log] [buildCompletionItems] Built 6 completion items.
-[Log] document has not changed
 [Log] <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -191,7 +159,9 @@ pointer-events: auto;
 	<button id="search-prev" title="Previous Match">↑</button>
 	<button id="search-next" title="Next Match">↓</button>
 	<button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
-	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div>
+	<!-- 
+	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div> 
+	-->
 
 </div>
 <div id="main"><div class="line" data-text="package com.mojang.blaze3d.vertex" style="opacity: 0;"><div><span class="kw">package</span> <span class="type-link" data-package="com"><span class="ident">com</span></span><span>.</span><span class="type-link" data-package="com.mojang"><span class="ident">mojang</span></span><span>.</span><span class="type-link" data-package="com.mojang.blaze3d"><span class="ident">blaze3d</span></span><span>.</span><span class="type-link" data-package="com.mojang.blaze3d.vertex"><span class="ident">vertex</span></span></div><br></div>
@@ -226,7 +196,6 @@ pointer-events: auto;
 	z-index: 50;
 	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 	pointer-events: auto;
-	cursor: grab;
 	
 ">
 <div id="hover-content"></div>
