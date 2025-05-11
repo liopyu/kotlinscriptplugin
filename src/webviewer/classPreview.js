@@ -101,6 +101,8 @@ document.addEventListener('mousemove', e => {
         lastHoveredType = null;
         isInsidePreview = false;
         typeElement.classList.remove('hovering');
+        document.querySelector('.debug-overlay-wrapper')?.remove();
+
         lastHoveredElement = null;
     }
 });
@@ -226,6 +228,8 @@ document.addEventListener('click', (e) => {
         previewBox.style.display = 'none';
         lastHoveredType = null;
         isInsidePreview = false;
+        document.querySelector('.debug-overlay-wrapper')?.remove();
+
     }
 });
 
@@ -249,60 +253,58 @@ function addDebugCornersAndSides() {
     const box = document.getElementById('hover-preview');
     if (!box) return;
 
-    // Remove any previous debug container
-    const existing = box.querySelector('.debug-overlay-wrapper');
+    const existing = document.querySelector('.debug-overlay-wrapper');
     if (existing) existing.remove();
 
+    const rect = box.getBoundingClientRect();
     const wrapper = document.createElement('div');
-    wrapper.className = 'debug-overlay-wrapper';
-    wrapper.style.position = 'absolute';
-    wrapper.style.top = '0';
-    wrapper.style.left = '0';
-    wrapper.style.right = '0';
-    wrapper.style.bottom = '0';
-    wrapper.style.pointerEvents = 'none';
 
-    const cornerSize = 20;
-    const sideThickness = 8;
+    wrapper.className = 'debug-overlay-wrapper';
+    Object.assign(wrapper.style, {
+        position: 'fixed',
+        left: `${rect.left - 1}px`,
+        top: `${rect.top - 1}px`,
+        width: `${rect.width + 2}px`,
+        height: `${rect.height + 2}px`,
+        pointerEvents: 'none',
+        zIndex: 10000,
+    });
+
 
     const zones = [
-        { className: 'corner-top-left', top: 0, left: 0, width: cornerSize, height: cornerSize, background: 'rgba(255, 0, 0, 0.3)' },
-        { className: 'corner-top-right', top: 0, left: box.clientWidth - cornerSize, width: cornerSize, height: cornerSize, background: 'rgba(0, 255, 0, 0.3)' },
-        { className: 'corner-bottom-left', bottom: 0, left: 0, width: cornerSize, height: cornerSize, background: 'rgba(0, 0, 255, 0.3)' },
-        { className: 'corner-bottom-right', bottom: 0, left: box.clientWidth - cornerSize, width: cornerSize, height: cornerSize, background: 'rgba(255, 255, 0, 0.3)' },
-
-        { className: 'side-top', top: 0, left: cornerSize, right: cornerSize, height: sideThickness, background: 'rgba(255, 0, 255, 0.3)' },
-        { className: 'side-bottom', bottom: 0, left: cornerSize, right: cornerSize, height: sideThickness, background: 'rgba(0, 255, 255, 0.3)' },
-        { className: 'side-left', left: 0, top: cornerSize, bottom: cornerSize, width: sideThickness, background: 'rgba(255, 128, 0, 0.3)' },
-        { className: 'side-right', top: cornerSize, left: box.clientWidth - sideThickness, bottom: cornerSize, width: sideThickness, background: 'rgba(0, 128, 255, 0.3)' },
+        { className: 'corner-top-left', top: 0, left: 0, width: 20, height: 20, backgroundColor: 'rgba(255, 0, 0, 0.4)', cursor: 'nwse-resize' },
+        { className: 'corner-top-right', top: 0, right: 0, width: 20, height: 20, backgroundColor: 'rgba(0, 255, 0, 0.4)', cursor: 'nesw-resize' },
+        { className: 'corner-bottom-left', bottom: 0, left: 0, width: 20, height: 20, backgroundColor: 'rgba(0, 0, 255, 0.4)', cursor: 'nesw-resize' },
+        { className: 'corner-bottom-right', bottom: 0, right: 0, width: 20, height: 20, backgroundColor: 'rgba(255, 255, 0, 0.4)', cursor: 'nwse-resize' },
+        { className: 'side-top', top: 0, left: 20, right: 20, height: 8, backgroundColor: 'rgba(0, 255, 255, 0.4)', cursor: 'ns-resize' },
+        { className: 'side-bottom', bottom: 0, left: 20, right: 20, height: 8, backgroundColor: 'rgba(255, 0, 255, 0.4)', cursor: 'ns-resize' },
+        { className: 'side-left', left: 0, top: 20, bottom: 20, width: 8, backgroundColor: 'rgba(255, 165, 0, 0.4)', cursor: 'ew-resize' },
+        { className: 'side-right', right: 0, top: 20, bottom: 20, width: 8, backgroundColor: 'rgba(128, 0, 128, 0.4)', cursor: 'ew-resize' }
     ];
+
 
     for (const zone of zones) {
         const el = document.createElement('div');
+        if (zone.cursor) el.style.cursor = zone.cursor;
         el.className = zone.className;
+        el.style.position = 'absolute';
+        el.style.background = 'transparent';
+        el.style.pointerEvents = 'auto';
+        el.style.zIndex = '1000';
 
-        Object.assign(el.style, {
-            position: 'absolute',
-            pointerEvents: 'auto',
-            zIndex: 1000,
-            background: zone.background,
-            ...('width' in zone ? { width: `${zone.width}px` } : {}),
-            ...('height' in zone ? { height: `${zone.height}px` } : {}),
-            ...('top' in zone ? { top: `${zone.top}px` } : {}),
-            ...('bottom' in zone ? { bottom: `${zone.bottom}px` } : {}),
-            ...('left' in zone && !('right' in zone) ? { left: `${zone.left}px` } : {}),
-            ...('right' in zone && !('left' in zone) ? { right: `${zone.right}px` } : {}),
-            ...('left' in zone && 'right' in zone ? {
-                left: `${zone.left}px`,
-                right: `${zone.right}px`
-            } : {}),
-        });
+        if ('top' in zone) el.style.top = `${zone.top}px`;
+        if ('bottom' in zone) el.style.bottom = `${zone.bottom}px`;
+        if ('left' in zone) el.style.left = `${zone.left}px`;
+        if ('right' in zone) el.style.right = `${zone.right}px`;
+        if ('width' in zone) el.style.width = `${zone.width}px`;
+        if ('height' in zone) el.style.height = `${zone.height}px`;
 
         wrapper.appendChild(el);
     }
 
-    box.appendChild(wrapper);
+    document.body.appendChild(wrapper);
 }
+
 (function enableDragForPreviewBox() {
     const box = document.getElementById('hover-preview');
     const minWidth = 200;
@@ -331,7 +333,8 @@ function addDebugCornersAndSides() {
         'side-right': 'ew-resize'
     };
 
-    box.addEventListener('mousedown', (e) => {
+    document.addEventListener('mousedown', (e) => {
+
         const target = e.target;
 
         for (const cls in zoneCursors) {
@@ -362,7 +365,6 @@ function addDebugCornersAndSides() {
         offsetX = e.clientX - rect.left;
         offsetY = e.clientY - rect.top;
         box.style.cursor = 'grabbing';
-        e.preventDefault();
     });
 
     document.addEventListener('mousemove', (e) => {
@@ -467,7 +469,10 @@ document.addEventListener('mouseover', (e) => {
         box.style.display = 'block';
         if (contentBox) contentBox.innerHTML = 'Loading...';
 
-        addDebugCornersAndSides();
+        setTimeout(() => {
+            addDebugCornersAndSides();
+        }, 10);
+
         vscode.postMessage({ command: 'requestPreview', type: typeName });
     }, 500);
 });
@@ -604,14 +609,13 @@ function performSearch(term) {
     let pattern = term;
 
     if (!useRegex) {
-        pattern = pattern.replace(/[.*+?^\\\${}()|[\\]\\\\]/g, '\\\\$&');
+        pattern = pattern.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
     }
     if (matchWhole && !useRegex) {
-        pattern = '(^|[^a-zA-Z0-9_])' + pattern + '(?=[^a-zA-Z0-9_]|$)';
-
-
+        pattern = `(?<![\\p{L}\\p{N}])${pattern}(?![\\p{L}\\p{N}])`;
+        flags += 'u';
     }
-
 
     console.log("Escaped pattern:", pattern);
 
@@ -636,7 +640,7 @@ document.addEventListener('keydown', e => {
     if (e.ctrlKey && e.key === 'f') {
         e.preventDefault();
         searchBar.style.display = 'block';
-        let selectedText = window.getSelection()?.toString()?.trim();
+        let selectedText = window.getSelection()?.toString()
 
         if (selectedText) {
             searchInput.value = selectedText;

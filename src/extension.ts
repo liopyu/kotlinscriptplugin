@@ -474,9 +474,30 @@ export async function activate(context: vscode.ExtensionContext) {
 			return `<div style="color: #999;">No preview available for <code>${typeName}</code></div>`;
 		}
 
-		const packageName = typeName.split('<')[0].split('.').slice(0, -1).join('.')
-		let title = `Package: ${packageName}`
-		let html = `<h3>Package: ${renderPackageSegments(title.replace("Package: ", "").trim())}</h3>`
+		const rawName = typeName.split('<')[0];
+		const simpleName = rawName.split('.').pop() || "";
+		const packageName = rawName.split('.').slice(0, -1).join('.');
+		const isInterface = member.modifiers?.includes('interface');
+		let modifiers = stripAnnotationModifiers(member.modifiers ?? []);
+
+		if (isInterface) {
+			modifiers = modifiers.replace(/\binterface\b/g, '').replace(/\babstract\b/g, '');
+		}
+
+		const topModifiers = modifiers
+			.replace(/\bpublic\b/g, '')
+			.trim()
+			.split(/\s+/)
+			.filter(Boolean)
+			.map(renderKeyword)
+			.join(' ');
+
+		const classKeyword = isInterface ? 'interface' : 'class';
+		const firstLine = `<h3>Package: ${renderPackageSegments(packageName)}</h3>`;
+
+		let html = firstLine;
+		html += `<div style="margin-bottom:6px">${topModifiers} ${renderKeyword(classKeyword)} ${renderIdentifier(simpleName)}</div>`;
+
 		// Fields
 		if (member.fields?.length > 0) {
 			html += `<div style="margin-bottom: 6px;"><u style="color:#c586c0">Fields</u><ul style="margin:0;padding-left:14px">`;
@@ -506,6 +527,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 		return html;
 	}
+
 
 	function openClassPanel(baseType: string, className: string, typingsMember: TypingsMember) {
 		const existing = classPanels.get(baseType);
@@ -644,7 +666,7 @@ pointer-events: auto;
 	position: absolute;
 	top: 0;
 	left: 0;
-	pointer-events: auto;
+	pointer-events: none;
 
 	z-index: 50;
 }
@@ -655,9 +677,20 @@ pointer-events: auto;
 }
 .highlight-box.current {
 	outline: 1px solid #3794ff;
-	background-color: rgba(55, 148, 255, 0.3); /* lighter blue */
+	background-color: rgba(55, 148, 255, 0.3); 
 	box-shadow: 0 0 4px #3794ff99;
 	z-index: 60;
+}
+.debug-overlay-wrapper {
+	position: fixed;
+	pointer-events: none;
+	z-index: 10000;
+}
+
+.debug-overlay-wrapper > div {
+	position: absolute;
+	pointer-events: auto;
+	background: rgba(255, 0, 0, 0.2);
 }
 
 		
@@ -693,9 +726,9 @@ pointer-events: auto;
 	<button id="search-prev" title="Previous Match">↑</button>
 	<button id="search-next" title="Next Match">↓</button>
 	<button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
-	<!-- 
+<!--
 	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div> 
-	-->
+		  -->
 
 </div>
 <div id="main">${classHtml}</div>
