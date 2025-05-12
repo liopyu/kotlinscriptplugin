@@ -35,6 +35,22 @@ const extensionConfig = {
         {
           from: path.resolve(__dirname, 'src/webviewer/classPreview.js'),
           to: path.resolve(__dirname, 'dist')
+        },
+        {
+          from: path.resolve(__dirname, 'src/webviewer/searchBarViewer.js'),
+          to: path.resolve(__dirname, 'dist')
+        },
+        {
+          from: path.resolve(__dirname, 'src/webviewer/consoleViewer.js'),
+          to: path.resolve(__dirname, 'dist')
+        },
+        {
+          from: path.resolve(__dirname, 'src/webviewer/constantsPreview.js'),
+          to: path.resolve(__dirname, 'dist')
+        },
+        {
+          from: path.resolve(__dirname, 'src/webviewer/packagePreview.js'),
+          to: path.resolve(__dirname, 'dist')
         }
       ]
     })

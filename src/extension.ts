@@ -424,50 +424,52 @@ export async function activate(context: vscode.ExtensionContext) {
 	</div>`
 		).join('\n');
 
-
-		const html = generateFullHtml(listHtml, `Package: ${packageName}`);
-
 		let panel = packagePanels.get(packageName);
+
+
+
 		if (panel) {
 			panel.reveal();
-		} else {
-			panel = vscode.window.createWebviewPanel(
-				'kotlinPackagePreview',
-				`Package: ${packageName}`,
-				vscode.ViewColumn.Active,
-				{
-					enableScripts: true,
-					retainContextWhenHidden: true
-				}
-			);
-			panel.webview.html = html;
-
-			panel.webview.onDidReceiveMessage(msg => {
-				if (msg.command === 'openType') {
-					vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: msg.type });
-				}
-				if (msg.command === 'openPackage') {
-					vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: msg.package });
-				}
-				if (msg.command === 'requestPreview') {
-					const typeName = msg.type;
-					const previewHtml = generateMiniPreview(typeName, utils.getTypingsMember(typeName));
-					if (panel)
-						panel.webview.postMessage({
-							command: 'previewResponse',
-							type: typeName,
-							html: previewHtml
-						});
-				}
-
-			});
-
-			panel.onDidDispose(() => {
-				packagePanels.delete(packageName);
-			});
-
-			packagePanels.set(packageName, panel);
+			return
 		}
+		panel = vscode.window.createWebviewPanel(
+			'kotlinPackagePreview',
+			`Package: ${packageName}`,
+			vscode.ViewColumn.Active,
+			{
+				enableScripts: true,
+				retainContextWhenHidden: true
+			}
+		);
+		let html = generatePackageHtml(panel.webview, context.extensionUri, listHtml, `Package: ${packageName}`);
+		panel.webview.html = html;
+
+		panel.webview.onDidReceiveMessage(msg => {
+			if (msg.command === 'openType') {
+				vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: msg.type });
+			}
+			if (msg.command === 'openPackage') {
+				vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: msg.package });
+			}
+			if (msg.command === 'requestPreview') {
+				const typeName = msg.type;
+				const previewHtml = generateMiniPreview(typeName, utils.getTypingsMember(typeName));
+				if (panel)
+					panel.webview.postMessage({
+						command: 'previewResponse',
+						type: typeName,
+						html: previewHtml
+					});
+			}
+
+		});
+
+		panel.onDidDispose(() => {
+			packagePanels.delete(packageName);
+		});
+
+		packagePanels.set(packageName, panel);
+
 	}
 	function generateMiniPreview(typeName: string, member: TypingsMember | undefined): string {
 		if (!member) {
@@ -527,8 +529,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 		return html;
 	}
-
-
 	function openClassPanel(baseType: string, className: string, typingsMember: TypingsMember) {
 		const existing = classPanels.get(baseType);
 		if (existing) {
@@ -544,18 +544,13 @@ export async function activate(context: vscode.ExtensionContext) {
 				retainContextWhenHidden: true
 			}
 		);
-
 		const classHtml = generateClassHtml(typingsMember);
-
 		const htmlContent = generateClassHtmlContent(panel.webview, context.extensionUri, classHtml);
 		console.log(htmlContent)
-
 		panel.webview.html = htmlContent;
 		currentClassFQName = baseType;
 		classPanels.set(baseType, panel);
-
 		const history: string[] = [];
-
 		panel.webview.onDidReceiveMessage(message => {
 			if (message.command === 'openType') {
 				history.push(currentClassFQName ?? "");
@@ -565,7 +560,6 @@ export async function activate(context: vscode.ExtensionContext) {
 				vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: message.package });
 			}
 
-			// 🔥 Add this block:
 			if (message.command === 'requestPreview') {
 				const typeName = message.type;
 				const previewHtml = generateMiniPreview(typeName, utils.getTypingsMember(typeName));
@@ -576,212 +570,145 @@ export async function activate(context: vscode.ExtensionContext) {
 				});
 			}
 		});
-
-
 		panel.onDidDispose(() => {
 			classPanels.delete(baseType);
 			currentClassFQName = undefined;
 		});
 	}
+	const htmlComment = (arg: string) => {
+		return `<!--${arg}-->`
+	}
+	const hoverPreviewDiv = `
+	<div id="hover-preview" style="
+	  position: fixed;
+	  overflow: auto;
+	  background: #2b2b2b;
+	  color: #ddd;
+	  border: 1px solid #444;
+	  border-radius: 6px;
+	  font-size: 13px;
+	  padding: 8px;
+	  display: none;
+	  z-index: 50;
+	  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+	  pointer-events: auto;
+	">
+	  <div id="hover-content"></div>
+	</div>`;
+
+	const consoleDiv = `
+  <div id="console-output" style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 160px;
+    background: #111;
+    color: #ccc;
+    font-family: monospace;
+    font-size: 12px;
+    overflow-y: auto;
+    padding: 24px 10px 6px;
+    border-top: 1px solid #333;
+    z-index: 200;
+  ">
+    <button id="console-minimize" style="
+      position: absolute;
+      top: 4px;
+      right: 8px;
+      background: #333;
+      color: #ccc;
+      border: 1px solid #555;
+      padding: 2px 6px;
+      font-size: 11px;
+      border-radius: 4px;
+      cursor: pointer;
+    ">–</button>
+    <div id="console-content"></div>
+  </div>
+
+  <div id="console-bar" style="
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: #222;
+    color: #ccc;
+    font-family: monospace;
+    font-size: 12px;
+    border-top: 1px solid #333;
+    z-index: 200;
+  ">
+  	<span>Console</span>
+    <button id="console-restore" style="
+      position: absolute;
+      top: 1px;
+      right: 8px;
+      background: #333;
+      color: #ccc;
+      border: 1px solid #555;
+      padding: 1px 6px;
+      font-size: 11px;
+      border-radius: 4px;
+      cursor: pointer;
+    ">+</button>
+  </div>`;
 
 
-
-	function generateClassHtmlContent(
-		webview: vscode.Webview,
-		extensionUri: vscode.Uri,
-		classHtml: string
-	): string {
-		const jsUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(extensionUri, 'dist', 'classPreview.js')
-		);
-
-		return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<style>
-	body {
-		margin: 0;
-		font-family: Consolas, 'Courier New', monospace;
+	const searchBarContent = `
+	<div id="search-bar" style="
+	  display: none;
+	  position: fixed;
+	  top: 8px;
+	  right: 8px;
+	  z-index: 100;
+	  background: #2c2c2c;
+	  padding: 4px 8px;
+	  border-radius: 4px;
+	  display: flex;
+	  gap: 4px;
+	  align-items: center;
+	">
+	  <input type="text" id="search-input" placeholder="Search..." style="
+		width: 180px;
 		background: #1e1e1e;
-		color: rgb(210, 222, 174);
-		font-size: 14px;
-		font-weight: 0;
-	}
-	@keyframes pop {
-		0% { transform: scale(1); }
-		50% { transform: scale(1.04); }
-		100% { transform: scale(1.035); }
-	}
-mark {
-		background-color: rgba(255, 160, 80, 0.35);
-		color: inherit;
-		padding: 0;
-		border-radius: 2px;
-	}
-mark.current {
-	outline: 1px solid #3794ff;
-	background-color: rgba(55, 148, 255, 0.2);
-}
-
-	#main {
-		cursor: text;
-		flex-grow: 1;
-		height: 100vh;
-	overflow-y: auto;
-		padding: 16px;
-		box-sizing: border-box;
-	}
-	.kw { color: rgba(76, 156, 222, 0.93); font-weight: bold; }
-	.annotation { color: rgb(238, 223, 154); }
-.type-link {
-
-	color: rgba(108, 220, 175, 0.92); /* dimmed green */
-	cursor: default;
-	text-decoration: none;
-pointer-events: auto;
-}
-
-.ctrl-down .type-link {
-	cursor: pointer;
-	pointer-events: auto;
-}
-
-.ctrl-down .type-link:hover {
-	color: rgba(158, 234, 203, 0.92);
-	text-decoration: underline;
-	display: inline-block;
-	animation: pop 0.17s ease-in-out forwards;
-}
-
-
-	.ident { color: #9cdcfe; }
-	.method-name { color: rgba(231, 229, 151, 0.92); }
-	.arg-name { color: rgba(104, 208, 237, 0.97); }
-	.line {
-		opacity: 0;
-		transition: opacity 0.05s linear;
-	}
-		.highlight-layer {
-	position: absolute;
-	top: 0;
-	left: 0;
-	pointer-events: none;
-
-	z-index: 50;
-}
-.highlight-box {
-	position: absolute;
-	background-color: rgba(255, 160, 80, 0.35);
-	border-radius: 2px;
-}
-.highlight-box.current {
-	outline: 1px solid #3794ff;
-	background-color: rgba(55, 148, 255, 0.3); 
-	box-shadow: 0 0 4px #3794ff99;
-	z-index: 60;
-}
-.debug-overlay-wrapper {
-	position: fixed;
-	pointer-events: none;
-	z-index: 10000;
-}
-
-.debug-overlay-wrapper > div {
-	position: absolute;
-	pointer-events: auto;
-	background: rgba(255, 0, 0, 0.2);
-}
-
-		
-			#search-bar button {
-		background-color:rgba(30, 30, 30, 0.27);
 		color: white;
 		border: 1px solid #555;
-		border-radius: 6px;
-		padding: 4px 8px;
-		cursor: pointer;
-		transition: all 0.2s ease-in-out;
-		font-size: 13px;
-		font-family: inherit;
-		user-select: none;
-	}
-
-	#search-bar button.active {
-		background-color: #094771;
-		border-color: #3794ff;
+		padding: 4px;
+	  " />
+	  <button id="toggle-case" title="Match Case">Aa</button>
+	  <button id="toggle-whole" title="Whole Word">⛶</button>
+	  <button id="toggle-regex" title="Regex">*</button>
+	  <span id="search-count" style="
 		color: white;
-	}
+		min-width: 30px;
+		text-align: center;
+		font-size: 13px;
+		font-family: Arial, sans-serif;
+	  ">No Results</span>
+	  <button id="search-prev" title="Previous Match">↑</button>
+	  <button id="search-next" title="Next Match">↓</button>
+	  <button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
+	</div>`;
 
+	const keyframePop = `
+	@keyframes pop {
+	  0% { transform: scale(1); }
+	  50% { transform: scale(1.04); }
+	  100% { transform: scale(1.035); }
+	}`;
 
-</style>
-</head>
-<body>
-<div id="search-bar" style="display: none; position: fixed; top: 8px; right: 8px; z-index: 100; background: #2c2c2c; padding: 4px 8px; border-radius: 4px; display: flex; gap: 4px; align-items: center;">
-	<input type="text" id="search-input" placeholder="Search..." style="width: 180px; background: #1e1e1e; color: white; border: 1px solid #555; padding: 4px;" />
-	<button id="toggle-case" title="Match Case">Aa</button>
-	<button id="toggle-whole" title="Whole Word">⛶</button>
-	<button id="toggle-regex" title="Regex">*</button>
-	<span id="search-count" style="color: white; min-width: 30px; text-align: center; font-size: 13px; font-family: Arial, sans-serif;">No Results</span>
-	<button id="search-prev" title="Previous Match">↑</button>
-	<button id="search-next" title="Next Match">↓</button>
-	<button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
-<!--
-	<div id="console-output" style="position: fixed; bottom: 0; left: 0; right: 0; height: 160px; background: #111; color: #ccc; font-family: monospace; font-size: 12px; overflow-y: auto; padding: 6px 10px; border-top: 1px solid #333; z-index: 200;"></div> 
-		  -->
-
-</div>
-<div id="main">${classHtml}</div>
-<div id="hover-preview" style="
-	position: fixed;
-	overflow: auto;
-	background: #2b2b2b;
-	color: #ddd;
-	border: 1px solid #444;
-	border-radius: 6px;
-	font-size: 13px;
-	padding: 8px;
-	display: none;
-	z-index: 50;
-	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
-	pointer-events: auto;
-	
-">
-<div id="hover-content"></div>
-</div>
-
- <script src="${jsUri}"></script>
-</body>
-</html>`;
-	}
-	function getClassesInPackage(pkg: string): string[] {
-		const members = package_index[pkg];
-		if (!members || members.length === 0) {
-			return [];
-		}
-		return members.map(m => m.classPath);
-	}
-
-
-
-	function generateFullHtml(content: string, title: string): string {
-		return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<style>
-@keyframes pop {
-		0% { transform: scale(1); }
-		50% { transform: scale(1.04); }
-		100% { transform: scale(1.035); }
-	}
+	const bodyDiv = `
 	body {
-		margin: 0;
-		font-family: Consolas, monospace;
-		background: #1e1e1e;
-		color: rgb(210, 222, 174);
-		padding: 16px;
-	}
+	  margin: 0;
+	  font-family: Consolas, monospace;
+	  background: #1e1e1e;
+	  color: rgb(210, 222, 174);
+	  padding: 16px;
+	}`;
+	const hoverTypeLink = `
 	.type-link {
 		color: rgba(108, 220, 175, 0.92);
 		cursor: pointer;
@@ -797,52 +724,181 @@ pointer-events: auto;
 		margin-bottom: 4px;
 		opacity: 0;
 		transition: opacity 0.05s linear;
+	}`
+	const mainDiv = `
+	#main {
+	  cursor: text;
+	  flex-grow: 1;
+	  height: 100vh;
+	  overflow-y: auto;
+	  padding: 16px;
+	  box-sizing: border-box;
 	}
-</style>
-</head>
-<body>
-	<h3>Package: ${renderPackageSegments(title.replace("Package: ", "").trim())}</h3>
-
-	${content}
-<script>
-	const vscode = acquireVsCodeApi?.() || { postMessage: console.log };
-document.addEventListener('click', e => {
-
-	let target = e.target;
-	while (target && !target.classList.contains('type-link')) {
-		target = target.parentElement;
+  
+	.kw {
+	  color: rgba(76, 156, 222, 0.93);
+	  font-weight: bold;
 	}
-	if (!target) return;
+  
+	.annotation {
+	  color: rgb(238, 223, 154);
+	}
+  
+	.type-link {
+	  color: rgba(108, 220, 175, 0.92);
+	  cursor: default;
+	  text-decoration: none;
+	  pointer-events: auto;
+	}
+  
+	.ctrl-down .type-link {
+	  cursor: pointer;
+	  pointer-events: auto;
+	}
+  
+	.ctrl-down .type-link:hover {
+	  color: rgba(158, 234, 203, 0.92);
+	  text-decoration: underline;
+	  display: inline-block;
+	  animation: pop 0.17s ease-in-out forwards;
+	}
+  
+	.ident {
+	  color: #9cdcfe;
+	}
+  
+	.method-name {
+	  color: rgba(231, 229, 151, 0.92);
+	}
+  
+	.arg-name {
+	  color: rgba(104, 208, 237, 0.97);
+	}
+  
+	.line {
+	  opacity: 0;
+	  transition: opacity 0.05s linear;
+	}`;
 
-	const pkg = target.getAttribute('data-package');
-	if (pkg) {
-		console.log("[WebView] Sending openPackage for:", pkg);
-		vscode.postMessage({ command: 'openPackage', package: pkg });
-		return; 
+	const searchBarDiv = `
+	.highlight-box {
+	  position: absolute;
+	  background-color: rgba(255, 160, 80, 0.35);
+	  border-radius: 2px;
+	}
+  
+	.highlight-box.current {
+	  outline: 1px solid #3794ff;
+	  background-color: rgba(55, 148, 255, 0.3);
+	  box-shadow: 0 0 4px #3794ff99;
+	  z-index: 60;
+	}
+  
+	.debug-overlay-wrapper {
+	  position: fixed;
+	  pointer-events: none;
+	  z-index: 10000;
+	}
+  
+	.debug-overlay-wrapper > div {
+	  position: absolute;
+	  pointer-events: auto;
+	  background: rgba(255, 0, 0, 0.2);
+	}
+  
+	#search-bar button {
+	  background-color: rgba(30, 30, 30, 0.27);
+	  color: white;
+	  border: 1px solid #555;
+	  border-radius: 6px;
+	  padding: 4px 8px;
+	  cursor: pointer;
+	  transition: all 0.2s ease-in-out;
+	  font-size: 13px;
+	  font-family: inherit;
+	  user-select: none;
+	}
+  
+	#search-bar button.active {
+	  background-color: #094771;
+	  border-color: #3794ff;
+	  color: white;
+	}`;
+
+	function generateClassHtmlContent(
+		webview: vscode.Webview,
+		extensionUri: vscode.Uri,
+		classHtml: string
+	): string {
+		const viewer = (viewerName: string) => {
+			return webview.asWebviewUri(
+				vscode.Uri.joinPath(extensionUri, 'dist', `${viewerName}.js`)
+			);
+		};
+		return `<!DOCTYPE html>
+		  <html lang="en">
+		  <head>
+			<meta charset="UTF-8">
+			<style>
+			  ${keyframePop}
+			  ${bodyDiv}
+			  ${mainDiv}
+			  ${searchBarDiv}
+			</style>
+		  </head>
+		  <body>
+			${searchBarContent}
+			${consoleDiv}
+			<div id="main">${classHtml}</div>
+			${hoverPreviewDiv}
+			<script src="${viewer("constantsPreview")}"></script>
+			<script src="${viewer("consoleViewer")}"></script>
+			<script src="${viewer("classPreview")}"></script>
+			<script src="${viewer("searchBarViewer")}"></script>
+		  </body>
+		  </html>`;
 	}
 
-	const typeName = target.getAttribute('data-type');
-	if (typeName) {
-		console.log("[WebView] Sending openType for:", typeName);
-		vscode.postMessage({ command: 'openType', type: typeName });
-	}
-});
-const lines = Array.from(document.querySelectorAll('.line'));
-	let index = 0;
-	function revealNextLine() {
-		if (index < lines.length) {
-			lines[index].style.opacity = '1';
-			index++;
-			setTimeout(revealNextLine, 10);
+	function getClassesInPackage(pkg: string): string[] {
+		const members = package_index[pkg];
+		if (!members || members.length === 0) {
+			return [];
 		}
-	}
-	revealNextLine();
-
-</script>
-</body>
-</html>`;
+		return members.map(m => m.classPath);
 	}
 
+	function generatePackageHtml(webview: vscode.Webview,
+		extensionUri: vscode.Uri, content: string, title: string): string {
+		const viewer = (viewerName: string) => {
+			return webview.asWebviewUri(
+				vscode.Uri.joinPath(extensionUri, 'dist', `${viewerName}.js`)
+			);
+		}
+		return `<!DOCTYPE html>
+				<html lang="en">
+				<head>
+				<meta charset="UTF-8">
+				<style>
+					${keyframePop}
+					${bodyDiv}
+					${hoverTypeLink}
+					${mainDiv}
+					${searchBarDiv}
+				</style>
+				</head>
+				<body>
+				${hoverPreviewDiv}
+				${searchBarContent}
+				${consoleDiv}
+				<h3>Package: ${renderPackageSegments(title.replace("Package: ", "").trim())}</h3>
+				${content}
+				<script src="${viewer("constantsPreview")}"></script>
+				<script src="${viewer("consoleViewer")}"></script>
+				<script src="${viewer("packagePreview")}"></script>
+				<script src="${viewer("searchBarViewer")}"></script>
+				</body>
+				</html>`;
+	}
 	function renderPackageSegments(packagePath: string): string {
 		const segments = packagePath.split('.');
 		return segments.map((segment, i) => {
@@ -850,20 +906,16 @@ const lines = Array.from(document.querySelectorAll('.line'));
 			return `<span class="type-link" data-package="${fullPath}"><span class="ident">${segment}</span></span>`;
 		}).join('<span>.</span>');
 	}
-
-
 	context.subscriptions.push(
 		vscode.commands.registerCommand('extension.insertImport', async (document: vscode.TextDocument, className: string) => {
 			const matchingClasses = Array.from(availableClasses).filter(cls => {
 				const processedName = cls.replace(/\$/g, '.').split('.').pop()?.trim();
 				return processedName === className.trim();
 			});
-
 			if (matchingClasses.length === 0) {
 				vscode.window.showErrorMessage(`No matching classes found for '${className}'.`);
 				return;
 			}
-
 			const selectedClass = matchingClasses.length === 1
 				? matchingClasses[0]
 				: await vscode.window.showQuickPick(
@@ -872,10 +924,8 @@ const lines = Array.from(document.querySelectorAll('.line'));
 				);
 
 			if (!selectedClass) return;
-
 			const edit = new vscode.WorkspaceEdit();
 			const importStatement = `import ${selectedClass.replace(/\$/g, '.')}\n`;
-
 			const lines = document.getText().split('\n');
 			let packageLineIndex = -1;
 			for (let i = 0; i < lines.length; i++) {
@@ -893,11 +943,9 @@ const lines = Array.from(document.querySelectorAll('.line'));
 					break;
 				}
 			}
-
 			const insertPosition = packageLineIndex !== -1
 				? new vscode.Position(packageLineIndex + 1, 0)
 				: new vscode.Position(0, 0);
-
 			if (!new RegExp(`^${importStatement}`, 'gm').test(document.getText())) {
 				edit.insert(document.uri, insertPosition, importStatement);
 				await vscode.workspace.applyEdit(edit);
@@ -906,8 +954,6 @@ const lines = Array.from(document.querySelectorAll('.line'));
 				if (!data) return;
 				let treeProvider = data.semanticTokensProvider?.treeProvider
 				if (!treeProvider) return
-
-
 				let classPath = selectedClass.replace(/\$/g, '.')
 				const newP = insertPosition.translate(0, 8)
 				const nodeAtPosition = treeProvider.tree?.rootNode.descendantForPosition({
@@ -936,13 +982,10 @@ const lines = Array.from(document.querySelectorAll('.line'));
 					treeProvider.semanticTokensProvider?.setLastChangedRange(importRange);
 					treeProvider.semanticTokensProvider?.updateTokens(document)
 				}
-
 				data.semanticTokensProvider?.codeLens?.clearDecorations();
 			}
 		})
 	);
-
-
 	context.subscriptions.push(
 		vscode.languages.registerCompletionItemProvider(
 			selector,
@@ -982,16 +1025,13 @@ const lines = Array.from(document.querySelectorAll('.line'));
 				}
 		}
 	}, 200);
-
 	vscode.window.onDidChangeTextEditorVisibleRanges(event => {
 		debouncedUpdateTokens(event.textEditor.document);
 	});
-
 	//Runs on start
 	vscode.window.visibleTextEditors.forEach(editor => {
 		addDocumentIfNotExists(editor.document, editor);
 	})
-
 	vscode.window.onDidChangeActiveTextEditor(async (editor) => {
 		const document = editor?.document;
 		const documentUri = document?.uri.toString();
@@ -1007,9 +1047,6 @@ const lines = Array.from(document.querySelectorAll('.line'));
 				}
 		}
 	});
-
-
-
 	vscode.window.onDidChangeVisibleTextEditors(editors => {
 		const openUris = new Set(editors.map(editor => editor.document.uri.toString()));
 		for (const editor of editors) {

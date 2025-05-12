@@ -601,13 +601,9 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                 console.log(`[resolveTypingsFromSuffixes] Found TypingsMember: ${foundTypingsMember.classPath}`);
             }
         }
-
         console.log(`[resolveTypingsFromSuffixes] Final resolved currentType: ${currentType}`);
         return { currentType, foundTypingsMember, currentIsStatic };
     }
-
-
-
     private buildCompletionItems(foundTypingsMember: TypingsMember, isCallOffClass: boolean, isStaticClassCall: boolean): vscode.CompletionItem[] {
         console.log("[buildCompletionItems] Building completions for:", foundTypingsMember.classPath);
         console.log(`[buildCompletionItems] isCallOffClass: ${isCallOffClass}, isStaticClassCall: ${isStaticClassCall}`);
