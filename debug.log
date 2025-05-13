@@ -9,7 +9,7 @@
 [Log] updating tokens
 [Log] [provideCompletionItems] Starting provideCompletionItems...
 [Log] [prepareContext] Preparing editor context...
-[Log] [prepareContext] Position line=7, character=16
+[Log] [prepareContext] Position line=14, character=16
 [Log] [prepareContext] Successfully prepared context.
 [Log] [prepareContext] Found iNode type: navigation_expression, [prepareContext] Found iNode text: AnomalyRenderer.c
 [Log] [provideCompletionItems] iNode (navigation_expression) type: navigation_expression, [provideCompletionItems] iNode (navigation_expression) text: AnomalyRenderer.c
@@ -45,6 +45,35 @@
 			<meta charset="UTF-8">
 			<style>
 			  
+		#class-search-bar {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 12px;
+		background: #2b2b2b;
+		border-bottom: 1px solid #444;
+		z-index: 150;
+		position: relative;
+		}
+
+		#class-search-results {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 4px;
+		display: none;
+		max-height: 200px;
+		overflow-y: auto;
+		width: 100%;
+		z-index: 160;
+		font-family: monospace;
+		font-size: 13px;
+		}
+
+			  
 	@keyframes pop {
 	  0% { transform: scale(1); }
 	  50% { transform: scale(1.04); }
@@ -63,7 +92,7 @@
 	  cursor: text;
 	  flex-grow: 1;
 	  height: 100vh;
-	  overflow-y: auto;
+	  overflow: visible;
 	  padding: 16px;
 	  box-sizing: border-box;
 	}
@@ -159,13 +188,49 @@
 			</style>
 		  </head>
 		  <body>
+		    
+	<div id="class-search-bar" style="
+	  display: flex;
+	  align-items: center;
+	  gap: 8px;
+	  padding: 8px 12px;
+	  background: #2b2b2b;
+	  border-bottom: 1px solid #444;
+	  z-index: 150;
+	">
+	  <input id="class-search-input" type="text" placeholder="Search classes..." style="
+		flex-grow: 1;
+		padding: 6px 10px;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 6px;
+		font-family: inherit;
+	  ">
+	  <div id="class-search-results" style="
+		position: absolute;
+		top: 42px;
+		left: 12px;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 4px;
+		display: none;
+		max-height: 200px;
+		overflow-y: auto;
+		width: calc(100% - 24px);
+		z-index: 160;
+		font-family: monospace;
+		font-size: 13px;
+	  "></div>
+	</div>
 			
 	<div id="search-bar" style="
 	  display: none;
 	  position: fixed;
 	  top: 8px;
 	  right: 8px;
-	  z-index: 100;
+	  z-index: 200;
 	  background: #2c2c2c;
 	  padding: 4px 8px;
 	  border-radius: 4px;
@@ -255,7 +320,7 @@
   </div>
 			<div id="main"><div class="line" data-text="package com.mojang.blaze3d.vertex" style="opacity: 0;"><div><span class="kw">package</span> <span class="type-link" data-package="com"><span class="ident">com</span></span><span>.</span><span class="type-link" data-package="com.mojang"><span class="ident">mojang</span></span><span>.</span><span class="type-link" data-package="com.mojang.blaze3d"><span class="ident">blaze3d</span></span><span>.</span><span class="type-link" data-package="com.mojang.blaze3d.vertex"><span class="ident">vertex</span></span></div><br></div>
 <div class="line" data-text=" class PoseStack {" style="opacity: 0;"><div id="current-class"> <span class="kw">class</span> <span class="ident">PoseStack</span> {</div></div>
-<div class="line" data-text="private final val poseStack: Deque<PoseStack$Pose>;" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">final</span> <span class="kw">val</span> <span class="ident">poseStack</span>: <span class="type-link" data-type="java.util.Deque">Deque</span>&lt;PoseStack$Pose&gt;;</div></div>
+<div class="line" data-text="private final val poseStack: Deque<PoseStack$Pose>;" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">final</span> <span class="kw">val</span> <span class="ident">poseStack</span>: <span class="type-link" data-type="java.util.Deque">Deque</span>&lt;<span class="type-link" data-type="com.mojang.blaze3d.vertex.PoseStack$Pose">PoseStack$Pose</span>&gt;;</div></div>
 <div class="line" data-text="fun translate(arg0: Double, arg1: Double, arg2: Double): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">translate</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Double">Double</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Double">Double</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Double">Double</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
 <div class="line" data-text="fun translate(arg0: Float, arg1: Float, arg2: Float): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">translate</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
 <div class="line" data-text="fun scale(arg0: Float, arg1: Float, arg2: Float): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">scale</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Float">Float</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Float">Float</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
@@ -269,6 +334,1115 @@
 <div class="line" data-text="fun mulPose(arg0: Matrix4f): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">mulPose</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="org.joml.Matrix4f">Matrix4f</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
 <div class="line" data-text="companion object {" style="opacity: 0;"><br><div style="padding-left: 2em"><span class="kw">companion object</span> {</div></div>
 <div class="line" data-text="@JvmStaticprivate fun method_22908(arg0: ArrayDeque): Unit {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">method_22908</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.ArrayDeque">ArrayDeque</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div style="padding-left: 2em">}</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div>}</div></div>
+<div class="line" data-text="" style="opacity: 0;"></div></div></div>
+			
+	<div id="hover-preview" style="
+	  position: fixed;
+	  overflow: auto;
+	  background: #2b2b2b;
+	  color: #ddd;
+	  border: 1px solid #444;
+	  border-radius: 6px;
+	  font-size: 13px;
+	  padding: 8px;
+	  display: none;
+	  z-index: 50;
+	  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+	  pointer-events: auto;
+	">
+	  <div id="hover-content"></div>
+	</div>
+			<script src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/Users/subli/kotlinscript/dist/constantsPreview.js"></script>
+			<script src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/Users/subli/kotlinscript/dist/consoleViewer.js"></script>
+			<script src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/Users/subli/kotlinscript/dist/classPreview.js"></script>
+			<script src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/Users/subli/kotlinscript/dist/searchBarViewer.js"></script>
+		  </body>
+		  </html>
+[Log] <!DOCTYPE html>
+		  <html lang="en">
+		  <head>
+			<meta charset="UTF-8">
+			<style>
+			  
+		#class-search-bar {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 12px;
+		background: #2b2b2b;
+		border-bottom: 1px solid #444;
+		z-index: 150;
+		position: relative;
+		}
+
+		#class-search-results {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 4px;
+		display: none;
+		max-height: 200px;
+		overflow-y: auto;
+		width: 100%;
+		z-index: 160;
+		font-family: monospace;
+		font-size: 13px;
+		}
+
+			  
+	@keyframes pop {
+	  0% { transform: scale(1); }
+	  50% { transform: scale(1.04); }
+	  100% { transform: scale(1.035); }
+	}
+			  
+	body {
+	  margin: 0;
+	  font-family: Consolas, monospace;
+	  background: #1e1e1e;
+	  color: rgb(210, 222, 174);
+	  padding: 16px;
+	}
+			  
+	#main {
+	  cursor: text;
+	  flex-grow: 1;
+	  height: 100vh;
+	  overflow: visible;
+	  padding: 16px;
+	  box-sizing: border-box;
+	}
+  
+	.kw {
+	  color: rgba(76, 156, 222, 0.93);
+	  font-weight: bold;
+	}
+  
+	.annotation {
+	  color: rgb(238, 223, 154);
+	}
+  
+	.type-link {
+	  color: rgba(108, 220, 175, 0.92);
+	  cursor: default;
+	  text-decoration: none;
+	  pointer-events: auto;
+	}
+  
+	.ctrl-down .type-link {
+	  cursor: pointer;
+	  pointer-events: auto;
+	}
+  
+	.ctrl-down .type-link:hover {
+	  color: rgba(158, 234, 203, 0.92);
+	  text-decoration: underline;
+	  display: inline-block;
+	  animation: pop 0.17s ease-in-out forwards;
+	}
+  
+	.ident {
+	  color: #9cdcfe;
+	}
+  
+	.method-name {
+	  color: rgba(231, 229, 151, 0.92);
+	}
+  
+	.arg-name {
+	  color: rgba(104, 208, 237, 0.97);
+	}
+  
+	.line {
+	  opacity: 0;
+	  transition: opacity 0.05s linear;
+	}
+			  
+	.highlight-box {
+	  position: absolute;
+	  background-color: rgba(255, 160, 80, 0.35);
+	  border-radius: 2px;
+	}
+  
+	.highlight-box.current {
+	  outline: 1px solid #3794ff;
+	  background-color: rgba(55, 148, 255, 0.3);
+	  box-shadow: 0 0 4px #3794ff99;
+	  z-index: 60;
+	}
+  
+	.debug-overlay-wrapper {
+	  position: fixed;
+	  pointer-events: none;
+	  z-index: 10000;
+	}
+  
+	.debug-overlay-wrapper > div {
+	  position: absolute;
+	  pointer-events: auto;
+	  background: rgba(255, 0, 0, 0.2);
+	}
+  
+	#search-bar button {
+	  background-color: rgba(30, 30, 30, 0.27);
+	  color: white;
+	  border: 1px solid #555;
+	  border-radius: 6px;
+	  padding: 4px 8px;
+	  cursor: pointer;
+	  transition: all 0.2s ease-in-out;
+	  font-size: 13px;
+	  font-family: inherit;
+	  user-select: none;
+	}
+  
+	#search-bar button.active {
+	  background-color: #094771;
+	  border-color: #3794ff;
+	  color: white;
+	}
+			</style>
+		  </head>
+		  <body>
+		    
+	<div id="class-search-bar" style="
+	  display: flex;
+	  align-items: center;
+	  gap: 8px;
+	  padding: 8px 12px;
+	  background: #2b2b2b;
+	  border-bottom: 1px solid #444;
+	  z-index: 150;
+	">
+	  <input id="class-search-input" type="text" placeholder="Search classes..." style="
+		flex-grow: 1;
+		padding: 6px 10px;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 6px;
+		font-family: inherit;
+	  ">
+	  <div id="class-search-results" style="
+		position: absolute;
+		top: 42px;
+		left: 12px;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 4px;
+		display: none;
+		max-height: 200px;
+		overflow-y: auto;
+		width: calc(100% - 24px);
+		z-index: 160;
+		font-family: monospace;
+		font-size: 13px;
+	  "></div>
+	</div>
+			
+	<div id="search-bar" style="
+	  display: none;
+	  position: fixed;
+	  top: 8px;
+	  right: 8px;
+	  z-index: 200;
+	  background: #2c2c2c;
+	  padding: 4px 8px;
+	  border-radius: 4px;
+	  display: flex;
+	  gap: 4px;
+	  align-items: center;
+	">
+	  <input type="text" id="search-input" placeholder="Search..." style="
+		width: 180px;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		padding: 4px;
+	  " />
+	  <button id="toggle-case" title="Match Case">Aa</button>
+	  <button id="toggle-whole" title="Whole Word">⛶</button>
+	  <button id="toggle-regex" title="Regex">*</button>
+	  <span id="search-count" style="
+		color: white;
+		min-width: 30px;
+		text-align: center;
+		font-size: 13px;
+		font-family: Arial, sans-serif;
+	  ">No Results</span>
+	  <button id="search-prev" title="Previous Match">↑</button>
+	  <button id="search-next" title="Next Match">↓</button>
+	  <button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
+	</div>
+			
+  <div id="console-output" style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 160px;
+    background: #111;
+    color: #ccc;
+    font-family: monospace;
+    font-size: 12px;
+    overflow-y: auto;
+    padding: 24px 10px 6px;
+    border-top: 1px solid #333;
+    z-index: 200;
+  ">
+    <button id="console-minimize" style="
+      position: absolute;
+      top: 4px;
+      right: 8px;
+      background: #333;
+      color: #ccc;
+      border: 1px solid #555;
+      padding: 2px 6px;
+      font-size: 11px;
+      border-radius: 4px;
+      cursor: pointer;
+    ">–</button>
+    <div id="console-content"></div>
+  </div>
+
+  <div id="console-bar" style="
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: #222;
+    color: #ccc;
+    font-family: monospace;
+    font-size: 12px;
+    border-top: 1px solid #333;
+    z-index: 200;
+  ">
+  	<span>Console</span>
+    <button id="console-restore" style="
+      position: absolute;
+      top: 1px;
+      right: 8px;
+      background: #333;
+      color: #ccc;
+      border: 1px solid #555;
+      padding: 1px 6px;
+      font-size: 11px;
+      border-radius: 4px;
+      cursor: pointer;
+    ">+</button>
+  </div>
+			<div id="main"><div class="line" data-text="package java.util.concurrent" style="opacity: 0;"><div><span class="kw">package</span> <span class="type-link" data-package="java"><span class="ident">java</span></span><span>.</span><span class="type-link" data-package="java.util"><span class="ident">util</span></span><span>.</span><span class="type-link" data-package="java.util.concurrent"><span class="ident">concurrent</span></span></div><br></div>
+<div class="line" data-text=" class CompletableFuture : Future, CompletionStage {" style="opacity: 0;"><div id="current-class"> <span class="kw">class</span> <span class="ident">CompletableFuture</span> : <span class="type-link" data-type="java.util.concurrent.Future">Future</span>, <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {</div></div>
+<div class="line" data-text="@Volatileval result: Object;" style="opacity: 0;"><div style="padding-left: 2em"><span class="annotation">@Volatile</span></div><div style="padding-left: 2em"><span class="kw">val</span> <span class="ident">result</span>: <span class="type-link" data-type="java.lang.Object">Object</span>;</div></div>
+<div class="line" data-text="@Volatileval stack: CompletableFuture$Completion;" style="opacity: 0;"><div style="padding-left: 2em"><span class="annotation">@Volatile</span></div><div style="padding-left: 2em"><span class="kw">val</span> <span class="ident">stack</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture$Completion">CompletableFuture$Completion</span>;</div></div>
+<div class="line" data-text="final fun internalComplete(arg0: Object): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">internalComplete</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="final fun tryPushStack(arg0: CompletableFuture$Completion): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">tryPushStack</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture$Completion">CompletableFuture$Completion</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="final fun pushStack(arg0: CompletableFuture$Completion): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">pushStack</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture$Completion">CompletableFuture$Completion</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="final fun completeNull(): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">completeNull</span>(): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="final fun encodeValue(arg0: T): Object {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">encodeValue</span>(<span class="arg-name">arg0</span>: <span class="ident">T</span>): <span class="type-link" data-type="java.lang.Object">Object</span> {};</div></div>
+<div class="line" data-text="final fun completeValue(arg0: T): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">completeValue</span>(<span class="arg-name">arg0</span>: <span class="ident">T</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="final fun completeThrowable(arg0: Throwable): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">completeThrowable</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Throwable">Throwable</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="final fun completeThrowable(arg0: Object, arg1: Throwable): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">completeThrowable</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.lang.Throwable">Throwable</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun encodeOutcome(arg0: T, arg1: Throwable): Object {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">encodeOutcome</span>(<span class="arg-name">arg0</span>: <span class="ident">T</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.lang.Throwable">Throwable</span>): <span class="type-link" data-type="java.lang.Object">Object</span> {};</div></div>
+<div class="line" data-text="final fun completeRelay(arg0: Object): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">completeRelay</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="final fun postComplete(): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">postComplete</span>(): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="final fun cleanStack(): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">cleanStack</span>(): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="final fun unipush(arg0: CompletableFuture$Completion): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">unipush</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture$Completion">CompletableFuture$Completion</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="final fun postFire(arg0: Int, arg1: CompletableFuture<*>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">postFire</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="kw">*</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="private fun uniApplyStage(arg0: Executor, arg1: Function<in T, out V>): CompletableFuture<V> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">uniApplyStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">out</span> <span class="ident">V</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">V</span>&gt; {};</div></div>
+<div class="line" data-text="private fun uniApplyNow(arg0: Object, arg1: Executor, arg2: Function<in T, out V>): CompletableFuture<V> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">uniApplyNow</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">out</span> <span class="ident">V</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">V</span>&gt; {};</div></div>
+<div class="line" data-text="private fun uniAcceptStage(arg0: Executor, arg1: Consumer<in T>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">uniAcceptStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="private fun uniAcceptNow(arg0: Object, arg1: Executor, arg2: Consumer<in T>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">uniAcceptNow</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="private fun uniRunStage(arg0: Runnable, arg1: Executor): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">uniRunStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="private fun uniRunNow(arg0: Object, arg1: Runnable, arg2: Executor): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">uniRunNow</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="final fun uniWhenComplete(arg0: Object, arg1: CompletableFuture$UniWhenComplete<T>, arg2: BiConsumer<in T, in Throwable>): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">uniWhenComplete</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture$UniWhenComplete">CompletableFuture$UniWhenComplete</span>&lt;<span class="ident">T</span>&gt;, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">in</span> <span class="type-link" data-type="java.lang.Throwable">Throwable</span>&gt;): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="private fun uniWhenCompleteStage(arg0: Executor, arg1: BiConsumer<in T, in Throwable>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">uniWhenCompleteStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">in</span> <span class="type-link" data-type="java.lang.Throwable">Throwable</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="final fun uniHandle(arg0: Object, arg1: CompletableFuture$UniHandle<S, T>, arg2: BiFunction<in S, Throwable, out T>): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">uniHandle</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture$UniHandle">CompletableFuture$UniHandle</span>&lt;<span class="ident">S</span>, <span class="ident">T</span>&gt;, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>&lt;<span class="kw">in</span> <span class="ident">S</span>, <span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="kw">out</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="private fun uniHandleStage(arg0: Executor, arg1: BiFunction<in T, Throwable, out V>): CompletableFuture<V> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">uniHandleStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="kw">out</span> <span class="ident">V</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">V</span>&gt; {};</div></div>
+<div class="line" data-text="final fun uniExceptionally(arg0: Object, arg1: CompletableFuture$UniExceptionally<T>, arg2: Function<in Throwable, out T>): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">uniExceptionally</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture$UniExceptionally">CompletableFuture$UniExceptionally</span>&lt;<span class="ident">T</span>&gt;, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="kw">out</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="private fun uniExceptionallyStage(arg0: Executor, arg1: Function<Throwable, out T>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">uniExceptionallyStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="kw">out</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="private fun uniComposeExceptionallyStage(arg0: Executor, arg1: Function<Throwable, CompletionStage<T>>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">uniComposeExceptionallyStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="type-link" data-type="out java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">T</span>&gt;&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="private fun uniAsMinimalStage(): CompletableFuture$MinimalStage<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">uniAsMinimalStage</span>(): <span class="type-link" data-type="java.util.concurrent.CompletableFuture$MinimalStage">CompletableFuture$MinimalStage</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="private fun uniComposeStage(arg0: Executor, arg1: Function<in T, CompletionStage<V>>): CompletableFuture<V> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">uniComposeStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="type-link" data-type="out java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">V</span>&gt;&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">V</span>&gt; {};</div></div>
+<div class="line" data-text="final fun bipush(arg0: CompletableFuture$BiCompletion<*, *, *>, arg1: CompletableFuture<*>): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">bipush</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture$BiCompletion">CompletableFuture$BiCompletion</span>&lt;<span class="kw">*</span>, <span class="kw">*</span>, <span class="kw">*</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="kw">*</span>&gt;): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="final fun postFire(arg0: Int, arg1: CompletableFuture<*>, arg2: CompletableFuture<*>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">postFire</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="kw">*</span>&gt;, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="kw">*</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="final fun biApply(arg0: Object, arg1: Object, arg2: CompletableFuture$BiApply<R, S, T>, arg3: BiFunction<in R, in S, out T>): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">biApply</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture$BiApply">CompletableFuture$BiApply</span>&lt;<span class="ident">R</span>, <span class="ident">S</span>, <span class="ident">T</span>&gt;, <span class="arg-name">arg3</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>&lt;<span class="kw">in</span> <span class="ident">R</span>, <span class="kw">in</span> <span class="ident">S</span>, <span class="kw">out</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="private fun biApplyStage(arg0: CompletionStage<U>, arg1: Executor, arg2: BiFunction<in T, in U, out V>): CompletableFuture<V> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">biApplyStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">U</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">in</span> <span class="ident">U</span>, <span class="kw">out</span> <span class="ident">V</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">V</span>&gt; {};</div></div>
+<div class="line" data-text="final fun biAccept(arg0: Object, arg1: Object, arg2: CompletableFuture$BiAccept<R, S>, arg3: BiConsumer<in R, in S>): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">biAccept</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture$BiAccept">CompletableFuture$BiAccept</span>&lt;<span class="ident">R</span>, <span class="ident">S</span>&gt;, <span class="arg-name">arg3</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>&lt;<span class="kw">in</span> <span class="ident">R</span>, <span class="kw">in</span> <span class="ident">S</span>&gt;): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="private fun biAcceptStage(arg0: CompletionStage<U>, arg1: Executor, arg2: BiConsumer<in T, in U>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">biAcceptStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">U</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">in</span> <span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="final fun biRun(arg0: Object, arg1: Object, arg2: Runnable, arg3: CompletableFuture$BiRun<*, *>): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">biRun</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg3</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture$BiRun">CompletableFuture$BiRun</span>&lt;<span class="kw">*</span>, <span class="kw">*</span>&gt;): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="private fun biRunStage(arg0: Runnable, arg1: CompletionStage<*>, arg2: Executor): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">biRunStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">*</span>&gt;, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="final fun orpush(arg0: CompletableFuture$BiCompletion<*, *, *>, arg1: CompletableFuture<*>): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">final</span> <span class="kw">fun</span> <span class="method-name">orpush</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture$BiCompletion">CompletableFuture$BiCompletion</span>&lt;<span class="kw">*</span>, <span class="kw">*</span>, <span class="kw">*</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="kw">*</span>&gt;): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="private fun orApplyStage(arg0: CompletionStage<U>, arg1: Executor, arg2: Function<in T, out V>): CompletableFuture<V> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">orApplyStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">U</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">out</span> <span class="ident">V</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">V</span>&gt; {};</div></div>
+<div class="line" data-text="private fun orAcceptStage(arg0: CompletionStage<U>, arg1: Executor, arg2: Consumer<in T>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">orAcceptStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">U</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="private fun orRunStage(arg0: Runnable, arg1: CompletionStage<*>, arg2: Executor): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">orRunStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">*</span>&gt;, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="private fun waitingGet(arg0: Boolean): Object {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">waitingGet</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Boolean">Boolean</span>): <span class="type-link" data-type="java.lang.Object">Object</span> {};</div></div>
+<div class="line" data-text="private fun timedGet(arg0: Long): Object {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">timedGet</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="java.lang.Object">Object</span> {};</div></div>
+<div class="line" data-text="fun isDone(): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">isDone</span>(): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun get(): T {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">get</span>(): <span class="ident">T</span> {};</div></div>
+<div class="line" data-text="fun get(arg0: TimeUnit, arg1: Long): T {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">get</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.TimeUnit">TimeUnit</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="ident">T</span> {};</div></div>
+<div class="line" data-text="fun join(): T {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">join</span>(): <span class="ident">T</span> {};</div></div>
+<div class="line" data-text="fun getNow(arg0: T): T {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">getNow</span>(<span class="arg-name">arg0</span>: <span class="ident">T</span>): <span class="ident">T</span> {};</div></div>
+<div class="line" data-text="fun resultNow(): T {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">resultNow</span>(): <span class="ident">T</span> {};</div></div>
+<div class="line" data-text="fun exceptionNow(): Throwable {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">exceptionNow</span>(): <span class="type-link" data-type="java.lang.Throwable">Throwable</span> {};</div></div>
+<div class="line" data-text="fun complete(arg0: T): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">complete</span>(<span class="arg-name">arg0</span>: <span class="ident">T</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun completeExceptionally(arg0: Throwable): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">completeExceptionally</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Throwable">Throwable</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun thenApply(arg0: Function<in T, out U>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenApply</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">out</span> <span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenApplyAsync(arg0: Function<in T, out U>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenApplyAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">out</span> <span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenApplyAsync(arg0: Executor, arg1: Function<in T, out U>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenApplyAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">out</span> <span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenAccept(arg0: Consumer<in T>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenAccept</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenAcceptAsync(arg0: Consumer<in T>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenAcceptAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenAcceptAsync(arg0: Executor, arg1: Consumer<in T>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenAcceptAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenRun(arg0: Runnable): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenRun</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenRunAsync(arg0: Runnable): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenRunAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenRunAsync(arg0: Runnable, arg1: Executor): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenRunAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenCombine(arg0: CompletionStage<out U>, arg1: BiFunction<in T, in U, out V>): CompletableFuture<V> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenCombine</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">out</span> <span class="ident">U</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">in</span> <span class="ident">U</span>, <span class="kw">out</span> <span class="ident">V</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">V</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenCombineAsync(arg0: CompletionStage<out U>, arg1: BiFunction<in T, in U, out V>): CompletableFuture<V> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenCombineAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">out</span> <span class="ident">U</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">in</span> <span class="ident">U</span>, <span class="kw">out</span> <span class="ident">V</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">V</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenCombineAsync(arg0: CompletionStage<out U>, arg1: Executor, arg2: BiFunction<in T, in U, out V>): CompletableFuture<V> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenCombineAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">out</span> <span class="ident">U</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">in</span> <span class="ident">U</span>, <span class="kw">out</span> <span class="ident">V</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">V</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenAcceptBoth(arg0: CompletionStage<out U>, arg1: BiConsumer<in T, in U>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenAcceptBoth</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">out</span> <span class="ident">U</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">in</span> <span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenAcceptBothAsync(arg0: CompletionStage<out U>, arg1: BiConsumer<in T, in U>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenAcceptBothAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">out</span> <span class="ident">U</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">in</span> <span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenAcceptBothAsync(arg0: CompletionStage<out U>, arg1: Executor, arg2: BiConsumer<in T, in U>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenAcceptBothAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">out</span> <span class="ident">U</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">in</span> <span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun runAfterBoth(arg0: Runnable, arg1: CompletionStage<*>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">runAfterBoth</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">*</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun runAfterBothAsync(arg0: Runnable, arg1: CompletionStage<*>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">runAfterBothAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">*</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun runAfterBothAsync(arg0: Runnable, arg1: CompletionStage<*>, arg2: Executor): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">runAfterBothAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">*</span>&gt;, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun applyToEither(arg0: CompletionStage<out T>, arg1: Function<in T, U>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">applyToEither</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">out</span> <span class="ident">T</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="fun applyToEitherAsync(arg0: CompletionStage<out T>, arg1: Function<in T, U>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">applyToEitherAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">out</span> <span class="ident">T</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="fun applyToEitherAsync(arg0: CompletionStage<out T>, arg1: Executor, arg2: Function<in T, U>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">applyToEitherAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">out</span> <span class="ident">T</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="fun acceptEither(arg0: CompletionStage<out T>, arg1: Consumer<in T>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">acceptEither</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">out</span> <span class="ident">T</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun acceptEitherAsync(arg0: CompletionStage<out T>, arg1: Consumer<in T>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">acceptEitherAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">out</span> <span class="ident">T</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun acceptEitherAsync(arg0: CompletionStage<out T>, arg1: Executor, arg2: Consumer<in T>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">acceptEitherAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">out</span> <span class="ident">T</span>&gt;, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun runAfterEither(arg0: Runnable, arg1: CompletionStage<*>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">runAfterEither</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">*</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun runAfterEitherAsync(arg0: Runnable, arg1: CompletionStage<*>): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">runAfterEitherAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">*</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun runAfterEitherAsync(arg0: Runnable, arg1: CompletionStage<*>, arg2: Executor): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">runAfterEitherAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="kw">*</span>&gt;, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenCompose(arg0: Function<in T, CompletionStage<U>>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenCompose</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="type-link" data-type="out java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">U</span>&gt;&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenComposeAsync(arg0: Function<in T, CompletionStage<U>>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenComposeAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="type-link" data-type="out java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">U</span>&gt;&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="fun thenComposeAsync(arg0: Executor, arg1: Function<in T, CompletionStage<U>>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenComposeAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="type-link" data-type="out java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">U</span>&gt;&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="fun whenComplete(arg0: BiConsumer<in T, in Throwable>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">whenComplete</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">in</span> <span class="type-link" data-type="java.lang.Throwable">Throwable</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun whenCompleteAsync(arg0: BiConsumer<in T, in Throwable>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">whenCompleteAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">in</span> <span class="type-link" data-type="java.lang.Throwable">Throwable</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun whenCompleteAsync(arg0: Executor, arg1: BiConsumer<in T, in Throwable>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">whenCompleteAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="kw">in</span> <span class="type-link" data-type="java.lang.Throwable">Throwable</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun handle(arg0: BiFunction<in T, Throwable, out U>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">handle</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="kw">out</span> <span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="fun handleAsync(arg0: BiFunction<in T, Throwable, out U>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">handleAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="kw">out</span> <span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="fun handleAsync(arg0: Executor, arg1: BiFunction<in T, Throwable, out U>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">handleAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>&lt;<span class="kw">in</span> <span class="ident">T</span>, <span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="kw">out</span> <span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="fun toCompletableFuture(): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toCompletableFuture</span>(): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun exceptionally(arg0: Function<Throwable, out T>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">exceptionally</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="kw">out</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun exceptionallyAsync(arg0: Function<Throwable, out T>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">exceptionallyAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="kw">out</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun exceptionallyAsync(arg0: Executor, arg1: Function<Throwable, out T>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">exceptionallyAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="kw">out</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun exceptionallyCompose(arg0: Function<Throwable, CompletionStage<T>>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">exceptionallyCompose</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="type-link" data-type="out java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">T</span>&gt;&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun exceptionallyComposeAsync(arg0: Function<Throwable, CompletionStage<T>>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">exceptionallyComposeAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="type-link" data-type="out java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">T</span>&gt;&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun exceptionallyComposeAsync(arg0: Executor, arg1: Function<Throwable, CompletionStage<T>>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">exceptionallyComposeAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>&lt;<span class="type-link" data-type="java.lang.Throwable">Throwable</span>, <span class="type-link" data-type="out java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">T</span>&gt;&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun cancel(arg0: Boolean): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">cancel</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Boolean">Boolean</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun isCancelled(): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">isCancelled</span>(): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun isCompletedExceptionally(): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">isCompletedExceptionally</span>(): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun state(): Future$State {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">state</span>(): <span class="type-link" data-type="java.util.concurrent.Future$State">Future$State</span> {};</div></div>
+<div class="line" data-text="fun obtrudeValue(arg0: T): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">obtrudeValue</span>(<span class="arg-name">arg0</span>: <span class="ident">T</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun obtrudeException(arg0: Throwable): Unit {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">obtrudeException</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Throwable">Throwable</span>): <span class="type-link" data-type="kotlin.Unit">Unit</span> {};</div></div>
+<div class="line" data-text="fun getNumberOfDependents(): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">getNumberOfDependents</span>(): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun newIncompleteFuture(): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">newIncompleteFuture</span>(): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="fun defaultExecutor(): Executor {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">defaultExecutor</span>(): <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span> {};</div></div>
+<div class="line" data-text="fun copy(): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">copy</span>(): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun minimalCompletionStage(): CompletionStage<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">minimalCompletionStage</span>(): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun completeAsync(arg0: Executor, arg1: Supplier<out T>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">completeAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Supplier">Supplier</span>&lt;<span class="kw">out</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun completeAsync(arg0: Supplier<out T>): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">completeAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Supplier">Supplier</span>&lt;<span class="kw">out</span> <span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun orTimeout(arg0: TimeUnit, arg1: Long): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">orTimeout</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.TimeUnit">TimeUnit</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun completeOnTimeout(arg0: T, arg1: TimeUnit, arg2: Long): CompletableFuture<T> {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">completeOnTimeout</span>(<span class="arg-name">arg0</span>: <span class="ident">T</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.TimeUnit">TimeUnit</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt; {};</div></div>
+<div class="line" data-text="fun exceptionallyComposeAsync(arg0: Executor, arg1: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">exceptionallyComposeAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun exceptionallyComposeAsync(arg0: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">exceptionallyComposeAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun exceptionallyCompose(arg0: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">exceptionallyCompose</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun exceptionallyAsync(arg0: Executor, arg1: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">exceptionallyAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun exceptionallyAsync(arg0: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">exceptionallyAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun exceptionally(arg0: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">exceptionally</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun whenCompleteAsync(arg0: Executor, arg1: BiConsumer): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">whenCompleteAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun whenCompleteAsync(arg0: BiConsumer): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">whenCompleteAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun whenComplete(arg0: BiConsumer): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">whenComplete</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun handleAsync(arg0: Executor, arg1: BiFunction): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">handleAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun handleAsync(arg0: BiFunction): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">handleAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun handle(arg0: BiFunction): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">handle</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenComposeAsync(arg0: Executor, arg1: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenComposeAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenComposeAsync(arg0: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenComposeAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenCompose(arg0: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenCompose</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun runAfterEitherAsync(arg0: Runnable, arg1: CompletionStage, arg2: Executor): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">runAfterEitherAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun runAfterEitherAsync(arg0: Runnable, arg1: CompletionStage): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">runAfterEitherAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun runAfterEither(arg0: Runnable, arg1: CompletionStage): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">runAfterEither</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun acceptEitherAsync(arg0: CompletionStage, arg1: Executor, arg2: Consumer): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">acceptEitherAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun acceptEitherAsync(arg0: CompletionStage, arg1: Consumer): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">acceptEitherAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun acceptEither(arg0: CompletionStage, arg1: Consumer): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">acceptEither</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun applyToEitherAsync(arg0: CompletionStage, arg1: Executor, arg2: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">applyToEitherAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun applyToEitherAsync(arg0: CompletionStage, arg1: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">applyToEitherAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun applyToEither(arg0: CompletionStage, arg1: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">applyToEither</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun runAfterBothAsync(arg0: Runnable, arg1: CompletionStage, arg2: Executor): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">runAfterBothAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun runAfterBothAsync(arg0: Runnable, arg1: CompletionStage): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">runAfterBothAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun runAfterBoth(arg0: Runnable, arg1: CompletionStage): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">runAfterBoth</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenAcceptBothAsync(arg0: CompletionStage, arg1: Executor, arg2: BiConsumer): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenAcceptBothAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenAcceptBothAsync(arg0: CompletionStage, arg1: BiConsumer): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenAcceptBothAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenAcceptBoth(arg0: CompletionStage, arg1: BiConsumer): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenAcceptBoth</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiConsumer">BiConsumer</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenCombineAsync(arg0: CompletionStage, arg1: Executor, arg2: BiFunction): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenCombineAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenCombineAsync(arg0: CompletionStage, arg1: BiFunction): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenCombineAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenCombine(arg0: CompletionStage, arg1: BiFunction): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenCombine</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.BiFunction">BiFunction</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenAcceptAsync(arg0: Executor, arg1: Consumer): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenAcceptAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenAcceptAsync(arg0: Consumer): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenAcceptAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenAccept(arg0: Consumer): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenAccept</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Consumer">Consumer</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenApplyAsync(arg0: Executor, arg1: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenApplyAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenApplyAsync(arg0: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenApplyAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="fun thenApply(arg0: Function): CompletionStage {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">thenApply</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Function">Function</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span> {};</div></div>
+<div class="line" data-text="companion object {" style="opacity: 0;"><br><div style="padding-left: 2em"><span class="kw">companion object</span> {</div></div>
+<div class="line" data-text="@JvmStaticfinal val NIL: CompletableFuture$AltResult;" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">final</span> <span class="kw">val</span> <span class="ident">NIL</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture$AltResult">CompletableFuture$AltResult</span>;</div></div>
+<div class="line" data-text="@JvmStaticprivate final val USE_COMMON_POOL: Boolean;" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">final</span> <span class="kw">val</span> <span class="ident">USE_COMMON_POOL</span>: <span class="type-link" data-type="kotlin.Boolean">Boolean</span>;</div></div>
+<div class="line" data-text="@JvmStaticprivate final val ASYNC_POOL: Executor;" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">final</span> <span class="kw">val</span> <span class="ident">ASYNC_POOL</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>;</div></div>
+<div class="line" data-text="@JvmStaticfinal val SYNC: Int;" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">final</span> <span class="kw">val</span> <span class="ident">SYNC</span>: <span class="type-link" data-type="kotlin.Int">Int</span>;</div></div>
+<div class="line" data-text="@JvmStaticfinal val ASYNC: Int;" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">final</span> <span class="kw">val</span> <span class="ident">ASYNC</span>: <span class="type-link" data-type="kotlin.Int">Int</span>;</div></div>
+<div class="line" data-text="@JvmStaticfinal val NESTED: Int;" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">final</span> <span class="kw">val</span> <span class="ident">NESTED</span>: <span class="type-link" data-type="kotlin.Int">Int</span>;</div></div>
+<div class="line" data-text="@JvmStaticprivate final val RESULT: VarHandle;" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">final</span> <span class="kw">val</span> <span class="ident">RESULT</span>: <span class="type-link" data-type="java.lang.invoke.VarHandle">VarHandle</span>;</div></div>
+<div class="line" data-text="@JvmStaticprivate final val STACK: VarHandle;" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">final</span> <span class="kw">val</span> <span class="ident">STACK</span>: <span class="type-link" data-type="java.lang.invoke.VarHandle">VarHandle</span>;</div></div>
+<div class="line" data-text="@JvmStaticprivate final val NEXT: VarHandle;" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">final</span> <span class="kw">val</span> <span class="ident">NEXT</span>: <span class="type-link" data-type="java.lang.invoke.VarHandle">VarHandle</span>;</div></div>
+<div class="line" data-text="@JvmStaticfun encodeThrowable(arg0: Throwable): CompletableFuture$AltResult {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">encodeThrowable</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Throwable">Throwable</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture$AltResult">CompletableFuture$AltResult</span> {};</div></div>
+<div class="line" data-text="@JvmStaticfun encodeThrowable(arg0: Object, arg1: Throwable): Object {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">encodeThrowable</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.lang.Throwable">Throwable</span>): <span class="type-link" data-type="java.lang.Object">Object</span> {};</div></div>
+<div class="line" data-text="@JvmStaticfun encodeRelay(arg0: Object): Object {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">encodeRelay</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>): <span class="type-link" data-type="java.lang.Object">Object</span> {};</div></div>
+<div class="line" data-text="@JvmStaticprivate fun reportGet(arg0: Object): Object {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">reportGet</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>): <span class="type-link" data-type="java.lang.Object">Object</span> {};</div></div>
+<div class="line" data-text="@JvmStaticprivate fun reportJoin(arg0: Object): Object {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">reportJoin</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Object">Object</span>): <span class="type-link" data-type="java.lang.Object">Object</span> {};</div></div>
+<div class="line" data-text="@JvmStaticfun screenExecutor(arg0: Executor): Executor {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">screenExecutor</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>): <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span> {};</div></div>
+<div class="line" data-text="@JvmStaticprivate fun uniCopyStage(arg0: CompletableFuture<T>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">private</span> <span class="kw">fun</span> <span class="method-name">uniCopyStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">T</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="@JvmStaticfun andTree(arg0: Int, arg1: Int, arg2: CompletableFuture<?>[]): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">andTree</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Int">Int</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="?">?</span>&gt;[]): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="@JvmStaticfun asyncSupplyStage(arg0: Executor, arg1: Supplier<U>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">asyncSupplyStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Supplier">Supplier</span>&lt;<span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="@JvmStaticfun asyncRunStage(arg0: Runnable, arg1: Executor): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">asyncRunStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="@JvmStaticfun supplyAsync(arg0: Supplier<U>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">supplyAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.function.Supplier">Supplier</span>&lt;<span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="@JvmStaticfun supplyAsync(arg0: Executor, arg1: Supplier<U>): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">supplyAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.function.Supplier">Supplier</span>&lt;<span class="ident">U</span>&gt;): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="@JvmStaticfun runAsync(arg0: Runnable): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">runAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="@JvmStaticfun runAsync(arg0: Runnable, arg1: Executor): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">runAsync</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Runnable">Runnable</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="@JvmStaticfun completedFuture(arg0: U): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">completedFuture</span>(<span class="arg-name">arg0</span>: <span class="ident">U</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="@JvmStaticfun allOf(arg0: CompletableFuture<?>[]): CompletableFuture<Void> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">allOf</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="?">?</span>&gt;[]): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt; {};</div></div>
+<div class="line" data-text="@JvmStaticfun anyOf(arg0: CompletableFuture<?>[]): CompletableFuture<Object> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">anyOf</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="?">?</span>&gt;[]): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="type-link" data-type="java.lang.Object">Object</span>&gt; {};</div></div>
+<div class="line" data-text="@JvmStaticfun delayedExecutor(arg0: Executor, arg1: TimeUnit, arg2: Long): Executor {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">delayedExecutor</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="java.util.concurrent.TimeUnit">TimeUnit</span>, <span class="arg-name">arg2</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span> {};</div></div>
+<div class="line" data-text="@JvmStaticfun delayedExecutor(arg0: TimeUnit, arg1: Long): Executor {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">delayedExecutor</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.util.concurrent.TimeUnit">TimeUnit</span>, <span class="arg-name">arg1</span>: <span class="type-link" data-type="kotlin.Long">Long</span>): <span class="type-link" data-type="java.util.concurrent.Executor">Executor</span> {};</div></div>
+<div class="line" data-text="@JvmStaticfun completedStage(arg0: U): CompletionStage<U> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">completedStage</span>(<span class="arg-name">arg0</span>: <span class="ident">U</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="@JvmStaticfun failedFuture(arg0: Throwable): CompletableFuture<U> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">failedFuture</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Throwable">Throwable</span>): <span class="type-link" data-type="java.util.concurrent.CompletableFuture">CompletableFuture</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="@JvmStaticfun failedStage(arg0: Throwable): CompletionStage<U> {};" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">fun</span> <span class="method-name">failedStage</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="java.lang.Throwable">Throwable</span>): <span class="type-link" data-type="java.util.concurrent.CompletionStage">CompletionStage</span>&lt;<span class="ident">U</span>&gt; {};</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div style="padding-left: 2em">}</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div>}</div></div>
+<div class="line" data-text="" style="opacity: 0;"></div></div></div>
+			
+	<div id="hover-preview" style="
+	  position: fixed;
+	  overflow: auto;
+	  background: #2b2b2b;
+	  color: #ddd;
+	  border: 1px solid #444;
+	  border-radius: 6px;
+	  font-size: 13px;
+	  padding: 8px;
+	  display: none;
+	  z-index: 50;
+	  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+	  pointer-events: auto;
+	">
+	  <div id="hover-content"></div>
+	</div>
+			<script src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/Users/subli/kotlinscript/dist/constantsPreview.js"></script>
+			<script src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/Users/subli/kotlinscript/dist/consoleViewer.js"></script>
+			<script src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/Users/subli/kotlinscript/dist/classPreview.js"></script>
+			<script src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/Users/subli/kotlinscript/dist/searchBarViewer.js"></script>
+		  </body>
+		  </html>
+[Log] <!DOCTYPE html>
+		  <html lang="en">
+		  <head>
+			<meta charset="UTF-8">
+			<style>
+			  
+		#class-search-bar {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 12px;
+		background: #2b2b2b;
+		border-bottom: 1px solid #444;
+		z-index: 150;
+		position: relative;
+		}
+
+		#class-search-results {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 4px;
+		display: none;
+		max-height: 200px;
+		overflow-y: auto;
+		width: 100%;
+		z-index: 160;
+		font-family: monospace;
+		font-size: 13px;
+		}
+
+			  
+	@keyframes pop {
+	  0% { transform: scale(1); }
+	  50% { transform: scale(1.04); }
+	  100% { transform: scale(1.035); }
+	}
+			  
+	body {
+	  margin: 0;
+	  font-family: Consolas, monospace;
+	  background: #1e1e1e;
+	  color: rgb(210, 222, 174);
+	  padding: 16px;
+	}
+			  
+	#main {
+	  cursor: text;
+	  flex-grow: 1;
+	  height: 100vh;
+	  overflow: visible;
+	  padding: 16px;
+	  box-sizing: border-box;
+	}
+  
+	.kw {
+	  color: rgba(76, 156, 222, 0.93);
+	  font-weight: bold;
+	}
+  
+	.annotation {
+	  color: rgb(238, 223, 154);
+	}
+  
+	.type-link {
+	  color: rgba(108, 220, 175, 0.92);
+	  cursor: default;
+	  text-decoration: none;
+	  pointer-events: auto;
+	}
+  
+	.ctrl-down .type-link {
+	  cursor: pointer;
+	  pointer-events: auto;
+	}
+  
+	.ctrl-down .type-link:hover {
+	  color: rgba(158, 234, 203, 0.92);
+	  text-decoration: underline;
+	  display: inline-block;
+	  animation: pop 0.17s ease-in-out forwards;
+	}
+  
+	.ident {
+	  color: #9cdcfe;
+	}
+  
+	.method-name {
+	  color: rgba(231, 229, 151, 0.92);
+	}
+  
+	.arg-name {
+	  color: rgba(104, 208, 237, 0.97);
+	}
+  
+	.line {
+	  opacity: 0;
+	  transition: opacity 0.05s linear;
+	}
+			  
+	.highlight-box {
+	  position: absolute;
+	  background-color: rgba(255, 160, 80, 0.35);
+	  border-radius: 2px;
+	}
+  
+	.highlight-box.current {
+	  outline: 1px solid #3794ff;
+	  background-color: rgba(55, 148, 255, 0.3);
+	  box-shadow: 0 0 4px #3794ff99;
+	  z-index: 60;
+	}
+  
+	.debug-overlay-wrapper {
+	  position: fixed;
+	  pointer-events: none;
+	  z-index: 10000;
+	}
+  
+	.debug-overlay-wrapper > div {
+	  position: absolute;
+	  pointer-events: auto;
+	  background: rgba(255, 0, 0, 0.2);
+	}
+  
+	#search-bar button {
+	  background-color: rgba(30, 30, 30, 0.27);
+	  color: white;
+	  border: 1px solid #555;
+	  border-radius: 6px;
+	  padding: 4px 8px;
+	  cursor: pointer;
+	  transition: all 0.2s ease-in-out;
+	  font-size: 13px;
+	  font-family: inherit;
+	  user-select: none;
+	}
+  
+	#search-bar button.active {
+	  background-color: #094771;
+	  border-color: #3794ff;
+	  color: white;
+	}
+			</style>
+		  </head>
+		  <body>
+		    
+	<div id="class-search-bar" style="
+	  display: flex;
+	  align-items: center;
+	  gap: 8px;
+	  padding: 8px 12px;
+	  background: #2b2b2b;
+	  border-bottom: 1px solid #444;
+	  z-index: 150;
+	">
+	  <input id="class-search-input" type="text" placeholder="Search classes..." style="
+		flex-grow: 1;
+		padding: 6px 10px;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 6px;
+		font-family: inherit;
+	  ">
+	  <div id="class-search-results" style="
+		position: absolute;
+		top: 42px;
+		left: 12px;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 4px;
+		display: none;
+		max-height: 200px;
+		overflow-y: auto;
+		width: calc(100% - 24px);
+		z-index: 160;
+		font-family: monospace;
+		font-size: 13px;
+	  "></div>
+	</div>
+			
+	<div id="search-bar" style="
+	  display: none;
+	  position: fixed;
+	  top: 8px;
+	  right: 8px;
+	  z-index: 200;
+	  background: #2c2c2c;
+	  padding: 4px 8px;
+	  border-radius: 4px;
+	  display: flex;
+	  gap: 4px;
+	  align-items: center;
+	">
+	  <input type="text" id="search-input" placeholder="Search..." style="
+		width: 180px;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		padding: 4px;
+	  " />
+	  <button id="toggle-case" title="Match Case">Aa</button>
+	  <button id="toggle-whole" title="Whole Word">⛶</button>
+	  <button id="toggle-regex" title="Regex">*</button>
+	  <span id="search-count" style="
+		color: white;
+		min-width: 30px;
+		text-align: center;
+		font-size: 13px;
+		font-family: Arial, sans-serif;
+	  ">No Results</span>
+	  <button id="search-prev" title="Previous Match">↑</button>
+	  <button id="search-next" title="Next Match">↓</button>
+	  <button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
+	</div>
+			
+  <div id="console-output" style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 160px;
+    background: #111;
+    color: #ccc;
+    font-family: monospace;
+    font-size: 12px;
+    overflow-y: auto;
+    padding: 24px 10px 6px;
+    border-top: 1px solid #333;
+    z-index: 200;
+  ">
+    <button id="console-minimize" style="
+      position: absolute;
+      top: 4px;
+      right: 8px;
+      background: #333;
+      color: #ccc;
+      border: 1px solid #555;
+      padding: 2px 6px;
+      font-size: 11px;
+      border-radius: 4px;
+      cursor: pointer;
+    ">–</button>
+    <div id="console-content"></div>
+  </div>
+
+  <div id="console-bar" style="
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: #222;
+    color: #ccc;
+    font-family: monospace;
+    font-size: 12px;
+    border-top: 1px solid #333;
+    z-index: 200;
+  ">
+  	<span>Console</span>
+    <button id="console-restore" style="
+      position: absolute;
+      top: 1px;
+      right: 8px;
+      background: #333;
+      color: #ccc;
+      border: 1px solid #555;
+      padding: 1px 6px;
+      font-size: 11px;
+      border-radius: 4px;
+      cursor: pointer;
+    ">+</button>
+  </div>
+			<div id="main"><div class="line" data-text="package kotlin" style="opacity: 0;"><div><span class="kw">package</span> <span class="type-link" data-package="kotlin"><span class="ident">kotlin</span></span></div><br></div>
+<div class="line" data-text=" class Any {" style="opacity: 0;"><div id="current-class"> <span class="kw">class</span> <span class="ident">Any</span> {</div></div>
+<div class="line" data-text="fun equals(arg0: Any): Boolean {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">equals</span>(<span class="arg-name">arg0</span>: <span class="type-link" data-type="kotlin.Any">Any</span>): <span class="type-link" data-type="kotlin.Boolean">Boolean</span> {};</div></div>
+<div class="line" data-text="fun hashCode(): Int {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">hashCode</span>(): <span class="type-link" data-type="kotlin.Int">Int</span> {};</div></div>
+<div class="line" data-text="fun toString(): String {};" style="opacity: 0;"><div style="padding-left: 2em"><span class="kw">fun</span> <span class="method-name">toString</span>(): <span class="type-link" data-type="kotlin.String">String</span> {};</div></div>
+<div class="line" data-text="}" style="opacity: 0;"><div>}</div></div>
+<div class="line" data-text="" style="opacity: 0;"></div></div></div>
+			
+	<div id="hover-preview" style="
+	  position: fixed;
+	  overflow: auto;
+	  background: #2b2b2b;
+	  color: #ddd;
+	  border: 1px solid #444;
+	  border-radius: 6px;
+	  font-size: 13px;
+	  padding: 8px;
+	  display: none;
+	  z-index: 50;
+	  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+	  pointer-events: auto;
+	">
+	  <div id="hover-content"></div>
+	</div>
+			<script src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/Users/subli/kotlinscript/dist/constantsPreview.js"></script>
+			<script src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/Users/subli/kotlinscript/dist/consoleViewer.js"></script>
+			<script src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/Users/subli/kotlinscript/dist/classPreview.js"></script>
+			<script src="https://file%2B.vscode-resource.vscode-cdn.net/c%3A/Users/subli/kotlinscript/dist/searchBarViewer.js"></script>
+		  </body>
+		  </html>
+[Log] Closed document: file:///d%3A/minecraft/instances/1.21%20fab/package.json
+[Log] <!DOCTYPE html>
+		  <html lang="en">
+		  <head>
+			<meta charset="UTF-8">
+			<style>
+			  
+		#class-search-bar {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 12px;
+		background: #2b2b2b;
+		border-bottom: 1px solid #444;
+		z-index: 150;
+		position: relative;
+		}
+
+		#class-search-results {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 4px;
+		display: none;
+		max-height: 200px;
+		overflow-y: auto;
+		width: 100%;
+		z-index: 160;
+		font-family: monospace;
+		font-size: 13px;
+		}
+
+			  
+	@keyframes pop {
+	  0% { transform: scale(1); }
+	  50% { transform: scale(1.04); }
+	  100% { transform: scale(1.035); }
+	}
+			  
+	body {
+	  margin: 0;
+	  font-family: Consolas, monospace;
+	  background: #1e1e1e;
+	  color: rgb(210, 222, 174);
+	  padding: 16px;
+	}
+			  
+	#main {
+	  cursor: text;
+	  flex-grow: 1;
+	  height: 100vh;
+	  overflow: visible;
+	  padding: 16px;
+	  box-sizing: border-box;
+	}
+  
+	.kw {
+	  color: rgba(76, 156, 222, 0.93);
+	  font-weight: bold;
+	}
+  
+	.annotation {
+	  color: rgb(238, 223, 154);
+	}
+  
+	.type-link {
+	  color: rgba(108, 220, 175, 0.92);
+	  cursor: default;
+	  text-decoration: none;
+	  pointer-events: auto;
+	}
+  
+	.ctrl-down .type-link {
+	  cursor: pointer;
+	  pointer-events: auto;
+	}
+  
+	.ctrl-down .type-link:hover {
+	  color: rgba(158, 234, 203, 0.92);
+	  text-decoration: underline;
+	  display: inline-block;
+	  animation: pop 0.17s ease-in-out forwards;
+	}
+  
+	.ident {
+	  color: #9cdcfe;
+	}
+  
+	.method-name {
+	  color: rgba(231, 229, 151, 0.92);
+	}
+  
+	.arg-name {
+	  color: rgba(104, 208, 237, 0.97);
+	}
+  
+	.line {
+	  opacity: 0;
+	  transition: opacity 0.05s linear;
+	}
+			  
+	.highlight-box {
+	  position: absolute;
+	  background-color: rgba(255, 160, 80, 0.35);
+	  border-radius: 2px;
+	}
+  
+	.highlight-box.current {
+	  outline: 1px solid #3794ff;
+	  background-color: rgba(55, 148, 255, 0.3);
+	  box-shadow: 0 0 4px #3794ff99;
+	  z-index: 60;
+	}
+  
+	.debug-overlay-wrapper {
+	  position: fixed;
+	  pointer-events: none;
+	  z-index: 10000;
+	}
+  
+	.debug-overlay-wrapper > div {
+	  position: absolute;
+	  pointer-events: auto;
+	  background: rgba(255, 0, 0, 0.2);
+	}
+  
+	#search-bar button {
+	  background-color: rgba(30, 30, 30, 0.27);
+	  color: white;
+	  border: 1px solid #555;
+	  border-radius: 6px;
+	  padding: 4px 8px;
+	  cursor: pointer;
+	  transition: all 0.2s ease-in-out;
+	  font-size: 13px;
+	  font-family: inherit;
+	  user-select: none;
+	}
+  
+	#search-bar button.active {
+	  background-color: #094771;
+	  border-color: #3794ff;
+	  color: white;
+	}
+			</style>
+		  </head>
+		  <body>
+		    
+	<div id="class-search-bar" style="
+	  display: flex;
+	  align-items: center;
+	  gap: 8px;
+	  padding: 8px 12px;
+	  background: #2b2b2b;
+	  border-bottom: 1px solid #444;
+	  z-index: 150;
+	">
+	  <input id="class-search-input" type="text" placeholder="Search classes..." style="
+		flex-grow: 1;
+		padding: 6px 10px;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 6px;
+		font-family: inherit;
+	  ">
+	  <div id="class-search-results" style="
+		position: absolute;
+		top: 42px;
+		left: 12px;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 4px;
+		display: none;
+		max-height: 200px;
+		overflow-y: auto;
+		width: calc(100% - 24px);
+		z-index: 160;
+		font-family: monospace;
+		font-size: 13px;
+	  "></div>
+	</div>
+			
+	<div id="search-bar" style="
+	  display: none;
+	  position: fixed;
+	  top: 8px;
+	  right: 8px;
+	  z-index: 200;
+	  background: #2c2c2c;
+	  padding: 4px 8px;
+	  border-radius: 4px;
+	  display: flex;
+	  gap: 4px;
+	  align-items: center;
+	">
+	  <input type="text" id="search-input" placeholder="Search..." style="
+		width: 180px;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		padding: 4px;
+	  " />
+	  <button id="toggle-case" title="Match Case">Aa</button>
+	  <button id="toggle-whole" title="Whole Word">⛶</button>
+	  <button id="toggle-regex" title="Regex">*</button>
+	  <span id="search-count" style="
+		color: white;
+		min-width: 30px;
+		text-align: center;
+		font-size: 13px;
+		font-family: Arial, sans-serif;
+	  ">No Results</span>
+	  <button id="search-prev" title="Previous Match">↑</button>
+	  <button id="search-next" title="Next Match">↓</button>
+	  <button id="search-close" title="Close Search" style="margin-left: auto;">✖</button>
+	</div>
+			
+  <div id="console-output" style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 160px;
+    background: #111;
+    color: #ccc;
+    font-family: monospace;
+    font-size: 12px;
+    overflow-y: auto;
+    padding: 24px 10px 6px;
+    border-top: 1px solid #333;
+    z-index: 200;
+  ">
+    <button id="console-minimize" style="
+      position: absolute;
+      top: 4px;
+      right: 8px;
+      background: #333;
+      color: #ccc;
+      border: 1px solid #555;
+      padding: 2px 6px;
+      font-size: 11px;
+      border-radius: 4px;
+      cursor: pointer;
+    ">–</button>
+    <div id="console-content"></div>
+  </div>
+
+  <div id="console-bar" style="
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: #222;
+    color: #ccc;
+    font-family: monospace;
+    font-size: 12px;
+    border-top: 1px solid #333;
+    z-index: 200;
+  ">
+  	<span>Console</span>
+    <button id="console-restore" style="
+      position: absolute;
+      top: 1px;
+      right: 8px;
+      background: #333;
+      color: #ccc;
+      border: 1px solid #555;
+      padding: 1px 6px;
+      font-size: 11px;
+      border-radius: 4px;
+      cursor: pointer;
+    ">+</button>
+  </div>
+			<div id="main"><div class="line" data-text="package java.lang" style="opacity: 0;"><div><span class="kw">package</span> <span class="type-link" data-package="java"><span class="ident">java</span></span><span>.</span><span class="type-link" data-package="java.lang"><span class="ident">lang</span></span></div><br></div>
+<div class="line" data-text="final class Void {" style="opacity: 0;"><div id="current-class"><span class="kw">final</span> <span class="kw">class</span> <span class="ident">Void</span> {</div></div>
+<div class="line" data-text="companion object {" style="opacity: 0;"><br><div style="padding-left: 2em"><span class="kw">companion object</span> {</div></div>
+<div class="line" data-text="@JvmStaticfinal val TYPE: Class<Void>;" style="opacity: 0;"><div style="padding-left: 4em"><span class="annotation">@JvmStatic</span></div><div style="padding-left: 4em"><span class="kw">final</span> <span class="kw">val</span> <span class="ident">TYPE</span>: <span class="type-link" data-type="java.lang.Class">Class</span>&lt;<span class="type-link" data-type="java.lang.Void">Void</span>&gt;;</div></div>
 <div class="line" data-text="}" style="opacity: 0;"><div style="padding-left: 2em">}</div></div>
 <div class="line" data-text="}" style="opacity: 0;"><div>}</div></div>
 <div class="line" data-text="" style="opacity: 0;"></div></div></div>

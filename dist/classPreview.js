@@ -1,3 +1,61 @@
+vscode.postMessage({ command: 'getSharedSet' });
+
+
+window.addEventListener('message', event => {
+    const msg = event.data;
+    if (msg.command === 'sharedSetData') {
+        classSet = new Set(msg.entries);
+    }
+});
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('class-search-input');
+    const results = document.getElementById('class-search-results');
+
+    input.addEventListener('input', () => {
+        const query = input.value.trim();
+        const matches = [];
+
+        if (query) {
+            const lowerQuery = query.toLowerCase();
+
+            for (const classPath of classSet) {
+                if (query.includes('.')) {
+                    if (classPath.toLowerCase().includes(lowerQuery)) {
+                        matches.push(classPath);
+                    }
+                } else {
+                    const className = classPath.split('<')[0].split('.').pop();
+                    if (className.toLowerCase().includes(lowerQuery)) {
+                        matches.push(classPath);
+                    }
+                }
+                if (matches.length >= 500) break;
+            }
+
+            matches.sort((a, b) => {
+                const aIndex = a.toLowerCase().indexOf(lowerQuery);
+                const bIndex = b.toLowerCase().indexOf(lowerQuery);
+                return aIndex !== bIndex ? aIndex - bIndex : a.length - b.length;
+            });
+        }
+
+        results.innerHTML = matches.map(classPath =>
+            `<div class="search-result" data-type="${classPath}" style="padding:4px 8px; cursor:pointer;">${classPath}</div>`
+        ).join('');
+
+        results.style.display = matches.length ? 'block' : 'none';
+
+        results.querySelectorAll('.search-result').forEach(el => {
+            el.addEventListener('click', () => {
+                const typeName = el.getAttribute('data-type');
+                vscode.postMessage({ command: 'openType', type: typeName });
+                results.style.display = 'none';
+            });
+        });
+    });
+
+});
+
 document.getElementById('current-class')?.scrollIntoView({ block: 'start' });
 document.addEventListener('click', e => {
     if (!e.ctrlKey) return;
@@ -43,19 +101,8 @@ window.addEventListener('message', event => {
         }, 10);
     }
 });
-/* window.addEventListener('message', event => {
-    const msg = event.data;
-    if (msg.command === 'previewResponse') {
-        const box = document.getElementById('hover-preview');
-        const contentBox = document.getElementById('hover-content');
-        box.style.display = 'block';
 
-        if (contentBox) {
-            contentBox.innerHTML = msg.html;
-        }
 
-    }
-}); */
 document.addEventListener('click', (e) => {
     if (!previewBox) return;
     const target = e.target.closest('.type-link');
@@ -120,7 +167,7 @@ function positionPreview(target) {
     const rect = target.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
     const scrollY = window.scrollY;
-    const hardYOffset = -20;
+    const hardYOffset = 0;
 
     box.style.maxHeight = '';
     box.style.height = 'auto';
@@ -148,7 +195,7 @@ function positionPreview(target) {
 
 
     box.style.height = finalHeight + 'px';
-    box.style.top = (scrollY + topPosition) + 'px';
+    box.style.top = topPosition + 'px';
     box.style.overflow = 'auto';
     box.style.visibility = 'visible';
 }

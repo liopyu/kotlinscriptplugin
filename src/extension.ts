@@ -223,6 +223,49 @@ export async function activate(context: vscode.ExtensionContext) {
 				}
 		}
 	});
+	function convertJavaGenericToKotlin(type: string): string {
+		if (!type.includes('<')) return type;
+
+		// Recursively handle nested generic groups
+		const processSegment = (segment: string): string => {
+			segment = segment.trim();
+
+			// Convert wildcard with extends: ? extends SomeType → out SomeType
+			if (/^\?\s+extends\s+/.test(segment)) {
+				return 'out ' + segment.replace(/^\?\s+extends\s+/, '');
+			}
+
+			// Convert wildcard with super: ? super SomeType → in SomeType
+			if (/^\?\s+super\s+/.test(segment)) {
+				return 'in ' + segment.replace(/^\?\s+super\s+/, '');
+			}
+
+			// Convert unbounded wildcard: ? → *
+			if (segment === '?') {
+				return '*';
+			}
+
+			// Convert declarations: T extends SomeType → T : SomeType
+			if (/^\w+\s+extends\s+/.test(segment)) {
+				const [param, base] = segment.split(/\s+extends\s+/);
+				return `${param.trim()} : ${base.trim()}`;
+			}
+
+			// Otherwise it's a normal type — return as-is
+			return segment;
+		};
+
+		// Extract outer type and generic content
+		const match = type.match(/^(.+?)<(.+)>$/);
+		if (!match) return type;
+
+		const outer = match[1].trim();
+		const inner = match[2];
+		const args = splitGenerics(inner).map(processSegment).join(', ');
+
+		return `${outer}<${args}>`;
+	}
+
 	const annotationModifiers: Record<string, string> = {
 		"synchronized": "@Synchronized",
 		"transient": "@Transient",
@@ -255,22 +298,92 @@ export async function activate(context: vscode.ExtensionContext) {
 	const renderIdentifier = (name: string) => `<span class="ident">${name}</span>`;
 	const renderMethodName = (name: string) => `<span class="method-name">${name}</span>`;
 	const renderArgName = (name: string) => `<span class="arg-name">${name}</span>`;
-	const renderType = (type: string | null, disableHover = false) => {
-		const raw = type?.split('<')[0];
-		const simple = raw?.split('.').pop();
-		const generics = type?.match(/<(.+)>/)?.[1];
-		const renderedGenerics = generics
-			?.split(',')
-			.map(t => t.trim().split('.').pop())
-			.join(', ');
-
+	const renderType = (type: string | null, disableHover = false): string => {
+		if (!type) return '';
+		type = convertJavaGenericToKotlin(type);
 		const classes = ['type-link'];
 		if (disableHover) classes.push('no-hover');
 
-		return `<span class="${classes.join(' ')}" data-type="${raw}">${simple}</span>${generics ? `&lt;${renderedGenerics}&gt;` : ''
-			}`;
-	};
+		const renderSegment = (segment: string): string => {
+			segment = segment.trim();
 
+			const arrayMatch = segment.match(/^(.+?)(\[\])$/);
+			if (arrayMatch) {
+				const base = arrayMatch[1];
+				const suffix = arrayMatch[2];
+				return `${renderSegment(base)}${suffix}`;
+			}
+
+			const genericMatch = segment.match(/^(.+?)<(.+)>$/);
+			if (genericMatch) {
+				const outerRaw = genericMatch[1].trim();
+				const outerSimple = outerRaw.split('.').pop();
+				const inner = genericMatch[2];
+
+				const renderedInner = splitGenerics(inner).map(renderSegment).join(', ');
+				return `<span class="${classes.join(' ')}" data-type="${outerRaw}">${outerSimple}</span>&lt;${renderedInner}&gt;`;
+			}
+
+			const modifierMatch = segment.match(/^(in|out)\s+(.+)$/);
+			if (modifierMatch) {
+				const modifier = modifierMatch[1];
+				const baseType = modifierMatch[2].trim();
+				const baseSimple = baseType.split('.').pop();
+
+				const isGenericLetter = /^[A-Z]$/.test(baseType);
+				const isUnqualified = !baseType.includes('.');
+
+				if (isGenericLetter && isUnqualified) {
+					return `<span class="kw">${modifier}</span> <span class="ident">${baseSimple}</span>`;
+				}
+
+				return `<span class="kw">${modifier}</span> <span class="${classes.join(' ')}" data-type="${baseType}">${baseSimple}</span>`;
+			}
+
+
+
+			if (segment === '*') {
+				return `<span class="kw">*</span>`;
+			}
+
+			const raw = segment.split('<')[0];
+			const simple = raw.split('.').pop();
+
+			const isGenericLetter = /^[A-Z]$/.test(raw);
+			const isUnqualified = !raw.includes('.');
+
+			if (isGenericLetter && isUnqualified) {
+				return `<span class="ident">${simple}</span>`;
+			}
+
+			return `<span class="${classes.join(' ')}" data-type="${raw}">${simple}</span>`;
+		};
+
+
+
+		return renderSegment(type);
+	};
+	function splitGenerics(input: string): string[] {
+		const parts: string[] = [];
+		let current = '';
+		let depth = 0;
+		let insideAngle = false;
+
+		for (let i = 0; i < input.length; i++) {
+			const char = input[i];
+
+			if (char === '<') depth++;
+			if (char === '>') depth--;
+			if (char === ',' && depth === 0) {
+				parts.push(current.trim());
+				current = '';
+				continue;
+			}
+			current += char;
+		}
+		if (current) parts.push(current.trim());
+		return parts;
+	}
 
 	const renderAnnotation = (text: string) => `<span class="annotation">@${text}</span>`;
 
@@ -352,6 +465,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		lines.push(`<div>${renderKeyword('package')} ${renderedPackage}</div><br>`);
 
 		const classSimpleName = member.classPath.split('.').pop()!;
+		/* const typeParams = member.typeParameters?.length ? `&lt;${member.typeParameters.join(', ')}&gt;` : '';
+		lines.push(`<div id="current-class">${topModifiers} ${renderKeyword(classKeyword)} ${renderIdentifier(classSimpleName)}${typeParams}${inheritance ? ' : ' + inheritance : ''} {</div>`);
+ */
 		lines.push(`<div id="current-class">${topModifiers} ${renderKeyword(classKeyword)} ${renderIdentifier(classSimpleName)}${inheritance ? ' : ' + inheritance : ''} {</div>`);
 
 		const instanceFields = member.fields.filter(f => !f.modifiers.includes('static'));
@@ -372,7 +488,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		lines.push(`<div>}</div>`);
 		lines.push(`</div>`);
 
-		/* return lines.map(line => `<div class="line" style="opacity: 0;">${line}</div>`).join('\n'); */
 		return lines.map(line => {
 			const plain = line.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 			return `<div class="line" data-text="${plain}" style="opacity: 0;">${line}</div>`;
@@ -548,6 +663,17 @@ export async function activate(context: vscode.ExtensionContext) {
 		const htmlContent = generateClassHtmlContent(panel.webview, context.extensionUri, classHtml);
 		console.log(htmlContent)
 		panel.webview.html = htmlContent;
+		const availableMembersMap: Record<string, TypingsMember> = {};
+		panel.webview.onDidReceiveMessage(message => {
+			if (message.command === 'getSharedSet') {
+				panel.webview.postMessage({
+					command: 'sharedSetData',
+					entries: Array.from(availableClasses)
+				});
+			}
+		});
+
+
 		currentClassFQName = baseType;
 		classPanels.set(baseType, panel);
 		const history: string[] = [];
@@ -655,15 +781,13 @@ export async function activate(context: vscode.ExtensionContext) {
       cursor: pointer;
     ">+</button>
   </div>`;
-
-
 	const searchBarContent = `
 	<div id="search-bar" style="
 	  display: none;
 	  position: fixed;
 	  top: 8px;
 	  right: 8px;
-	  z-index: 100;
+	  z-index: 200;
 	  background: #2c2c2c;
 	  padding: 4px 8px;
 	  border-radius: 4px;
@@ -730,7 +854,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	  cursor: text;
 	  flex-grow: 1;
 	  height: 100vh;
-	  overflow-y: auto;
+	  overflow: visible;
 	  padding: 16px;
 	  box-sizing: border-box;
 	}
@@ -824,6 +948,71 @@ export async function activate(context: vscode.ExtensionContext) {
 	  border-color: #3794ff;
 	  color: white;
 	}`;
+	const classSearchBarCSS = `
+		#class-search-bar {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 12px;
+		background: #2b2b2b;
+		border-bottom: 1px solid #444;
+		z-index: 150;
+		position: relative;
+		}
+
+		#class-search-results {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 4px;
+		display: none;
+		max-height: 200px;
+		overflow-y: auto;
+		width: 100%;
+		z-index: 160;
+		font-family: monospace;
+		font-size: 13px;
+		}
+`
+	const classSearchBarDiv = `
+	<div id="class-search-bar" style="
+	  display: flex;
+	  align-items: center;
+	  gap: 8px;
+	  padding: 8px 12px;
+	  background: #2b2b2b;
+	  border-bottom: 1px solid #444;
+	  z-index: 150;
+	">
+	  <input id="class-search-input" type="text" placeholder="Search classes..." style="
+		flex-grow: 1;
+		padding: 6px 10px;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 6px;
+		font-family: inherit;
+	  ">
+	  <div id="class-search-results" style="
+		position: absolute;
+		top: 42px;
+		left: 12px;
+		background: #1e1e1e;
+		color: white;
+		border: 1px solid #555;
+		border-radius: 4px;
+		display: none;
+		max-height: 200px;
+		overflow-y: auto;
+		width: calc(100% - 24px);
+		z-index: 160;
+		font-family: monospace;
+		font-size: 13px;
+	  "></div>
+	</div>`;
 
 	function generateClassHtmlContent(
 		webview: vscode.Webview,
@@ -840,6 +1029,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		  <head>
 			<meta charset="UTF-8">
 			<style>
+			  ${classSearchBarCSS}
 			  ${keyframePop}
 			  ${bodyDiv}
 			  ${mainDiv}
@@ -847,6 +1037,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			</style>
 		  </head>
 		  <body>
+		    ${classSearchBarDiv}
 			${searchBarContent}
 			${consoleDiv}
 			<div id="main">${classHtml}</div>
