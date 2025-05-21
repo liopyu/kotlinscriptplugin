@@ -135,7 +135,7 @@ export function writeAlphabeticalTypingsIndex(ktsDirectory: string) {
         const inputPath = path.join(ktsDirectory, 'typings', fileName);
 
         if (!fs.existsSync(inputPath)) {
-            console.warn(`⚠️ Input file not found: ${inputPath}`);
+            console.warn(` Input file not found: ${inputPath}`);
             continue;
         }
 
@@ -190,7 +190,7 @@ export function writeAlphabeticalTypingsIndex(ktsDirectory: string) {
 }
 
 
-function getKotlinBoxedType(type: string): string {
+export function getKotlinBoxedType(type: string): string {
     const primitiveToBoxedMap: Record<string, string> = {
         byte: 'kotlin.Byte',
         short: 'kotlin.Short',
@@ -217,7 +217,7 @@ function getKotlinBoxedType(type: string): string {
     return primitiveToBoxedMap[type.toLowerCase()] ?? type
 }
 
-function stripAnnotations(input: string): string {
+export function stripAnnotations(input: string): string {
     return input.replace(/@[\w.]+(?:\([^\)]*\))?\s*/g, '').trim();
 }
 
@@ -266,19 +266,19 @@ export async function loadTypingMembers(ktsDirectory: string): Promise<TypingsMe
                         (details as { modifiers?: string }).modifiers || '',
                         ""
                     ));
-                    if (name.includes("getAttachedOrElse") && classPath === "net.minecraft.world.entity.Entity") {
-                        log("🟡 DEBUG: Matched Method — getAttachedOrElse");
-                        log("🔹 Original method key:", name);
-                        log("🔹 MethodSignature:", methodSignature);
-                        log("🔹 Parsed rawArgsMatch:", rawArgsMatch);
-                        log("🔹 Extracted raw args:", rawArgsMatch?.[1]);
-                        log("🔹 Split arguments:", rawArgsMatch?.[1] ? splitTopLevelArgs(rawArgsMatch[1]) : []);
-                        log("🔹 Extracted and stripped args:", extractedArgs);
-                        log("🔹 Return type (raw):", (details as { returns?: string }).returns);
-                        log("🔹 Return type (stripped):", stripAnnotations((details as { returns?: string }).returns || 'Any'));
-                        log("🔹 Full method object:", details);
-                    }
-
+                    /*   if (name.includes("getAttachedOrElse") && classPath === "net.minecraft.world.entity.Entity") {
+                          log("DEBUG: Matched Method — getAttachedOrElse");
+                          log(" Original method key:", name);
+                          log(" MethodSignature:", methodSignature);
+                          log(" Parsed rawArgsMatch:", rawArgsMatch);
+                          log(" Extracted raw args:", rawArgsMatch?.[1]);
+                          log(" Split arguments:", rawArgsMatch?.[1] ? splitTopLevelArgs(rawArgsMatch[1]) : []);
+                          log(" Extracted and stripped args:", extractedArgs);
+                          log(" Return type (raw):", (details as { returns?: string }).returns);
+                          log(" Return type (stripped):", stripAnnotations((details as { returns?: string }).returns || 'Any'));
+                          log(" Full method object:", details);
+                      }
+   */
                     if (!hasInvokeOperator)
                         hasInvokeOperator = (details as { isInvokeOperator?: boolean }).isInvokeOperator ?? false;
 
@@ -389,7 +389,6 @@ export async function loadAvailableClasses(ktsDirectory: string): Promise<Set<st
             return availableClasses;
         }
 
-        // Fallback to JSON file
         if (fs.existsSync(jsonFilePath)) {
             log('Loading classes from JSON file...');
             const fileContent = fs.readFileSync(jsonFilePath, 'utf-8');
@@ -412,7 +411,7 @@ export async function loadAvailableClasses(ktsDirectory: string): Promise<Set<st
         return availableClasses;
     }
 }
-function splitTopLevelArgs(argString: string): string[] {
+export function splitTopLevelArgs(argString: string): string[] {
     const args: string[] = [];
     let current = '';
     let depth = 0;
@@ -454,7 +453,6 @@ export function updateTokensForDocument(document: vscode.TextDocument) {
 
     const visibleRange = editor.visibleRanges[0];
     const expansion = 0
-    // ✅ Expanded range calculation with boundary protection
     const expandedStartLine = Math.max(0, visibleRange.start.line - expansion);
     const expandedEndLine = Math.min(document.lineCount - 1, visibleRange.end.line + expansion);
 
@@ -518,4 +516,110 @@ export function logNode(node: SyntaxNode | null | undefined, name: string) {
     if (node)
         log(`${name} type: ${node.type}, ${name} text: ${node.text}`)
     else log(name + " is null.")
+}
+export function buildTypingsMemberFromClassNode(node: SyntaxNode, treeProvider: TreeProvider): TypingsMember {
+    const className = node.text;
+    const classPath = "kotlinscript." + className;
+    const inheritances = getNamedSiblings(node).map(sib => sib.text);
+    const classBody = treeProvider.findChild(node, "function_declaration", "class_body");
+    const methods: Method[] = [];
+    getNamedSiblings(classBody, true).forEach(funcNode => {
+        const method = getMethodFromFunctionDeclaration(funcNode, treeProvider);
+        if (method) methods.push(method);
+    });
+    const typeParameters = getNamedSiblings(
+        treeProvider.findChild(node.parent ?? node, "type_parameters", "class_declaration")?.firstChild,
+        true
+    ).map(sib => sib.text);
+    let classModifiersNode
+    if (node.parent)
+        classModifiersNode = treeProvider.findChild(node.parent, "modifiers", "class_declaration")?.firstChild;
+    const classAnnotations: string[] = [];
+    const classModifiers: string[] = [];
+    getNamedSiblings(classModifiersNode, true).forEach(modChild => {
+        logNode(modChild, "modChild")
+        return modChild.type !== "annotation" ? classModifiers.push(modChild.text) : classAnnotations.push(modChild.text)
+    });
+    const fields: Field[] = [];
+    getNamedSiblings(classBody, true).forEach(child => {
+        if (child.type === "property_declaration") {
+            const field = getFieldFromPropertyDeclaration(child, treeProvider);
+            if (field) fields.push(field);
+        }
+    });
+    let interfaceString = getNamedSiblings(node.parent?.firstChild, true).filter(sib => sib.type == "interface").map(sib => " " + sib.text)[0] ?? ""
+    return new TypingsMember(
+        classPath,
+        methods,
+        fields,
+        false,
+        false,
+        classModifiers.join(" ") + interfaceString,
+        "",
+        inheritances,
+        typeParameters
+    );
+}
+export function getFieldFromPropertyDeclaration(fieldNode: SyntaxNode, treeProvider: TreeProvider): Field | null {
+    const name = treeProvider.findChild(fieldNode, "simple_identifier", "variable_declaration")?.text;
+    if (!name) return null;
+
+    const typeName = treeProvider.findChild(fieldNode, "user_type", "property_declaration")?.text;
+    const resolvedType = getImportFromClassOrPath(typeName ?? "", treeProvider) || "Unknown";
+
+    const modifiersNode = treeProvider.findChild(fieldNode, "modifiers", "property_declaration")?.firstChild;
+    const modifiers: string[] = [];
+    getNamedSiblings(modifiersNode).forEach(mod => modifiers.push(mod.text));
+
+    const isStatic = modifiers.includes("static");
+
+    return new Field(name, resolvedType, isStatic, "", modifiers.join(" "));
+}
+
+export function getMethodFromFunctionDeclaration(funcNode: SyntaxNode, treeProvider: TreeProvider): Method | null {
+    const functionName = treeProvider.findChild(funcNode, "simple_identifier", "function_declaration")?.text;
+    if (!functionName) return null;
+
+    const argList = treeProvider.findChild(funcNode, "function_value_parameters")?.text || "";
+    const rawArgs = argList.match(/\((.*)\)/)?.[1];
+    const extractedArgs = rawArgs
+        ? splitTopLevelArgs(rawArgs).map(arg => getKotlinBoxedType(stripAnnotations(arg)))
+        : [];
+    const typedArgs = extractedArgs.map(arg => getImportFromClassOrPath(arg, treeProvider) ?? arg);
+    const returnTypeName = treeProvider.findChildInRange(
+        funcNode,
+        "user_type",
+        "function_declaration",
+        treeProvider.supplyRange(funcNode)
+    )?.text;
+    const typedReturnType = getImportFromClassOrPath(returnTypeName ?? "", treeProvider) || "kotlin.Unit";
+
+    const modifiersNode = treeProvider.findChild(funcNode, "modifiers", "function_declaration")?.firstChild;
+    const annotations: string[] = [];
+    const modifiers: string[] = [];
+    getNamedSiblings(modifiersNode).forEach(modChild =>
+        modChild.type !== "annotation" ? modifiers.push(modChild.text) : annotations.push(modChild.text)
+    );
+
+    return new Method(functionName, typedArgs, typedReturnType, false, "", modifiers.join(" "), "");
+}
+
+export function getNamedSiblings(node: SyntaxNode | null | undefined, includeCurrentNode: boolean = false): SyntaxNode[] {
+    if (!node) return []
+    let nextSibling = node.nextNamedSibling
+    let siblings: SyntaxNode[] = []
+    if (includeCurrentNode) siblings.push(node)
+    while (nextSibling) {
+        siblings.push(nextSibling)
+        nextSibling = nextSibling.nextNamedSibling
+    }
+    return siblings
+}
+export function getImportFromClassOrPath(classOrPath: string, treeProvider: TreeProvider): string | null {
+    for (const [, importSymbol] of treeProvider.imports.entries()) {
+        if (importSymbol.path === classOrPath || importSymbol.simpleName === classOrPath) {
+            return importSymbol.path;
+        }
+    }
+    return null;
 }

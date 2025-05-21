@@ -5,6 +5,7 @@ import { ImportSymbol } from './symbols';
 import { log, warn, error } from './extension';
 import { console } from './extension'
 import { currentEditor } from './semantictokensprovider';
+import { logNode } from './utils';
 const regex = /(?<!\.\s*?)\b\w+\b/g;
 const indexedClassMap: Map<string, Map<string, string[]>> = new Map();
 export function buildClassMap(availableClasses: Set<string>): void {
@@ -84,17 +85,14 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
                     continue;
                 }
                 if (!this.findMatchingClasses(className).length) {
-                    /*   console.log("No matching classes found: " + className) */
                     continue;
                 }
 
 
                 if (this.isClassImported(className)) {
-                    /*  console.log("Class already imported: " + className) */
                     continue;
                 }
                 if (!this.isInCorrectNode(range)) {
-                    /*  console.log("Not in correct node: " + className) */
                     continue
                 }
                 if (range.contains(cursorPosition)) {
@@ -177,20 +175,18 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
     private isInCorrectNode(range: vscode.Range): boolean {
         let editor = currentEditor(this.document);
         if (!editor) return false;
-        const character = range.start.character - 1;
         const treeProvider = documentData.get(editor.document.uri.toString())?.semanticTokensProvider?.treeProvider
         const rootNode = treeProvider?.tree?.rootNode;
         if (!rootNode) return false;
         const nodeAtPosition = rootNode.descendantForPosition({
             row: range.start.line,
-            column: character,
+            column: range.start.character - 1,
         });
-        const childNode = treeProvider.findChildInRange(nodeAtPosition, "simple_identifier", null, range) ||
-            treeProvider.findChildInRange(nodeAtPosition, "type_identifier", null, range)
+        const childNode = treeProvider.findChildInRange((nodeAtPosition.type == ":" && nodeAtPosition?.parent) ? nodeAtPosition?.parent : nodeAtPosition, "simple_identifier", null, range) ||
+            treeProvider.findChildInRange((nodeAtPosition.type == ":" && nodeAtPosition?.parent) ? nodeAtPosition?.parent : nodeAtPosition, "type_identifier", null, range)
         const delegation_specifiers = treeProvider.findParent(childNode, "delegation_specifier", range)
         const delegation_specifiers2 = treeProvider.findChildInRange(nodeAtPosition, "delegation_specifier", null, range)
-        /* log("Node type: " + nodeAtPosition?.type + ", Node Text: " + nodeAtPosition?.text + "")
-        log("Child Node type: " + childNode?.type + ", Child Node Text: " + childNode?.text + "") */
+        logNode(nodeAtPosition?.parent, "nodeAtPosition parent")
         if (!childNode || ((["class_declaration"].includes(nodeAtPosition.type) && childNode.type == "type_identifier" && !delegation_specifiers)) ||
             (childNode.type != "type_identifier" && !expressionTypes.includes(childNode.parent?.type ?? "")
                 && ![

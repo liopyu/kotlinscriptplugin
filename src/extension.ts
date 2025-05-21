@@ -40,7 +40,9 @@ import {
 	documentData,
 	semanticTokensEnabled
 } from './constants'
-
+import {
+	HoverProviderKS
+} from "./hoverprovider"
 import { TreeProvider } from './treeprovider'
 import { ImportDefinitionProvider, indexedClassMap, PeriodTypingSuggestionProvider, TypingSuggestionProvider } from './suggestionprovider';
 import { SemanticTokensProvider } from './semantictokensprovider';
@@ -132,7 +134,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		{ language: 'kotlin', scheme: 'file', pattern: '**/*.kts' },
 		{ language: 'kotlin', scheme: 'file', pattern: path.join(absoluteKtsDirectory, '**/*.kts') }
 	];
-
+	vscode.languages.registerHoverProvider(selector, new HoverProviderKS());
 	function addDocumentIfNotExists(document: vscode.TextDocument, editor: vscode.TextEditor) {
 		const documentUri = document.uri.toString();
 		if (!document.fileName.endsWith(".kts")) return;
@@ -508,7 +510,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	}
 
-	let currentClassFQName: string | undefined;
 	const classPanels = new Map<string, vscode.WebviewPanel>();
 	const packagePanels = new Map<string, vscode.WebviewPanel>();
 
@@ -520,7 +521,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	function handleTypingDefinition(typeName: string) {
 		const baseType = typeName.split('<')[0];
-		if (currentClassFQName === baseType) return;
 
 		const className = baseType.substring(baseType.lastIndexOf('.') + 1);
 		const typingsMember = utils.getTypingsMember(typeName);
@@ -534,10 +534,9 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 			return;
 		}
-
-
 		openClassPanel(baseType, className, typingsMember);
 	}
+
 
 
 	function openPackagePanel(packageName: string) {
@@ -662,9 +661,10 @@ export async function activate(context: vscode.ExtensionContext) {
 			existing.reveal();
 			return;
 		}
+		const isInterface = typingsMember.modifiers.includes('interface');
 		const panel = vscode.window.createWebviewPanel(
 			'kotlinClassPreview',
-			`Kotlin: ${className}`,
+			`${isInterface ? "Interface" : "Class"}: ${className}`,
 			vscode.ViewColumn.Active,
 			{
 				enableScripts: true,
@@ -673,7 +673,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		);
 		const classHtml = generateClassHtml(typingsMember);
 		const htmlContent = generateClassHtmlContent(panel.webview, context.extensionUri, classHtml);
-		console.log(htmlContent)
+		//console.log(htmlContent)
 		panel.webview.html = htmlContent;
 		const availableMembersMap: Record<string, TypingsMember> = {};
 		panel.webview.onDidReceiveMessage(message => {
@@ -685,13 +685,9 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 		});
 
-
-		currentClassFQName = baseType;
 		classPanels.set(baseType, panel);
-		const history: string[] = [];
 		panel.webview.onDidReceiveMessage(message => {
 			if (message.command === 'openType') {
-				history.push(currentClassFQName ?? "");
 				vscode.commands.executeCommand('extension.gotoTypingDefinition', { type: message.type });
 			}
 			if (message.command === 'openPackage') {
@@ -710,7 +706,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		});
 		panel.onDidDispose(() => {
 			classPanels.delete(baseType);
-			currentClassFQName = undefined;
 		});
 	}
 	const htmlComment = (arg: string) => {

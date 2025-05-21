@@ -414,7 +414,7 @@ function addDebugCornersAndSides() {
     });
 })();
 document.addEventListener('mouseover', (e) => {
-    if (isInsidePreview) return;
+    if ((isInsidePreview || e.ctrlKey)) return;
     const target = e.target.closest('.type-link');
     if (!target || target.classList.contains('no-hover')) return;
     const typeName = target.getAttribute('data-type');

@@ -188,6 +188,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             match.captures.forEach((capture, captureIndex) => {
                 const node = capture.node;
                 let range = this.treeProvider.supplyRange(node);
+                //log(this.currentScopeFromRange(this.treeProvider.supplyRange(node))?.id + ", text: " + node.text)
                 this.handleErrorNodes(node);
                 this.handleMissingNodes(node);
                 if (!this.init || (this.init && !filterRanges)) {
@@ -319,6 +320,10 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             }
         } else if ((node.text == "}" && node.type == "}")) {
             this.treeProvider.exitScope(node);
+        } else {
+            this.treeProvider.currentScope = this.treeProvider.scopes.get("0:0:0") ?? this.treeProvider.currentScope
+            this.treeProvider.scopes.set("0:0:0", this.treeProvider.currentScope)
+            // console.log("setting current scope to " + this.treeProvider.currentScope.id)
         }
     }
     public isUpdating: boolean = false
@@ -458,9 +463,10 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
 
     public currentScopeFromRange(modifiedRange: vscode.Range): Scope | undefined {
         let currentScope: Scope | undefined;
-
+        //log("checking scopes: " + [...this.treeProvider.scopes.keys()])
         this.treeProvider.scopes.forEach((scope) => {
             if (scope?.startPoint && scope?.endPoint) {
+                // log("found scope with start/endpoint")
                 let scopeRange = new vscode.Range(scope.startPoint, scope.endPoint);
 
                 if (
@@ -472,9 +478,10 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                     }
                 }
             }
+            // log("scope of id: " + scope.id + ", does not have start or end point: startpoint: " + scope.startPoint + ", end: " + scope.endPoint)
         });
 
-        return currentScope;
+        return currentScope ?? this.treeProvider.scopes.get("0:0:0");
     }
 
     public processTokenType(capture: QueryCapture, range: vscode.Range, builder: vscode.SemanticTokensBuilder): void {

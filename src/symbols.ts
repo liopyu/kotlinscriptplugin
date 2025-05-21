@@ -37,7 +37,7 @@ export class Scope {
         this.startPoint = startPoint;
         this.paramScope = paramScope
         this.childScopeId = childScopeId
-        this.id = parentScope ? `${startPoint?.line}:${startPoint?.character}:` + (parentScope.depth + 1) : `0:0:0`
+        this.id = parentScope ? (`${startPoint?.line}:${startPoint?.character}:` + (parentScope.depth + 1)) : `0:0:0`
 
     }
 

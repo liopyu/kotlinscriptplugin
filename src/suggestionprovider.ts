@@ -248,14 +248,6 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         return null;
 
     }
-    private getTypingsMember(classPath: string): TypingsMember | undefined {
-        console.log("ClassPath: " + classPath)
-        let className = classPath.includes(".") ? classPath.split(".").pop() ?? "" : classPath
-        const matchedTyping: TypingsMember | undefined = getTypingsMember(classPath)/* indexedClassMap
-            .get(className.charAt(0).toUpperCase())
-            ?.get(classPath); */
-        return matchedTyping
-    }
     private getTypingsSuggestionFromSimpleName(simpleName: string): TypingSuggestion | undefined {
         const className = simpleName.split(".").pop() ?? "";
         let matchedTyping = typingSuggestions.find(s => s.simpleName === className || s.fullyQualifiedName === simpleName);
@@ -275,14 +267,14 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         if (!node) return false;
 
         if (node.type === "call_expression") {
-            console.log(`[isMethodCall] Direct call_expression: ${node.text}`);
+            //  console.log(`[isMethodCall] Direct call_expression: ${node.text}`);
             return true;
         }
 
         if (node.type === "navigation_expression") {
             const callExpr = node.child(0);
             if (callExpr?.type === "call_expression") {
-                console.log(`[isMethodCall] navigation_expression contains call_expression: ${callExpr.text}`);
+                // console.log(`[isMethodCall] navigation_expression contains call_expression: ${callExpr.text}`);
                 return true;
             }
         }
@@ -292,7 +284,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             const hasCallSuffix = callExpr?.type === "call_expression" &&
                 callExpr.children.some(c => c.type === "call_suffix");
             if (hasCallSuffix) {
-                console.log(`[isMethodCall] navigation_suffix leads into call_expression: ${node.text}`);
+                // console.log(`[isMethodCall] navigation_suffix leads into call_expression: ${node.text}`);
                 return true;
             }
         }
@@ -307,21 +299,11 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ): Promise<vscode.CompletionItem[] | undefined> {
-        console.log("[provideCompletionItems] Starting provideCompletionItems...");
         const setup = this.prepareContext(document, position);
         if (!setup) {
-            console.log("[provideCompletionItems] Setup preparation failed, exiting.");
             return;
         }
         const { data, treeProvider, tree, range, iNode, scope, node } = setup;
-
-        logNode(iNode, "[provideCompletionItems] iNode (navigation_expression)");
-        if (scope) {
-            console.log("[provideCompletionItems] Scope exists for current position.");
-        } else {
-            console.log("[provideCompletionItems] No scope found for current position.");
-        }
-
         let {
             baseType,
             className,
@@ -330,10 +312,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             potentialVariable,
             scopedVariable
         } = this.resolveBaseType(treeProvider, document, iNode, scope);
-
-
         if (!baseType) {
-            console.log("[provideCompletionItems] No baseType resolved, exiting.");
             return;
         }
 
@@ -345,25 +324,29 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
             potentialVariable
         );
         if (!foundTypingsMember) {
-            console.log(`[provideCompletionItems] No TypingsMember found for classPath: ${currentType}`);
             return;
+        }
+        console.log("potentialvariable: " + potentialVariable?.text + ", calloffclass: " + isCallOffClass)
+        if (potentialVariable && !isCallOffClass) {
+            isCallOffClass = false;
+            isStaticClassCall = false;
         }
         if (
             potentialVariable?.text &&
-            !potentialVariable.text.endsWith(".Companion")
+            !potentialVariable.text.endsWith(".Companion") &&
+            (!isStaticClassCall && !isCallOffClass)
         ) {
-            console.log("[provideCompletionItems] Variable is not Companion, forcing instance context.");
             isCallOffClass = false;
             isStaticClassCall = false;
 
             if (foundTypingsMember.hasInvokeOperator && this.isMethodCall(potentialVariable?.parent)) {
                 const invokeMethod = foundTypingsMember.methods.find(m => {
-                    log("Method: " + m.name + ", isStatic: " + m.isStatic)
+                    //log("Method: " + m.name + ", isStatic: " + m.isStatic)
                     return m.name === "invoke"
                 });
                 if (invokeMethod) {
-                    log("invoke method: " + invokeMethod.name)
-                    console.log(`[provideCompletionItems] Found invoke() operator, refining type to: ${invokeMethod.returns}`);
+                    //log("invoke method: " + invokeMethod.name)
+                    //   console.log(`[provideCompletionItems] Found invoke() operator, refining type to: ${invokeMethod.returns}`);
                     const invokedTypingsMember = getTypingsMember(invokeMethod.returns);
                     if (invokedTypingsMember) {
                         console.log(`[provideCompletionItems] Switching context to type: ${invokedTypingsMember.classPath}`);
@@ -378,29 +361,29 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
 
 
     private prepareContext(document: vscode.TextDocument, position: vscode.Position) {
-        console.log("[prepareContext] Preparing editor context...");
+        // console.log("[prepareContext] Preparing editor context...");
         const documentUri = document.uri.toString();
         const data = documentData.get(documentUri);
         if (!data) {
-            console.log("[prepareContext] No semantic token data found for document.");
+            // console.log("[prepareContext] No semantic token data found for document.");
             return null;
         }
 
         const treeProvider = data.semanticTokensProvider?.treeProvider;
         if (!treeProvider) {
-            console.log("[prepareContext] No tree provider available.");
+            // console.log("[prepareContext] No tree provider available.");
             return null;
         }
 
         const tree = treeProvider.tree;
         if (!tree) {
-            console.log("[prepareContext] No tree available inside tree provider.");
+            //  console.log("[prepareContext] No tree available inside tree provider.");
             return null;
         }
 
         const line = position.line;
         const character = position.character - 1;
-        console.log(`[prepareContext] Position line=${line}, character=${character}`);
+        //console.log(`[prepareContext] Position line=${line}, character=${character}`);
 
         const startPosition = new vscode.Position(line, character);
         const endPosition = new vscode.Position(line, character + 1);
@@ -408,18 +391,14 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
 
         const scope = data.semanticTokensProvider?.currentScopeFromRange(range);
         const node = tree.rootNode.descendantForPosition({ row: line, column: character });
-        if (!node) {
-            console.log("[prepareContext] No node found at current cursor position.");
-        }
 
         const iNode = treeProvider.findParent(node, "navigation_expression", range);
         if (!iNode) {
-            console.log("[prepareContext] No navigation_expression iNode found.");
+            //   console.log("[prepareContext] No navigation_expression iNode found.");
             return null;
         }
 
-        console.log("[prepareContext] Successfully prepared context.");
-        logNode(iNode, "[prepareContext] Found iNode");
+        // console.log("[prepareContext] Successfully prepared context.");
 
         return { data, treeProvider, tree, range, iNode, scope, node };
     }
@@ -429,7 +408,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         iNode: SyntaxNode,
         scope: Scope | undefined
     ) {
-        console.log("[resolveBaseType] Starting base type resolution...");
+        // console.log("[resolveBaseType] Starting base type resolution...");
 
         let className;
         let isStaticClassCall = false;
@@ -440,33 +419,33 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         let firstChild = treeProvider.findChild(iNode, "navigation_expression");
 
         if (!lastChild) {
-            console.log("[resolveBaseType] No lastChild found, using simple_identifier from current node");
+            // console.log("[resolveBaseType] No lastChild found, using simple_identifier from current node");
             potentialVariable = treeProvider.findChild(iNode, "simple_identifier", null);
         } else if (firstChild) {
-            console.log("[resolveBaseType] Found firstChild navigation_expression");
+            //  console.log("[resolveBaseType] Found firstChild navigation_expression");
             potentialVariable = treeProvider.findChild(firstChild, "simple_identifier", null);
         }
 
         const scopedVariable = scope?.resolveVariable(potentialVariable?.text ?? "");
         if (scopedVariable) {
-            console.log("[resolveBaseType] Found scoped variable: " + scopedVariable.name);
+            //console.log("[resolveBaseType] Found scoped variable: " + scopedVariable.name);
             const classPath = this.getImportFromClassOrPath(scopedVariable.type, treeProvider);
             baseType = classPath ?? scopedVariable.type;
         } else {
-            console.log("[resolveBaseType] No scoped variable found, falling back to resolveBaseTypeFromImports");
+            //console.log("[resolveBaseType] No scoped variable found, falling back to resolveBaseTypeFromImports");
             ({ baseType, className, isStaticClassCall } = this.resolveBaseTypeFromImports(treeProvider, document, iNode));
         }
-
+        // TODO: fix this
         const isCallOffClass = treeProvider.findChild(iNode, "navigation_expression") == null;
-
+        // logNode(treeProvider.findChild(iNode, "navigation_expression"), "iscalloffclassnode")
         if (isCallOffClass && !this.isMethodCall(iNode)) {
             console.log("[resolveBaseType] Call is directly off class, setting isStaticClassCall = true");
             isStaticClassCall = true;
         }
 
-        console.log("[resolveBaseType] Final resolved baseType: " + baseType);
-        console.log("[resolveBaseType] isCallOffClass: " + isCallOffClass);
-        console.log("[resolveBaseType] isStaticClassCall: " + isStaticClassCall);
+        // console.log("[resolveBaseType] Final resolved baseType: " + baseType);
+        // console.log("[resolveBaseType] isCallOffClass: " + isCallOffClass);
+        // console.log("[resolveBaseType] isStaticClassCall: " + isStaticClassCall);
 
         return {
             baseType,
@@ -478,7 +457,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         };
     }
     private resolveBaseTypeFromImports(treeProvider: TreeProvider, document: vscode.TextDocument, iNode: SyntaxNode) {
-        console.log("[resolveBaseTypeFromImports] Starting import-based resolution...");
+        // console.log("[resolveBaseTypeFromImports] Starting import-based resolution...");
 
         let className: SyntaxNode | null | undefined;
         let isStaticClassCall = true;
@@ -486,7 +465,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         let baseType: string | null = null;
 
         const potentialImports = [...treeProvider.findChildren(iNode, ["navigation_expression"], null), iNode];
-        console.log(`[resolveBaseTypeFromImports] Checking ${potentialImports.length} potential imports...`);
+        //console.log(`[resolveBaseTypeFromImports] Checking ${potentialImports.length} potential imports...`);
 
         for (const syntaxNode of potentialImports) {
             const rawText = syntaxNode.text;
@@ -498,14 +477,14 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                     baseType = this.getImportFromClassOrPath(name, treeProvider) ?? name;
                     className = simpleIdentifier;
                     if (this.isMethodCall(syntaxNode)) isStaticClassCall = false;
-                    console.log(`[resolveBaseTypeFromImports] Resolved from import: ${name}`);
+                    //   console.log(`[resolveBaseTypeFromImports] Resolved from import: ${name}`);
                     return { baseType, className, isStaticClassCall, isCallOffClass };
                 }
             }
 
             if (!baseType) {
-                console.log("[resolveBaseTypeFromImports] No import match, checking TypingSuggestion fallback...");
-                logNode(syntaxNode, "INode");
+                // console.log("[resolveBaseTypeFromImports] No import match, checking TypingSuggestion fallback...");
+                // logNode(syntaxNode, "INode");
 
                 let fallbackKey = rawText.includes("(") ? rawText.substring(0, rawText.indexOf("(")) : rawText;
                 const fallbackSuggestion = this.getTypingsSuggestionFromSimpleName(fallbackKey);
@@ -515,13 +494,13 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                     className = simpleIdentifier;
                     isStaticClassCall = true;
                     isCallOffClass = false;
-                    console.log(`[resolveBaseTypeFromImports] Fallback TypingSuggestion used: ${baseType}`);
+                    //  console.log(`[resolveBaseTypeFromImports] Fallback TypingSuggestion used: ${baseType}`);
                     return { baseType, className, isStaticClassCall, isCallOffClass };
                 }
             }
         }
 
-        console.log("[resolveBaseTypeFromImports] Resolution failed, returning null baseType.");
+        //console.log("[resolveBaseTypeFromImports] Resolution failed, returning null baseType.");
         return { baseType, className, isStaticClassCall, isCallOffClass };
     }
 
@@ -532,8 +511,8 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         isCallOffClass: boolean,
         potentialVariable: SyntaxNode | undefined | null
     ) {
-        console.log(`[resolveTypingsFromSuffixes] BaseType at start: ${baseType}`);
-        console.log(`[resolveTypingsFromSuffixes] isCallOffClass: ${isCallOffClass}`);
+        //  console.log(`[resolveTypingsFromSuffixes] BaseType at start: ${baseType}`);
+        // console.log(`[resolveTypingsFromSuffixes] isCallOffClass: ${isCallOffClass}`);
 
         const suffixes = treeProvider.findChildren(iNode, ["navigation_suffix"], null) ?? [];
         const refinedSuffixes: string[] = [];
@@ -544,17 +523,17 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
 
             const isCall = this.isMethodCall(suffix);
             refinedSuffixes.push(identifier.text + (isCall ? "()" : ""));
-            console.log(`[resolveTypingsFromSuffixes] Found suffix: ${identifier.text}, isMethodCall: ${isCall}`);
+            //console.log(`[resolveTypingsFromSuffixes] Found suffix: ${identifier.text}, isMethodCall: ${isCall}`);
         }
 
-        console.log("[resolveTypingsFromSuffixes] Found refined suffixes:", refinedSuffixes);
+        // console.log("[resolveTypingsFromSuffixes] Found refined suffixes:", refinedSuffixes);
 
         let currentType = baseType;
         let currentIsStatic = false;
         let foundTypingsMember = getTypingsMember(currentType);
 
         if (!isCallOffClass) {
-            console.log(`[resolveTypingsFromSuffixes] Resolving instance chain from baseType: ${currentType}`);
+            //  console.log(`[resolveTypingsFromSuffixes] Resolving instance chain from baseType: ${currentType}`);
 
             for (const element of refinedSuffixes) {
                 if (!foundTypingsMember) {
@@ -562,7 +541,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                     break;
                 }
 
-                console.log(`[resolveTypingsFromSuffixes] Processing suffix: ${element}`);
+                // console.log(`[resolveTypingsFromSuffixes] Processing suffix: ${element}`);
                 const isMethod = element.endsWith("()");
                 if (isMethod) {
                     const method = foundTypingsMember.methods.find(m => m.name === element);
@@ -576,10 +555,10 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                 } else {
                     const field = foundTypingsMember.fields.find(f => f.name === element);
                     if (!field) {
-                        console.log(`[resolveTypingsFromSuffixes] Field not found: ${element} in ${foundTypingsMember.classPath}`);
+                        //console.log(`[resolveTypingsFromSuffixes] Field not found: ${element} in ${foundTypingsMember.classPath}`);
                         break;
                     }
-                    console.log(`[resolveTypingsFromSuffixes] Matched field '${field.name}' -> returns ${field.returns}`);
+                    // console.log(`[resolveTypingsFromSuffixes] Matched field '${field.name}' -> returns ${field.returns}`);
                     currentType = field.returns;
                     currentIsStatic = field.isStatic;
                 }
@@ -587,21 +566,21 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                 foundTypingsMember = getTypingsMember(currentType);
             }
         } else {
-            console.log(`[resolveTypingsFromSuffixes] Static call context, checking baseType: ${baseType}`);
+            //  console.log(`[resolveTypingsFromSuffixes] Static call context, checking baseType: ${baseType}`);
             if (!foundTypingsMember) {
                 const fallback = typingSuggestions.find(
                     s => s.simpleName === iNode.text || s.fullyQualifiedName === iNode.text
                 );
                 if (fallback?.returnType) {
-                    console.log(`[resolveTypingsFromSuffixes] Fallback TypingSuggestion used: ${fallback.returnType}`);
+                    //  console.log(`[resolveTypingsFromSuffixes] Fallback TypingSuggestion used: ${fallback.returnType}`);
                     currentType = fallback.returnType;
                     foundTypingsMember = getTypingsMember(currentType);
                 }
             } else {
-                console.log(`[resolveTypingsFromSuffixes] Found TypingsMember: ${foundTypingsMember.classPath}`);
+                // console.log(`[resolveTypingsFromSuffixes] Found TypingsMember: ${foundTypingsMember.classPath}`);
             }
         }
-        console.log(`[resolveTypingsFromSuffixes] Final resolved currentType: ${currentType}`);
+        // console.log(`[resolveTypingsFromSuffixes] Final resolved currentType: ${currentType}`);
         return { currentType, foundTypingsMember, currentIsStatic };
     }
     private buildCompletionItems(foundTypingsMember: TypingsMember, isCallOffClass: boolean, isStaticClassCall: boolean): vscode.CompletionItem[] {
@@ -631,19 +610,17 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                 const argsBlock = method.args
                     .map((arg, idx) => `   arg${idx}: ${arg}`)
                     .join(', \n');
-                doc.appendCodeblock(`${cleanName}(\n${argsBlock}\n)`, 'kotlin');
+                doc.appendCodeblock(``, 'kotlin');
             } else {
                 doc.appendCodeblock(`${cleanName}()`, 'kotlin');
             }
 
-            // Clickable argument type links
             if (method.args.length > 0) {
                 doc.appendMarkdown(`\n\n**Args:**\n`);
 
                 method.args.forEach((arg, idx) => {
                     const raw = arg.trim();
 
-                    // Extract outer type (e.g. kotlin.jvm.functions.Function1<...>)
                     const match = raw.match(/^([^<]+)(<.*>)?$/);
                     const baseType = match?.[1] || raw;
                     const generics = match?.[2] || '';
@@ -698,7 +675,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         }
 
 
-        console.log(`[buildCompletionItems] Built ${snippetCompletions.length} completion items.`);
+        // console.log(`[buildCompletionItems] Built ${snippetCompletions.length} completion items.`);
         return snippetCompletions;
     }
 
