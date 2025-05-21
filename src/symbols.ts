@@ -252,7 +252,8 @@ export class TypingsMember {
         public hasInvokeOperator: boolean,
         public modifiers: string,
         public superclass: string,
-        public interfaces: string[]
+        public interfaces: string[],
+        public typeParameters: string[]
     ) { }
 }
 
@@ -263,7 +264,8 @@ export class Method {
         public returns: string,
         public isStatic: boolean,
         public description: string | null,
-        public modifiers: string
+        public modifiers: string,
+        public annotations: string
     ) { }
 }
 export class Field {

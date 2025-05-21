@@ -217,6 +217,9 @@ function getKotlinBoxedType(type: string): string {
     return primitiveToBoxedMap[type.toLowerCase()] ?? type
 }
 
+function stripAnnotations(input: string): string {
+    return input.replace(/@[\w.]+(?:\([^\)]*\))?\s*/g, '').trim();
+}
 
 export async function loadTypingMembers(ktsDirectory: string): Promise<TypingsMember[]> {
     if (cachedTypingMembers) {
@@ -240,25 +243,41 @@ export async function loadTypingMembers(ktsDirectory: string): Promise<TypingsMe
             const classModifiers = membersRecord["$modifiers"] || "";
             const superclass = membersRecord["$superclass"] || "";
             const interfaces = membersRecord["$interfaces"] || "";
+            const typeParams = membersRecord["$typeParameters"] || ""
 
             Object.entries(members as Record<string, any>).forEach(([name, details]) => {
-                if (["$superclass", "$modifiers", "$interfaces"].includes(name)) {
+                if (["$superclass", "$modifiers", "$interfaces", "$typeParameters"].includes(name)) {
                 } else if (name.endsWith(')')) {
+
                     const rawArgsMatch: RegExpMatchArray | null = name.match(/\((.*)\)/);
                     const extractedArgs: string[] = rawArgsMatch?.[1]
-                        ? splitTopLevelArgs(rawArgsMatch[1]).map(arg => getKotlinBoxedType(arg.trim()))
+                        ? splitTopLevelArgs(rawArgsMatch[1]).map(arg => getKotlinBoxedType(stripAnnotations(arg)))
+
                         : [];
 
                     const isStatic = (details as { modifiers?: string }).modifiers?.includes("static");
-
+                    const methodSignature = `${name.split('(')[0]}(${extractedArgs.join(',')})`;
                     methods.push(new Method(
-                        name,
+                        methodSignature,
                         extractedArgs,
-                        getKotlinBoxedType((details as { returns?: string }).returns || 'Any'),
+                        getKotlinBoxedType(stripAnnotations((details as { returns?: string }).returns || 'Any')),
                         forceStatic || isStatic || false,
                         (details as { description?: string }).description || '',
                         (details as { modifiers?: string }).modifiers || '',
+                        ""
                     ));
+                    if (name.includes("getAttachedOrElse") && classPath === "net.minecraft.world.entity.Entity") {
+                        log("🟡 DEBUG: Matched Method — getAttachedOrElse");
+                        log("🔹 Original method key:", name);
+                        log("🔹 MethodSignature:", methodSignature);
+                        log("🔹 Parsed rawArgsMatch:", rawArgsMatch);
+                        log("🔹 Extracted raw args:", rawArgsMatch?.[1]);
+                        log("🔹 Split arguments:", rawArgsMatch?.[1] ? splitTopLevelArgs(rawArgsMatch[1]) : []);
+                        log("🔹 Extracted and stripped args:", extractedArgs);
+                        log("🔹 Return type (raw):", (details as { returns?: string }).returns);
+                        log("🔹 Return type (stripped):", stripAnnotations((details as { returns?: string }).returns || 'Any'));
+                        log("🔹 Full method object:", details);
+                    }
 
                     if (!hasInvokeOperator)
                         hasInvokeOperator = (details as { isInvokeOperator?: boolean }).isInvokeOperator ?? false;
@@ -268,9 +287,7 @@ export async function loadTypingMembers(ktsDirectory: string): Promise<TypingsMe
 
                     fields.push(new Field(
                         name,
-                        getKotlinBoxedType(
-                            (details as { type?: string, returns?: string }).type || (details as any).returns || 'Unknown'
-                        ),
+                        getKotlinBoxedType(stripAnnotations((details as { type?: string, returns?: string }).type || (details as any).returns || 'Unknown')),
                         forceStatic || isStatic || false,
                         (details as { description?: string }).description || '',
                         (details as { modifiers?: string }).modifiers || '',
@@ -278,7 +295,7 @@ export async function loadTypingMembers(ktsDirectory: string): Promise<TypingsMe
                 }
             });
             if (!availableClasses.has(classPath)) availableClasses.add(classPath)
-            suggestions.push(new TypingsMember(classPath, methods, fields, forceStatic, hasInvokeOperator, classModifiers, superclass, interfaces));
+            suggestions.push(new TypingsMember(classPath, methods, fields, forceStatic, hasInvokeOperator, classModifiers, superclass, interfaces, typeParams));
         });
     };
 

@@ -54,7 +54,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // 🔻 Close on outside click
+    document.addEventListener('click', (e) => {
+        const target = e.target
+        const clickedInsideInput = input.contains(target);
+        const clickedInsideResults = results.contains(target);
+
+        if (!clickedInsideInput && !clickedInsideResults) {
+            results.style.display = 'none';
+        }
+    });
+
+    // 🔺 Reopen results if input has focus and non-empty value
+    input.addEventListener('focus', () => {
+        if (input.value.trim()) {
+            results.style.display = 'block';
+        }
+    });
 });
+
 
 document.getElementById('current-class')?.scrollIntoView({ block: 'start' });
 document.addEventListener('click', e => {
@@ -75,12 +93,15 @@ document.addEventListener('click', e => {
     }
 });
 function revealNextLine() {
+    const delay = Math.max(3, Math.min(20, Math.floor(1000 / lines.length)));
+
     if (index < lines.length) {
         lines[index].style.opacity = '1';
         index++;
-        setTimeout(revealNextLine, 20);
+        setTimeout(revealNextLine, delay);
     }
 }
+
 revealNextLine();
 window.addEventListener('message', event => {
     const msg = event.data;

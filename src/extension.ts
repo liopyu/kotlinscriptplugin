@@ -226,36 +226,29 @@ export async function activate(context: vscode.ExtensionContext) {
 	function convertJavaGenericToKotlin(type: string): string {
 		if (!type.includes('<')) return type;
 
-		// Recursively handle nested generic groups
 		const processSegment = (segment: string): string => {
 			segment = segment.trim();
 
-			// Convert wildcard with extends: ? extends SomeType → out SomeType
 			if (/^\?\s+extends\s+/.test(segment)) {
 				return 'out ' + segment.replace(/^\?\s+extends\s+/, '');
 			}
 
-			// Convert wildcard with super: ? super SomeType → in SomeType
 			if (/^\?\s+super\s+/.test(segment)) {
 				return 'in ' + segment.replace(/^\?\s+super\s+/, '');
 			}
 
-			// Convert unbounded wildcard: ? → *
 			if (segment === '?') {
 				return '*';
 			}
 
-			// Convert declarations: T extends SomeType → T : SomeType
 			if (/^\w+\s+extends\s+/.test(segment)) {
 				const [param, base] = segment.split(/\s+extends\s+/);
 				return `${param.trim()} : ${base.trim()}`;
 			}
 
-			// Otherwise it's a normal type — return as-is
 			return segment;
 		};
 
-		// Extract outer type and generic content
 		const match = type.match(/^(.+?)<(.+)>$/);
 		if (!match) return type;
 
@@ -332,18 +325,17 @@ export async function activate(context: vscode.ExtensionContext) {
 
 				const isGenericLetter = /^[A-Z]$/.test(baseType);
 				const isUnqualified = !baseType.includes('.');
-
 				if (isGenericLetter && isUnqualified) {
-					return `<span class="kw">${modifier}</span> <span class="ident">${baseSimple}</span>`;
+					return `${renderKeyword(modifier)} ${renderIdentifier(baseSimple ?? "")}`;
 				}
 
-				return `<span class="kw">${modifier}</span> <span class="${classes.join(' ')}" data-type="${baseType}">${baseSimple}</span>`;
+				return `${renderKeyword(modifier)} <span class="${classes.join(' ')}" data-type="${baseType}">${baseSimple}</span>`;
 			}
 
 
 
 			if (segment === '*') {
-				return `<span class="kw">*</span>`;
+				return renderKeyword(`*`);
 			}
 
 			const raw = segment.split('<')[0];
@@ -353,7 +345,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			const isUnqualified = !raw.includes('.');
 
 			if (isGenericLetter && isUnqualified) {
-				return `<span class="ident">${simple}</span>`;
+				return renderIdentifier(`${simple}`);
 			}
 
 			return `<span class="${classes.join(' ')}" data-type="${raw}">${simple}</span>`;
@@ -465,10 +457,30 @@ export async function activate(context: vscode.ExtensionContext) {
 		lines.push(`<div>${renderKeyword('package')} ${renderedPackage}</div><br>`);
 
 		const classSimpleName = member.classPath.split('.').pop()!;
-		/* const typeParams = member.typeParameters?.length ? `&lt;${member.typeParameters.join(', ')}&gt;` : '';
+		const typeParams = member.typeParameters?.length
+			? `&lt;${member.typeParameters
+				.map(p => {
+					const normalized = convertJavaGenericToKotlin(p);
+					const [left, right] = normalized.split(/\s*:\s*/);
+					const leftParts = left.trim().split(/\s+/);
+
+					let renderedLeft = '';
+					if (leftParts.length === 2) {
+						renderedLeft = `${renderKeyword(leftParts[0])} ${renderIdentifier(leftParts[1])}`;
+
+					} else {
+						renderedLeft = renderIdentifier(left.trim());
+
+					}
+
+					if (!right) return renderedLeft;
+					return `${renderedLeft} : ${renderType(right.trim())}`;
+				})
+				.join(', ')}&gt;`
+			: '';
+
 		lines.push(`<div id="current-class">${topModifiers} ${renderKeyword(classKeyword)} ${renderIdentifier(classSimpleName)}${typeParams}${inheritance ? ' : ' + inheritance : ''} {</div>`);
- */
-		lines.push(`<div id="current-class">${topModifiers} ${renderKeyword(classKeyword)} ${renderIdentifier(classSimpleName)}${inheritance ? ' : ' + inheritance : ''} {</div>`);
+
 
 		const instanceFields = member.fields.filter(f => !f.modifiers.includes('static'));
 		const staticFields = member.fields.filter(f => f.modifiers.includes('static'));
