@@ -361,6 +361,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
 
 
     private prepareContext(document: vscode.TextDocument, position: vscode.Position) {
+
         // console.log("[prepareContext] Preparing editor context...");
         const documentUri = document.uri.toString();
         const data = documentData.get(documentUri);
@@ -401,6 +402,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         // console.log("[prepareContext] Successfully prepared context.");
 
         return { data, treeProvider, tree, range, iNode, scope, node };
+
     }
     private resolveBaseType(
         treeProvider: TreeProvider,

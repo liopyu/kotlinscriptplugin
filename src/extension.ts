@@ -81,7 +81,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	available_members = await utils.loadTypingMembers(absoluteKtsDirectory);
 	//utils.writeAlphabeticalTypingsIndex(absoluteKtsDirectory);
 	await vscode.window.withProgress({
-		location: vscode.ProgressLocation.Window,
+		location: vscode.ProgressLocation.Notification,
 		title: "[KotlinScript] Indexing classes",
 		cancellable: false
 	}, async (progress) => {
@@ -166,12 +166,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 	vscode.workspace.onDidCloseTextDocument(document => {
 		const documentUri = document.uri.toString();
-		console.log("Closed document: " + documentUri);
+		//console.log("Closed document: " + documentUri);
 		if (documentData.has(documentUri)) {
 			const data = documentData.get(documentUri);
-			console.log("Data found: " + data);
+			//console.log("Data found: " + data);
 			if (data?.semanticTokensProvider?.treeProvider?.diagnosticCollection) {
-				console.log("Clearing diagnostics for closed document: " + documentUri);
+				//console.log("Clearing diagnostics for closed document: " + documentUri);
 				data.semanticTokensProvider?.treeProvider.diagnosticCollection.clear();
 			}
 
@@ -838,6 +838,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	  background: #1e1e1e;
 	  color: rgb(210, 222, 174);
 	  padding: 16px;
+	  padding-bottom: 100px;
 	}`;
 	const hoverTypeLink = `
 	.type-link {
@@ -1046,11 +1047,11 @@ export async function activate(context: vscode.ExtensionContext) {
 		  <body>
 		    ${classSearchBarDiv}
 			${searchBarContent}
-			${consoleDiv}
+			${false ? consoleDiv : ""}
 			<div id="main">${classHtml}</div>
 			${hoverPreviewDiv}
 			<script src="${viewer("constantsPreview")}"></script>
-			<script src="${viewer("consoleViewer")}"></script>
+			${false ? `<script src="${viewer("consoleViewer")}"></script>` : ""}
 			<script src="${viewer("classPreview")}"></script>
 			<script src="${viewer("searchBarViewer")}"></script>
 		  </body>

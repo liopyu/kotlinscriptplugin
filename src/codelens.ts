@@ -186,7 +186,7 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
             treeProvider.findChildInRange((nodeAtPosition.type == ":" && nodeAtPosition?.parent) ? nodeAtPosition?.parent : nodeAtPosition, "type_identifier", null, range)
         const delegation_specifiers = treeProvider.findParent(childNode, "delegation_specifier", range)
         const delegation_specifiers2 = treeProvider.findChildInRange(nodeAtPosition, "delegation_specifier", null, range)
-        logNode(nodeAtPosition?.parent, "nodeAtPosition parent")
+        //logNode(nodeAtPosition?.parent, "nodeAtPosition parent")
         if (!childNode || ((["class_declaration"].includes(nodeAtPosition.type) && childNode.type == "type_identifier" && !delegation_specifiers)) ||
             (childNode.type != "type_identifier" && !expressionTypes.includes(childNode.parent?.type ?? "")
                 && ![

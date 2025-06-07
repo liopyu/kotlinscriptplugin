@@ -99,6 +99,7 @@ export const blocks = [
     "class_body",
     "enum_class_body",
     "block",
+    "class_declaration"
     /* "catch_block",
     "finally_block", */
 ]

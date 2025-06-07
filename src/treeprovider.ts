@@ -38,6 +38,7 @@ import {
 import { log, error, warn } from './extension';
 import { console } from './extension'
 import { currentEditor, SemanticTokensProvider } from './semantictokensprovider';
+import { getImportFromClassOrPath, getNamedSiblings, logNode } from './utils';
 export class TreeProvider {
     public semanticTokensProvider: SemanticTokensProvider | undefined = undefined
     public varId: number
@@ -48,7 +49,6 @@ export class TreeProvider {
     public simpleRanges: vscode.Range[] = []
     public init: boolean = false;
     public readonly parser: TSParser;
-    public scopedVariables: Map<string, VariableSymbol> = new Map();
     public paramVariables: Map<string, VariableSymbol> = new Map();
     public rangesToDecorate: Map<string, vscode.Range[]> = new Map();
     public imports: Map<string, ImportSymbol> = new Map();
@@ -69,6 +69,7 @@ export class TreeProvider {
         this.document = document
         this.currentScope = new Scope(null, null);
         this.scopes.set(this.currentScope.id, this.currentScope)
+
         this.currentScope.document = document
         this.semanticTokensProvider = documentData.get(this.document.uri.toString())?.semanticTokensProvider
         this.varId = 0
@@ -161,88 +162,76 @@ export class TreeProvider {
     public validateVariables(tree: TSParser.Tree, modifiedRange: vscode.Range, builder: vscode.SemanticTokensBuilder): void {
         const variablesToRemove: string[] = [];
         const modifiedVariables: Map<string, VariableSymbol> = new Map()
-        //console.log("Starting variable validation...");
+        // console.log("Starting variable validation...");
 
         let editor = currentEditor(this.document);
         if (!editor) {
             console.log("No active editor detected. Skipping variable validation.");
             return;
         }
+        for (let [scopeKey, scope] of this.scopes) {
+            for (let [variableKey, variableSymbol] of scope.variables.entries()) {
+                const [variableName, scopeId, rangeKey] = variableKey.split("@");
+                const expectedRange = variableSymbol.range;
 
-        /*  for (const [variableName, variableSymbol] of this.duplicateVars) {
-             const originalRange = this.supplyRange(variableSymbol.node);
-             const isStillDuplicate = variableSymbol.scope.countVariablesByName(variableName)
-             console.log(isStillDuplicate)
-             let supposedText = editor.document.getText(originalRange);
-             if (variableName !== supposedText) {
-                 console.log(`→ Removing stale duplicate variable: ${variableName}`);
-                 this.duplicateVars.delete(variableName);
-             }
-         } */
+                const adjustedExpectedRange = this.adjustRangeForShifts(expectedRange, modifiedRange, editor, true);
+                // this.processVariableDeclaration(variableSymbol.node, null, variableSymbol.range, builder)
+                // if (t) return
+                /*  console.log(`Checking scoped variable '${variableName}'`);
+                 console.log(`→ Original Range: ${expectedRange.start.line}:${expectedRange.start.character} - ${expectedRange.end.line}:${expectedRange.end.character}`);
+                 console.log(`→ Adjusted Range: ${adjustedExpectedRange.start.line}:${adjustedExpectedRange.start.character} - ${adjustedExpectedRange.end.line}:${adjustedExpectedRange.end.character}`); */
+                const desc = tree.rootNode.descendantForPosition({
+                    row: adjustedExpectedRange.start.line,
+                    column: adjustedExpectedRange.start.character - 1,
+                });
+                const node = this.findParent(desc, "variable_declaration", adjustedExpectedRange)
+                if (!node) {
+                    //console.log(`→ Removing stale scoped variable (no matching node): ${variableKey}`);
+                    variablesToRemove.push(variableKey);
+                    continue;
+                }
+                let supposedText = editor.document.getText(this.supplyRange(desc));
+                /*  console.log(`→ Found text: "${supposedText.trim()}"`);
+                 console.log(`→ Expected text: "${variableName.trim()}"`); */
 
-        for (let [variableKey, variableSymbol] of this.scopedVariables.entries()) {
-            const [variableName, scopeId, rangeKey] = variableKey.split("@");
-            const expectedRange = variableSymbol.range;
+                if (supposedText !== variableName) {
+                    //console.log(`→ Removing stale scoped variable (text mismatch): ${variableKey}`);
+                    variablesToRemove.push(variableKey);
+                    continue;
+                }
 
-            const adjustedExpectedRange = this.adjustRangeForShifts(expectedRange, modifiedRange, editor, true);
-            // this.processVariableDeclaration(variableSymbol.node, null, variableSymbol.range, builder)
-            // if (t) return
-            /*   console.log(`Checking scoped variable '${variableName}'`);
-              console.log(`→ Original Range: ${expectedRange.start.line}:${expectedRange.start.character} - ${expectedRange.end.line}:${expectedRange.end.character}`);
-              console.log(`→ Adjusted Range: ${adjustedExpectedRange.start.line}:${adjustedExpectedRange.start.character} - ${adjustedExpectedRange.end.line}:${adjustedExpectedRange.end.character}`);
-   */
-            const desc = tree.rootNode.descendantForPosition({
-                row: adjustedExpectedRange.start.line,
-                column: adjustedExpectedRange.start.character,
-            });
-            const node = this.findParent(desc, "variable_declaration", adjustedExpectedRange)
-            if (!node) {
-                // console.log(`→ Removing stale scoped variable (no matching node): ${variableKey}`);
-                variablesToRemove.push(variableKey);
-                continue;
+                const actualRange = this.supplyRange(desc);
+                actualRange.start.translate(-1, -1)
+                actualRange.end.translate(-1, -1)
+                // console.log(actualRange)
+                const actualRangeKey = this.getRangeKey(actualRange);
+                if (!this.rangesEqual(adjustedExpectedRange, actualRange) || actualRangeKey !== rangeKey) {
+                    variableSymbol.setRange(actualRange);
+                    const newVarKey = `${variableName}@${scopeId}@${actualRangeKey}`;
+                    variablesToRemove.push(variableKey);
+                    scope.variables.delete(variableKey);
+                    scope.variables.set(newVarKey, variableSymbol);
+                    variableSymbol.scope.undefine(variableSymbol);
+                    variableSymbol.varKey = newVarKey;
+                    variableSymbol.scope.define(variableSymbol);
+                    //console.log(`→ Updating range for variable: ${variableKey} to ${newVarKey}`);
+                    variableKey = newVarKey;
+                    modifiedVariables.set(newVarKey, variableSymbol)
+                    continue;
+                }
             }
-            let supposedText = editor.document.getText(this.supplyRange(desc));
-            /* console.log(`→ Found text: "${supposedText.trim()}"`);
-            console.log(`→ Expected text: "${variableName.trim()}"`); */
 
-            if (supposedText !== variableName) {
-                // console.log(`→ Removing stale scoped variable (text mismatch): ${variableKey}`);
-                variablesToRemove.push(variableKey);
-                continue;
-            }
+            for (const variableKey of variablesToRemove) {
+                const symbol = scope.variables.get(variableKey);
+                if (symbol) {
+                    symbol.scope.undefine(symbol);
+                    //console.log(`→ Final removal of variable: ${variableKey}`);
+                    scope.variables.delete(variableKey);
 
-            const actualRange = this.supplyRange(desc);
-            actualRange.start.translate(-1, -1)
-            actualRange.end.translate(-1, -1)
-            // console.log(actualRange)
-            const actualRangeKey = this.getRangeKey(actualRange);
-            if (!this.rangesEqual(adjustedExpectedRange, actualRange) || actualRangeKey !== rangeKey) {
-                variableSymbol.setRange(actualRange);
-                const newVarKey = `${variableName}@${scopeId}@${actualRangeKey}`;
-                variablesToRemove.push(variableKey);
-                /* this.scopedVariables.delete(variableKey);
-                this.scopedVariables.set(newVarKey, variableSymbol); */
-                variableSymbol.scope.undefine(variableSymbol);
-                variableSymbol.varKey = newVarKey;
-                variableSymbol.scope.define(variableSymbol);
-                //console.log(`→ Updating range for variable: ${variableKey} to ${newVarKey}`);
-                //variableKey = newVarKey;
-                modifiedVariables.set(newVarKey, variableSymbol)
-                continue;
-            }
-        }
-
-        for (const variableKey of variablesToRemove) {
-            const symbol = this.scopedVariables.get(variableKey);
-            if (symbol) {
-                symbol.scope.undefine(symbol);
-                //console.log(`→ Final removal of variable: ${variableKey}`);
-                this.scopedVariables.delete(variableKey);
-
-                // Collect variables to add
-                for (const [key, variable] of symbol.scope.variables) {
-                    if (!this.scopedVariables.has(key)) {
-                        modifiedVariables.set(key, variable);
+                    for (const [key, variable] of symbol.scope.variables) {
+                        if (!scope.variables.has(key)) {
+                            modifiedVariables.set(key, variable);
+                        }
                     }
                 }
             }
@@ -463,9 +452,13 @@ export class TreeProvider {
         return variables;
     }
     public extractVariableNode(declaration: SyntaxNode): VariableNode {
+        const node = declaration.firstChild
+        const isFunctionVariable = getNamedSiblings(node, true).some(sib => sib.type == "function_type")
+        const funcVariable = isFunctionVariable ? this.findChild(node?.parent, "function_type", "variable_declaration") : node;
         const userTypeNode = this.findChild(declaration, "user_type");
-        let dec = userTypeNode && declaration.firstChild ? declaration.firstChild : declaration;
-        let newnode = new VariableNode(dec, userTypeNode)
+        const userType = this.findChild(funcVariable, "user_type", "function_type") ?? userTypeNode;
+        let dec = userType && declaration.firstChild ? declaration.firstChild : declaration;
+        let newnode = new VariableNode(dec, userType)
         return newnode
     }
     public processImportDeclarations(node: SyntaxNode) {
@@ -683,9 +676,9 @@ export class TreeProvider {
     }
 
 
-    public findChild(node: SyntaxNode, type: string, expectedParent: string | null = null): SyntaxNode | null {
+    public findChild(node: SyntaxNode | null | undefined, type: string, expectedParent: string | null = null): SyntaxNode | null {
+        if (!node) return null;
         for (const child of node.children) {
-
             if (child.type === type) {
                 if (!expectedParent || (child.parent && child.parent.type === expectedParent)) {
                     return child;
@@ -824,7 +817,9 @@ export class TreeProvider {
     ): void {
         const variableName = identifierNode.text;
         const rangeMode = this.semanticTokensProvider?.rangeMode;
-        var scope = this.semanticTokensProvider?.currentScopeFromRange(range) ?? this.currentScope;
+        var scope = /* this.semanticTokensProvider?.currentScopeFromRange(range) ?? */ this.currentScope;
+        /* log("Variable:" + variableName + ", CurrentScopeFromRange: " + this.semanticTokensProvider?.currentScopeFromRange(range)?.id)
+        log("Variable: " + variableName + ", Current Scope: " + this.currentScope?.id) */
         if (!scope) return;
         let varKey = `${variableName}@${scope.id}@${this.getRangeKey(range)}`;
         if (reservedCharacters.includes(variableName)) {
@@ -837,34 +832,18 @@ export class TreeProvider {
                 return;
             }
         }
-        /*  if (!isParamVar) { */
         const existingVars = Array.from(scope.variables.values()).filter(v => v.name === variableName);
         const isExactDuplicate = existingVars.some(v => v.varKey === varKey);
         if (existingVars.length > 0 && !isExactDuplicate && identifierNode.parent?.type != "lambda_parameters") {
             const errorMessage = `Variable "${variableName}" is already defined in the current scope.`;
             TreeProvider.addError(this.document, range, errorMessage, variableName, vscode.DiagnosticSeverity.Error);
             builder.push(range, "enumMember");
-            /* const duplicateVariableSymbol = new VariableSymbol(
-                variableName,
-                range,
-                identifierNode,
-                variableNode ? variableNode.text : "",
-                scope,
-                varKey,
-                isParamVar
-            );
-            scope.define(duplicateVariableSymbol);
-            this.duplicateVars.set(variableName, duplicateVariableSymbol) */
             return;
         }
-        /*  } */
-        /* this.duplicateVars.forEach((symbol, key) => console.log(key))
-        if (this.duplicateVars.has(variableName)) {
-            this.duplicateVars.delete(variableName)
-        } */
+        const typedType = getImportFromClassOrPath(typeNode?.text ?? "", this)
         const variableSymbol = new VariableSymbol(
             variableName,
-            typeNode ? typeNode.text : null,
+            typeNode ? (typedType ?? typeNode.text) : null,
             range,
             identifierNode,
             variableNode ? variableNode.text : "",
@@ -873,11 +852,6 @@ export class TreeProvider {
             isParamVar
         );
         scope.define(variableSymbol);
-        /* if (!isParamVar) { */
-        this.scopedVariables.set(varKey, variableSymbol);
-        /*  } else {
-             this.paramVariables.set(varKey, variableSymbol);
-         } */
         builder.push(range, "enumMember");
     }
 
@@ -889,8 +863,8 @@ export class TreeProvider {
         }
     }
 
-    getscopedVariables(): Map<string, VariableSymbol> {
-        return this.scopedVariables;
+    getscopedVariables(scope: Scope): Map<string, VariableSymbol> {
+        return scope.variables;
     }
     getimports(): Map<string, ImportSymbol> {
         return this.imports;
@@ -922,11 +896,13 @@ export class TreeProvider {
     }
 
     exitScope(node: SyntaxNode): void {
+        //logNode(node, "exitScope")
         let parentScope = this.currentScope.parentScope
         if (!parentScope) {
             TreeProvider.addError(this.document, this.supplyRange(node), "Cannot exit global scope", node.text)
             return;
         }
+        this.currentScope.setEndPoint(this.supplyRange(node).end)
         if (this.currentScope.childScopeId != null) {
             let childScope = this.scopes.get(this.currentScope.childScopeId)
             if (childScope) {
@@ -934,6 +910,7 @@ export class TreeProvider {
             }
         }
         this.currentScope = parentScope
+        //log("Entering parent scope: " + this.currentScope.id)
     }
     public rangeToString(range: vscode.Range | undefined): string {
         if (!range) return "undefined"

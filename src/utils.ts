@@ -186,7 +186,7 @@ export function writeAlphabeticalTypingsIndex(ktsDirectory: string) {
 
     const manifestPath = path.join(outputBaseDir, 'manifest.json');
     fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf-8');
-    console.log(`✅ Three-level alphabetical index files written to: ${outputBaseDir}`);
+    console.log(` Three-level alphabetical index files written to: ${outputBaseDir}`);
 }
 
 
@@ -537,8 +537,7 @@ export function buildTypingsMemberFromClassNode(node: SyntaxNode, treeProvider: 
     const classAnnotations: string[] = [];
     const classModifiers: string[] = [];
     getNamedSiblings(classModifiersNode, true).forEach(modChild => {
-        logNode(modChild, "modChild")
-        return modChild.type !== "annotation" ? classModifiers.push(modChild.text) : classAnnotations.push(modChild.text)
+        return modChild.type !== "annotation" ? classModifiers.push(modChild.text) : classAnnotations.push(modChild.text.trim())
     });
     const fields: Field[] = [];
     getNamedSiblings(classBody, true).forEach(child => {
@@ -547,14 +546,20 @@ export function buildTypingsMemberFromClassNode(node: SyntaxNode, treeProvider: 
             if (field) fields.push(field);
         }
     });
-    let interfaceString = getNamedSiblings(node.parent?.firstChild, true).filter(sib => sib.type == "interface").map(sib => " " + sib.text)[0] ?? ""
+    let interfaceString = ""
+    getAllSiblings(node.parent?.firstChild, true).forEach(sib => {
+        if (sib.type == "interface")
+            interfaceString = sib.text.trim()
+    })
+    if (interfaceString.length > 0)
+        classModifiers.push(interfaceString)
     return new TypingsMember(
         classPath,
         methods,
         fields,
         false,
         false,
-        classModifiers.join(" ") + interfaceString,
+        classModifiers.join(" ").trim(),
         "",
         inheritances,
         typeParameters
@@ -612,6 +617,17 @@ export function getNamedSiblings(node: SyntaxNode | null | undefined, includeCur
     while (nextSibling) {
         siblings.push(nextSibling)
         nextSibling = nextSibling.nextNamedSibling
+    }
+    return siblings
+}
+export function getAllSiblings(node: SyntaxNode | null | undefined, includeCurrentNode: boolean = false): SyntaxNode[] {
+    if (!node) return []
+    let nextSibling = node.nextSibling
+    let siblings: SyntaxNode[] = []
+    if (includeCurrentNode) siblings.push(node)
+    while (nextSibling) {
+        siblings.push(nextSibling)
+        nextSibling = nextSibling.nextSibling
     }
     return siblings
 }
