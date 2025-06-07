@@ -15,11 +15,17 @@ export class HoverProviderKS implements vscode.HoverProvider {
         try {
             const treeProvider = documentData.get(document.uri.toString())?.semanticTokensProvider?.treeProvider;
             if (!treeProvider || !treeProvider.tree) return;
+            if (position.character === 0) return;
+
             const node = treeProvider.tree.rootNode.descendantForPosition({
                 row: position.line,
                 column: position.character - 1
             });
-            const range = new vscode.Range(position.line, position.character - 1, position.line, position.character);
+
+            const startChar = Math.max(position.character - 1, 0);
+            const range = new vscode.Range(position.line, startChar, position.line, position.character);
+
+
             const scope = treeProvider.semanticTokensProvider?.currentScopeFromRange(range) ?? treeProvider.currentScope
 
             /*  logNode(node, "Hover Node")

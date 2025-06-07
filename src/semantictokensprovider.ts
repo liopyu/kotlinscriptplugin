@@ -172,7 +172,9 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             this.treeProvider.validateImports(this.treeProvider.tree, importList, modifiedRange);
             this.treeProvider.validateVariables(this.treeProvider.tree, modifiedRange, builder);
         }
+
         let verifiedScopes: string[] = ["0:0:0"]
+        this.updateGlobalScopeRange(globalScopeRange)
         this.traverseTree(tree.rootNode, builder, verifiedScopes);
         //log("verified scopes1: " + verifiedScopes.length)
         this.treeProvider.scopes = new Map(
@@ -204,7 +206,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 this.handleMissingNodes(node);
                 if (!this.init || (this.init && !filterRanges)) {
                     this.rangeMode = RangeMode.FULL;
-                    console.log("init")
+                    //console.log("init")
                     this.setCurrentScope(node, range)
                     this.processTokens(capture, builder, range);
                 } else if ((filterRanges &&
@@ -214,7 +216,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                     )) || (visibleRanges && this.startRangeIntersect(range, visibleRanges) && !this.doesRangeIntersectTokens(range, existingTokens)) ||
                     (!this.doesRangeIntersectTokens(range, existingTokens) && this.startAndEndRangeIntersect(range, visibleRange))
                 ) {
-                    console.log("normal")
+                    //console.log("normal")
                     //l.push(range);
                     this.handleCallExpression(node, builder);
                     this.rangeMode = RangeMode.EDIT;
@@ -222,7 +224,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                     this.processTokens(capture, builder, range);
                 } else if (this.reEvaluationRange && this.rangesIntersect(range, this.reEvaluationRange)) {
                     //m.push(range);
-                    console.log("reevaluation")
+                    // console.log("reevaluation")
                     this.rangeMode = RangeMode.REPROCESSING
                     this.handleCallExpression(node, builder);
                     this.setCurrentScope(node, range)
@@ -262,6 +264,12 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         this.reEvaluationRange = modifiedNodeRange
         return this.lastSemanticTokens;
 
+    }
+    public updateGlobalScopeRange(range: vscode.Range) {
+        let global = this.treeProvider.scopes.get("0:0:0")
+        global?.setStartPoint(range.start)
+        global?.setEndPoint(range.end)
+        this.globalScope = global
     }
     public exclusiveRangeIntersect(range1: vscode.Range, range2: vscode.Range): boolean {
         const startIntersects =
@@ -325,45 +333,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
     }
 
     public setCurrentScope(node: TSParser.SyntaxNode, range: vscode.Range) {
-        if (t) {
-            /* let startPoint = range.start
-            let storedScopeId = this.treeProvider.currentScope ? `${startPoint?.line}:${startPoint?.character}:` + (this.treeProvider.currentScope.depth + 1) : ""
-            let storedScope = this.treeProvider.scopes.get(storedScopeId) */
-            this.treeProvider.currentScope = this.currentScopeFromRange(range) ?? this.globalScope ?? this.treeProvider.currentScope
-            return
-        }
-        let originalStartCheck = (newNode: TSParser.SyntaxNode, s: string) => ((newNode.text == s && newNode.type == s))
-        let isControlStructureOpenBracket = node.parent?.type == "block" && node.parent.parent?.type == "control_structure_body"
-        let isBlockNode = (node.type == "block" && node.parent?.type == "control_structure_body")
-        if ((originalStartCheck(node, "{") && !isControlStructureOpenBracket) || originalStartCheck(node, "for") || isBlockNode) {
-            let startPoint = range.start
-            let endPoint = isBlockNode ? range.end : null
-            let storedScopeId = this.treeProvider.currentScope ? `${startPoint?.line}:${startPoint?.character}:` + (this.treeProvider.currentScope.depth + 1) : ""
-            let storedScope = this.treeProvider.scopes.get(storedScopeId)
-            if (storedScope) {
-                logNode(node, "Entering scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
-                this.treeProvider.currentScope = storedScope
-                if (endPoint)
-                    this.treeProvider.currentScope.setEndPoint(endPoint)
-            } else {
-                logNode(node, "Entering new scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
-                this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint, endPoint);
-            }
-        }
-        if (originalStartCheck(node, "}")) {
-            if (isControlStructureOpenBracket) {
-                logNode(node, "Exiting scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
-                this.treeProvider.exitScope(node);
-            }
-            logNode(node, "Exiting scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
-
-            this.treeProvider.exitScope(node);
-        }
-        if (!this.treeProvider.currentScope) {
-            this.treeProvider.currentScope = this.treeProvider.scopes.get("0:0:0") ?? this.treeProvider.currentScope
-            this.treeProvider.scopes.set("0:0:0", this.treeProvider.currentScope)
-        }
-        //console.log("setting current scope to " + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
+        this.treeProvider.currentScope = this.currentScopeFromRange(range) ?? this.globalScope ?? this.treeProvider.currentScope
     }
     public isUpdating: boolean = false
     provideDocumentSemanticTokens(document: vscode.TextDocument): vscode.ProviderResult<vscode.SemanticTokens> {
@@ -833,11 +803,18 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
     private traverseTree(node: TSParser.SyntaxNode, builder: vscode.SemanticTokensBuilder, verifiedScopes: string[]) {
         let range = this.treeProvider.supplyRange(node);
         let originalStartCheck = (newNode: TSParser.SyntaxNode, s: string) => ((newNode.text == s && newNode.type == s))
-        let isControlStructureBracket = node.parent?.type == "block" && node.parent.parent?.type == "control_structure_body"
-        let isBlockNode = node.type == "block"
-        let isControlStructureBody = (node.type == "block" && node.parent?.type == "control_structure_body")
         this.setCurrentScope(node, this.treeProvider.supplyRange(node))
-        if ((originalStartCheck(node, "{") && !isControlStructureBracket) || originalStartCheck(node, "for") || isBlockNode) {
+        let controlFunctions = [
+            "for_statement",
+        ]
+        let blockNodes = [
+            "block",
+            "enum_class_body",
+            "class_body",
+            "function_body"
+        ]
+        let isBlockNode = blockNodes.includes(node.type)
+        if (controlFunctions.includes(node.type) || (isBlockNode && node.parent?.type != "function_body")) {
             let newNodeRange = this.treeProvider.supplyRange(node);
             let modifiedRange = this.lastChangedRange
             let editor = currentEditor(this.treeProvider.document);
@@ -855,21 +832,12 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint, endPoint ?? newNodeRange.end)
                 verifiedScopes.push(this.treeProvider.currentScope.id)
             } else {
-                this.treeProvider.scopes.delete(scopeId)
                 let newScopeId = `${startPoint.line}:${startPoint.character}:${this.treeProvider.currentScope?.depth + 1}`;
                 verifiedScopes.push(newScopeId)
                 this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint, endPoint ?? newNodeRange.end);
                 //  logNode(node, "Entering scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
             }
         }
-        /* if (originalStartCheck(node, "}")) {
-            if (isControlStructureBracket) {
-                logNode(node, "Exiting scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
-                this.treeProvider.exitScope(node);
-            }
-            logNode(node, "Exiting scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
-            this.treeProvider.exitScope(node);
-        } */
         if ((node.type === "var" || node.type === "val") &&
             this.treeProvider.findParent(node, "property_declaration", range)) {
             const pD = this.treeProvider.findParent(node, "property_declaration", range);

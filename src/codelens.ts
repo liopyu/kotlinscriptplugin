@@ -87,14 +87,17 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
                 if (!this.findMatchingClasses(className).length) {
                     continue;
                 }
-
-
                 if (this.isClassImported(className)) {
                     continue;
                 }
                 if (!this.isInCorrectNode(range)) {
                     continue
                 }
+                const scope = treeProvider.semanticTokensProvider?.currentScopeFromRange(range);
+                if (scope?.resolveVariable(className)) {
+                    continue;
+                }
+
                 if (range.contains(cursorPosition)) {
                     codeLenses.push(new vscode.CodeLens(range));
                 }
@@ -222,7 +225,12 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
     public applyDecorations(document: vscode.TextDocument): void {
         let editor = currentEditor(this.document);
         if (!editor) return;
-
+        const documentUri = document.uri.toString();
+        const data = documentData.get(documentUri);
+        if (!data) {
+            return;
+        }
+        const treeProvider = data.semanticTokensProvider?.treeProvider;
         const cursorPosition = editor.selection.active;
         const redDecorations: vscode.DecorationOptions[] = [];
         const whiteLineDecorations: vscode.DecorationOptions[] = [];
@@ -237,12 +245,15 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
                 const className = match[0];
                 const range = new vscode.Range(i, match.index, i, match.index + className.length);
 
-                // ✅ Skip early if range is outside visible ranges
                 if (!visibleRanges.some(vr => vr.intersection(range))) {
                     continue;
                 }
 
                 if (!this.isInCorrectNode(range) || this.isClassImported(className) || !this.findMatchingClasses(className).length) {
+                    continue;
+                }
+                const scope = treeProvider?.semanticTokensProvider?.currentScopeFromRange(range);
+                if (scope?.resolveVariable(className)) {
                     continue;
                 }
 

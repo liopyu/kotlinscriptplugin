@@ -817,9 +817,9 @@ export class TreeProvider {
     ): void {
         const variableName = identifierNode.text;
         const rangeMode = this.semanticTokensProvider?.rangeMode;
-        var scope = /* this.semanticTokensProvider?.currentScopeFromRange(range) ?? */ this.currentScope;
-        /* log("Variable:" + variableName + ", CurrentScopeFromRange: " + this.semanticTokensProvider?.currentScopeFromRange(range)?.id)
-        log("Variable: " + variableName + ", Current Scope: " + this.currentScope?.id) */
+        var scope = this.semanticTokensProvider?.currentScopeFromRange(range) ?? this.currentScope;
+        log("Variable:" + variableName + ", CurrentScopeFromRange: " + this.semanticTokensProvider?.currentScopeFromRange(range)?.id)
+        log("Variable: " + variableName + ", Current Scope: " + this.currentScope?.id)
         if (!scope) return;
         let varKey = `${variableName}@${scope.id}@${this.getRangeKey(range)}`;
         if (reservedCharacters.includes(variableName)) {

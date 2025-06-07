@@ -810,12 +810,23 @@ module.exports = grammar({
       seq("$", alias($.simple_identifier, $.interpolated_identifier))
     ),
 
-    lambda_literal: $ => prec(PREC.LAMBDA_LITERAL, seq(
+    /* lambda_literal: $ => prec(PREC.LAMBDA_LITERAL, seq(
       "{",
       optional(seq(optional($.lambda_parameters), "->")),
       optional($.statements),
       "}"
-    )),
+    )), */
+    lambda_literal: $ => prec(PREC.LAMBDA_LITERAL,
+      alias($._lambda_block, $.block)
+    ),
+
+    _lambda_block: $ => seq(
+      "{",
+      optional(seq(optional($.lambda_parameters), "->")),
+      optional($.statements),
+      "}"
+    ),
+
 
     multi_variable_declaration: $ => seq(
       '(',

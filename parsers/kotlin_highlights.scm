@@ -141,9 +141,11 @@
 
 ; lambda parameters
 (lambda_literal
-	(lambda_parameters
-		(variable_declaration
-			(simple_identifier) @parameter)))
+  (block
+    (lambda_parameters
+      (variable_declaration
+        (simple_identifier) @parameter))))
+
 
 ;;; Function calls
 
