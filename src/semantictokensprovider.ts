@@ -204,6 +204,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 this.handleMissingNodes(node);
                 if (!this.init || (this.init && !filterRanges)) {
                     this.rangeMode = RangeMode.FULL;
+                    console.log("init")
                     this.setCurrentScope(node, range)
                     this.processTokens(capture, builder, range);
                 } else if ((filterRanges &&
@@ -213,6 +214,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                     )) || (visibleRanges && this.startRangeIntersect(range, visibleRanges) && !this.doesRangeIntersectTokens(range, existingTokens)) ||
                     (!this.doesRangeIntersectTokens(range, existingTokens) && this.startAndEndRangeIntersect(range, visibleRange))
                 ) {
+                    console.log("normal")
                     //l.push(range);
                     this.handleCallExpression(node, builder);
                     this.rangeMode = RangeMode.EDIT;
@@ -220,6 +222,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                     this.processTokens(capture, builder, range);
                 } else if (this.reEvaluationRange && this.rangesIntersect(range, this.reEvaluationRange)) {
                     //m.push(range);
+                    console.log("reevaluation")
                     this.rangeMode = RangeMode.REPROCESSING
                     this.handleCallExpression(node, builder);
                     this.setCurrentScope(node, range)
@@ -321,25 +324,46 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         );
     }
 
-    public setCurrentScope(node: TSParser.SyntaxNode, range: vscode.Range, isReevaluation: boolean = false) {
+    public setCurrentScope(node: TSParser.SyntaxNode, range: vscode.Range) {
+        if (t) {
+            /* let startPoint = range.start
+            let storedScopeId = this.treeProvider.currentScope ? `${startPoint?.line}:${startPoint?.character}:` + (this.treeProvider.currentScope.depth + 1) : ""
+            let storedScope = this.treeProvider.scopes.get(storedScopeId) */
+            this.treeProvider.currentScope = this.currentScopeFromRange(range) ?? this.globalScope ?? this.treeProvider.currentScope
+            return
+        }
         let originalStartCheck = (newNode: TSParser.SyntaxNode, s: string) => ((newNode.text == s && newNode.type == s))
-        if (originalStartCheck(node, "{") || originalStartCheck(node, "for")) {
-            //getAllSiblings(node, false).forEach((n, i) => logNode(n, i.toString()))
+        let isControlStructureOpenBracket = node.parent?.type == "block" && node.parent.parent?.type == "control_structure_body"
+        let isBlockNode = (node.type == "block" && node.parent?.type == "control_structure_body")
+        if ((originalStartCheck(node, "{") && !isControlStructureOpenBracket) || originalStartCheck(node, "for") || isBlockNode) {
             let startPoint = range.start
+            let endPoint = isBlockNode ? range.end : null
             let storedScopeId = this.treeProvider.currentScope ? `${startPoint?.line}:${startPoint?.character}:` + (this.treeProvider.currentScope.depth + 1) : ""
             let storedScope = this.treeProvider.scopes.get(storedScopeId)
             if (storedScope) {
+                logNode(node, "Entering scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
                 this.treeProvider.currentScope = storedScope
+                if (endPoint)
+                    this.treeProvider.currentScope.setEndPoint(endPoint)
             } else {
-                this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint);
+                logNode(node, "Entering new scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
+                this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint, endPoint);
             }
-        } else if ((originalStartCheck(node, "}") || originalStartCheck(node, "in")) && !isReevaluation) {
+        }
+        if (originalStartCheck(node, "}")) {
+            if (isControlStructureOpenBracket) {
+                logNode(node, "Exiting scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
+                this.treeProvider.exitScope(node);
+            }
+            logNode(node, "Exiting scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
+
             this.treeProvider.exitScope(node);
-        } else if (!this.treeProvider.currentScope) {
+        }
+        if (!this.treeProvider.currentScope) {
             this.treeProvider.currentScope = this.treeProvider.scopes.get("0:0:0") ?? this.treeProvider.currentScope
             this.treeProvider.scopes.set("0:0:0", this.treeProvider.currentScope)
         }
-        //console.log("setting current scope to " + this.treeProvider.currentScope.id)
+        //console.log("setting current scope to " + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
     }
     public isUpdating: boolean = false
     provideDocumentSemanticTokens(document: vscode.TextDocument): vscode.ProviderResult<vscode.SemanticTokens> {
@@ -807,16 +831,18 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         return ""
     }
     private traverseTree(node: TSParser.SyntaxNode, builder: vscode.SemanticTokensBuilder, verifiedScopes: string[]) {
-
         let range = this.treeProvider.supplyRange(node);
         let originalStartCheck = (newNode: TSParser.SyntaxNode, s: string) => ((newNode.text == s && newNode.type == s))
-        if (originalStartCheck(node, "{") || originalStartCheck(node, "for")) {
-            // log("Block node: " + node.text)
+        let isControlStructureBracket = node.parent?.type == "block" && node.parent.parent?.type == "control_structure_body"
+        let isBlockNode = node.type == "block"
+        let isControlStructureBody = (node.type == "block" && node.parent?.type == "control_structure_body")
+        this.setCurrentScope(node, this.treeProvider.supplyRange(node))
+        if ((originalStartCheck(node, "{") && !isControlStructureBracket) || originalStartCheck(node, "for") || isBlockNode) {
             let newNodeRange = this.treeProvider.supplyRange(node);
             let modifiedRange = this.lastChangedRange
             let editor = currentEditor(this.treeProvider.document);
             let startPoint = newNodeRange.start;
-            let endPoint = newNodeRange.end;
+            let endPoint = isBlockNode ? range.end : null
             let r
             if (modifiedRange && editor) {
                 r = this.treeProvider.adjustRangeForShiftsNoColumnNegative(range, modifiedRange, editor)
@@ -824,33 +850,38 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             let scopeId = `${r?.start.line}:${r?.start.character}:${this.treeProvider.currentScope?.depth + 1}`;
             let storedScope = this.treeProvider.scopes.get(scopeId);
             if (storedScope) {
-                //log("> Entering stored scope: " + storedScope.id)
+                //logNode(node, "Entering scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
                 this.treeProvider.scopes.delete(scopeId)
-                this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint, endPoint)
+                this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint, endPoint ?? newNodeRange.end)
                 verifiedScopes.push(this.treeProvider.currentScope.id)
             } else {
-                //log("> Entering new scope: " + scopeId)
                 this.treeProvider.scopes.delete(scopeId)
                 let newScopeId = `${startPoint.line}:${startPoint.character}:${this.treeProvider.currentScope?.depth + 1}`;
                 verifiedScopes.push(newScopeId)
-                this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint, endPoint);
+                this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint, endPoint ?? newNodeRange.end);
+                //  logNode(node, "Entering scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
             }
-        } else if (originalStartCheck(node, "}") || originalStartCheck(node, "in")) {
-            //log("> Exiting scope: " + this.treeProvider.currentScope?.id)
-            this.treeProvider.exitScope(node);
         }
+        /* if (originalStartCheck(node, "}")) {
+            if (isControlStructureBracket) {
+                logNode(node, "Exiting scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
+                this.treeProvider.exitScope(node);
+            }
+            logNode(node, "Exiting scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
+            this.treeProvider.exitScope(node);
+        } */
         if ((node.type === "var" || node.type === "val") &&
             this.treeProvider.findParent(node, "property_declaration", range)) {
             const pD = this.treeProvider.findParent(node, "property_declaration", range);
             if (pD) {
                 const valNode = this.treeProvider.findChild(pD, "val");
                 if (!valNode || valNode.text === "val") {
+                    this.setCurrentScope(node, this.treeProvider.supplyRange(node))
                     this.treeProvider.processPropertyDeclaration(pD, builder);
                 }
             }
         }
         node.children.forEach(child => this.traverseTree(child, builder, verifiedScopes));
-
     }
 
 
