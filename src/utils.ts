@@ -242,7 +242,7 @@ export async function loadTypingMembers(ktsDirectory: string): Promise<TypingsMe
             const membersRecord = members as Record<string, any>;
             const classModifiers = membersRecord["$modifiers"] || "";
             const superclass = membersRecord["$superclass"] || "";
-            const interfaces = membersRecord["$interfaces"] || "";
+            const interfaces = membersRecord["$interfaces"] || [""];
             const typeParams = membersRecord["$typeParameters"] || ""
 
             Object.entries(members as Record<string, any>).forEach(([name, details]) => {

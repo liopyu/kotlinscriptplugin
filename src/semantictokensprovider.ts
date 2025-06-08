@@ -18,7 +18,8 @@ import {
 } from './decorations'
 import {
     VariableType,
-    RangeMode
+    RangeMode,
+    VariableParameter
 } from './enums'
 import {
     t,
@@ -100,6 +101,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             new vscode.Position(0, 0),
             editor.document.lineAt(editor.document.lineCount - 1).range.end
         );
+        this.updateGlobalScopeRange(globalScopeRange)
         const matches = this.highlightQuery.matches(tree.rootNode);
         this.treeProvider.updateTokens();
 
@@ -174,7 +176,6 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         }
 
         let verifiedScopes: string[] = ["0:0:0"]
-        this.updateGlobalScopeRange(globalScopeRange)
         this.traverseTree(tree.rootNode, builder, verifiedScopes);
         //log("verified scopes1: " + verifiedScopes.length)
         this.treeProvider.scopes = new Map(
@@ -633,7 +634,10 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                 break;
 
             case 'operator':
-                tokenType = 'operator';
+                if (node.type == "->")
+                    tokenType = "keyword"
+                else
+                    tokenType = 'operator';
                 break;
 
             case 'string.regex':
@@ -805,21 +809,23 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         let originalStartCheck = (newNode: TSParser.SyntaxNode, s: string) => ((newNode.text == s && newNode.type == s))
         this.setCurrentScope(node, this.treeProvider.supplyRange(node))
         let controlFunctions = [
-            "for_statement",
+            "for_statement"
         ]
         let blockNodes = [
             "block",
             "enum_class_body",
             "class_body",
-            "function_body"
+            "function_body",
+            "function_declaration"
         ]
+        let isArrowFunction = originalStartCheck(node, "->")
         let isBlockNode = blockNodes.includes(node.type)
-        if (controlFunctions.includes(node.type) || (isBlockNode && node.parent?.type != "function_body")) {
+        if (controlFunctions.includes(node.type) || (isBlockNode && node.parent?.type != "function_body") || isArrowFunction) {
             let newNodeRange = this.treeProvider.supplyRange(node);
             let modifiedRange = this.lastChangedRange
             let editor = currentEditor(this.treeProvider.document);
             let startPoint = newNodeRange.start;
-            let endPoint = isBlockNode ? range.end : null
+            let endPoint = isBlockNode ? range.end : isArrowFunction && node.parent ? this.treeProvider.supplyRange(node.parent).end : null
             let r
             if (modifiedRange && editor) {
                 r = this.treeProvider.adjustRangeForShiftsNoColumnNegative(range, modifiedRange, editor)
@@ -848,6 +854,14 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                     this.treeProvider.processPropertyDeclaration(pD, builder);
                 }
             }
+        }
+        if (node.type === "lambda_parameters") {
+            this.setCurrentScope(node, this.treeProvider.supplyRange(node))
+            this.treeProvider.processPropertyDeclaration(node, builder, VariableParameter.LAMBDA_PARAMETERS);
+        }
+        if (node.type === "function_value_parameters") {
+            this.setCurrentScope(node, this.treeProvider.supplyRange(node))
+            this.treeProvider.processPropertyDeclaration(node, builder, VariableParameter.FUNCTION_VALUE_PARAMETERS);
         }
         node.children.forEach(child => this.traverseTree(child, builder, verifiedScopes));
     }

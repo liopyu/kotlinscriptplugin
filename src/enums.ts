@@ -11,3 +11,9 @@ export enum VariableType {
     IMPORT,
     METHOD
 }
+
+export enum VariableParameter {
+    FUNCTION_VALUE_PARAMETERS,
+    LAMBDA_PARAMETERS,
+
+}

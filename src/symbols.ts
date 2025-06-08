@@ -252,7 +252,7 @@ export class TypingsMember {
         public hasInvokeOperator: boolean,
         public modifiers: string,
         public superclass: string,
-        public interfaces: string[],
+        public interfaces: string[] = [],
         public typeParameters: string[]
     ) { }
 }

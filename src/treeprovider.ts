@@ -20,7 +20,8 @@ import {
 } from './decorations'
 import {
     VariableType,
-    RangeMode
+    RangeMode,
+    VariableParameter
 } from './enums'
 import {
     t,
@@ -407,15 +408,14 @@ export class TreeProvider {
             range1.end.line === range2.end.line &&
             range1.end.character === range2.end.character;
     }
+
     public processPropertyDeclaration(node: SyntaxNode,
-        builder: vscode.SemanticTokensBuilder): void {
+        builder: vscode.SemanticTokensBuilder, variableParameter: VariableParameter | null = null): void {
         //console.log("PropertyDeclaration: " + node.type + ", " + node.text)
         const valueNodes = this.findChildren(node, expressionTypes, "property_declaration");
 
-        const variables = this.extractVariables(node);
-        /*  variables.forEach((range, node) => {
-             console.log("variable Nodes: " + node.variable?.type + ", " + node.variable?.text + ", Type: " + node.type?.text)
-         }) */
+        const variables = variableParameter == VariableParameter.LAMBDA_PARAMETERS ? this.extractLambdaParams(node) :
+            variableParameter == VariableParameter.FUNCTION_VALUE_PARAMETERS ? this.extractFunctionValueParams(node) : this.extractVariables(node);
         if (valueNodes.length > 0) {
             valueNodes.forEach(valueNode => {
                 if (!this.isValueInDeclaration(valueNode)) return;
@@ -431,11 +431,41 @@ export class TreeProvider {
         }
 
     }
+    public extractFunctionValueParams(node: SyntaxNode): Map<VariableNode, vscode.Range> {
+        const variables: Map<VariableNode, vscode.Range> = new Map();
+
+        const declarationNodes = this.findChildren(node, ["parameter"]);
+        declarationNodes.forEach(variable => {
+            const variableNode = this.extractVariableNode(variable);
+            if (variableNode && variableNode.variable) {
+                variables.set(variableNode, this.supplyRange(variableNode.variable));
+            }
+        });
+        return variables;
+    }
+    public extractLambdaParams(node: SyntaxNode): Map<VariableNode, vscode.Range> {
+        const variables: Map<VariableNode, vscode.Range> = new Map();
+
+        const declarationNodes = this.findChildren(node, variableDeclarationTypes);
+        declarationNodes.forEach(declaration => {
+            const variableNodes = declaration.type === "multi_variable_declaration"
+                ? this.findChildren(declaration, ["variable_declaration"])
+                : [declaration];
+
+            variableNodes.forEach(variable => {
+                const variableNode = this.extractVariableNode(variable);
+                if (variableNode && variableNode.variable) {
+                    variables.set(variableNode, this.supplyRange(variableNode.variable));
+                }
+            });
+        });
+
+        return variables;
+    }
     public extractVariables(node: SyntaxNode): Map<VariableNode, vscode.Range> {
         const variables: Map<VariableNode, vscode.Range> = new Map();
 
         const declarationNodes = this.findChildren(node, variableDeclarationTypes);
-
         declarationNodes.forEach(declaration => {
             const variableNodes = declaration.type === "multi_variable_declaration"
                 ? this.findChildren(declaration, ["variable_declaration"])
@@ -523,17 +553,17 @@ export class TreeProvider {
         return (
             node.type == "init" ||
             node.type == "->" ||
-            node.type == "!!" ||
+            // node.type == "!!" ||
             node.type == "is" ||
-            node.type == "?:" ||
+            // node.type == "?:" ||
             node.type == "in" ||
             node.type == "companion" && node.parent?.type == "companion_object" ||
             (node.type == "simple_identifier" &&
                 typingSuggestions.some(suggestion => node.text == suggestion.simpleName) &&
                 node.parent?.type == "infix_expression") ||
             ((node.type == "as" || node.type == "as?") && node.parent?.type == "as_expression") ||
-            (node.type == "?" && node.parent?.type == "nullable_type") ||
-            (node.type == "?." && node.parent?.type == "navigation_suffix") ||
+            // (node.type == "?" && node.parent?.type == "nullable_type") ||
+            // (node.type == "?." && node.parent?.type == "navigation_suffix") ||
             node.type == "by" ||
             (node.text == "it" &&
                 this.hasParent(node, "lambda_literal") &&
@@ -818,8 +848,8 @@ export class TreeProvider {
         const variableName = identifierNode.text;
         const rangeMode = this.semanticTokensProvider?.rangeMode;
         var scope = this.semanticTokensProvider?.currentScopeFromRange(range) ?? this.currentScope;
-        log("Variable:" + variableName + ", CurrentScopeFromRange: " + this.semanticTokensProvider?.currentScopeFromRange(range)?.id)
-        log("Variable: " + variableName + ", Current Scope: " + this.currentScope?.id)
+        /* log("Variable:" + variableName + ", CurrentScopeFromRange: " + this.semanticTokensProvider?.currentScopeFromRange(range)?.id)
+        log("Variable: " + variableName + ", Current Scope: " + this.currentScope?.id) */
         if (!scope) return;
         let varKey = `${variableName}@${scope.id}@${this.getRangeKey(range)}`;
         if (reservedCharacters.includes(variableName)) {

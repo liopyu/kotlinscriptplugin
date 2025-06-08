@@ -19,10 +19,10 @@ export class HoverProviderKS implements vscode.HoverProvider {
 
             const node = treeProvider.tree.rootNode.descendantForPosition({
                 row: position.line,
-                column: position.character - 1
+                column: position.character
             });
 
-            const startChar = Math.max(position.character - 1, 0);
+            const startChar = Math.max(position.character, 0);
             const range = new vscode.Range(position.line, startChar, position.line, position.character);
 
 
@@ -192,9 +192,12 @@ export class HoverProviderKS implements vscode.HoverProvider {
             ? `<${typingsMember.typeParameters.join(', ')}>`
             : '';
         const interfaceNames = Array.of()
-        typingsMember.interfaces.forEach(i => {
-            interfaceNames.push(this.getClassName(i))
-        })
+        if (Array.isArray(typingsMember.interfaces)) {
+            typingsMember.interfaces.forEach(i => {
+                interfaceNames.push(this.getClassName(i));
+            });
+        }
+
         let superclassName = this.getClassName(typingsMember.superclass)
         const inheritance = [
             ...(superclassName ? [superclassName] : []),

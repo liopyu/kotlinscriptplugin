@@ -6,6 +6,4 @@
 [Log] Loaded 108981 classes from JSON file.
 [Log] Typing suggestions loaded: 3214
 [Log] Semantic Tokens Provider Initialized
-[Log] Variable:i, CurrentScopeFromRange: 0:0:0
-[Log] Variable: i, Current Scope: 0:0:0
 [Log] updating tokens
