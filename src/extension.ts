@@ -45,7 +45,7 @@ import {
 } from "./hoverprovider"
 import { TreeProvider } from './treeprovider'
 import { ImportDefinitionProvider, indexedClassMap, PeriodTypingSuggestionProvider, TypingSuggestionProvider } from './suggestionprovider';
-import { SemanticTokensProvider } from './semantictokensprovider';
+import { SemanticTokensProvider, syntheticTypingsMembers } from './semantictokensprovider';
 import { buildClassMap, ImportCodeLensProvider } from './codelens';
 
 
@@ -134,7 +134,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		{ language: 'kotlin', scheme: 'file', pattern: '**/*.kts' },
 		{ language: 'kotlin', scheme: 'file', pattern: path.join(absoluteKtsDirectory, '**/*.kts') }
 	];
-	vscode.languages.registerHoverProvider(selector, new HoverProviderKS());
+
 	function addDocumentIfNotExists(document: vscode.TextDocument, editor: vscode.TextEditor) {
 		const documentUri = document.uri.toString();
 		if (!document.fileName.endsWith(".kts")) return;
@@ -162,8 +162,13 @@ export async function activate(context: vscode.ExtensionContext) {
 					importCodeLensProvider
 				)
 			);
+			context.subscriptions.push(
+				vscode.languages.registerHoverProvider(selector, new HoverProviderKS(document, treeProvider))
+			)
 		}
 	}
+
+
 	vscode.workspace.onDidCloseTextDocument(document => {
 		const documentUri = document.uri.toString();
 		//console.log("Closed document: " + documentUri);
@@ -515,32 +520,36 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('extension.gotoTypingDefinition', (args) => {
-			handleTypingDefinition(args.type);
+			handleTypingDefinition(args);
 		})
 	);
 
-	function handleTypingDefinition(typeName: string) {
+	function handleTypingDefinition(args: any) {
+		const typeName: string = args.type
+		const documentUri: string = args.documentUri
 		const baseType = typeName.split('<')[0];
+		const data = documentData.get(documentUri)
+		const treeProvider = data?.semanticTokensProvider?.treeProvider
 
 		const className = baseType.substring(baseType.lastIndexOf('.') + 1);
 		const typingsMember = utils.getTypingsMember(typeName);
 
 		if (!typingsMember) {
-			const classNames = getClassesInPackage(baseType);
+			const classNames = getClassesInPackage(baseType, treeProvider);
 			if (classNames.length > 0) {
-				openPackagePanel(baseType);
+				openPackagePanel(baseType, treeProvider);
 			} else {
 				vscode.window.showWarningMessage(`No class or package found for "${typeName}".`);
 			}
 			return;
 		}
-		openClassPanel(baseType, className, typingsMember);
+		openClassPanel(baseType, className, typingsMember, treeProvider);
 	}
 
 
 
-	function openPackagePanel(packageName: string) {
-		const classNames = getClassesInPackage(packageName);
+	function openPackagePanel(packageName: string, treeProvider: TreeProvider | undefined | null) {
+		const classNames = getClassesInPackage(packageName, treeProvider);
 		if (classNames.length === 0) return;
 
 		const listHtml = classNames.map(name =>
@@ -655,7 +664,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 		return html;
 	}
-	function openClassPanel(baseType: string, className: string, typingsMember: TypingsMember) {
+	function openClassPanel(baseType: string, className: string, typingsMember: TypingsMember, treeProvider: TreeProvider | undefined | null) {
 		const existing = classPanels.get(baseType);
 		if (existing) {
 			existing.reveal();
@@ -1058,13 +1067,26 @@ export async function activate(context: vscode.ExtensionContext) {
 		  </html>`;
 	}
 
-	function getClassesInPackage(pkg: string): string[] {
+	function getClassesInPackage(pkg: string, treeProvider: TreeProvider | null | undefined = null): string[] {
+		const result: string[] = [];
+
 		const members = package_index[pkg];
-		if (!members || members.length === 0) {
-			return [];
+		if (members && members.length > 0) {
+			result.push(...members.map(m => m.classPath));
 		}
-		return members.map(m => m.classPath);
+
+		if (treeProvider) {
+			for (const [classPath] of syntheticTypingsMembers) {
+				log("testing for package with: " + pkg + " with : " + classPath)
+				if (classPath.startsWith(pkg + ".")) {
+					result.push(classPath);
+				}
+			}
+		} else log("no treeprovider found")
+
+		return result;
 	}
+
 
 	function generatePackageHtml(webview: vscode.Webview,
 		extensionUri: vscode.Uri, content: string, title: string): string {
@@ -1111,14 +1133,19 @@ export async function activate(context: vscode.ExtensionContext) {
 				const processedName = cls.replace(/\$/g, '.').split('.').pop()?.trim();
 				return processedName === className.trim();
 			});
-			if (matchingClasses.length === 0) {
+			const syntheticClasses = Array.from(syntheticTypingsMembers.keys()).filter(cls => {
+				const processedName = cls.replace(/\$/g, '.').split('.').pop()?.trim();
+				return processedName === className.trim();
+			});
+			let finalClasses = [...syntheticClasses, ...matchingClasses]
+			if (finalClasses.length === 0) {
 				vscode.window.showErrorMessage(`No matching classes found for '${className}'.`);
 				return;
 			}
-			const selectedClass = matchingClasses.length === 1
-				? matchingClasses[0]
+			const selectedClass = finalClasses.length === 1
+				? finalClasses[0]
 				: await vscode.window.showQuickPick(
-					matchingClasses.map(cls => cls.replace(/\$/g, '.')),
+					finalClasses.map(cls => cls.replace(/\$/g, '.')),
 					{ placeHolder: `Select the correct import for '${className}'` }
 				);
 

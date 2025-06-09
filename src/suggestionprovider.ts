@@ -21,6 +21,7 @@ import {
     kotlinCorePackages
 } from './constants'
 import { getTypingsMember, logNode } from './utils';
+import { syntheticTypingsMembers } from './semantictokensprovider';
 
 export class TypingSuggestionProvider implements vscode.CompletionItemProvider {
     public suggestions: TypingSuggestion[];
@@ -350,13 +351,13 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
                     const invokedTypingsMember = getTypingsMember(invokeMethod.returns);
                     if (invokedTypingsMember) {
                         console.log(`[provideCompletionItems] Switching context to type: ${invokedTypingsMember.classPath}`);
-                        return this.buildCompletionItems(invokedTypingsMember, false, false);
+                        return this.buildCompletionItems(invokedTypingsMember, false, false, treeProvider);
                     }
                 }
             }
         }
         console.log(`[provideCompletionItems] Found TypingsMember: ${foundTypingsMember.classPath}, preparing completions.`);
-        return this.buildCompletionItems(foundTypingsMember, isCallOffClass, isStaticClassCall);
+        return this.buildCompletionItems(foundTypingsMember, isCallOffClass, isStaticClassCall, treeProvider);
     }
 
 
@@ -585,7 +586,7 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
         // console.log(`[resolveTypingsFromSuffixes] Final resolved currentType: ${currentType}`);
         return { currentType, foundTypingsMember, currentIsStatic };
     }
-    private buildCompletionItems(foundTypingsMember: TypingsMember, isCallOffClass: boolean, isStaticClassCall: boolean): vscode.CompletionItem[] {
+    private buildCompletionItems(foundTypingsMember: TypingsMember, isCallOffClass: boolean, isStaticClassCall: boolean, treeProvider: TreeProvider): vscode.CompletionItem[] {
         console.log("[buildCompletionItems] Building completions for:", foundTypingsMember.classPath);
         console.log(`[buildCompletionItems] isCallOffClass: ${isCallOffClass}, isStaticClassCall: ${isStaticClassCall}`);
         const snippetCompletions: vscode.CompletionItem[] = [];
@@ -719,7 +720,7 @@ export class ImportDefinitionProvider implements vscode.CompletionItemProvider {
         let snippetCompletions: vscode.CompletionItem[] = [];
         const importPrefix = linePrefix.trim().split(/\s+/).pop() || "";
         let onlySuggestImmediateNextPackageName = (treeProvider.findParent(node, "import_header", treeProvider.supplyRange(node)) == null)
-        let isTypeNode = (node.type == "type_identifier"/*  || treeProvider.findParent(node, "type_identifier", treeProvider.supplyRange(node)) == null */)
+        let isTypeNode = (node.type == "type_identifier")
         //log("Node type: " + node.type + ", Node Text: " + node.text + ", testNode: " + (isTypeNode))
 
 
@@ -734,13 +735,18 @@ export class ImportDefinitionProvider implements vscode.CompletionItemProvider {
             return item;
         });
 
+
         if (importPrefix.length > 0 && node.parent && !isTypeNode) {
             const prefixParts = importPrefix.split('.');
             const lastPrefixPart = prefixParts.pop() ?? '';
             const basePrefix = prefixParts.join('.') + (prefixParts.length ? '.' : '');
-            const matchingClasses = Array.from(availableClasses)
+            const baseClasses = Array.from(availableClasses)
                 .map(cls => cls.replace(/\$/g, '.'))
                 .filter(cls => cls.startsWith(basePrefix));
+
+            const syntheticClasses = Array.from(syntheticTypingsMembers.keys())
+                .filter(cls => cls.startsWith(basePrefix) && syntheticTypingsMembers.get(cls)?.syntheticOriginUri !== documentUri)
+            const matchingClasses = [...syntheticClasses, ...baseClasses]
             if (onlySuggestImmediateNextPackageName) {
                 const nextSegments = new Set(
                     matchingClasses

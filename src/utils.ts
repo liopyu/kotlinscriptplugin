@@ -18,11 +18,12 @@ import {
     documentData,
     semanticTokensEnabled
 } from './constants'
-import { currentEditor } from './semantictokensprovider';
+import { currentEditor, SemanticTokensProvider, syntheticTypingsMembers } from './semantictokensprovider';
 import { SyntaxNode } from 'web-tree-sitter';
 
 let cachedTypingSuggestions: TypingSuggestion[] | null = null;
 let cachedTypingMembers: TypingsMember[] | null = null;
+
 export class Utils {
     private static instance: Utils | null = null;
     public logFile: string;
@@ -113,13 +114,33 @@ export class Utils {
     }
 }
 export function getTypingsMember(fqName: string): TypingsMember | undefined {
+    const normalizedFQName = fqName.trim();
+
     const className = fqName.split('.').pop() || fqName;
     const first = className[0]?.toUpperCase() || '_';
     const second = className[1]?.toLowerCase() || '_';
     const third = className[2]?.toLowerCase() || '_';
     const threeKey = `${first}${second}${third}`;
-    return available_members_index[first]?.[`${first}${second}`]?.[threeKey]?.[fqName];
+
+    const fromIndex = available_members_index[first]?.[`${first}${second}`]?.[threeKey]?.[fqName];
+    if (fromIndex) {
+        return fromIndex;
+    }
+    const keys = Array.from(syntheticTypingsMembers.keys());
+    let matched = false;
+    for (const key of keys) {
+        if (key === normalizedFQName) {
+            matched = true;
+        } else if (key.trim() === normalizedFQName) {
+            matched = true;
+        }
+    }
+
+    const result = syntheticTypingsMembers.get(fqName);
+    return result;
 }
+
+
 
 export function writeAlphabeticalTypingsIndex(ktsDirectory: string) {
     const inputFiles = [
@@ -517,15 +538,31 @@ export function logNode(node: SyntaxNode | null | undefined, name: string) {
         log(`${name} type: ${node.type}, ${name} text: ${node.text}`)
     else log(name + " is null.")
 }
-export function buildTypingsMemberFromClassNode(node: SyntaxNode, treeProvider: TreeProvider): TypingsMember {
+export function buildTypingsMemberFromClassNode(node: SyntaxNode, treeProvider: TreeProvider): TypingsMember | null {
     const className = node.text;
-    const classPath = "kotlinscript." + className;
-    const inheritances = getNamedSiblings(node).map(sib => sib.text);
-    const classBody = treeProvider.findChild(node, "function_declaration", "class_body");
+    const classNode = node.parent
+    if (!classNode) return null
+    const classBody = treeProvider.findChild(classNode, "class_body", "class_declaration")
+    /*  classNode.children.forEach((child, i) => {
+         logNode(child, "Class child: " + i.toString())
+     }) */
+    const packageHeader = treeProvider.findChild(treeProvider.tree?.rootNode, "package_header")
+    const packagePath = treeProvider.findChild(packageHeader, "identifier")?.text
+    const outerName = "Script";
+    const classPath = `${packagePath ? packagePath + "." : ""}${outerName}.${className}`;
+
+    const inheritances = getNamedSiblings(node)
+        .filter(sib => sib.type === "delegation_specifier")
+        .map(sib => getImportFromClassOrPath(sib.text, treeProvider) ?? sib.text);
+
+    const classFunctions = treeProvider.findChild(classBody, "function_declaration", "class_body");
+    const classFields = treeProvider.findChild(classBody, "property_declaration", "class_body");
     const methods: Method[] = [];
-    getNamedSiblings(classBody, true).forEach(funcNode => {
-        const method = getMethodFromFunctionDeclaration(funcNode, treeProvider);
-        if (method) methods.push(method);
+    getNamedSiblings(classFunctions, true).forEach(funcNode => {
+        if (funcNode.type == "function_declaration") {
+            const method = getMethodFromFunctionDeclaration(funcNode, treeProvider);
+            if (method) methods.push(method);
+        }
     });
     const typeParameters = getNamedSiblings(
         treeProvider.findChild(node.parent ?? node, "type_parameters", "class_declaration")?.firstChild,
@@ -540,7 +577,7 @@ export function buildTypingsMemberFromClassNode(node: SyntaxNode, treeProvider: 
         return modChild.type !== "annotation" ? classModifiers.push(modChild.text) : classAnnotations.push(modChild.text.trim())
     });
     const fields: Field[] = [];
-    getNamedSiblings(classBody, true).forEach(child => {
+    getNamedSiblings(classFields, true).forEach(child => {
         if (child.type === "property_declaration") {
             const field = getFieldFromPropertyDeclaration(child, treeProvider);
             if (field) fields.push(field);
@@ -562,14 +599,17 @@ export function buildTypingsMemberFromClassNode(node: SyntaxNode, treeProvider: 
         classModifiers.join(" ").trim(),
         "",
         inheritances,
-        typeParameters
+        typeParameters,
+        true,
+        treeProvider.document.uri.toString()
     );
 }
 export function getFieldFromPropertyDeclaration(fieldNode: SyntaxNode, treeProvider: TreeProvider): Field | null {
     const name = treeProvider.findChild(fieldNode, "simple_identifier", "variable_declaration")?.text;
+    const varDeclaration = treeProvider.findChild(fieldNode, "variable_declaration", "property_declaration")
     if (!name) return null;
 
-    const typeName = treeProvider.findChild(fieldNode, "user_type", "property_declaration")?.text;
+    const typeName = treeProvider.findChild(varDeclaration, "user_type", "variable_declaration")?.text;
     const resolvedType = getImportFromClassOrPath(typeName ?? "", treeProvider) || "Unknown";
 
     const modifiersNode = treeProvider.findChild(fieldNode, "modifiers", "property_declaration")?.firstChild;
@@ -631,11 +671,65 @@ export function getAllSiblings(node: SyntaxNode | null | undefined, includeCurre
     }
     return siblings
 }
+const defaultKotlinPackages = [
+    "kotlin",
+    "kotlin.io",
+    "kotlin.text",
+    "kotlin.collections",
+    "kotlin.ranges",
+    "kotlin.sequences",
+    "kotlin.comparisons",
+    "kotlin.annotation",
+    "java.lang"
+];
+
 export function getImportFromClassOrPath(classOrPath: string, treeProvider: TreeProvider): string | null {
     for (const [, importSymbol] of treeProvider.imports.entries()) {
         if (importSymbol.path === classOrPath || importSymbol.simpleName === classOrPath) {
+            console.log("found imported symbol: " + importSymbol.path)
             return importSymbol.path;
         }
     }
+
+    for (const pkg of defaultKotlinPackages) {
+        const fqName = `${pkg}.${classOrPath.split(".").pop()}`;
+        const member = getTypingsMember(fqName);
+        if (member) {
+            return fqName;
+        }
+    }
+    let syntheticClassName = ""
+
+    for (const [key, member] of syntheticTypingsMembers.entries()) {
+        if (key == classOrPath || key.split(".").pop() == classOrPath) {
+            syntheticClassName = key
+            break
+        }
+    }
+    const fallbackMember = getTypingsMember(classOrPath) ?? getTypingsMember(syntheticClassName)
+    if (fallbackMember) {
+        if (
+            fallbackMember.isSynthetic &&
+            fallbackMember.syntheticOriginUri !== treeProvider.document.uri.toString() &&
+            !treeProvider.imports.has(fallbackMember.classPath)
+        ) {
+            console.log("is synthetic, is not synthetic class origin file and is not imported: " + fallbackMember.classPath)
+            return null
+        }
+        log("returning fallback member: " + fallbackMember.classPath)
+        return fallbackMember.classPath;
+    }
     return null;
+}
+export function getCurrentTreeProvider(doc: vscode.TextDocument) {
+    let editor = currentEditor(doc);
+    const document = editor?.document;
+    if (!document) return null
+    const documentUri = document.uri.toString();
+    const data = documentData.get(documentUri);
+    if (!data) {
+        return null;
+    }
+    return data.semanticTokensProvider?.treeProvider;
+
 }

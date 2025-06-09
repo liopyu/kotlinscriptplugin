@@ -9,29 +9,27 @@ import {
     t,
     documentData,
 } from './constants'
-import { buildTypingsMemberFromClassNode, getImportFromClassOrPath, getKotlinBoxedType, getMethodFromFunctionDeclaration, getNamedSiblings, getTypingsMember, logNode, logNodeTree, splitTopLevelArgs, stripAnnotations } from './utils';
+import { buildTypingsMemberFromClassNode, getCurrentTreeProvider, getImportFromClassOrPath, getKotlinBoxedType, getMethodFromFunctionDeclaration, getNamedSiblings, getTypingsMember, logNode, logNodeTree, splitTopLevelArgs, stripAnnotations } from './utils';
 export class HoverProviderKS implements vscode.HoverProvider {
+
+    constructor(
+        public document: vscode.TextDocument,
+        public treeProvider: TreeProvider
+    ) { }
     provideHover(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken): vscode.ProviderResult<vscode.Hover> {
         try {
-            const treeProvider = documentData.get(document.uri.toString())?.semanticTokensProvider?.treeProvider;
+            const treeProvider = this.treeProvider
             if (!treeProvider || !treeProvider.tree) return;
             if (position.character === 0) return;
-
             const node = treeProvider.tree.rootNode.descendantForPosition({
                 row: position.line,
                 column: position.character
             });
-
             const startChar = Math.max(position.character, 0);
             const range = new vscode.Range(position.line, startChar, position.line, position.character);
-
-
             const scope = treeProvider.semanticTokensProvider?.currentScopeFromRange(range) ?? treeProvider.currentScope
+            const debug = false
 
-            /*  logNode(node, "Hover Node")
-     
-             logNode(node.nextNamedSibling, "Hover Node sibling")
-             logNode(node.parent, "Hover Node Parent") */
 
             if (node.type === "type_identifier" && node.parent?.type === "class_declaration") {
                 const typingsMember = buildTypingsMemberFromClassNode(node, treeProvider);
@@ -39,7 +37,7 @@ export class HoverProviderKS implements vscode.HoverProvider {
                     new vscode.Position(node.startPosition.row, node.startPosition.column),
                     new vscode.Position(node.endPosition.row, node.endPosition.column)
                 );
-                return new vscode.Hover(this.buildHoverMarkdownNativeClass(typingsMember.classPath, typingsMember), hoverRange);
+                return new vscode.Hover(this.buildHoverMarkdownNativeClass(typingsMember), hoverRange);
             }
             if (node.type === "simple_identifier" && node.parent?.type === "function_declaration") {
                 const hoverContent = this.buildFunctionHoverMarkdown(node.text, node.parent, treeProvider);
@@ -50,25 +48,52 @@ export class HoverProviderKS implements vscode.HoverProvider {
                     ));
                 }
             }
-
-
             if (!["type_identifier", "simple_identifier"].includes(node.type)) return;
-            const isFunctionVariable = getNamedSiblings(node, true).some(sib => sib.type == "function_type")
-            const funcVariable = isFunctionVariable ? treeProvider.findChild(node?.parent, "function_type", "variable_declaration") : node;
+
+            const isFunctionVariable = getNamedSiblings(node, true).some(sib => sib.type == "function_type");
+
+            const funcVariable = isFunctionVariable
+                ? treeProvider.findChild(node?.parent, "function_type", "variable_declaration")
+                : node;
+
             const userType = treeProvider.findChild(funcVariable, "user_type", "function_type") ?? node;
+
             const baseType = this.resolveBaseType(userType, treeProvider, scope);
             const navNode = node.parent?.parent;
-            const typingsMember = !baseType ? getTypingsMember(navNode?.text ?? "") : getTypingsMember(baseType)
-            const effectiveBaseType = baseType || (navNode?.type === "navigation_expression" ? typingsMember?.classPath : getImportFromClassOrPath(navNode?.text ?? "", treeProvider));
+            const typingsMember = !baseType
+                ? getTypingsMember(navNode?.text ?? "")
+                : getTypingsMember(baseType);
+            const effectiveBaseType = baseType || (
+                navNode?.type === "navigation_expression"
+                    ? typingsMember?.classPath
+                    : getImportFromClassOrPath(navNode?.text ?? "", treeProvider)
+            );
             if (!effectiveBaseType || !typingsMember) return;
-            const simpleVarNode = node.parent?.type == "variable_declaration" ? node.parent : undefined
-            const variableNode = funcVariable ?? simpleVarNode
-            const variable = variableNode != undefined ? scope?.resolveVariable(node.text) : undefined
+            const simpleVarNode = node.parent?.type == "variable_declaration" ? node.parent : undefined;
+            const variableNode = funcVariable ?? simpleVarNode;
+            const variable = variableNode != undefined ? scope?.resolveVariable(node.text) : undefined;
+            if (debug) {
+                logNode(node, "Hover Node")
+                logNode(node.nextNamedSibling, "Hover Node sibling")
+                logNode(node.parent, "Hover Node Parent")
+                log("isFunctionVariable: " + isFunctionVariable);
+                log("funcVariable.text: " + funcVariable?.text);
+                log("userType.text: " + userType?.text);
+                log("baseType: " + baseType);
+                log("navNode.type: " + navNode?.type);
+                log("navNode.text: " + navNode?.text);
+                log("typingsMember: " + typingsMember?.classPath);
+                log("effectiveBaseType: " + effectiveBaseType);
+                log("simpleVarNode.text: " + simpleVarNode?.text);
+                log("variableNode.text: " + variableNode?.text);
+                log("resolved variable type: " + variable?.type);
+                log("Found member: " + typingsMember.classPath);
+            }
             return new vscode.Hover(this.buildHoverMarkdownType(effectiveBaseType, typingsMember, variable));
+
         } catch (error) {
             console.log("Error in HoverProviderKS:" + error);
         }
-
     }
     private buildFunctionHoverMarkdown(
         functionName: string,
@@ -92,9 +117,15 @@ export class HoverProviderKS implements vscode.HoverProvider {
             const typeName = typeNode?.text ?? "Unknown";
             const resolvedType = getImportFromClassOrPath(typeName, treeProvider) ?? typeName;
             const resolvedTypeName = this.getClassName(resolvedType);
-            const command = `command:extension.gotoTypingDefinition?${encodeURIComponent(JSON.stringify({ type: resolvedType }))}`;
-            return `@param ${name} — [${resolvedTypeName}](${command})`;
+
+            const commandLink = this.buildCommandLink(resolvedTypeName, 'extension.gotoTypingDefinition', {
+                type: resolvedType,
+                documentUri: this.document.uri.toString()
+            });
+
+            return `@param ${name} — ${commandLink}`;
         }) ?? [];
+
 
         const returnTypeNode = treeProvider.findChildInRange(
             funcNode,
@@ -105,16 +136,24 @@ export class HoverProviderKS implements vscode.HoverProvider {
         const returnTypeRaw = returnTypeNode?.text ?? "Unit";
         const resolvedReturn = getImportFromClassOrPath(returnTypeRaw, treeProvider) ?? returnTypeRaw;
         const returnTypeName = this.getClassName(resolvedReturn);
-        const returnCommand = `command:extension.gotoTypingDefinition?${encodeURIComponent(JSON.stringify({ type: resolvedReturn }))}`;
-        paramLines.push(`@returns [${returnTypeName}](${returnCommand})`);
+
+        const returnLink = this.buildCommandLink(returnTypeName, 'extension.gotoTypingDefinition', {
+            type: resolvedReturn,
+            documentUri: this.document.uri.toString()
+        });
+
+        paramLines.push(`@returns ${returnLink}`);
+
         const hoverText = [
             "```kotlin",
             `fun ${functionName}()`,
             "```",
             ...paramLines
         ].join("\n\n");
+
         markdown.appendMarkdown(hoverText);
         return markdown;
+
     }
 
 
@@ -122,16 +161,19 @@ export class HoverProviderKS implements vscode.HoverProvider {
     private resolveBaseType(node: SyntaxNode, treeProvider: TreeProvider, scope: Scope | undefined): string | null | undefined {
         const varText = node.text;
         const scoped = scope?.resolveVariable(varText);
+        // log("Scoped Variable: " + scoped?.type)
         if (scoped?.type) return getImportFromClassOrPath(scoped.type, treeProvider) || scoped.type;
         return getImportFromClassOrPath(varText, treeProvider);
     }
 
-    private buildHoverMarkdownNativeClass(classPath: string, typingsMember: TypingsMember): vscode.MarkdownString {
+    private buildHoverMarkdownNativeClass(typingsMember: TypingsMember | null): vscode.MarkdownString {
         const markdown = new vscode.MarkdownString(undefined, true);
+        const classPath = typingsMember?.classPath;
         markdown.isTrusted = true;
-        const isInterface = typingsMember.modifiers?.includes('interface');
+        const isInterface = typingsMember?.modifiers?.includes('interface');
         const classKeyword = isInterface ? 'interface' : 'class';
-        let modifiers = this.stripAnnotationModifiers(typingsMember.modifiers);
+        let modifiers = this.stripAnnotationModifiers(typingsMember?.modifiers || "");
+
         if (isInterface) {
             modifiers = modifiers
                 .replace(/\binterface\b/g, '')
@@ -139,17 +181,48 @@ export class HoverProviderKS implements vscode.HoverProvider {
                 .replace(/\s+/g, ' ')
                 .trim();
         }
-        const className = this.getClassName(classPath);
-        const typeParams = typingsMember.typeParameters?.length
+
+        const className = this.getClassName(classPath || "");
+        const typeParams = typingsMember?.typeParameters?.length
             ? `<${typingsMember.typeParameters.join(', ')}>`
             : '';
-        const classLine = `${modifiers} ${classKeyword} ${className}${typeParams}`.trim();
+
+        const baseTypes: string[] = [];
+
+        if (typingsMember?.superclass) {
+            baseTypes.push(this.getClassName(typingsMember.superclass));
+        }
+
+        if (Array.isArray(typingsMember?.interfaces)) {
+            baseTypes.push(...typingsMember.interfaces.map(i => this.getClassName(i)));
+        }
+
+        const inheritance = baseTypes.length ? ` : ${baseTypes.join(', ')}` : '';
+
+        const classLine = `${modifiers} ${classKeyword} ${className}${typeParams}${inheritance}`.trim();
+        const packagePath = classPath?.includes(".") ? classPath.substring(0, classPath.lastIndexOf(".")) : "";
+        if (packagePath) {
+            markdown.appendCodeblock(`package ${packagePath}`, 'kotlin');
+            markdown.appendMarkdown('\n\n');
+        }
+
         markdown.appendCodeblock(classLine, 'kotlin');
-        const args = { type: classPath };
-        const commandLink = `[Go to Definitions](command:extension.gotoTypingDefinition?${encodeURIComponent(JSON.stringify(args))})`;
+
+        const args = { type: classPath || "", documentUri: this.document.uri.toString() };
+        const commandLink = this.buildCommandLink("Go to Definitions", 'extension.gotoTypingDefinition', args);
         markdown.appendMarkdown(`\n\n${commandLink}`);
+
         return markdown;
     }
+    private buildCommandLink(displayText: string, commandId: string, args: Record<string, string>): string {
+        const encodedArgs = Object.entries(args).map(([key, value]) =>
+            `"${key}":"${encodeURIComponent(value)}"`
+        ).join(',');
+
+        const encodedJson = encodeURIComponent(`{${encodedArgs}}`);
+        return `[${displayText}](command:${commandId}?${encodedJson})`;
+    }
+
     private buildHoverMarkdownType(classPath: string, typingsMember: TypingsMember, variableSymbol: VariableSymbol | undefined = undefined): vscode.MarkdownString {
         const markdown = new vscode.MarkdownString(undefined, true);
         markdown.isTrusted = true;
@@ -170,7 +243,8 @@ export class HoverProviderKS implements vscode.HoverProvider {
 
             const returnType = classPath
             const returnName = this.getClassName(returnType);
-            const returnLink = `[${returnName}](command:extension.gotoTypingDefinition?${encodeURIComponent(JSON.stringify({ type: returnType }))})`;
+            const args = { type: classPath, documentUri: this.document.uri.toString() };
+            const returnLink = this.buildCommandLink(returnName, 'extension.gotoTypingDefinition', args);
             markdown.appendMarkdown(`\n\n**Returns**\n${returnLink}`);
 
             return markdown;
@@ -206,13 +280,13 @@ export class HoverProviderKS implements vscode.HoverProvider {
         const headerLine = `${modifiers} ${classKeyword} ${className}${typeParams}${inheritance ? ` : ${inheritance}` : ''}`;
         markdown.appendCodeblock(headerLine, 'kotlin');
         const args = {
-            type: classPath
+            type: classPath, documentUri: this.document.uri.toString()
         };
-        const commandLink = `[Go to Definitions](command:extension.gotoTypingDefinition?${encodeURIComponent(JSON.stringify(args))})`;
+        const commandLink = this.buildCommandLink("Go to Definitions", 'extension.gotoTypingDefinition', args);
         markdown.appendMarkdown(`\n\n${commandLink}`);
         return markdown;
     }
-    private getClassName(path: string): String {
+    private getClassName(path: string): string {
         return path.substring(path.lastIndexOf('.') + 1)
     }
 
@@ -225,27 +299,5 @@ export class HoverProviderKS implements vscode.HoverProvider {
     private stripAnnotationModifiers(modStr: string): string {
         const mods = modStr.split(/\s+/).filter(m => !this.annotationModifiers[m]);
         return mods.join(" ").trim();
-    }
-    private extractAnnotations(modStr: string): string[] {
-        const mods = modStr.split(/\s+/);
-        return mods.map(m => this.annotationModifiers[m]).filter(Boolean);
-    }
-    private renderLinkedType(type: string): string {
-        const raw = type?.split('<')[0];
-        const name = raw?.split('.').pop();
-        if (!name || !raw || /^[A-Z]$/.test(raw)) return type;
-        return `[${name}](command:extension.gotoTypingDefinition?${encodeURIComponent(JSON.stringify({ type: raw }))})`;
-    }
-
-
-
-    private buildHoverCommandLink(displayName: string, classPath: string): string {
-        const typingsMember = getTypingsMember(classPath);
-        if (!typingsMember) return displayName;
-        const args = {
-            type: classPath,
-            typingsMember
-        };
-        return `[${displayName}](command:extension.gotoTypingDefinition?${encodeURIComponent(JSON.stringify(args))})`;
     }
 }

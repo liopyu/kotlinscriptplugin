@@ -15,5 +15,6 @@ export enum VariableType {
 export enum VariableParameter {
     FUNCTION_VALUE_PARAMETERS,
     LAMBDA_PARAMETERS,
+    CATCH_BLOCK
 
 }

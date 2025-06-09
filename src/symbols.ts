@@ -5,6 +5,7 @@ import { log, error, warn } from './extension';
 import { console } from './extension'
 import { documentData } from './constants';
 import { currentEditor } from './semantictokensprovider';
+import { getImportFromClassOrPath, getTypingsMember } from './utils';
 class Symbol {
     name: string;
     type: string | null;
@@ -253,7 +254,9 @@ export class TypingsMember {
         public modifiers: string,
         public superclass: string,
         public interfaces: string[] = [],
-        public typeParameters: string[]
+        public typeParameters: string[],
+        public isSynthetic: boolean = false,
+        public syntheticOriginUri: string = ""
     ) { }
 }
 
@@ -279,8 +282,61 @@ export class Field {
 }
 
 export class VariableNode {
+    public kotlinType: KotlinType
     constructor(
         public variable: SyntaxNode,
-        public type: SyntaxNode | null
+        public type: SyntaxNode | null,
+        public treeProvider: TreeProvider
+    ) {
+        this.kotlinType = this.parseKotlinTypeString(this.type?.text ?? "");
+        const typeStr = getImportFromClassOrPath(this.kotlinType.classPath ?? "", treeProvider) ?? 'kotlin.Any';
+        //log("type text: " + typeStr)
+
+    }
+    public parseKotlinTypeString(typeStr: string): KotlinType {
+        const trimmed = typeStr.trim();
+        const stack: KotlinType[] = [];
+        let currentName = '';
+        let genericsStack: KotlinType[][] = [[]];
+
+        for (let i = 0; i < trimmed.length; i++) {
+            const char = trimmed[i];
+
+            if (char === '<') {
+                stack.push(new KotlinType(currentName.trim(), []));
+                genericsStack.push([]);
+                currentName = '';
+            } else if (char === '>') {
+                if (currentName.trim()) {
+                    genericsStack[genericsStack.length - 1].push(this.parseKotlinTypeString(currentName.trim()));
+                }
+
+                const generics = genericsStack.pop()!;
+                const base = stack.pop()!;
+                base.generics = generics;
+                currentName = '';
+                genericsStack[genericsStack.length - 1].push(base);
+            } else if (char === ',' && genericsStack.length > 1) {
+                if (currentName.trim()) {
+                    genericsStack[genericsStack.length - 1].push(this.parseKotlinTypeString(currentName.trim()));
+                    currentName = '';
+                }
+            } else {
+                currentName += char;
+            }
+        }
+
+        if (stack.length === 0 && genericsStack.length === 1 && genericsStack[0].length === 0 && currentName.trim()) {
+            return new KotlinType(currentName.trim(), []);
+        }
+
+        return genericsStack[0][0];
+    }
+
+}
+export class KotlinType {
+    constructor(
+        public classPath: string,
+        public generics: KotlinType[],
     ) { }
 }

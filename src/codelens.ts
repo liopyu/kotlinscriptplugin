@@ -4,8 +4,8 @@ import { documentData, expressionTypes } from './constants';
 import { ImportSymbol } from './symbols';
 import { log, warn, error } from './extension';
 import { console } from './extension'
-import { currentEditor } from './semantictokensprovider';
-import { logNode } from './utils';
+import { currentEditor, syntheticTypingsMembers } from './semantictokensprovider';
+import { getCurrentTreeProvider, getImportFromClassOrPath, logNode } from './utils';
 const regex = /(?<!\.\s*?)\b\w+\b/g;
 const indexedClassMap: Map<string, Map<string, string[]>> = new Map();
 export function buildClassMap(availableClasses: Set<string>): void {
@@ -128,7 +128,6 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
         return codeLens;
     }
     private findMatchingClasses(symbol: string): string[] {
-
         const firstLetter = symbol.charAt(0).toUpperCase();
         const letterBucket = indexedClassMap.get(firstLetter);
 
@@ -139,22 +138,25 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
         const matches = Array.from(letterBucket.values())
             .flat()
             .filter(cls => {
-                const processedName = cls.replace(/\$/g, '.').split('.').pop()?.trim();
+                const processedName = cls.replace(/\$/g, '.').split('.').pop()?.trim()
                 const isMatch = processedName === symbol.trim();
                 return isMatch;
-            });
-
-        return matches;
+            })
+        const syntheticMatches = Array.from(syntheticTypingsMembers.keys())
+            .filter(cls => {
+                const processedName = cls.replace(/\$/g, '.').split('.').pop()?.trim()
+                const isMatch = processedName === symbol.trim();
+                return isMatch;
+            })
+        /* syntheticMatches.forEach(match => {
+            console.log(match)
+        }) */
+        return [...matches, ...syntheticMatches]
     }
     private isClassImported(className: string): boolean {
-        let foundInImports = false;
-        for (const [fullPath, importSymbol] of this.imports.entries()) {
-            if (importSymbol.simpleName === className.replace(/\$/g, '.')) {
-                foundInImports = true;
-                break;
-            }
-        }
-        if (foundInImports) {
+        const treeProvider = getCurrentTreeProvider(this.document)
+        if (!treeProvider) return false
+        if (getImportFromClassOrPath(className, treeProvider) != null) {
             return true;
         }
         let foundInTypingSuggestions = false;
