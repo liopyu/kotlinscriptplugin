@@ -75,130 +75,119 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         return this.updateTokens(document);
     }
     updateTokens(document: vscode.TextDocument, visibleRanges: vscode.Range | null = null) {
-        /* try { */
-        if (!document) {
-            console.log("No document")
-            return;
-        }
-        const tree = this.treeProvider.tree;
-        const builder = new vscode.SemanticTokensBuilder(LEGEND);
-        let editor = currentEditor(document);
-        if (!tree || !editor) {
-            console.log("Either No tree or no editor")
-            return this.lastSemanticTokens;
-        }
-        let lastText = editor.document.getText()
-        if ((this.lastSemanticTokens && lastText === this.lastDocumentText)) {
-            console.log("document has not changed")
-            return this.lastSemanticTokens;
-        }
-        let logRootNode = false;
-        function shouldLogRootNode(document: vscode.TextDocument): boolean {
-            const text = document.getText();
-            const noRangeFilterRegex = /^\s*\/\/@log-root-node/m;
-
-            return noRangeFilterRegex.test(text);
-        }
-        if (shouldLogRootNode(document)) logRootNode = true
-        if (logRootNode) {
-            console.log("Logging root node")
-            logNodeTree(tree.rootNode)
-        }
-        this.lastDocumentText = lastText
-        let globalScopeRange = new vscode.Range(
-            new vscode.Position(0, 0),
-            editor.document.lineAt(editor.document.lineCount - 1).range.end
-        );
-
-        this.updateGlobalScopeRange(globalScopeRange)
-        const matches = this.highlightQuery.matches(tree.rootNode);
-        this.treeProvider.updateTokens();
-
-        this.tempInterpolatedRanges = [];
-        this.errorType = [];
-
-        const modifiedRange = this.lastChangedRange ?? globalScopeRange;
-        let modifiedNode = tree.rootNode.descendantForPosition({
-            row: modifiedRange.start.line,
-            column: modifiedRange.start.character,
-        });
-        if (modifiedNode.parent && modifiedNode.parent.type != "source_file") {
-            modifiedNode = modifiedNode.parent
-        }
-        const existingTokens = this.decodeSemanticTokens(this.lastSemanticTokens);
-
-        let l: vscode.Range[] = []
-        const m: vscode.Range[] = []
-        let modifiedNodeRange = this.treeProvider.supplyRange(modifiedNode)
-        //m.push(modifiedNodeRange)
-        const totalLines = document.lineCount;
-        const findPreviousNonEmptyLine = (startLine: number, expansion: number) => {
-            for (let i = startLine + expansion; i >= 0; i--) {
-                if (document.lineAt(i).text.trim().length > 0) {
-                    return i;
-                }
-            }
-            return 0;
-        };
-        const findNextNonEmptyLine = (endLine: number, expansion: number) => {
-            for (let i = endLine + expansion; i < totalLines; i++) {
-                if (document.lineAt(i).text.trim().length > 0) {
-                    return i;
-                }
-            }
-            return totalLines - 1
-        };
-        if (modifiedNode.type === "source_file") {
-            const expandedStartLine = findPreviousNonEmptyLine(modifiedRange.start.line, -1);
-            const expandedEndLine = findNextNonEmptyLine(modifiedRange.end.line, + 1);
-            modifiedNodeRange = new vscode.Range(
-                new vscode.Position(expandedStartLine, 0),
-                new vscode.Position(expandedEndLine, document.lineAt(expandedEndLine).range.end.character)
-            );
-        } else {
-            const expandedStartLine = findPreviousNonEmptyLine(modifiedNodeRange.start.line, -1);
-            const expandedEndLine = findNextNonEmptyLine(modifiedNodeRange.end.line, +1);
-            modifiedNodeRange = new vscode.Range(
-                new vscode.Position(expandedStartLine, 0),
-                new vscode.Position(expandedEndLine, document.lineAt(expandedEndLine).range.end.character)
-            );
-        }
-        let packageHeader = tree.rootNode.descendantsOfType("package_header")[0];
-        let importList = tree.rootNode.descendantsOfType("import_list");
-        let importRange = modifiedNodeRange;
-        if (importList.length !== 0) {
-            let importListFirst = importList[0];
-            let importListLast = importList[importList.length - 1];
-            const safeStart = packageHeader
-                ? this.treeProvider.supplyRange(packageHeader).start
-                : this.treeProvider.supplyRange(importListFirst).start;
-            const safeEnd = this.treeProvider.supplyRange(importListLast).end;
-            importRange = new vscode.Range(
-                new vscode.Position(Math.max(0, safeStart.line), Math.max(0, safeStart.character)),
-                new vscode.Position(
-                    Math.min(document.lineCount - 1, safeEnd.line),
-                    Math.min(document.lineAt(safeEnd.line).text.length, safeEnd.character)
-                )
-            );
-        }
-        let verifiedScopes: string[] = ["0:0:0"]
-        let filterRanges = true;
-        if (this.treeProvider.tree) {
-            this.treeProvider.validateImports(this.treeProvider.tree, importList, modifiedRange);
-            this.treeProvider.validateVariables(this.treeProvider.tree, modifiedRange, builder);
-        }
         try {
+            if (!document) {
+                console.log("No document")
+                return;
+            }
+            const tree = this.treeProvider.tree;
+            const builder = new vscode.SemanticTokensBuilder(LEGEND);
+            let editor = currentEditor(document);
+            if (!tree || !editor) {
+                console.log("Either No tree or no editor")
+                return this.lastSemanticTokens;
+            }
+            let lastText = editor.document.getText()
+            if ((this.lastSemanticTokens && lastText === this.lastDocumentText)) {
+                console.log("document has not changed")
+                return this.lastSemanticTokens;
+            }
+            let logRootNode = false;
+            function shouldLogRootNode(document: vscode.TextDocument): boolean {
+                const text = document.getText();
+                const noRangeFilterRegex = /^\s*\/\/@log-root-node/m;
+
+                return noRangeFilterRegex.test(text);
+            }
+            if (shouldLogRootNode(document)) logRootNode = true
+            if (logRootNode) {
+                console.log("Logging root node")
+                logNodeTree(tree.rootNode)
+            }
+            this.lastDocumentText = lastText
+            let globalScopeRange = new vscode.Range(
+                new vscode.Position(0, 0),
+                editor.document.lineAt(editor.document.lineCount - 1).range.end
+            );
+
+            this.updateGlobalScopeRange(globalScopeRange)
+            const matches = this.highlightQuery.matches(tree.rootNode);
+            this.treeProvider.updateTokens();
+
+            this.tempInterpolatedRanges = [];
+            this.errorType = [];
+
+            const modifiedRange = this.lastChangedRange ?? globalScopeRange;
+            let modifiedNode = tree.rootNode.descendantForPosition({
+                row: modifiedRange.start.line,
+                column: modifiedRange.start.character,
+            });
+            if (modifiedNode.parent && modifiedNode.parent.type != "source_file") {
+                modifiedNode = modifiedNode.parent
+            }
+
+            let l: vscode.Range[] = []
+            const m: vscode.Range[] = []
+            let modifiedNodeRange = this.treeProvider.supplyRange(modifiedNode)
+            //m.push(modifiedNodeRange)
+            const totalLines = document.lineCount;
+            const findPreviousNonEmptyLine = (startLine: number, expansion: number) => {
+                for (let i = startLine + expansion; i >= 0; i--) {
+                    if (document.lineAt(i).text.trim().length > 0) {
+                        return i;
+                    }
+                }
+                return 0;
+            };
+            const findNextNonEmptyLine = (endLine: number, expansion: number) => {
+                for (let i = endLine + expansion; i < totalLines; i++) {
+                    if (document.lineAt(i).text.trim().length > 0) {
+                        return i;
+                    }
+                }
+                return totalLines - 1
+            };
+            if (modifiedNode.type === "source_file") {
+                const expandedStartLine = findPreviousNonEmptyLine(modifiedRange.start.line, -1);
+                const expandedEndLine = findNextNonEmptyLine(modifiedRange.end.line, + 1);
+                modifiedNodeRange = new vscode.Range(
+                    new vscode.Position(expandedStartLine, 0),
+                    new vscode.Position(expandedEndLine, document.lineAt(expandedEndLine).range.end.character)
+                );
+            } else {
+                const expandedStartLine = findPreviousNonEmptyLine(modifiedNodeRange.start.line, -1);
+                const expandedEndLine = findNextNonEmptyLine(modifiedNodeRange.end.line, +1);
+                modifiedNodeRange = new vscode.Range(
+                    new vscode.Position(expandedStartLine, 0),
+                    new vscode.Position(expandedEndLine, document.lineAt(expandedEndLine).range.end.character)
+                );
+            }
+            let packageHeader = tree.rootNode.descendantsOfType("package_header")[0];
+            let importList = tree.rootNode.descendantsOfType("import_list");
+            let importRange = modifiedNodeRange;
+            if (importList.length !== 0) {
+                let importListFirst = importList[0];
+                let importListLast = importList[importList.length - 1];
+                const safeStart = packageHeader
+                    ? this.treeProvider.supplyRange(packageHeader).start
+                    : this.treeProvider.supplyRange(importListFirst).start;
+                const safeEnd = this.treeProvider.supplyRange(importListLast).end;
+                importRange = new vscode.Range(
+                    new vscode.Position(Math.max(0, safeStart.line), Math.max(0, safeStart.character)),
+                    new vscode.Position(
+                        Math.min(document.lineCount - 1, safeEnd.line),
+                        Math.min(document.lineAt(safeEnd.line).text.length, safeEnd.character)
+                    )
+                );
+            }
+            if (this.treeProvider.tree) {
+                this.treeProvider.validateImports(this.treeProvider.tree, importList, modifiedRange);
+                this.treeProvider.validateVariables(this.treeProvider.tree, modifiedRange, builder);
+            }
+
+            let verifiedScopes: string[] = ["0:0:0"]
             this.updateSyntheticTypingsMembers(tree.rootNode)
-        } catch (error) {
-            console.log("Error5: " + error)
-
-        }
-        try {
             this.traverseTree(tree.rootNode, builder, verifiedScopes);
-        } catch (error) {
-            console.log("Error7: " + error)
-        }
-        try {
             //log("verified scopes1: " + verifiedScopes.length)
             this.treeProvider.scopes = new Map(
                 [...this.treeProvider.scopes].filter(([key]) => verifiedScopes.includes(key))
@@ -206,7 +195,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             //log("verified scopes2: " + verifiedScopes.length)
             const parentScopeRange = this.findClosestParentScopeRange(modifiedRange) ?? globalScopeRange;
 
-
+            let filterRanges = true;
             function shouldFilterRanges(document: vscode.TextDocument): boolean {
                 const text = document.getText();
                 const noRangeFilterRegex = /^\s*\/\/@range-filter-none/m;
@@ -215,16 +204,12 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
             }
             if (shouldFilterRanges(document)) filterRanges = false
             console.log("updating tokens")
+            const existingTokens = this.decodeSemanticTokens(this.lastSemanticTokens);
+            const visibleRange = editor.visibleRanges[0];
             /* if (t)
                 return null */
-        } catch (error) {
-            console.log("Error6: " + error)
-
-        }
-        const visibleRange = editor.visibleRanges[0];
-        matches.forEach((match, matchIndex) => {
-            match.captures.forEach((capture, captureIndex) => {
-                try {
+            matches.forEach((match, matchIndex) => {
+                match.captures.forEach((capture, captureIndex) => {
                     const node = capture.node;
                     let range = this.treeProvider.supplyRange(node);
                     //logNode(node, "Node in match")
@@ -257,46 +242,42 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
                         this.setCurrentScope(node, range)
                         this.processTokens(capture, builder, range);
                     }
-                } catch (error) {
-                    console.log("Error3: " + error)
+                });
+            });
+            this.init = true
+            const newLineShift = editor.document.lineCount - this.previousLineCount;
+            const currentTokens = this.decodeSemanticTokens(builder.build());
+            existingTokens.forEach(token => {
+                let range = token.range;
+                const shouldShift = range.start.line >= modifiedRange.start.line;
+
+                token.range = new vscode.Range(
+                    new vscode.Position(
+                        Math.max(0, range.start.line + (shouldShift ? newLineShift : 0)),
+                        range.start.character
+                    ),
+                    new vscode.Position(
+                        Math.max(0, range.end.line + (shouldShift ? newLineShift : 0)),
+                        range.end.character
+                    )
+                );
+                let some = !this.doesRangeStartAndEndIntersectTokens(token.range, currentTokens)
+                if (some) {
+                    builder.push(token.range, LEGEND.tokenTypes[token.tokenType] || "variable");
                 }
             });
-        });
 
-        this.init = true
-        const newLineShift = editor.document.lineCount - this.previousLineCount;
-        const currentTokens = this.decodeSemanticTokens(builder.build());
-        existingTokens.forEach(token => {
-            let range = token.range;
-            const shouldShift = range.start.line >= modifiedRange.start.line;
+            editor.setDecorations(DelimiterDecorationType, l)
+            editor.setDecorations(ImportDecorationType, m)
+            this.treeProvider.validateDiagnostics()
+            this.lastSemanticTokens = builder.build();
+            this.init = true
+            this.previousLineCount = editor.document.lineCount;
+            this.reEvaluationRange = modifiedNodeRange
 
-            token.range = new vscode.Range(
-                new vscode.Position(
-                    Math.max(0, range.start.line + (shouldShift ? newLineShift : 0)),
-                    range.start.character
-                ),
-                new vscode.Position(
-                    Math.max(0, range.end.line + (shouldShift ? newLineShift : 0)),
-                    range.end.character
-                )
-            );
-            let some = !this.doesRangeStartAndEndIntersectTokens(token.range, currentTokens)
-            if (some) {
-                builder.push(token.range, LEGEND.tokenTypes[token.tokenType] || "variable");
-            }
-        });
-
-        editor.setDecorations(DelimiterDecorationType, l)
-        editor.setDecorations(ImportDecorationType, m)
-        this.treeProvider.validateDiagnostics()
-        this.lastSemanticTokens = builder.build();
-        this.init = true
-        this.previousLineCount = editor.document.lineCount;
-        this.reEvaluationRange = modifiedNodeRange
-
-        /*   } catch (error) {
-              console.log("Error1: " + error)
-          } */
+        } catch (error) {
+            console.log("Error: " + error)
+        }
         return this.lastSemanticTokens;
     }
 
@@ -306,7 +287,7 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         const collect = (n: SyntaxNode) => {
             if (n.type === "type_identifier" && n.parent?.type === "class_declaration") {
                 const typingsMember = buildTypingsMemberFromClassNode(n, this.treeProvider);
-                if (typingsMember != undefined) {
+                if (typingsMember) {
                     updatedMembers.set(typingsMember.classPath, typingsMember);
                 }
             }
@@ -870,68 +851,52 @@ export class SemanticTokensProvider implements vscode.DocumentSemanticTokensProv
         ]
         let isArrowFunction = originalStartCheck(node, "->")
         let isBlockNode = blockNodes.includes(node.type)
-        try {
-            if (controlFunctions.includes(node.type) || (isBlockNode && node.parent?.type != "function_body") || isArrowFunction) {
-                let newNodeRange = this.treeProvider.supplyRange(node);
-                let modifiedRange = this.lastChangedRange
-                let editor = currentEditor(this.treeProvider.document);
-                let startPoint = newNodeRange.start;
-                let endPoint = isBlockNode ? range.end : isArrowFunction && node.parent ? this.treeProvider.supplyRange(node.parent).end : null
-                let r
-                if (modifiedRange && editor) {
-                    r = this.treeProvider.adjustRangeForShiftsNoColumnNegative(range, modifiedRange, editor)
-                } else r = newNodeRange
-                let scopeId = `${r?.start.line}:${r?.start.character}:${this.treeProvider.currentScope?.depth + 1}`;
-                let storedScope = this.treeProvider.scopes.get(scopeId);
-                if (storedScope) {
-                    //logNode(node, "Entering scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
-                    this.treeProvider.scopes.delete(scopeId)
-                    this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint, endPoint ?? newNodeRange.end)
-                    verifiedScopes.push(this.treeProvider.currentScope.id)
-                } else {
-                    let newScopeId = `${startPoint.line}:${startPoint.character}:${this.treeProvider.currentScope?.depth + 1}`;
-                    verifiedScopes.push(newScopeId)
-                    this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint, endPoint ?? newNodeRange.end);
-                    //  logNode(node, "Entering scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
-                }
+        if (controlFunctions.includes(node.type) || (isBlockNode && node.parent?.type != "function_body") || isArrowFunction) {
+            let newNodeRange = this.treeProvider.supplyRange(node);
+            let modifiedRange = this.lastChangedRange
+            let editor = currentEditor(this.treeProvider.document);
+            let startPoint = newNodeRange.start;
+            let endPoint = isBlockNode ? range.end : isArrowFunction && node.parent ? this.treeProvider.supplyRange(node.parent).end : null
+            let r
+            if (modifiedRange && editor) {
+                r = this.treeProvider.adjustRangeForShiftsNoColumnNegative(range, modifiedRange, editor)
+            } else r = newNodeRange
+            let scopeId = `${r?.start.line}:${r?.start.character}:${this.treeProvider.currentScope?.depth + 1}`;
+            let storedScope = this.treeProvider.scopes.get(scopeId);
+            if (storedScope) {
+                //logNode(node, "Entering scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
+                this.treeProvider.scopes.delete(scopeId)
+                this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint, endPoint ?? newNodeRange.end)
+                verifiedScopes.push(this.treeProvider.currentScope.id)
+            } else {
+                let newScopeId = `${startPoint.line}:${startPoint.character}:${this.treeProvider.currentScope?.depth + 1}`;
+                verifiedScopes.push(newScopeId)
+                this.treeProvider.enterScope(this.treeProvider.currentScope, startPoint, endPoint ?? newNodeRange.end);
+                //  logNode(node, "Entering scope:" + this.treeProvider.currentScope.id + ", at: " + this.treeProvider.rangeToString(this.treeProvider.supplyRange(node)))
             }
-        } catch (error) {
-            console.log("Error8: " + error)
         }
-        try {
-            try {
-                if ((node.type === "var" || node.type === "val") &&
-                    this.treeProvider.findParent(node, "property_declaration", range)) {
-                    const pD = this.treeProvider.findParent(node, "property_declaration", range);
-                    if (pD) {
-                        const valNode = this.treeProvider.findChild(pD, "val");
-                        if (!valNode || valNode.text === "val") {
-                            this.setCurrentScope(node, this.treeProvider.supplyRange(node))
-                            this.treeProvider.processPropertyDeclaration(pD, builder);
-                        }
-                    }
-                }
-                if (node.type === "lambda_parameters") {
+        if ((node.type === "var" || node.type === "val") &&
+            this.treeProvider.findParent(node, "property_declaration", range)) {
+            const pD = this.treeProvider.findParent(node, "property_declaration", range);
+            if (pD) {
+                const valNode = this.treeProvider.findChild(pD, "val");
+                if (!valNode || valNode.text === "val") {
                     this.setCurrentScope(node, this.treeProvider.supplyRange(node))
-                    this.treeProvider.processPropertyDeclaration(node, builder, VariableParameter.LAMBDA_PARAMETERS);
+                    this.treeProvider.processPropertyDeclaration(pD, builder);
                 }
-            } catch (error) {
-                console.log("error 11: " + error)
             }
-            try {
-                if (node.type === "function_value_parameters") {
-                    this.setCurrentScope(node, this.treeProvider.supplyRange(node))
-                    this.treeProvider.processPropertyDeclaration(node, builder, VariableParameter.FUNCTION_VALUE_PARAMETERS);
-                }
-                if (node.type === "catch_block") {
-                    this.setCurrentScope(node, this.treeProvider.supplyRange(node))
-                    this.treeProvider.processPropertyDeclaration(node, builder, VariableParameter.CATCH_BLOCK);
-                }
-            } catch (error) {
-                console.log("error 12: " + error)
-            }
-        } catch (error) {
-            console.log("Error9: " + error)
+        }
+        if (node.type === "lambda_parameters") {
+            this.setCurrentScope(node, this.treeProvider.supplyRange(node))
+            this.treeProvider.processPropertyDeclaration(node, builder, VariableParameter.LAMBDA_PARAMETERS);
+        }
+        if (node.type === "function_value_parameters") {
+            this.setCurrentScope(node, this.treeProvider.supplyRange(node))
+            this.treeProvider.processPropertyDeclaration(node, builder, VariableParameter.FUNCTION_VALUE_PARAMETERS);
+        }
+        if (node.type === "catch_block") {
+            this.setCurrentScope(node, this.treeProvider.supplyRange(node))
+            this.treeProvider.processPropertyDeclaration(node, builder, VariableParameter.CATCH_BLOCK);
         }
         node.children.forEach(child => this.traverseTree(child, builder, verifiedScopes));
     }

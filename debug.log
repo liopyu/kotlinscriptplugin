@@ -6,34 +6,6 @@
 [Log] Loaded 108981 classes from JSON file.
 [Log] Typing suggestions loaded: 3214
 [Log] Semantic Tokens Provider Initialized
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
 [Log] updating tokens
-[Log] [ERROR]: Error extracting variable node:  {}
-[Log] Error3: TypeError: Cannot read properties of undefined (reading 'classPath')
+(x2) [Log] no treeprovider found
+[Log] document has not changed
