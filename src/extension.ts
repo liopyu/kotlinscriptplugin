@@ -89,6 +89,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
 		for (let i = 0; i < total; i++) {
 			const member = available_members[i];
+			if (!member) {
+				continue;
+			}
 			const className = member.classPath.split('.').pop() || member.classPath;
 			const first = className[0]?.toUpperCase() || '_';
 			const second = className[1]?.toLowerCase() || '_';

@@ -6,77 +6,34 @@
 [Log] Loaded 108981 classes from JSON file.
 [Log] Typing suggestions loaded: 3214
 [Log] Semantic Tokens Provider Initialized
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] error 11: TypeError: Cannot read properties of undefined (reading 'classPath')
 [Log] updating tokens
-[Log] returning fallback member: some.Script.ClassName
-[Log] Semantic Tokens Provider Initialized
-[Log] updating tokens
-[Log] document has not changed
-[Log] updating tokens
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] updating tokens
-[Log] returning fallback member: some.Script.ClassName
-[Log] updating tokens
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-(x2) [Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] updating tokens
-[Log] document has not changed
-[Log] updating tokens
-[Log] document has not changed
-[Log] updating tokens
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] updating tokens
-[Log] returning fallback member: some.Script.ClassName
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] updating tokens
-[Log] returning fallback member: some.Script.ClassName
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] document has not changed
-[Log] updating tokens
-[Log] document has not changed
-[Log] updating tokens
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] updating tokens
-[Log] returning fallback member: some.Script.ClassName
-[Log] updating tokens
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] updating tokens
-[Log] returning fallback member: some.Script.ClassName
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] updating tokens
-[Log] returning fallback member: some.Script.ClassName
-[Log] updating tokens
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] updating tokens
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] updating tokens
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] document has not changed
-[Log] returning fallback member: some.Script.ClassName
-[Log] updating tokens
-[Log] document has not changed
+[Log] [ERROR]: Error extracting variable node:  {}
+[Log] Error3: TypeError: Cannot read properties of undefined (reading 'classPath')

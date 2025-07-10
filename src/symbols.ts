@@ -289,7 +289,7 @@ export class VariableNode {
         public treeProvider: TreeProvider
     ) {
         this.kotlinType = this.parseKotlinTypeString(this.type?.text ?? "");
-        const typeStr = getImportFromClassOrPath(this.kotlinType.classPath ?? "", treeProvider) ?? 'kotlin.Any';
+        const typeStr = getImportFromClassOrPath(this.kotlinType ? this.kotlinType.classPath : "", treeProvider) ?? 'kotlin.Any';
         //log("type text: " + typeStr)
 
     }
@@ -339,4 +339,13 @@ export class KotlinType {
         public classPath: string,
         public generics: KotlinType[],
     ) { }
+}
+export class NodeContext {
+    constructor(
+        public treeProvider: TreeProvider,
+        public scope: Scope | undefined,
+        public node: SyntaxNode,
+        public range: vscode.Range
+    ) {
+    }
 }

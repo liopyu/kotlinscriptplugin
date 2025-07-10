@@ -497,15 +497,22 @@ export class TreeProvider {
         return variables;
     }
     public extractVariableNode(declaration: SyntaxNode): VariableNode {
-        const node = declaration.firstChild
-        const isFunctionVariable = getNamedSiblings(node, true).some(sib => sib.type == "function_type")
-        const funcVariable = isFunctionVariable ? this.findChild(node?.parent, "function_type", "variable_declaration") : node;
-        const userTypeNode = declaration.parent?.type == "catch_block" ? this.findChild(declaration.parent, "user_type") : this.findChild(declaration, "user_type");
-        const userType = this.findChild(funcVariable, "user_type", "function_type") ?? userTypeNode;
-        let dec = userType && declaration.firstChild ? declaration.firstChild : declaration;
-        let newnode = new VariableNode(dec, userType, this)
-        //log("user type: " + userType + " of variable: " + dec.text)
-        return newnode
+        try {
+            const node = declaration.firstChild
+            const isFunctionVariable = getNamedSiblings(node, true).some(sib => sib.type == "function_type")
+            const funcVariable = isFunctionVariable ? this.findChild(node?.parent, "function_type", "variable_declaration") : node;
+            const userTypeNode = declaration.parent?.type == "catch_block" ? this.findChild(declaration.parent, "user_type") : this.findChild(declaration, "user_type");
+            const userType = this.findChild(funcVariable, "user_type", "function_type") ?? userTypeNode;
+            let dec = userType && declaration.firstChild ? declaration.firstChild : declaration;
+            let newnode = new VariableNode(dec, userType, this)
+            //log("user type: " + userType + " of variable: " + dec.text)
+            return newnode
+        } catch (error) {
+            console.error("Error extracting variable node: ", error);
+            return new VariableNode(declaration, null, this);
+
+        }
+
     }
     public processImportDeclarations(node: SyntaxNode) {
         const importNode = this.findChild(node, "identifier");

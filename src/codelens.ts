@@ -191,6 +191,7 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
             treeProvider.findChildInRange((nodeAtPosition.type == ":" && nodeAtPosition?.parent) ? nodeAtPosition?.parent : nodeAtPosition, "type_identifier", null, range)
         const delegation_specifiers = treeProvider.findParent(childNode, "delegation_specifier", range)
         const delegation_specifiers2 = treeProvider.findChildInRange(nodeAtPosition, "delegation_specifier", null, range)
+        //logNode(nodeAtPosition, "nodeAtPosition")
         //logNode(nodeAtPosition?.parent, "nodeAtPosition parent")
         if (!childNode || ((["class_declaration"].includes(nodeAtPosition.type) && childNode.type == "type_identifier" && !delegation_specifiers)) ||
             (childNode.type != "type_identifier" && !expressionTypes.includes(childNode.parent?.type ?? "")
@@ -211,9 +212,14 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
                     "function_value_parameters",
                     "explicit_delegation",
                     "property_delegate"
-                ].includes(childNode.parent?.type ?? ""))
+                ].includes(childNode.parent?.type ?? "")) ||
+            [
+                "object_declaration"
+
+            ].includes(nodeAtPosition.type)
 
         ) {
+            //log("not in correct node")
             return false;
         }
         return true
@@ -237,7 +243,7 @@ export class ImportCodeLensProvider implements vscode.CodeLensProvider<vscode.Co
         const redDecorations: vscode.DecorationOptions[] = [];
         const whiteLineDecorations: vscode.DecorationOptions[] = [];
 
-        const visibleRanges = editor.visibleRanges; // ✅ Only process visible text
+        const visibleRanges = editor.visibleRanges;
 
         for (let i = 0; i < document.lineCount; i++) {
             const line = document.lineAt(i);

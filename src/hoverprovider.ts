@@ -9,7 +9,7 @@ import {
     t,
     documentData,
 } from './constants'
-import { buildTypingsMemberFromClassNode, getCurrentTreeProvider, getImportFromClassOrPath, getKotlinBoxedType, getMethodFromFunctionDeclaration, getNamedSiblings, getTypingsMember, logNode, logNodeTree, splitTopLevelArgs, stripAnnotations } from './utils';
+import { buildTypingsMemberFromClassNode, getCurrentTreeProvider, getImportFromClassOrPath, getKotlinBoxedType, getMethodFromFunctionDeclaration, getNamedSiblings, getTypingsMember, logNode, logNodeTree, prepareContext, resolveBaseType, resolveTypingsFromSuffixes, splitTopLevelArgs, stripAnnotations } from './utils';
 export class HoverProviderKS implements vscode.HoverProvider {
 
     constructor(
@@ -48,27 +48,26 @@ export class HoverProviderKS implements vscode.HoverProvider {
                     ));
                 }
             }
+            /* logNode(node, "Hover Node")
+            logNode(node.nextNamedSibling, "Hover Node sibling")
+            logNode(node.parent, "Hover Node Parent") */
             if (!["type_identifier", "simple_identifier"].includes(node.type)) return;
 
             const isFunctionVariable = getNamedSiblings(node, true).some(sib => sib.type == "function_type");
-
             const funcVariable = isFunctionVariable
                 ? treeProvider.findChild(node?.parent, "function_type", "variable_declaration")
                 : node;
-
             const userType = treeProvider.findChild(funcVariable, "user_type", "function_type") ?? node;
-
-            const baseType = this.resolveBaseType(userType, treeProvider, scope);
+            const baseType = this.resolveTypeFromVarOrPath(userType, treeProvider, scope);
             const navNode = node.parent?.parent;
-            const typingsMember = !baseType
+            let typingsMember = !baseType
                 ? getTypingsMember(navNode?.text ?? "")
                 : getTypingsMember(baseType);
-            const effectiveBaseType = baseType || (
+            let effectiveBaseType = baseType || (
                 navNode?.type === "navigation_expression"
                     ? typingsMember?.classPath
                     : getImportFromClassOrPath(navNode?.text ?? "", treeProvider)
             );
-            if (!effectiveBaseType || !typingsMember) return;
             const simpleVarNode = node.parent?.type == "variable_declaration" ? node.parent : undefined;
             const variableNode = funcVariable ?? simpleVarNode;
             const variable = variableNode != undefined ? scope?.resolveVariable(node.text) : undefined;
@@ -87,7 +86,41 @@ export class HoverProviderKS implements vscode.HoverProvider {
                 log("simpleVarNode.text: " + simpleVarNode?.text);
                 log("variableNode.text: " + variableNode?.text);
                 log("resolved variable type: " + variable?.type);
-                log("Found member: " + typingsMember.classPath);
+                log("Found member: " + typingsMember?.classPath);
+            }
+            if (!effectiveBaseType || !typingsMember) {
+                const setup = prepareContext(document, position);
+                if (!setup) {
+                    return;
+                }
+                const { treeProvider, range, scope, node } = setup;
+                const iNode = treeProvider.findParent(node, "navigation_expression", range);
+                if (!iNode) {
+                    return
+                }
+                let {
+                    baseType,
+                    isStaticClassCall,
+                    isCallOffClass,
+                    potentialVariable
+                } = resolveBaseType(treeProvider, document, iNode, scope);
+                if (!baseType) {
+                    return;
+                }
+
+                const { currentType, foundTypingsMember, currentIsStatic } = resolveTypingsFromSuffixes(
+                    treeProvider,
+                    iNode,
+                    baseType,
+                    isCallOffClass,
+                    potentialVariable
+                );
+                if (!foundTypingsMember) {
+                    return;
+                }
+                log("found currentType: " + currentType)
+                effectiveBaseType = currentType
+                typingsMember = foundTypingsMember
             }
             return new vscode.Hover(this.buildHoverMarkdownType(effectiveBaseType, typingsMember, variable));
 
@@ -158,7 +191,7 @@ export class HoverProviderKS implements vscode.HoverProvider {
 
 
 
-    private resolveBaseType(node: SyntaxNode, treeProvider: TreeProvider, scope: Scope | undefined): string | null | undefined {
+    private resolveTypeFromVarOrPath(node: SyntaxNode, treeProvider: TreeProvider, scope: Scope | undefined): string | null | undefined {
         const varText = node.text;
         const scoped = scope?.resolveVariable(varText);
         // log("Scoped Variable: " + scoped?.type)

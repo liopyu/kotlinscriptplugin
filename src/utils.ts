@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { Field, Method, TypingsMember, TypingSuggestion } from './symbols';
+import { Field, Method, NodeContext, Scope, TypingsMember, TypingSuggestion, VariableNode } from './symbols';
 import { TreeProvider } from './treeprovider';
-import { log, error, warn, availableClasses, available_members_index } from './extension';
+import { log, error, warn, availableClasses, available_members_index, typingSuggestions } from './extension';
 import {
     t,
     TOKEN_TYPES,
@@ -16,7 +16,8 @@ import {
     standinReserved,
     reservedCharacters,
     documentData,
-    semanticTokensEnabled
+    semanticTokensEnabled,
+    kotlinCorePackages
 } from './constants'
 import { currentEditor, SemanticTokensProvider, syntheticTypingsMembers } from './semantictokensprovider';
 import { SyntaxNode } from 'web-tree-sitter';
@@ -548,8 +549,8 @@ export function buildTypingsMemberFromClassNode(node: SyntaxNode, treeProvider: 
      }) */
     const packageHeader = treeProvider.findChild(treeProvider.tree?.rootNode, "package_header")
     const packagePath = treeProvider.findChild(packageHeader, "identifier")?.text
-    const outerName = "Script";
-    const classPath = `${packagePath ? packagePath + "." : ""}${outerName}.${className}`;
+    const outerName = "";
+    const classPath = `${packagePath ? packagePath + "." : ""}${className}`;
 
     const inheritances = getNamedSiblings(node)
         .filter(sib => sib.type === "delegation_specifier")
@@ -620,17 +621,33 @@ export function getFieldFromPropertyDeclaration(fieldNode: SyntaxNode, treeProvi
 
     return new Field(name, resolvedType, isStatic, "", modifiers.join(" "));
 }
-
+export function getVariableNodeFromFunctionValues(node: SyntaxNode | null | undefined, treeProvider: TreeProvider) {
+    const variableNodes: VariableNode[] = []
+    getNamedSiblings(node?.firstChild, true).forEach(variable => {
+        if (variable.type == "parameter") {
+            const variableNode = treeProvider.extractVariableNode(variable);
+            variableNodes.push(variableNode)
+        }
+    });
+    return variableNodes
+}
 export function getMethodFromFunctionDeclaration(funcNode: SyntaxNode, treeProvider: TreeProvider): Method | null {
     const functionName = treeProvider.findChild(funcNode, "simple_identifier", "function_declaration")?.text;
     if (!functionName) return null;
 
-    const argList = treeProvider.findChild(funcNode, "function_value_parameters")?.text || "";
-    const rawArgs = argList.match(/\((.*)\)/)?.[1];
-    const extractedArgs = rawArgs
-        ? splitTopLevelArgs(rawArgs).map(arg => getKotlinBoxedType(stripAnnotations(arg)))
-        : [];
-    const typedArgs = extractedArgs.map(arg => getImportFromClassOrPath(arg, treeProvider) ?? arg);
+    const argList = treeProvider.findChild(funcNode, "function_value_parameters");
+    const variableNodes: VariableNode[] = getVariableNodeFromFunctionValues(argList, treeProvider)
+    //this is the issue
+    const typedArgs = variableNodes.map(arg => {
+        // log("getImportFromClassOrPath: " + getImportFromClassOrPath(arg.kotlinType.classPath, treeProvider))
+        // log("arg: " + arg.variable.text)
+        try {
+            return getImportFromClassOrPath(arg.kotlinType.classPath, treeProvider) ?? arg.kotlinType.classPath
+        } catch (error) {
+            console.log("getMethodFromFunctionDeclaration: " + error)
+            return "Unknown"
+        }
+    });
     const returnTypeName = treeProvider.findChildInRange(
         funcNode,
         "user_type",
@@ -686,7 +703,7 @@ const defaultKotlinPackages = [
 export function getImportFromClassOrPath(classOrPath: string, treeProvider: TreeProvider): string | null {
     for (const [, importSymbol] of treeProvider.imports.entries()) {
         if (importSymbol.path === classOrPath || importSymbol.simpleName === classOrPath) {
-            console.log("found imported symbol: " + importSymbol.path)
+            //console.log("found imported symbol: " + importSymbol.path)
             return importSymbol.path;
         }
     }
@@ -716,7 +733,7 @@ export function getImportFromClassOrPath(classOrPath: string, treeProvider: Tree
             console.log("is synthetic, is not synthetic class origin file and is not imported: " + fallbackMember.classPath)
             return null
         }
-        log("returning fallback member: " + fallbackMember.classPath)
+        //log("returning fallback member: " + fallbackMember.classPath)
         return fallbackMember.classPath;
     }
     return null;
@@ -732,4 +749,254 @@ export function getCurrentTreeProvider(doc: vscode.TextDocument) {
     }
     return data.semanticTokensProvider?.treeProvider;
 
+}
+
+export function prepareContext(document: vscode.TextDocument, position: vscode.Position) {
+    const documentUri = document.uri.toString();
+    const data = documentData.get(documentUri);
+    if (!data) {
+        return null;
+    }
+    const treeProvider = data.semanticTokensProvider?.treeProvider;
+    if (!treeProvider) {
+        return null;
+    }
+    const tree = treeProvider.tree;
+    if (!tree) {
+        return null;
+    }
+    const line = position.line;
+    const character = position.character - 1;
+    const startPosition = new vscode.Position(line, character);
+    const endPosition = new vscode.Position(line, character + 1);
+    const range = new vscode.Range(startPosition, endPosition);
+    const scope = data.semanticTokensProvider?.currentScopeFromRange(range);
+    const node = tree.rootNode.descendantForPosition({ row: line, column: character });
+    return new NodeContext(treeProvider, scope, node, range);
+}
+
+export function resolveTypingsFromSuffixes(
+    treeProvider: TreeProvider,
+    iNode: SyntaxNode,
+    baseType: string,
+    isCallOffClass: boolean,
+    potentialVariable: SyntaxNode | undefined | null
+) {
+    //  console.log(`[resolveTypingsFromSuffixes] BaseType at start: ${baseType}`);
+    // console.log(`[resolveTypingsFromSuffixes] isCallOffClass: ${isCallOffClass}`);
+
+    const suffixes = treeProvider.findChildren(iNode, ["navigation_suffix"], null) ?? [];
+    const refinedSuffixes: string[] = [];
+
+    for (const suffix of suffixes) {
+        const identifier = treeProvider.findChild(suffix, "simple_identifier", null);
+        if (!identifier || identifier.text === potentialVariable?.text) continue;
+
+        const isCall = isMethodCall(suffix);
+        refinedSuffixes.push(identifier.text + (isCall ? "()" : ""));
+        //console.log(`[resolveTypingsFromSuffixes] Found suffix: ${identifier.text}, isMethodCall: ${isCall}`);
+    }
+
+    // console.log("[resolveTypingsFromSuffixes] Found refined suffixes:", refinedSuffixes);
+
+    let currentType = baseType;
+    let currentIsStatic = false;
+    let foundTypingsMember = getTypingsMember(currentType);
+
+    if (!isCallOffClass) {
+        //  console.log(`[resolveTypingsFromSuffixes] Resolving instance chain from baseType: ${currentType}`);
+
+        for (const element of refinedSuffixes) {
+            if (!foundTypingsMember) {
+                console.log(`[resolveTypingsFromSuffixes] Stopped - no TypingsMember found for: ${currentType}`);
+                break;
+            }
+
+            // console.log(`[resolveTypingsFromSuffixes] Processing suffix: ${element}`);
+            const isMethod = element.endsWith("()");
+            if (isMethod) {
+                const method = foundTypingsMember.methods.find(m => m.name === element);
+                if (!method) {
+                    console.log(`[resolveTypingsFromSuffixes] Method not found: ${element} in ${foundTypingsMember.classPath}`);
+                    break;
+                }
+                console.log(`[resolveTypingsFromSuffixes] Matched method '${method.name}' -> returns ${method.returns}`);
+                currentType = method.returns;
+                currentIsStatic = method.isStatic;
+            } else {
+                const field = foundTypingsMember.fields.find(f => f.name === element);
+                if (!field) {
+                    //console.log(`[resolveTypingsFromSuffixes] Field not found: ${element} in ${foundTypingsMember.classPath}`);
+                    break;
+                }
+                // console.log(`[resolveTypingsFromSuffixes] Matched field '${field.name}' -> returns ${field.returns}`);
+                currentType = field.returns;
+                currentIsStatic = field.isStatic;
+            }
+
+            foundTypingsMember = getTypingsMember(currentType);
+        }
+    } else {
+        //  console.log(`[resolveTypingsFromSuffixes] Static call context, checking baseType: ${baseType}`);
+        if (!foundTypingsMember) {
+            const fallback = typingSuggestions.find(
+                s => s.simpleName === iNode.text || s.fullyQualifiedName === iNode.text
+            );
+            if (fallback?.returnType) {
+                //  console.log(`[resolveTypingsFromSuffixes] Fallback TypingSuggestion used: ${fallback.returnType}`);
+                currentType = fallback.returnType;
+                foundTypingsMember = getTypingsMember(currentType);
+            }
+        } else {
+            // console.log(`[resolveTypingsFromSuffixes] Found TypingsMember: ${foundTypingsMember.classPath}`);
+        }
+    }
+    // console.log(`[resolveTypingsFromSuffixes] Final resolved currentType: ${currentType}`);
+    return { currentType, foundTypingsMember, currentIsStatic };
+}
+export function isMethodCall(node: SyntaxNode | null): boolean {
+    if (!node) return false;
+
+    if (node.type === "call_expression") {
+        //  console.log(`[isMethodCall] Direct call_expression: ${node.text}`);
+        return true;
+    }
+
+    if (node.type === "navigation_expression") {
+        const callExpr = node.child(0);
+        if (callExpr?.type === "call_expression") {
+            // console.log(`[isMethodCall] navigation_expression contains call_expression: ${callExpr.text}`);
+            return true;
+        }
+    }
+
+    if (node.type === "navigation_suffix" && node.parent?.type === "navigation_expression") {
+        const callExpr = node.parent.parent;
+        const hasCallSuffix = callExpr?.type === "call_expression" &&
+            callExpr.children.some(c => c.type === "call_suffix");
+        if (hasCallSuffix) {
+            // console.log(`[isMethodCall] navigation_suffix leads into call_expression: ${node.text}`);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+export function resolveBaseType(
+    treeProvider: TreeProvider,
+    document: vscode.TextDocument,
+    iNode: SyntaxNode,
+    scope: Scope | undefined
+) {
+    // console.log("[resolveBaseType] Starting base type resolution...");
+
+    let className;
+    let isStaticClassCall = false;
+    let potentialVariable;
+    let baseType: string | null = null;
+
+    let lastChild = treeProvider.findLastChildInRange(iNode, "navigation_expression", null, treeProvider.supplyRange(iNode));
+    let firstChild = treeProvider.findChild(iNode, "navigation_expression");
+
+    if (!lastChild) {
+        // console.log("[resolveBaseType] No lastChild found, using simple_identifier from current node");
+        potentialVariable = treeProvider.findChild(iNode, "simple_identifier", null);
+    } else if (firstChild) {
+        //  console.log("[resolveBaseType] Found firstChild navigation_expression");
+        potentialVariable = treeProvider.findChild(firstChild, "simple_identifier", null);
+    }
+
+    const scopedVariable = scope?.resolveVariable(potentialVariable?.text ?? "");
+    if (scopedVariable) {
+        //console.log("[resolveBaseType] Found scoped variable: " + scopedVariable.name);
+        const classPath = getImportFromClassOrPath(scopedVariable.type, treeProvider);
+        baseType = classPath ?? scopedVariable.type;
+    } else {
+        //console.log("[resolveBaseType] No scoped variable found, falling back to resolveBaseTypeFromImports");
+        ({ baseType, className, isStaticClassCall } = resolveBaseTypeFromImports(treeProvider, document, iNode));
+    }
+    // TODO: fix this
+    const isCallOffClass = treeProvider.findChild(iNode, "navigation_expression") == null;
+    // logNode(treeProvider.findChild(iNode, "navigation_expression"), "iscalloffclassnode")
+    if (isCallOffClass && !isMethodCall(iNode) && !scopedVariable) {
+        console.log("[resolveBaseType] Call is directly off class, setting isStaticClassCall = true");
+        isStaticClassCall = true;
+    }
+
+    // console.log("[resolveBaseType] Final resolved baseType: " + baseType);
+    // console.log("[resolveBaseType] isCallOffClass: " + isCallOffClass);
+    // console.log("[resolveBaseType] isStaticClassCall: " + isStaticClassCall);
+
+    return {
+        baseType,
+        className,
+        isStaticClassCall,
+        isCallOffClass,
+        potentialVariable,
+        scopedVariable
+    };
+}
+export function resolveBaseTypeFromImports(treeProvider: TreeProvider, document: vscode.TextDocument, iNode: SyntaxNode) {
+    // console.log("[resolveBaseTypeFromImports] Starting import-based resolution...");
+
+    let className: SyntaxNode | null | undefined;
+    let isStaticClassCall = true;
+    let isCallOffClass = true;
+    let baseType: string | null = null;
+
+    const potentialImports = [...treeProvider.findChildren(iNode, ["navigation_expression"], null), iNode];
+    //console.log(`[resolveBaseTypeFromImports] Checking ${potentialImports.length} potential imports...`);
+
+    for (const syntaxNode of potentialImports) {
+        const rawText = syntaxNode.text;
+        const simpleIdentifier = treeProvider.findChild(syntaxNode, "simple_identifier", null);
+        const candidates = [rawText, simpleIdentifier?.text].filter(Boolean) as string[];
+
+        for (const name of candidates) {
+            if (getImportFromClassOrPath(name, treeProvider)) {
+                baseType = getImportFromClassOrPath(name, treeProvider) ?? name;
+                className = simpleIdentifier;
+                if (isMethodCall(syntaxNode)) isStaticClassCall = false;
+                //   console.log(`[resolveBaseTypeFromImports] Resolved from import: ${name}`);
+                return { baseType, className, isStaticClassCall, isCallOffClass };
+            }
+        }
+
+        if (!baseType) {
+            // console.log("[resolveBaseTypeFromImports] No import match, checking TypingSuggestion fallback...");
+            // logNode(syntaxNode, "INode");
+
+            let fallbackKey = rawText.includes("(") ? rawText.substring(0, rawText.indexOf("(")) : rawText;
+            const fallbackSuggestion = getTypingsSuggestionFromSimpleName(fallbackKey);
+
+            if (fallbackSuggestion?.returnType) {
+                baseType = fallbackSuggestion.returnType;
+                className = simpleIdentifier;
+                isStaticClassCall = true;
+                isCallOffClass = false;
+                //  console.log(`[resolveBaseTypeFromImports] Fallback TypingSuggestion used: ${baseType}`);
+                return { baseType, className, isStaticClassCall, isCallOffClass };
+            }
+        }
+    }
+
+    //console.log("[resolveBaseTypeFromImports] Resolution failed, returning null baseType.");
+    return { baseType, className, isStaticClassCall, isCallOffClass };
+}
+
+export function getTypingsSuggestionFromSimpleName(simpleName: string): TypingSuggestion | undefined {
+    const className = simpleName.split(".").pop() ?? "";
+    let matchedTyping = typingSuggestions.find(s => s.simpleName === className || s.fullyQualifiedName === simpleName);
+    if (matchedTyping) {
+        return matchedTyping;
+    }
+    for (const basePackage of kotlinCorePackages) {
+        const potentialFQName = `${basePackage}.${className}`;
+        matchedTyping = typingSuggestions.find(s => s.fullyQualifiedName === potentialFQName);
+        if (matchedTyping) {
+            return matchedTyping;
+        }
+    }
+    return undefined;
 }
