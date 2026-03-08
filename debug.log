@@ -7,5 +7,114 @@
 [Log] Typing suggestions loaded: 3214
 [Log] Semantic Tokens Provider Initialized
 [Log] updating tokens
-(x2) [Log] no treeprovider found
 [Log] document has not changed
+[Log] [provideCompletionItems] Called with position: 38 9
+[Log] [provideCompletionItems] iNode: undefined
+[Log] [provideCompletionItems] No iNode found, returning undefined
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 38 9
+[Log] [provideCompletionItems] iNode: undefined
+[Log] [provideCompletionItems] No iNode found, returning undefined
+[Log] updating tokens
+[Log] document has not changed
+[Log] [provideCompletionItems] Called with position: 38 17
+[Log] [provideCompletionItems] iNode: undefined
+[Log] [provideCompletionItems] No iNode found, returning undefined
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 38 9
+[Log] [provideCompletionItems] iNode: undefined
+[Log] [provideCompletionItems] No iNode found, returning undefined
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 38 17
+[Log] [provideCompletionItems] iNode: undefined
+[Log] [provideCompletionItems] No iNode found, returning undefined
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 38 9
+[Log] [provideCompletionItems] iNode: undefined
+[Log] [provideCompletionItems] No iNode found, returning undefined
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 38 18
+[Log] [provideCompletionItems] iNode: undefined
+[Log] [provideCompletionItems] No iNode found, returning undefined
+[Log] [provideCompletionItems] Called with position: 38 19
+[Log] [provideCompletionItems] iNode: navigation_expression Minecraft.g
+[Log] [provideCompletionItems] resolveBaseType returned: baseType: net.minecraft.client.Minecraft isStaticClassCall: true isCallOffClass: true potentialVariable: Minecraft
+[Log] [provideCompletionItems] resolveTypingsFromSuffixes returned: currentType: net.minecraft.client.Minecraft foundTypingsMember: net.minecraft.client.Minecraft currentIsStatic: false
+[Log] [provideCompletionItems] potentialVariable: Minecraft callOffClass: true isStaticClassCall: true
+[Log] [provideCompletionItems] Found TypingsMember: net.minecraft.client.Minecraft, preparing completions (isCallOffClass: true, isStaticClassCall: true)
+[Log] [buildCompletionItems] Building completions for: net.minecraft.client.Minecraft
+[Log] [buildCompletionItems] isCallOffClass: true, isStaticClassCall: true
+[Log] [provideCompletionItems] Returning completion items, count: 57
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 38 32
+[Log] [provideCompletionItems] iNode: undefined
+[Log] [provideCompletionItems] No iNode found, returning undefined
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 70 9
+[Log] [provideCompletionItems] iNode: undefined
+[Log] [provideCompletionItems] No iNode found, returning undefined
+(x2) [Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 70 20
+[Log] [provideCompletionItems] iNode: navigation_expression guiGraphics.
+        guiGraphics
+[Log] [provideCompletionItems] resolveBaseType returned: baseType: net.minecraft.client.gui.GuiGraphics isStaticClassCall: false isCallOffClass: true potentialVariable: guiGraphics
+[Log] [provideCompletionItems] resolveTypingsFromSuffixes returned: currentType: net.minecraft.client.gui.GuiGraphics foundTypingsMember: net.minecraft.client.gui.GuiGraphics currentIsStatic: false
+[Log] [provideCompletionItems] potentialVariable: guiGraphics callOffClass: true isStaticClassCall: false
+[Log] [provideCompletionItems] Found TypingsMember: net.minecraft.client.gui.GuiGraphics, preparing completions (isCallOffClass: true, isStaticClassCall: false)
+[Log] [buildCompletionItems] Building completions for: net.minecraft.client.gui.GuiGraphics
+[Log] [buildCompletionItems] isCallOffClass: true, isStaticClassCall: false
+[Log] [provideCompletionItems] Returning completion items, count: 80
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 70 35
+[Log] [provideCompletionItems] iNode: navigation_expression guiGraphics.applyScissor().
+        guiGraphics
+[Log] [provideCompletionItems] resolveBaseType returned: baseType: net.minecraft.client.gui.GuiGraphics isStaticClassCall: false isCallOffClass: false potentialVariable: guiGraphics
+[Log] [provideCompletionItems] resolveTypingsFromSuffixes returned: currentType: kotlin.Unit foundTypingsMember: kotlin.Unit currentIsStatic: false
+[Log] [provideCompletionItems] potentialVariable: guiGraphics callOffClass: false isStaticClassCall: false
+[Log] [provideCompletionItems] Reset isCallOffClass and isStaticClassCall to false due to potentialVariable
+[Log] [provideCompletionItems] Inside potentialVariable branch (not Companion, not static/calloffclass)
+[Log] [provideCompletionItems] Found TypingsMember: kotlin.Unit, preparing completions (isCallOffClass: false, isStaticClassCall: false)
+[Log] [buildCompletionItems] Building completions for: kotlin.Unit
+[Log] [buildCompletionItems] isCallOffClass: false, isStaticClassCall: false
+[Log] [provideCompletionItems] Returning completion items, count: 0
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 70 36
+[Log] [provideCompletionItems] iNode: navigation_expression guiGraphics.applyScissor().g
+[Log] [provideCompletionItems] resolveBaseType returned: baseType: net.minecraft.client.gui.GuiGraphics isStaticClassCall: false isCallOffClass: false potentialVariable: guiGraphics
+[Log] [provideCompletionItems] resolveTypingsFromSuffixes returned: currentType:  foundTypingsMember: kotlin.Unit currentIsStatic: false
+[Log] [provideCompletionItems] No foundTypingsMember or empty currentType, returning undefined
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 70 20
+[Log] [provideCompletionItems] iNode: navigation_expression guiGraphics.
+        guiGraphics
+[Log] [provideCompletionItems] resolveBaseType returned: baseType: net.minecraft.client.gui.GuiGraphics isStaticClassCall: false isCallOffClass: true potentialVariable: guiGraphics
+[Log] [provideCompletionItems] resolveTypingsFromSuffixes returned: currentType: net.minecraft.client.gui.GuiGraphics foundTypingsMember: net.minecraft.client.gui.GuiGraphics currentIsStatic: false
+[Log] [provideCompletionItems] potentialVariable: guiGraphics callOffClass: true isStaticClassCall: false
+[Log] [provideCompletionItems] Found TypingsMember: net.minecraft.client.gui.GuiGraphics, preparing completions (isCallOffClass: true, isStaticClassCall: false)
+[Log] [buildCompletionItems] Building completions for: net.minecraft.client.gui.GuiGraphics
+[Log] [buildCompletionItems] isCallOffClass: true, isStaticClassCall: false
+[Log] [provideCompletionItems] Returning completion items, count: 80
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 93 1
+[Log] [provideCompletionItems] iNode: undefined
+[Log] [provideCompletionItems] No iNode found, returning undefined
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 93 5
+[Log] [provideCompletionItems] iNode: undefined
+[Log] [provideCompletionItems] No iNode found, returning undefined
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 93 15
+[Log] [provideCompletionItems] iNode: navigation_expression tesselator.
+    fun
+[Log] [provideCompletionItems] resolveBaseType returned: baseType: kotlin.Any isStaticClassCall: false isCallOffClass: true potentialVariable: tesselator
+[Log] [provideCompletionItems] resolveTypingsFromSuffixes returned: currentType: kotlin.Any foundTypingsMember: kotlin.Any currentIsStatic: false
+[Log] [provideCompletionItems] potentialVariable: tesselator callOffClass: true isStaticClassCall: false
+[Log] [provideCompletionItems] Found TypingsMember: kotlin.Any, preparing completions (isCallOffClass: true, isStaticClassCall: false)
+[Log] [buildCompletionItems] Building completions for: kotlin.Any
+[Log] [buildCompletionItems] isCallOffClass: true, isStaticClassCall: false
+[Log] [provideCompletionItems] Returning completion items, count: 3
+[Log] updating tokens
+[Log] [provideCompletionItems] Called with position: 93 14
+[Log] [provideCompletionItems] iNode: undefined
+[Log] [provideCompletionItems] No iNode found, returning undefined
+[Log] updating tokens

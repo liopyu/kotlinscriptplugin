@@ -211,74 +211,110 @@ export class PeriodTypingSuggestionProvider implements vscode.CompletionItemProv
 
 
 
+
     async provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
     ): Promise<vscode.CompletionItem[] | undefined> {
+        log("[provideCompletionItems] Called with position:", position.line, position.character);
+
         const setup = prepareContext(document, position);
+
         if (!setup) {
+            log("[provideCompletionItems] No setup (prepareContext failed), returning undefined");
             return;
         }
+
         const { treeProvider, range, scope, node } = setup;
+
         const iNode = treeProvider.findParent(node, "navigation_expression", range);
+        log("[provideCompletionItems] iNode:", iNode ? iNode.type + " " + iNode.text : "undefined");
+
         if (!iNode) {
-            return
-        }
-        let {
-            baseType,
-            isStaticClassCall,
-            isCallOffClass,
-            potentialVariable
-        } = resolveBaseType(treeProvider, document, iNode, scope);
-        if (!baseType) {
+            log("[provideCompletionItems] No iNode found, returning undefined");
             return;
         }
+        try {
+            let {
+                baseType,
+                isStaticClassCall,
+                isCallOffClass,
+                potentialVariable
+            } = resolveBaseType(treeProvider, document, iNode, scope);
 
-        const { currentType, foundTypingsMember, currentIsStatic } = resolveTypingsFromSuffixes(
-            treeProvider,
-            iNode,
-            baseType,
-            isCallOffClass,
-            potentialVariable
-        );
-        if (!foundTypingsMember) {
-            return;
-        }
-        log("found currentType: " + currentType)
-        console.log("potentialvariable: " + potentialVariable?.text + ", calloffclass: " + isCallOffClass)
-        if (potentialVariable && !isCallOffClass) {
-            isCallOffClass = false;
-            isStaticClassCall = false;
-        }
-        if (
-            potentialVariable?.text &&
-            !potentialVariable.text.endsWith(".Companion") &&
-            (!isStaticClassCall && !isCallOffClass)
-        ) {
-            isCallOffClass = false;
-            isStaticClassCall = false;
+            log("[provideCompletionItems] resolveBaseType returned:", "baseType:", baseType, "isStaticClassCall:", isStaticClassCall, "isCallOffClass:", isCallOffClass, "potentialVariable:", potentialVariable ? potentialVariable.text : "undefined");
 
-            if (foundTypingsMember.hasInvokeOperator && isMethodCall(potentialVariable?.parent)) {
-                const invokeMethod = foundTypingsMember.methods.find(m => {
-                    //log("Method: " + m.name + ", isStatic: " + m.isStatic)
-                    return m.name === "invoke"
-                });
-                if (invokeMethod) {
-                    //log("invoke method: " + invokeMethod.name)
-                    //   console.log(`[provideCompletionItems] Found invoke() operator, refining type to: ${invokeMethod.returns}`);
-                    const invokedTypingsMember = getTypingsMember(invokeMethod.returns);
-                    if (invokedTypingsMember) {
-                        console.log(`[provideCompletionItems] Switching context to type: ${invokedTypingsMember.classPath}`);
-                        return this.buildCompletionItems(invokedTypingsMember, false, false, treeProvider);
+            if (!baseType) {
+                log("[provideCompletionItems] No baseType, returning undefined");
+                return;
+            }
+
+            const { currentType, foundTypingsMember, currentIsStatic } = resolveTypingsFromSuffixes(
+                treeProvider,
+                iNode,
+                baseType,
+                isCallOffClass,
+                potentialVariable
+            );
+
+            log("[provideCompletionItems] resolveTypingsFromSuffixes returned:", "currentType:", currentType, "foundTypingsMember:", foundTypingsMember ? foundTypingsMember.classPath : "undefined", "currentIsStatic:", currentIsStatic);
+
+            if (!foundTypingsMember || !currentType.length) {
+                log("[provideCompletionItems] No foundTypingsMember or empty currentType, returning undefined");
+                return;
+            }
+
+            log("[provideCompletionItems] potentialVariable:", potentialVariable?.text, "callOffClass:", isCallOffClass, "isStaticClassCall:", isStaticClassCall);
+
+            if (potentialVariable && !isCallOffClass) {
+                isCallOffClass = false;
+                isStaticClassCall = false;
+                log("[provideCompletionItems] Reset isCallOffClass and isStaticClassCall to false due to potentialVariable");
+            }
+
+            if (
+                potentialVariable?.text &&
+                !potentialVariable.text.endsWith(".Companion") &&
+                (!isStaticClassCall && !isCallOffClass)
+            ) {
+                isCallOffClass = false;
+                isStaticClassCall = false;
+                log("[provideCompletionItems] Inside potentialVariable branch (not Companion, not static/calloffclass)");
+
+                if (foundTypingsMember.hasInvokeOperator && isMethodCall(potentialVariable?.parent)) {
+                    log("[provideCompletionItems] foundTypingsMember has invoke operator and parent is method call");
+
+                    const invokeMethod = foundTypingsMember.methods.find(m => m.name === "invoke");
+                    log("[provideCompletionItems] invokeMethod:", invokeMethod ? invokeMethod.name : "undefined");
+
+                    if (invokeMethod) {
+                        log("[provideCompletionItems] invokeMethod found, returns:", invokeMethod.returns);
+
+                        const invokedTypingsMember = getTypingsMember(invokeMethod.returns);
+                        log("[provideCompletionItems] invokedTypingsMember:", invokedTypingsMember ? invokedTypingsMember.classPath : "undefined");
+
+                        if (invokedTypingsMember) {
+                            log(`[provideCompletionItems] Switching context to type: ${invokedTypingsMember.classPath}`);
+                            const items = this.buildCompletionItems(invokedTypingsMember, false, false, treeProvider);
+                            log("[provideCompletionItems] Returning completion items for invokedTypingsMember, count:", Array.isArray(items) ? items.length : "unknown");
+                            return items;
+                        }
                     }
                 }
             }
+
+            log(`[provideCompletionItems] Found TypingsMember: ${foundTypingsMember.classPath}, preparing completions (isCallOffClass: ${isCallOffClass}, isStaticClassCall: ${isStaticClassCall})`);
+            const items = this.buildCompletionItems(foundTypingsMember, isCallOffClass, isStaticClassCall, treeProvider);
+            log("[provideCompletionItems] Returning completion items, count:", Array.isArray(items) ? items.length : "unknown");
+            return items;
+        } catch (error) {
+            console.error("[provideCompletionItems] Error in initial try block:", error);
         }
-        console.log(`[provideCompletionItems] Found TypingsMember: ${foundTypingsMember.classPath}, preparing completions.`);
-        return this.buildCompletionItems(foundTypingsMember, isCallOffClass, isStaticClassCall, treeProvider);
+
     }
+
 
 
 

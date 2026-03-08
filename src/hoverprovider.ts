@@ -29,7 +29,7 @@ export class HoverProviderKS implements vscode.HoverProvider {
             const range = new vscode.Range(position.line, startChar, position.line, position.character);
             const scope = treeProvider.semanticTokensProvider?.currentScopeFromRange(range) ?? treeProvider.currentScope
             const debug = false
-
+            const debug1 = false
 
             if (node.type === "type_identifier" && node.parent?.type === "class_declaration") {
                 const typingsMember = buildTypingsMemberFromClassNode(node, treeProvider);
@@ -48,9 +48,11 @@ export class HoverProviderKS implements vscode.HoverProvider {
                     ));
                 }
             }
-            /* logNode(node, "Hover Node")
-            logNode(node.nextNamedSibling, "Hover Node sibling")
-            logNode(node.parent, "Hover Node Parent") */
+            if (debug1 && !debug) {
+                logNode(node, "Hover Node")
+                logNode(node.nextNamedSibling, "Hover Node sibling")
+                logNode(node.parent, "Hover Node Parent")
+            }
             if (!["type_identifier", "simple_identifier"].includes(node.type)) return;
 
             const isFunctionVariable = getNamedSiblings(node, true).some(sib => sib.type == "function_type");
@@ -105,6 +107,7 @@ export class HoverProviderKS implements vscode.HoverProvider {
                     potentialVariable
                 } = resolveBaseType(treeProvider, document, iNode, scope);
                 if (!baseType) {
+                    //log("No base type found for node: " + iNode.text);
                     return;
                 }
 
@@ -118,7 +121,9 @@ export class HoverProviderKS implements vscode.HoverProvider {
                 if (!foundTypingsMember) {
                     return;
                 }
-                log("found currentType: " + currentType)
+                // log("found currentType: " + currentType)
+                // log("found foundTypingsMember: " + foundTypingsMember.classPath)
+                if (!currentType.length) return
                 effectiveBaseType = currentType
                 typingsMember = foundTypingsMember
             }

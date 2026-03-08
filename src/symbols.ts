@@ -289,7 +289,7 @@ export class VariableNode {
         public treeProvider: TreeProvider
     ) {
         this.kotlinType = this.parseKotlinTypeString(this.type?.text ?? "");
-        const typeStr = getImportFromClassOrPath(this.kotlinType ? this.kotlinType.classPath : "", treeProvider) ?? 'kotlin.Any';
+        //const typeStr = getImportFromClassOrPath(this.kotlinType ? this.kotlinType.classPath : "", treeProvider) ?? 'kotlin.Any';
         //log("type text: " + typeStr)
 
     }
